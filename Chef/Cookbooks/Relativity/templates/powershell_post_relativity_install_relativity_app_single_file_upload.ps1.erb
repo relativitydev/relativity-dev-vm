@@ -1,0 +1,103 @@
+##########################################################################
+# This script creates a workspaces and install a relativity application. #
+# The Data Sampler application imports documents with images and         #
+# productions that you specify in the config section in this script.     #
+#                                                                        #
+#                                                                        #
+# How to use:                                                            #
+# 1. Point the include section to the directory of your Relativity       #
+#    Client Dlls                                                         #
+#                                                                        #
+# 2. Update the Config section dlls                                      #
+#                                                                        #
+# 3. Execute the script                                                  #
+#                                                                        #
+##########################################################################
+
+#############################INCLUDE SECTION##############################
+$ScriptDir = Split-Path -parent $MyInvocation.MyCommand.Path
+Import-Module $ScriptDir\powershell_functions.ps1 -force
+Add-Type -Path "C:\Program Files\kCura Corporation\Relativity\Library\kCura.Relativity.Client.dll"
+Add-Type -Path "C:\Program Files\kCura Corporation\Relativity\Library\Relativity.API.dll"
+##########################################################################
+
+############################USER CONFIG SECTION###########################
+$newWorkspaceName = "<%= node['sample_data_population']['workspace_name'] %>"
+$fullFilePathRap = "$($ScriptDir)\Single File Upload 1.2.0.16 (for Relativity 9.4 - 9.5 - RelOne).rap"
+$relativityUrl = "http://<%= node['windows']['hostname'] %>/Relativity.Services"
+$relativityUsername = "<%= node['sample_data_population']['relativity_admin_account']['login'] %>"
+$relativityPassword = "<%= node['sample_data_population']['relativity_admin_account']['password'] %>"
+$maxRetry = 3
+###########################################################################
+
+
+if ([System.IO.File]::Exists($fullFilePathRap) -eq $FALSE) {
+  Write-Error "RAP file does not exist $($fullFilePathRap)"
+  Return
+}
+
+$relativityServicesUrl = New-Object -TypeName System.Uri -ArgumentList $relativityUrl
+
+# First check if workspace exists
+$doesWorkspaceExists
+$retryCnt = 0
+$existingWorkspaceArtifactID = 0
+while ($retryCnt -lt $maxRetry -and $existingWorkspaceArtifactID -eq 0) {
+  $rsapiClient = $NULL
+
+  try {
+    $rsapiClient = GetRsapiClient $relativityServicesUrl $relativityUsername $relativityPassword
+    $existingWorkspaceArtifactID = QueryWorkspace $rsapiClient $newWorkspaceName    
+    # $existingWorkspaceArtifactID = [convert]::ToInt32($existingWorkspaceArtifactID, 10)
+    if ($existingWorkspaceArtifactID -gt 0) {
+      $doesWorkspaceExists = $true
+    }
+  }
+  Catch [Exception] {
+    Write-Host "$($_.Exception.GetType().FullName) $($_.Exception.Message)"
+  }
+  finally {
+    if ($rsapiClient -ne $NULL) {
+      $rsapiClient.Dispose()
+    }
+  }
+
+  $retryCnt++
+}
+
+if ($doesWorkspaceExists) {
+  # Install Relativity Smoke Test App into Workspace
+  $retryCnt = 0
+  $appInstalled = $FALSE
+  while ($retryCnt -lt $maxRetry -and $appInstalled -eq $FALSE) {
+    $rsapiClient = $NULL
+
+    try {
+      $rsapiClient = GetRsapiClient $relativityServicesUrl $relativityUsername $relativityPassword
+      Write-Host "Writing test value."
+      Write-Host $existingWorkspaceArtifactID
+      $appInstalled = InstallApplication $rsapiClient $existingWorkspaceArtifactID $fullFilePathRap
+    }
+    Catch [Exception] {
+      Write-Host "$($_.Exception.GetType().FullName) $($_.Exception.Message)"
+    }
+    finally {
+      if ($rsapiClient -ne $NULL) {
+        $rsapiClient.Dispose()
+      }
+    }
+
+    $retryCnt++
+  }
+
+  if ($appInstalled) {
+    #
+    #SUCCESS
+    exit 0
+  }
+  else {
+    #
+    #FAILURE
+    exit 1
+  }
+}

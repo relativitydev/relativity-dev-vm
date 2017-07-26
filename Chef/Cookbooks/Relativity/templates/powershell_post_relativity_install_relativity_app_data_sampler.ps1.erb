@@ -1,0 +1,163 @@
+##########################################################################
+# This script creates a workspaces and install a relativity application. #
+# The Data Sampler application imports documents with images and         #
+# productions that you specify in the config section in this script.     #
+#                                                                        #
+#                                                                        #
+# How to use:                                                            #
+# 1. Point the include section to the directory of your Relativity       #
+#    Client Dlls                                                         #
+#                                                                        #
+# 2. Update the Config section dlls                                      #
+#                                                                        #
+# 3. Execute the script                                                  #
+#                                                                        #
+##########################################################################
+
+#############################INCLUDE SECTION##############################
+$ScriptDir = Split-Path -parent $MyInvocation.MyCommand.Path
+Import-Module $ScriptDir\powershell_functions.ps1 -force
+Add-Type -Path "C:\Program Files\kCura Corporation\Relativity\Library\kCura.Relativity.Client.dll"
+Add-Type -Path "C:\Program Files\kCura Corporation\Relativity\Library\Relativity.API.dll"
+##########################################################################
+
+######################DONT'T CHANGE THESE VALUES##########################
+$configFileName = "DataPopulateConfiguration.Json"
+$relativityDefaultAppGuid = New-Object -TypeName System.Guid -ArgumentList "3E86B18F-8B55-45C4-9A57-9E0CBD7BAF46"
+##########################################################################
+
+############################USER CONFIG SECTION###########################
+$newWorkspaceName = "<%= node['sample_data_population']['workspace_name'] %>"
+$fullFilePathRap = "$($ScriptDir)\Relativity_App_Data_Sampler.rap"
+$relativityUrl = "http://<%= node['windows']['hostname'] %>/Relativity.Services"
+$relativityUsername = "<%= node['sample_data_population']['relativity_admin_account']['login'] %>"
+$relativityPassword = "<%= node['sample_data_population']['relativity_admin_account']['password'] %>"
+$relativityLibraryFolder = "C:\\Program Files\\kCura Corporation\\Relativity\\Library" #Use double backslashes here
+$numberOfDocuments = <%= node['sample_data_population']['number_of_documents'] %>
+$importImagesWithDocuments = <%= node['sample_data_population']['import_images_with_Documents'] %>
+$importProductionImagesWithDocuments = <%= node['sample_data_population']['import_production_images_with_documents'] %>
+$maxRetry = 3
+###########################################################################
+
+
+if ([System.IO.File]::Exists($fullFilePathRap) -eq $FALSE) {
+  Write-Error "RAP file does not exist $($fullFilePathRap)"
+  Return
+}
+
+$configFileLocation = CreateJsonConfigFile $configFileName $relativityUsername $relativityPassword $relativityLibraryFolder $numberOfDocuments $importImagesWithDocuments $importProductionImagesWithDocuments
+$relativityServicesUrl = New-Object -TypeName System.Uri -ArgumentList $relativityUrl
+
+# Upload Config File as a resource to the Default Application
+$retryCnt = 0
+$resourceFilePushed = $FALSE
+while ($retryCnt -lt $maxRetry -and $resourceFilePushed -eq $false) {
+  $rsapiClient = $NULL
+
+  try {
+    $rsapiClient = GetRsapiClient $relativityServicesUrl $relativityUsername $relativityPassword
+    $resourceFilePushed = PushResource $rsapiClient $configFileName $configFileLocation $relativityDefaultAppGuid
+  }
+  Catch [Exception] {
+    Write-Host "$($_.Exception.GetType().FullName) $($_.Exception.Message)"
+  }
+  finally {
+    if ($rsapiClient -ne $NULL) {
+      $rsapiClient.Dispose()
+    }
+  }
+
+  $retryCnt++
+}
+
+# First check if workspace with the same name already exists
+[Boolean]$doesWorkspaceExists
+$retryCnt = 0
+$existingWorkspaceArtifactID = 0
+while ($retryCnt -lt $maxRetry -and $existingWorkspaceArtifactID -eq 0) {
+  $rsapiClient = $NULL
+
+  try {
+    $rsapiClient = GetRsapiClient $relativityServicesUrl $relativityUsername $relativityPassword
+    $existingWorkspaceArtifactID = QueryWorkspace $rsapiClient $newWorkspaceName
+    if ($existingWorkspaceArtifactID -gt 0) {
+      $doesWorkspaceExists = $true
+    }
+  }
+  Catch [Exception] {
+    Write-Host "$($_.Exception.GetType().FullName) $($_.Exception.Message)"
+  }
+  finally {
+    if ($rsapiClient -ne $NULL) {
+      $rsapiClient.Dispose()
+    }
+  }
+
+  $retryCnt++
+}
+
+# Create workspace and install app if the workspace not already exists
+if ($doesWorkspaceExists) {
+  Write-Host "Skipping Workspace creation and Data Sampler App install."
+}
+else {
+  #Create Workspace
+  $retryCnt = 0
+  $newWorkspaceArtifactID = 0
+  while ($retryCnt -lt $maxRetry -and $newWorkspaceArtifactID -eq 0) {
+    $rsapiClient = $NULL
+
+    try {
+      $rsapiClient = GetRsapiClient $relativityServicesUrl $relativityUsername $relativityPassword
+      $newWorkspaceArtifactID = CreateWorkspace $rsapiClient $newWorkspaceName
+    }
+    Catch [Exception] {
+      Write-Host "$($_.Exception.GetType().FullName) $($_.Exception.Message)"
+    }
+    finally {
+      if ($rsapiClient -ne $NULL) {
+        $rsapiClient.Dispose()
+      }
+    }
+
+    $retryCnt++
+  }
+
+  # Sleep for 3 min for the workspace to upgrade
+  Start-Sleep -s 180
+
+  #Install Data Sampler Application into Newly Created Workspace
+  $retryCnt = 0
+  $appInstalled = $FALSE
+  while ($retryCnt -lt $maxRetry -and $appInstalled -eq $FALSE) {
+    $rsapiClient = $NULL
+
+    try {
+      $rsapiClient = GetRsapiClient $relativityServicesUrl $relativityUsername $relativityPassword
+      $appInstalled = InstallApplication $rsapiClient $newWorkspaceArtifactID $fullFilePathRap
+    }
+    Catch [Exception] {
+      Write-Host "$($_.Exception.GetType().FullName) $($_.Exception.Message)"
+    }
+    finally {
+      if ($rsapiClient -ne $NULL) {
+        $rsapiClient.Dispose()
+      }
+    }
+
+    $retryCnt++
+  }
+
+  Remove-Item $configFileLocation
+
+  if ($appInstalled) {
+    #
+    #SUCCESS
+    exit 0
+  }
+  else {
+    #
+    #FAILURE
+    exit 1
+  }
+}

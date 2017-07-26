@@ -1,0 +1,34 @@
+---
+driver:
+  name: hyperv
+  parent_vhd_folder: 'C:\Chef_Windows_Base'
+  parent_vhd_name: WindowsServer2012R2.vhdx
+  vm_switch: DevVm
+  memory_startup_bytes: 8GB 
+  processor_count: 4
+
+provisioner:
+  name: chef_zero
+
+transport:
+  password: Password1!
+  elevated: true
+
+verifier:
+  name: inspec
+
+platforms:
+  - name: windows-2012r2  
+
+suites:
+  - name: default
+    run_list:
+      - recipe[Relativity::default_windows]
+      - recipe[Relativity::default_pre_relativity]
+      - recipe[Relativity::default_relativity]
+      - recipe[Relativity::default_post_relativity]
+      - recipe[Relativity::post_relativity_configure_invariant]
+    verifier:
+      inspec_tests:
+        - test/smoke/default
+    attributes:

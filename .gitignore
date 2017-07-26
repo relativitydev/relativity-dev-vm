@@ -1,9 +1,51 @@
 .vagrant
-/cookbooks
+*~
+*#
+.#*
+\#*#
+.*.sw[a-z]
+*.un~
 
 # Bundler
+Gemfile.lock
 bin/*
 .bundle/*
 
+# test kitchen
 .kitchen/
 .kitchen.local.yml
+
+# Chef
+Berksfile.lock
+.zero-knife.rb
+Policyfile.lock.json
+
+# Visual Studio Project
+/bin/
+/Bin/
+/obj/
+/Obj/
+UpgradeResults.xml
+suo
+re:\.user
+_ReSharper
+.hgignore
+.dotCover
+/toDelete/
+/Junk/
+/XXX/
+.orig
+/JJK_
+cp_deployment/
+bin/
+obj/
+Bin/
+Obj/
+re:~.*
+packages/
+StyleCop*
+.pyo
+.vs
+*.pubxml.user
+*.suo
+*.user

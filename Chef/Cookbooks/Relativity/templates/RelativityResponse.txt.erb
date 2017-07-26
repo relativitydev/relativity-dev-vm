@@ -1,0 +1,197 @@
+### Version 1 ###
+
+### WARNING. This software installation program and all other programs and software that will
+### be installed by this program (collectively, “Software”) belong to kCura Corporation and/or
+### kCura’s third party software licensors. The Software is licensed with restrictions and is
+### protected by Federal Copyright Law, International Copyright Treaties, and the Illinois Trade
+### Secrets Act. All rights are reserved. Any unauthorized copying, use, or other activity, is
+### strictly prohibited, and is subject to civil and criminal penalties.
+
+################### FEATURE SELECTION ################################
+### 0 for: Do not install, do not upgrade, or uninstall if currently installed .
+### 1 for: Install or upgrade.
+###
+### E.g. INSTALLPRIMARYDATABASE=1
+### 
+### Note: Installing the Primary Database will automatically install and run Procuro.
+### Note: You cannot install Primary Database and Distributed Database at the same time.
+######################################################################
+
+INSTALLPRIMARYDATABASE=1
+INSTALLDISTRIBUTEDDATABASE=0
+INSTALLAGENTS=1
+INSTALLWEB=1
+INSTALLSERVICEBUS=1
+
+
+################### COMMON PROPERTIES ################################
+### The following properties are required for all features.
+######################################################################
+
+### Target directory for local installation files.
+### This path must be a local, accessible path on the server you are installing to.
+### E.g. INSTALLDIR=C:\Program Files\kCura Corporation\Relativity\
+
+INSTALLDIR=C:\Program Files\kCura Corporation\Relativity\
+
+ 
+### The Primary SQL Server Instance Name.
+### If you are installing to a cluster, specify the cluster and instance name.
+### If you are installing to a named instance, specify the server and instance name.
+### E.g. PRIMARYSQLINSTANCE=MySQLServer
+
+PRIMARYSQLINSTANCE=<%= node['fqdn'] %>
+
+ 
+### The password for the EDDSDBO account on the SQL Primary SQL Instance you are installing to.
+### The EDDSDBO login must have the same password for all Relativity Database servers (Primary or Distributed). 
+### If you are installing for the first time and this login doesn't exist, we will attempt to 
+### create it for you, so ensure this password passes any password strength restrictions that 
+### may be in place. Otherwise, this must match the existing account's password.
+### E.g. EDDSDBOPASSWORD=MySecretPassword
+
+EDDSDBOPASSWORD=<%= node['sql']['user']['eddsdbo']['password'] %>
+
+
+### Domain (or Workgroup) and Username of the Relativity Service Account Windows login. 
+### This Windows login must already exist.
+### E.g. SERVICEUSERNAME=domain\username
+
+SERVICEUSERNAME=.\<%= node['windows']['user']['admin']['login'] %>
+
+ 
+### Password for the SERVICEUSERNAME.
+### E.g. SERVICEPASSWORD=MySecretPassword
+
+SERVICEPASSWORD=<%= node['windows']['user']['admin']['password'] %>
+
+
+### Whether or not to use WinAuth to connect to the SQL Server.
+### If 1, then the user running the installer must be SQL sysadmin, and any values passed in for SQLUSERNAME and SQLPASSWORD will be ignored.
+### If 0, then SQLUSERNAME and SQLPASSWORD properties needed.
+### E.g. USEWINAUTH=1 
+
+USEWINAUTH=1
+
+
+### The name of a SQL Server login.
+### This SQL login must be a SQL sysadmin.
+### This property is only needed if USEWINAUTH is set to 0.
+### E.g. SQLUSERNAME=mySqlUserName
+
+SQLUSERNAME=
+
+
+### The password for the SQLUSERNAME.
+### This property is only needed if USEWINAUTH is set to 0
+### E.g. SQLPASSWORD=myPassword
+
+SQLPASSWORD=
+
+
+### Whether or not to keep current connection strings in config files on upgrade. Only works when upgrading from Relativity 9.2+.
+### A value of 1 indicates that the connection strings should be kept.
+### E.g. KEEPCONNECTIONSTRINGS=1
+
+KEEPCONNECTIONSTRINGS=1
+
+
+################### PRIMARY DATABASE PROPERTIES ######################
+### The following properties are required only when installing the Primary Database
+######################################################################
+
+### Target UNC path for the default file repository.
+### This path must be a shared folder that both the user running the installer and the Relativity Service Account have read/write permissions to.
+### E.g. DEFAULTFILEREPOSITORY=\\yourmachine\FileShare
+
+DEFAULTFILEREPOSITORY=\\<%= node['fqdn'] %>\Fileshare
+
+
+### Target UNC path for the EDDS File Share.
+### This path must be a shared folder that both the user running the installer and the Relativity Service Account have read/write permissions to.
+### E.g. EDDSFILESHARE=\\yourmachine\Fileshare
+
+EDDSFILESHARE=\\<%= node['fqdn'] %>\Fileshare\EDDS
+
+
+### Target UNC path for the dtSearch Indexes to be stored.
+### This path must be a shared folder that both the user running the installer and the Relativity Service Account have read/write permissions to.
+### E.g. DTSEARCHINDEXPATH=\\yourmachine\dtSearch
+
+DTSEARCHINDEXPATH=\\<%= node['fqdn'] %>\dtSearchIndexes
+
+
+### The name of the Relativity instance.
+### This is only set on a first time install. It is ignored on upgrades.
+### This value does not need to be quoted
+### E.g. RELATIVITYINSTANCENAME=My Relativity Instance
+
+RELATIVITYINSTANCENAME=<%= node['fqdn'] %>
+
+
+
+################### DISTRIBUTED DATABASE PROPERTIES ##################
+### The following properties are required only when installing the Distributed Database
+######################################################################
+
+### The Distributed SQL Server Instance Name.
+### E.g. DISTRIBUTEDSQLINSTANCE=MyOtherSQLServer
+
+DISTRIBUTEDSQLINSTANCE=
+
+
+
+################### COMMON DATABASE PROPERTIES #######################
+### The following properites are required when installing Primary Database or Distributed Database
+######################################################################
+
+### Target directory for the database backup (.bak) files.
+### This path must be a local, accessible path on the SQL server you are installing to.
+### E.g. DATABASEBACKUPDIR=C:\Backup
+
+DATABASEBACKUPDIR=C:\Backup
+
+
+### Target directory for the database log (.ldf) files.
+### This path must be a local, accessible path on the SQL server you are installing to.
+### E.g. LDFDIR=C:\Logs
+
+LDFDIR=C:\Logs
+
+
+### Target directory for the database data (.mdf) files.
+### This path must be a local, accessible path on the SQL server you are installing to.
+### E.g. MDFDIR=C:\Data
+
+MDFDIR=C:\Data
+
+
+### Target directory for the database full text index (.ndf) files.
+### This path must be a local, accessible path on the SQL server you are installing to.
+### E.g. FULLTEXTDIR=C:\FullText
+
+FULLTEXTDIR=C:\FullText
+
+
+################### AGENT PROPERTIES #################################
+### The following properties are only required only when installing Agents
+######################################################################
+
+### Whether or not to create the default agents. 
+### This value is only used on a first time install of Relativity Agents, it is ignored during upgrades.
+### A value of 1 indicates to create the agents.
+### If the value isn't set, or is set to anything but 1, the agents will not be created.
+### E.g. DEFAULTAGENTS=1
+
+DEFAULTAGENTS=1
+
+################### WEB PROPERTIES #################################
+### The following properties are only required only when installing Web
+######################################################################
+
+### Whether or not to enable win auth for your Relativity environment. 
+### A value of 1 indicates to enable win auth.
+### If the value isn't set, or is set to anything but 1, win auth will not be enabled.
+### E.g. ENABLEWINAUTH=1
+
+ENABLEWINAUTH=0
