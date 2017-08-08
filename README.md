@@ -1,3 +1,3 @@
-# relativity_dev_vm
+# relativity-dev-vm
 
-Please find instruction on how to run Chef recipes at this link - https://github.com/kCura-Relativity/relativity_dev_vm/wiki
+Documentation will be posted soon...
