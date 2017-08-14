@@ -16,7 +16,10 @@ ProcessingSourceLocation_directory = 'ProcessingSourceLocation'
 
 BCPPath_directory = 'BCPPath'
 
-directories = [Backup_directory, Data_directory, dtSearchIndexes_directory, Fileshare_directory, Fileshare_EDDS_directory, FullText_directory, InvariantNetworkShare_directory, Logs_directory, ProcessingSourceLocation_directory, BCPPath_directory]
+Chef_Install_directory = 'Chef_Install'
+Chef_Install_ServiceBusDefectWindowsUpdate_directory = 'Chef_Install\ServiceBusDefectWindowsUpdate'
+
+directories = [Backup_directory, Data_directory, dtSearchIndexes_directory, Fileshare_directory, Fileshare_EDDS_directory, FullText_directory, InvariantNetworkShare_directory, Logs_directory, ProcessingSourceLocation_directory, BCPPath_directory, Chef_Install_directory, Chef_Install_ServiceBusDefectWindowsUpdate_directory]
 
 # Create directories
 directories.each do |dir|
@@ -106,6 +109,22 @@ powershell_script 'BCPPath_directory' do
     New-SmbShare -Name 'BCPPath' -Path 'C:/BCPPath' -FullAccess 'Everyone'
     EOH
     not_if "(Get-SmbShare).Name -Contains 'BCPPath'"
+    action :run
+end
+
+powershell_script 'Chef_Install_directory' do
+    code <<-EOH
+    New-SmbShare -Name 'Chef_Install' -Path 'C:/Chef_Install' -FullAccess 'Everyone'
+    EOH
+    not_if "(Get-SmbShare).Name -Contains 'Chef_Install'"
+    action :run
+end
+
+powershell_script 'Chef_Install_ServiceBusDefectWindowsUpdate_directory' do
+    code <<-EOH
+    New-SmbShare -Name 'Chef_Install_ServiceBusDefectWindowsUpdate' -Path 'C:/Chef_Install/ServiceBusDefectWindowsUpdate' -FullAccess 'Everyone'
+    EOH
+    not_if "(Get-SmbShare).Name -Contains 'Chef_Install_ServiceBusDefectWindowsUpdate'"
     action :run
 end
 

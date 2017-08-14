@@ -2,15 +2,18 @@ log 'Starting Windows Update install for Service Bus defect'
 start_time = DateTime.now
 log "recipe_start_time(#{recipe_name}): #{start_time}"
 
-#todo
-# cookbook_file 'C:/Chef_Install/ServiceBusWindowsUpdate/AppServer-KB3086798-x64-EN.exe' do
-#   source 'AppServer-KB3086798-x64-EN.exe'
-# end
+service_bus_defect_windows_udpate_installer_location = "#{node['service_bus']['defect_windows_udpate']['install_directory']}/#{node['service_bus']['defect_windows_udpate']['installer_file_name']}"
 
+# Copy the service bus windows update file to install directory
+cookbook_file service_bus_defect_windows_udpate_installer_location do
+  source node['service_bus']['installer_file_name']
+end
+
+# Install windows update
 windows_package 'Install Windows Update for Service Bus defect' do
   action :install
   installer_type :installshield
-  source 'C:/Chef_Install/ServiceBusWindowsUpdate/AppServer-KB3086798-x64-EN.exe'
+  source service_bus_defect_windows_udpate_installer_location
   options '/quiet /q /norestart'
 end
 

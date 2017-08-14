@@ -22,6 +22,8 @@ default['service_bus']['services']['service_bus_message_broker'] = 'Service Bus 
 default['service_bus']['services']['service_bus_resource_provider'] = 'Service Bus Resource Provider'
 default['service_bus']['services']['service_bus_vss'] = 'Service Bus VSS'
 default['service_bus']['services']['service_bus_FabricHostSvc'] = 'FabricHostSvc'
+default['service_bus']['defect_windows_udpate']['install_directory'] = 'C:/Chef_Install/ServiceBusDefectWindowsUpdate'
+default['service_bus']['defect_windows_udpate']['installer_file_name'] = 'AppServer-KB3086798-x64-EN.exe'
 
 default['relativity']['install_directory'] = 'C:/Chef_Install/Relativity'
 default['relativity']['installer_file_location'] = 'C:/Chef_Install/Relativity/Relativity.exe'
