@@ -11,10 +11,6 @@ include_recipe 'Relativity::pre_relativity_install_windows_features_and_services
 # Create shared folders
 include_recipe 'Relativity::pre_relativity_create_shared_folders'
 
-#todo
-# # Copy Install files to node
-# include_recipe 'Relativity::pre_relativity_copy_install_files_to_node'
-
 # Install Microsoft SQL Server
 include_recipe 'Relativity::pre_relativity_install_sqlserver'
 

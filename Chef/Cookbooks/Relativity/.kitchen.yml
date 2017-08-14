@@ -1,7 +1,7 @@
 ---
 driver:
   name: hyperv
-  parent_vhd_folder: 'C:\Hyper-V'
+  parent_vhd_folder: 'C:\Chef_Windows_Base'
   parent_vhd_name: WindowsServer2012R2.vhdx
   vm_switch: DevVmExternalSwitch
   memory_startup_bytes: 4GB 

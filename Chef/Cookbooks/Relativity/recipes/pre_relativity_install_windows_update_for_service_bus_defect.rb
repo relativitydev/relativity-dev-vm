@@ -3,14 +3,14 @@ start_time = DateTime.now
 log "recipe_start_time(#{recipe_name}): #{start_time}"
 
 #todo
-# cookbook_file 'C:/Chef_Install/AppServer-KB3086798-x64-EN.exe' do
+# cookbook_file 'C:/Chef_Install/ServiceBusWindowsUpdate/AppServer-KB3086798-x64-EN.exe' do
 #   source 'AppServer-KB3086798-x64-EN.exe'
 # end
 
 windows_package 'Install Windows Update for Service Bus defect' do
   action :install
   installer_type :installshield
-  source 'C:/Chef_Install/AppServer-KB3086798-x64-EN.exe'
+  source 'C:/Chef_Install/ServiceBusWindowsUpdate/AppServer-KB3086798-x64-EN.exe'
   options '/quiet /q /norestart'
 end
 
