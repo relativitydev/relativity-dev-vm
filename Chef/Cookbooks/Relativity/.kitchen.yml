@@ -4,7 +4,7 @@ driver:
   parent_vhd_folder: 'C:\Hyper-V'
   parent_vhd_name: WindowsServer2012R2.vhdx
   vm_switch: DevVmExternalSwitch
-  memory_startup_bytes: 8GB 
+  memory_startup_bytes: 4GB 
   processor_count: 2
 
 provisioner:
