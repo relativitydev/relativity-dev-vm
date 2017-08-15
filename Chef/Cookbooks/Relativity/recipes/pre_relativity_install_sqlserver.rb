@@ -2,34 +2,17 @@ log 'Starting Sql Server install'
 start_time = DateTime.now
 log "recipe_start_time(#{recipe_name}): #{start_time}"
 
-ps_modules = %w(xSQLServer Carbon)
-
-ps_modules.each do |ps_module|
-  powershell_script "install_#{ps_module}_module" do
-    code "Install-Module #{ps_module} -Force"
-    not_if "(Get-Module -ListAvailable).Name -Contains \"#{ps_module}\""
-  end
+# Install xSQLServer powershell module
+powershell_script 'install_xSQLServer_module' do
+  code 'Install-Module -Name xSQLServer -RequiredVersion 7.1.0.0 -Force'
+  not_if '(Get-Module -ListAvailable).Name -Contains \"xSQLServer\"'
 end
 
-#todo
-# directories = %w(C:/chef/sql C:/relativity/BCPPath)
-
-# directories.each do |directory|
-#   directory directory do
-#     recursive true
-#   end
-# end
-
-# powershell_script 'install_fileshare_BCPPath' do
-#   code "Install-FileShare -Name BCPPath -Path C:/relativity/BCPPath -FullAccess 'Everyone'"
-#   not_if "(Get-FileShare).Name -Contains 'BCPPath'"
-# end
-
-# extract_iso 'sql_iso' do
-#   iso_source node['sql']['iso_path']
-#   target 'C:/chef/sql/'
-#   not_if { ::File.exist?('C:/chef/sql/setup.exe') }
-# end
+# Install Carbon powershell module
+powershell_script 'install_Carbon_module' do
+  code 'Install-Module -Name Carbon -RequiredVersion 2.5.0 -Force'
+  not_if '(Get-Module -ListAvailable).Name -Contains \"Carbon\"'
+end
 
 relativity_pscredential = ps_credential(node['windows']['user']['admin']['login'], node['windows']['user']['admin']['password'])
 
