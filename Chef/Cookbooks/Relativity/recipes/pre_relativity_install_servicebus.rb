@@ -5,7 +5,7 @@ log "recipe_start_time(#{recipe_name}): #{start_time}"
 include_recipe 'webpi'
 
 # Instal Service Bus
-webpi_product 'ServiceBus_1_1' do
+webpi_product 'ServiceBus_1_1_CU1' do
   accept_eula true
   action :install
 end
@@ -16,6 +16,8 @@ farm_catalog_connection_string = "Data Source=#{node['fqdn']};Initial Catalog=Sb
 
 # Powershell module import line.
 IMPORT_MODULE = 'Import-Module "C:/Program Files/Service Bus/1.1/ServiceBus/ServiceBus.psd1" -ErrorAction Stop'.freeze
+
+sleep 30
 
 # Create the initial farm, if needed
 log 'Creating new service bus farm'
@@ -28,6 +30,8 @@ New-SBFarm -SBFarmDBConnectionString '#{farm_connection_string}' -RunAsAccount '
   not_if "#{IMPORT_MODULE}; (Get-SBFarm -SBFarmDBConnectionString '#{farm_catalog_connection_string}') -ne $null"
 end
 log 'Created new service bus farm'
+
+sleep 30
 
 # Add the host to the newly created farm
 log 'Adding service bus host to farm'
@@ -43,6 +47,8 @@ EOH
 end
 log 'Added service bus host to farm'
 
+sleep 30
+
 # Create a new namespace
 log 'Creating new service bus namespace'
 powershell_script 'new_sb_namespace' do
@@ -53,6 +59,8 @@ EOH
   not_if "#{IMPORT_MODULE}; (Get-SBNamespace).Name -eq 'ServiceBusDefaultNamespace'"
 end
 log 'Created new service bus namespace'
+
+sleep 30
 
 # Update the DNS
 log 'Setting service bus farm dns'
@@ -68,6 +76,8 @@ EOH
   not_if "#{IMPORT_MODULE}; (Get-SBFarm).FarmDNS -eq '#{node['windows']['hostname']}'"
 end
 log 'Finished setting service bus farm dns'
+
+sleep 30
 
 log 'Setting correct service bus credentials'
 powershell_script 'correct_sb_creds' do
