@@ -40,7 +40,7 @@ INSTALLDIR=C:\Program Files\kCura Corporation\Relativity\
 ### If you are installing to a named instance, specify the server and instance name.
 ### E.g. PRIMARYSQLINSTANCE=MySQLServer
 
-PRIMARYSQLINSTANCE=<%= node['fqdn'] %>
+PRIMARYSQLINSTANCE=<%= node['hostname'] %>
 
  
 ### The password for the EDDSDBO account on the SQL Primary SQL Instance you are installing to.
@@ -104,21 +104,21 @@ KEEPCONNECTIONSTRINGS=1
 ### This path must be a shared folder that both the user running the installer and the Relativity Service Account have read/write permissions to.
 ### E.g. DEFAULTFILEREPOSITORY=\\yourmachine\FileShare
 
-DEFAULTFILEREPOSITORY=\\<%= node['fqdn'] %>\Fileshare
+DEFAULTFILEREPOSITORY=\\<%= node['hostname'] %>\Fileshare
 
 
 ### Target UNC path for the EDDS File Share.
 ### This path must be a shared folder that both the user running the installer and the Relativity Service Account have read/write permissions to.
 ### E.g. EDDSFILESHARE=\\yourmachine\Fileshare
 
-EDDSFILESHARE=\\<%= node['fqdn'] %>\Fileshare\EDDS
+EDDSFILESHARE=\\<%= node['hostname'] %>\Fileshare\EDDS
 
 
 ### Target UNC path for the dtSearch Indexes to be stored.
 ### This path must be a shared folder that both the user running the installer and the Relativity Service Account have read/write permissions to.
 ### E.g. DTSEARCHINDEXPATH=\\yourmachine\dtSearch
 
-DTSEARCHINDEXPATH=\\<%= node['fqdn'] %>\dtSearchIndexes
+DTSEARCHINDEXPATH=\\<%= node['hostname'] %>\dtSearchIndexes
 
 
 ### The name of the Relativity instance.
@@ -126,7 +126,7 @@ DTSEARCHINDEXPATH=\\<%= node['fqdn'] %>\dtSearchIndexes
 ### This value does not need to be quoted
 ### E.g. RELATIVITYINSTANCENAME=My Relativity Instance
 
-RELATIVITYINSTANCENAME=<%= node['fqdn'] %>
+RELATIVITYINSTANCENAME=<%= node['hostname'] %>
 
 
 
