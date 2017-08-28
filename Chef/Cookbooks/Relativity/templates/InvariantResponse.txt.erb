@@ -23,6 +23,13 @@ INSTALLWORKER=1
 ### E.g. SQLINSTANCE=MySQLServer
  
 SQLINSTANCE=<%= node['fqdn'] %>
+
+### Target SQL server port for Invariant install
+### This value only needs to be set it the default value (1433) is not being used
+### Ensure that the value matches the value set in sys.servers
+### E.g. SQLINSTANCEPORT=1234
+
+SQLINSTANCEPORT=
  
 ### SQL instance for Relativity install
 ### This SQL instance must be network accessible from local machine
@@ -30,6 +37,13 @@ SQLINSTANCE=<%= node['fqdn'] %>
  
 RELATIVITYSQLINSTANCE=<%= node['fqdn'] %>
  
+### Target SQL server port for Relativity install
+### This value only needs to be set it the default value (1433) is not being used
+### Ensure that the value matches the value set in sys.servers
+### E.g. RELATIVITYSQLINSTANCEPORT=1234
+
+RELATIVITYSQLINSTANCEPORT=
+
 ### Windows username to run queue manager service as
 ### E.g. SERVICEUSERNAME=domain\username
  
@@ -106,6 +120,11 @@ DATAFILESNETWORKPATH=\\<%= node['fqdn'] %>\fileshare
 ### E.g. NISTPACKAGEPATH=C:\NISTPackage.zip
  
 NISTPACKAGEPATH=
+
+### The install path for database utilities (NISTUtility, DbUpdater, Deployment)
+### E.g. DATABASEINSTALLPATH=C:\Program Files\kCura Corporation\Invariant\Database\
+
+DATABASEINSTALLPATH=C:\Program Files\kCura Corporation\Invariant\Database\
  
 ####################### QUEUE MANAGER AND WORKER PROPERTIES #######################
 ### The following properties are for the queue manager and worker features.
