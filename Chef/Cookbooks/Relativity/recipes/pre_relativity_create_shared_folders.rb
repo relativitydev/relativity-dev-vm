@@ -5,6 +5,7 @@ log "recipe_start_time(#{recipe_name}): #{start_time}"
 # Directories
 Backup_directory = 'Backup'
 Data_directory = 'Data'
+viewer_cache_directory = 'ViewerCache'
 dtSearchIndexes_directory = 'dtSearchIndexes'
 Fileshare_directory = 'Fileshare'
 Fileshare_EDDS_directory = 'Fileshare\EDDS'
@@ -19,7 +20,7 @@ BCPPath_directory = 'BCPPath'
 Chef_Install_directory = 'Chef_Install'
 Chef_Install_ServiceBusDefectWindowsUpdate_directory = 'Chef_Install\ServiceBusDefectWindowsUpdate'
 
-directories = [Backup_directory, Data_directory, dtSearchIndexes_directory, Fileshare_directory, Fileshare_EDDS_directory, FullText_directory, InvariantNetworkShare_directory, Logs_directory, ProcessingSourceLocation_directory, BCPPath_directory, Chef_Install_directory, Chef_Install_ServiceBusDefectWindowsUpdate_directory]
+directories = [Backup_directory, Data_directory, viewer_cache_directory, dtSearchIndexes_directory, Fileshare_directory, Fileshare_EDDS_directory, FullText_directory, InvariantNetworkShare_directory, Logs_directory, ProcessingSourceLocation_directory, BCPPath_directory, Chef_Install_directory, Chef_Install_ServiceBusDefectWindowsUpdate_directory]
 
 # Create directories
 directories.each do |dir|
@@ -45,6 +46,14 @@ powershell_script 'Data_directory' do
     New-SmbShare -Name 'Data' -Path 'C:/Data' -FullAccess 'Everyone'
     EOH
     not_if "(Get-SmbShare).Name -Contains 'Data'"
+    action :run
+end
+
+powershell_script 'viewer_cache_directory' do
+    code <<-EOH
+    New-SmbShare -Name 'ViewerCache' -Path 'C:/ViewerCache' -FullAccess 'Everyone'
+    EOH
+    not_if "(Get-SmbShare).Name -Contains 'ViewerCache'"
     action :run
 end
 

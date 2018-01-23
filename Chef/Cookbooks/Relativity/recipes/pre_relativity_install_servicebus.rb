@@ -5,14 +5,14 @@ log "recipe_start_time(#{recipe_name}): #{start_time}"
 include_recipe 'webpi'
 
 # Instal Service Bus
-webpi_product 'ServiceBus_1_1_CU1' do
+webpi_product 'ServiceBus_1_1' do
   accept_eula true
   action :install
 end
 
 cert_flag = '-CertificateAutoGenerationKey $mycert '
-farm_connection_string = "Data Source=#{node['fqdn']};User Id=#{node['sql']['user']['sa']['login']};Password=#{node['sql']['user']['sa']['password']}"
-farm_catalog_connection_string = "Data Source=#{node['fqdn']};Initial Catalog=SbManagementDB;User Id=#{node['sql']['user']['sa']['login']};Password=#{node['sql']['user']['sa']['password']}"
+farm_connection_string = "Data Source=#{node['windows']['hostname']};User Id=#{node['sql']['user']['sa']['login']};Password=#{node['sql']['user']['sa']['password']}"
+farm_catalog_connection_string = "Data Source=#{node['windows']['hostname']};Initial Catalog=SbManagementDB;User Id=#{node['sql']['user']['sa']['login']};Password=#{node['sql']['user']['sa']['password']}"
 
 # Powershell module import line.
 IMPORT_MODULE = 'Import-Module "C:/Program Files/Service Bus/1.1/ServiceBus/ServiceBus.psd1" -ErrorAction Stop'.freeze
@@ -43,7 +43,7 @@ $SBRunAsPassword = ConvertTo-SecureString -AsPlainText -Force -String '#{node['s
 Add-SBHost -SBFarmDBConnectionString '#{farm_catalog_connection_string}' -CertificateAutoGenerationKey $mycert -RunAsPassword $SBRunAsPassword -EnableFirewallRules $true
 EOH
   # Check if the current machine is listed in the Farm's hosts
-  not_if "#{IMPORT_MODULE}; (Get-SBFarm).Hosts.Name -contains '#{node['fqdn']}'"
+  not_if "#{IMPORT_MODULE}; (Get-SBFarm).Hosts.Name -contains '#{node['windows']['hostname']}'"
 end
 log 'Added service bus host to farm'
 

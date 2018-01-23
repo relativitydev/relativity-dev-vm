@@ -24,7 +24,7 @@ Add-Type -Path "C:\Program Files\kCura Corporation\Relativity\Library\Relativity
 ############################USER CONFIG SECTION###########################
 $newWorkspaceName = "<%= node['sample_data_population']['workspace_name'] %>"
 $fullFilePathRap = "$($ScriptDir)\Single File Upload 1.2.0.16 (for Relativity 9.4 - 9.5 - RelOne).rap"
-$relativityUrl = "http://<%= node['windows']['hostname'] %>/Relativity.Services"
+$relativityUrl = "<%= node['relativity']['services_url'] %>"
 $relativityUsername = "<%= node['sample_data_population']['relativity_admin_account']['login'] %>"
 $relativityPassword = "<%= node['sample_data_population']['relativity_admin_account']['password'] %>"
 $maxRetry = 3

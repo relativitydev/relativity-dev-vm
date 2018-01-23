@@ -43,7 +43,7 @@ protocols.each do |protocol|
       [reflection.assembly]::LoadWithPartialName("Microsoft.SqlServer.Smo")
       [reflection.assembly]::LoadWithPartialName("Microsoft.SqlServer.SqlWmiManagement")
       $wmi = New-Object ('Microsoft.SqlServer.Management.Smo.Wmi.ManagedComputer')
-      $uri = "ManagedComputer[@Name='#{node['hostname'].upcase}']/ ServerInstance[@Name='#{node['sql']['instance_name']}']/ServerProtocol[@Name='#{protocol}']"
+      $uri = "ManagedComputer[@Name='#{node['windows']['hostname'].upcase}']/ ServerInstance[@Name='#{node['sql']['instance_name']}']/ServerProtocol[@Name='#{protocol}']"
       $protocol = $wmi.GetSmoObject($uri)
       $protocol.IsEnabled = $true
       $protocol.Alter()

@@ -22,7 +22,7 @@ INSTALLWORKER=1
 ### The primary instance for this SQL server will be the instance used
 ### E.g. SQLINSTANCE=MySQLServer
  
-SQLINSTANCE=<%= node['fqdn'] %>
+SQLINSTANCE=<%= node['windows']['hostname'] %>
 
 ### Target SQL server port for Invariant install
 ### This value only needs to be set it the default value (1433) is not being used
@@ -35,7 +35,7 @@ SQLINSTANCEPORT=
 ### This SQL instance must be network accessible from local machine
 ### E.g. RELATIVITYSQLINSTANCE=MyRelativitySQLServer
  
-RELATIVITYSQLINSTANCE=<%= node['fqdn'] %>
+RELATIVITYSQLINSTANCE=<%= node['windows']['hostname'] %>
  
 ### Target SQL server port for Relativity install
 ### This value only needs to be set it the default value (1433) is not being used
@@ -83,12 +83,12 @@ SQLPASSWORD=
 ### The file share for worker files
 ### E.g. WORKERNETWORKPATH=\\MySQLServer\InvariantNetworkShare
  
-WORKERNETWORKPATH=\\<%= node['fqdn'] %>\InvariantNetworkShare\
+WORKERNETWORKPATH=\\<%= node['windows']['hostname'] %>\InvariantNetworkShare\
  
 ### The URL for the Identity Server for user authentication when running the RPC
 ### E.g. IDENTITYSERVERURL=https://MyRelativityServer/Relativity/Identity
  
-IDENTITYSERVERURL=http://<%= node['fqdn'] %>/Relativity/Identity
+IDENTITYSERVERURL=http://<%= node['windows']['hostname'] %>/Relativity/Identity
  
  
 ############################### DATABASE PROPERTIES ###############################
@@ -108,12 +108,12 @@ LDFDIR=C:\Logs
 ### The file share for dtSearch files
 ### E.g. DTSEARCHINDEXPATH=\\MySQLServer\DtSearchIndexes
  
-DTSEARCHINDEXPATH=\\<%= node['fqdn'] %>\dtSearchIndexes
+DTSEARCHINDEXPATH=\\<%= node['windows']['hostname'] %>\dtSearchIndexes
  
 ### The file share for data files
 ### E.g. DATAFILESNETWORKPATH=\\MySQLServer\Fileshare
  
-DATAFILESNETWORKPATH=\\<%= node['fqdn'] %>\fileshare
+DATAFILESNETWORKPATH=\\<%= node['windows']['hostname'] %>\fileshare
  
 ### The nist package path to install (OPTIONAL)
 ### If higher or equal Nist package already installed, new install is skipped

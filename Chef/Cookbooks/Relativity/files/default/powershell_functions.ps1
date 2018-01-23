@@ -80,8 +80,8 @@ function CreateWorkspace([kCura.Relativity.Client.RSAPIClient] $rsapiClient, [st
       $info = $rsapiClient.GetProcessState($rsapiClient.APIOptions, $workspaceCreateRequestresults.ProcessID)
       $iteration = 0
       while ($info.State -ne [kCura.Relativity.Client.ProcessStateValue]::Completed) {
-        # Sleeping for 30 secs for the workspace upgrade to complete
-        Start-Sleep -s 30
+        # Sleeping for 90 secs for the workspace upgrade to complete
+        Start-Sleep -s 90
         $info = $rsapiClient.GetProcessState($rsapiClient.APIOptions, $workspaceCreateRequestresults.ProcessID)
 
         if ($iteration -gt 6) {
@@ -164,8 +164,8 @@ function InstallApplication([kCura.Relativity.Client.RSAPIClient] $rsapiClient, 
     $info = $rsapiClient.GetProcessState($rsapiClient.APIOptions, $installationRequest.ProcessID)
     $iteration = 0
     while ($info.State -eq [kCura.Relativity.Client.ProcessStateValue]::Running) {
-      # Sleeping for 30 secs for the application installation to complete
-      Start-Sleep -s 30
+      # Sleeping for 90 secs for the application installation to complete
+      Start-Sleep -s 90
       $info = $rsapiClient.GetProcessState($rsapiClient.APIOptions, $info.ProcessID)
 
       if ($iteration -gt 6) {

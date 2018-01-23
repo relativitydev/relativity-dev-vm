@@ -8,6 +8,9 @@ powershell_script 'IIS_Reset' do
   EOH
 end
 
+log "Sleeping for 5 minutes"
+sleep(300)
+
 end_time = DateTime.now
 log "recipe_end_Time(#{recipe_name}): #{end_time}"
 log "recipe_duration(#{recipe_name}): #{end_time.to_time - start_time.to_time} seconds"

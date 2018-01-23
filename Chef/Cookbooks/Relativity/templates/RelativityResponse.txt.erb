@@ -40,7 +40,7 @@ INSTALLDIR=C:\Program Files\kCura Corporation\Relativity\
 ### If you are installing to a named instance, specify the server and instance name.
 ### E.g. PRIMARYSQLINSTANCE=MySQLServer
 
-PRIMARYSQLINSTANCE=<%= node['hostname'] %>
+PRIMARYSQLINSTANCE=<%= node['windows']['hostname'] %>
 
  
 ### The password for the EDDSDBO account on the SQL Primary SQL Instance you are installing to.
@@ -104,21 +104,29 @@ KEEPCONNECTIONSTRINGS=1
 ### This path must be a shared folder that both the user running the installer and the Relativity Service Account have read/write permissions to.
 ### E.g. DEFAULTFILEREPOSITORY=\\yourmachine\FileShare
 
-DEFAULTFILEREPOSITORY=\\<%= node['hostname'] %>\Fileshare
+DEFAULTFILEREPOSITORY=\\<%= node['windows']['hostname'] %>\Fileshare
 
 
 ### Target UNC path for the EDDS File Share.
 ### This path must be a shared folder that both the user running the installer and the Relativity Service Account have read/write permissions to.
 ### E.g. EDDSFILESHARE=\\yourmachine\Fileshare
 
-EDDSFILESHARE=\\<%= node['hostname'] %>\Fileshare\EDDS
+EDDSFILESHARE=\\<%= node['windows']['hostname'] %>\Fileshare\EDDS
 
+### Target UNC path for the viewer cache location.
+### This path must be a shared folder that both the user running the installer and the Relativity Service Account have read/write permissions to.
+### If a value is not specified then this value will default to the value for DEFAULTFILEREPOSITORY\cache.
+### Readings of disk free space are used for cache management, so a dedicated volume will help to ensure optimal experience.
+### Fast read/write speeds on this cache are recommended for performance considerations.
+### E.g. CACHELOCATION=\\yourmachine\ViewerCache
+
+CACHELOCATION=\\<%= node['windows']['hostname'] %>\ViewerCache
 
 ### Target UNC path for the dtSearch Indexes to be stored.
 ### This path must be a shared folder that both the user running the installer and the Relativity Service Account have read/write permissions to.
 ### E.g. DTSEARCHINDEXPATH=\\yourmachine\dtSearch
 
-DTSEARCHINDEXPATH=\\<%= node['hostname'] %>\dtSearchIndexes
+DTSEARCHINDEXPATH=\\<%= node['windows']['hostname'] %>\dtSearchIndexes
 
 
 ### The name of the Relativity instance.
@@ -126,7 +134,7 @@ DTSEARCHINDEXPATH=\\<%= node['hostname'] %>\dtSearchIndexes
 ### This value does not need to be quoted
 ### E.g. RELATIVITYINSTANCENAME=My Relativity Instance
 
-RELATIVITYINSTANCENAME=<%= node['hostname'] %>
+RELATIVITYINSTANCENAME=<%= node['windows']['hostname'] %>
 
 
 

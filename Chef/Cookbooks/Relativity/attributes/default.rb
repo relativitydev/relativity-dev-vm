@@ -1,6 +1,7 @@
 default['timeout']['default'] = 3600
 
-default['windows']['hostname'] = node['fqdn']
+default['windows']['hostname'] = node['machinename'] 
+#default['windows']['hostname'] = Chef::Config[:node_name]
 default['windows']['new_computer_name'] = 'RelativityDevVm'
 default['windows']['user']['admin']['login'] = 'Administrator'
 default['windows']['user']['admin']['password'] = 'Password1!'
@@ -28,6 +29,7 @@ default['service_bus']['defect_windows_udpate']['installer_file_name'] = 'AppSer
 default['relativity']['install_directory'] = 'C:/Chef_Install/Relativity'
 default['relativity']['installer_file_location'] = 'C:/Chef_Install/Relativity/Relativity.exe'
 default['relativity']['response_file_location'] = 'C:/Chef_Install/Relativity/RelativityResponse.txt'
+default['relativity']['services_url'] = "http://" +node['fqdn'] +"/Relativity.Services"
 default['relativity']['admin']['login'] = 'relativity.admin@kcura.com'
 default['relativity']['admin']['password'] = 'Test1234!'
 default['relativity']['processing']['source']['location'] = "\\\\#{default['windows']['hostname']}\\ProcessingSourceLocation"

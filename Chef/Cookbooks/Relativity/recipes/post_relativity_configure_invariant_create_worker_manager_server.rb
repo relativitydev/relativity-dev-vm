@@ -33,7 +33,7 @@ request.body = request_body_json.to_json
 response = http.request(request)
 is_http_request_success = (response.is_a? Net::HTTPSuccess)
 unless is_http_request_success
-  error_message = 'An unexpected error occured when Checking if Processing Exists.'
+  error_message = 'An unexpected error occured when Checking if Processing Exists.' +response.message
   log error_message
   raise error_message
 end
@@ -67,7 +67,7 @@ if node.run_state['processing_server_artifact_id'].nil?
         "MassImagingPriority": 100,
         "SingleSaveAsPDFPriority": 100,
         "MassSaveAsPDFPriority": 100,
-        "URL": "net.tcp://#{node['windows']['hostname']}:6859/InvariantAPI"
+        "URL": "#{node['windows']['hostname']}"
       }
     }
     QUERY
@@ -76,7 +76,7 @@ if node.run_state['processing_server_artifact_id'].nil?
   response = http.request(request)
   is_http_request_success = (response.is_a? Net::HTTPSuccess)
   unless is_http_request_success
-    error_message = 'An unexpected error occured when creating new Processing Server.'
+    error_message = 'An unexpected error occured when creating new Processing Server.' +response.message
     log error_message
     raise error_message
   end
