@@ -1,0 +1,10 @@
+# Copy this file to the parent directory of the repopopulate
+# Populate the variables
+# Rename this file to config.yaml
+
+credentials:
+    vm_username: 'Administrator'
+    vm_password: 'examplePassword'
+    smb_domain: 'kcura'
+    smb_username: 'myUserName'
+    smb_password: 'exampleNetworkPassword'
