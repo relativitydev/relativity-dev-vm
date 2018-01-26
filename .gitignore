@@ -20,7 +20,7 @@ Berksfile.lock
 .zero-knife.rb
 Policyfile.lock.json
 
-# test kitchen
+# vagrant
 /Chef/Nodes/
 /Chef/DataBags/
 
