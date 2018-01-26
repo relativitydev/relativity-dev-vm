@@ -20,6 +20,10 @@ Berksfile.lock
 .zero-knife.rb
 Policyfile.lock.json
 
+# test kitchen
+/Chef/Nodes/
+/Chef/DataBags/
+
 # Visual Studio Project
 /bin/
 /Bin/
