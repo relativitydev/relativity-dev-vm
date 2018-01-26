@@ -49,3 +49,4 @@ StyleCop*
 *.pubxml.user
 *.suo
 *.user
+/config.yaml
