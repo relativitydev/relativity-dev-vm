@@ -4,9 +4,8 @@ log "recipe_start_time(#{recipe_name}): #{start_time}"
 
 programs = {
   'powershell.exe' => 'C:\Windows\System32\WindowsPowerShell\v1.0',
-  'msvsmon.exe' => 'C:\Program Files\Microsoft Visual Studio 14.0\Common7\IDE\Remote Debugger\x64',
+  'msvsmon.exe' => 'C:\Program Files\Microsoft Visual Studio 15.0\Common7\IDE\Remote Debugger\x64',
   'notepad++.exe' => 'C:\Program Files\Notepad++',
-  'Code.exe' => 'C:\Program Files (x86)\Microsoft VS Code',
   'services.msc' => 'C:\Windows\system32',
 }
 

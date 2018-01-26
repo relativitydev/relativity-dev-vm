@@ -17,6 +17,12 @@ chocolatey_package 'vs2015remotetools' do
   action :install
 end
 
+# Install Visual Studio 2017 Remote Debugger
+chocolatey_package 'visualstudio2017-remotetools' do
+  version '15.0.26430.2'
+  action :install
+end
+
 end_time = DateTime.now
 log "recipe_end_Time(#{recipe_name}): #{end_time}"
 log "recipe_duration(#{recipe_name}): #{end_time.to_time - start_time.to_time} seconds"
