@@ -2,14 +2,14 @@ log 'Starting Pre-Relativity Setup'
 start_time = DateTime.now
 log "recipe_start_time(#{recipe_name}): #{start_time}"
 
-# Install Nuget provider
-include_recipe 'Relativity::pre_relativity_install_nuget_provider'
-
 # Install Windows Features and Services
 include_recipe 'Relativity::pre_relativity_install_windows_features_and_services'
 
 # Create shared folders
 include_recipe 'Relativity::pre_relativity_create_shared_folders'
+
+# Install 7 zip software
+include_recipe 'seven_zip::default'
 
 # Install Microsoft SQL Server
 include_recipe 'Relativity::pre_relativity_install_sqlserver'

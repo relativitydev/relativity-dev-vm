@@ -18,13 +18,6 @@ dsc_resource 'change_computer_name' do
   timeout node['timeout']['default']
 end
 
-# reboot after chef run completes
-reboot 'change_computer_name_requires_reboot' do
-  action :request_reboot
-  reason 'Need to reboot when the run completes successfully.'
-  delay_mins 5
-end
-
 end_time = DateTime.now
 log "recipe_end_Time(#{recipe_name}): #{end_time}"
 log "recipe_duration(#{recipe_name}): #{end_time.to_time - start_time.to_time} seconds"
