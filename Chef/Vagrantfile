@@ -59,23 +59,23 @@ Vagrant.configure("2") do |config|
         "smb_password" => network_share_smb_password
       }
     chef.add_recipe("Relativity::default_pre_windows")
-    end
+  end
     
   # Restart VM
   config.vm.provision :reload
 
   # Run Pre-Windows Chef Recipe
   config.vm.provision "chef_zero" do |chef|
-	chef.cookbooks_path = "Cookbooks"
-    chef.data_bags_path = "DataBags"
-    chef.nodes_path = "Nodes"
-    chef.roles_path = "Roles"
-	chef.json = {
-	  "smb_domain" => network_share_smb_domain,
-      "smb_username" => network_share_smb_username,
-      "smb_password" => network_share_smb_password
-    }
-	chef.add_recipe("Relativity::default_windows")
+    chef.cookbooks_path = "Cookbooks"
+      chef.data_bags_path = "DataBags"
+      chef.nodes_path = "Nodes"
+      chef.roles_path = "Roles"
+    chef.json = {
+      "smb_domain" => network_share_smb_domain,
+        "smb_username" => network_share_smb_username,
+        "smb_password" => network_share_smb_password
+      }
+    chef.add_recipe("Relativity::default_windows")
   end
   
   # Restart VM
@@ -83,16 +83,84 @@ Vagrant.configure("2") do |config|
 
   # Run Pre-Relativity Chef Recipe
   config.vm.provision "chef_zero" do |chef|
-	chef.cookbooks_path = "Cookbooks"
-    chef.data_bags_path = "DataBags"
-    chef.nodes_path = "Nodes"
-    chef.roles_path = "Roles"
-	chef.json = {
-	  "smb_domain" => network_share_smb_domain,
-      "smb_username" => network_share_smb_username,
-      "smb_password" => network_share_smb_password
-    }
-	chef.add_recipe("Relativity::default_pre_relativity")
+    chef.cookbooks_path = "Cookbooks"
+      chef.data_bags_path = "DataBags"
+      chef.nodes_path = "Nodes"
+      chef.roles_path = "Roles"
+    chef.json = {
+      "smb_domain" => network_share_smb_domain,
+        "smb_username" => network_share_smb_username,
+        "smb_password" => network_share_smb_password
+      }
+    chef.add_recipe("Relativity::default_pre_relativity")
+  end
+
+  # Restart VM
+  config.vm.provision :reload
+
+  # Run Pre-Relativity Install ServiceBus Chef Recipe
+  config.vm.provision "chef_zero" do |chef|
+    chef.cookbooks_path = "Cookbooks"
+      chef.data_bags_path = "DataBags"
+      chef.nodes_path = "Nodes"
+      chef.roles_path = "Roles"
+    chef.json = {
+      "smb_domain" => network_share_smb_domain,
+        "smb_username" => network_share_smb_username,
+        "smb_password" => network_share_smb_password
+      }
+    chef.add_recipe("Relativity::pre_relativity_install_servicebus")
+  end
+
+  # Restart VM
+  config.vm.provision :reload
+
+  # Run Relativity Chef Recipe
+  config.vm.provision "chef_zero" do |chef|
+    chef.cookbooks_path = "Cookbooks"
+      chef.data_bags_path = "DataBags"
+      chef.nodes_path = "Nodes"
+      chef.roles_path = "Roles"
+    chef.json = {
+      "smb_domain" => network_share_smb_domain,
+        "smb_username" => network_share_smb_username,
+        "smb_password" => network_share_smb_password
+      }
+    chef.add_recipe("Relativity::default_relativity")
+  end
+
+  # Restart VM
+  config.vm.provision :reload
+
+  # Run Post-Relativity Chef Recipe
+  config.vm.provision "chef_zero" do |chef|
+    chef.cookbooks_path = "Cookbooks"
+      chef.data_bags_path = "DataBags"
+      chef.nodes_path = "Nodes"
+      chef.roles_path = "Roles"
+    chef.json = {
+      "smb_domain" => network_share_smb_domain,
+        "smb_username" => network_share_smb_username,
+        "smb_password" => network_share_smb_password
+      }
+    chef.add_recipe("Relativity::default_post_relativity")
+  end
+
+  # Restart VM
+  config.vm.provision :reload
+
+  # Run Post-Relativity Configure Invariant Chef Recipe
+  config.vm.provision "chef_zero" do |chef|
+    chef.cookbooks_path = "Cookbooks"
+      chef.data_bags_path = "DataBags"
+      chef.nodes_path = "Nodes"
+      chef.roles_path = "Roles"
+    chef.json = {
+      "smb_domain" => network_share_smb_domain,
+        "smb_username" => network_share_smb_username,
+        "smb_password" => network_share_smb_password
+      }
+    chef.add_recipe("Relativity::post_relativity_configure_invariant")
   end
 
   # Restart VM
