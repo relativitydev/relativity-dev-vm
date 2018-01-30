@@ -2,7 +2,7 @@ log 'Starting Relativity install'
 start_time = DateTime.now
 log "recipe_start_time(#{recipe_name}): #{start_time}"
 
-relativity_install_file = "#{node['relativity']['install']['destination_folder']}\\#{default['relativity']['install']['file_name']}"
+relativity_install_file = "#{node['relativity']['install']['destination_folder']}\\#{node['relativity']['install']['file_name']}"
 relativity_response_file = node['relativity']['install']['response_file_destination_location']
 
 # update response file
