@@ -27,6 +27,8 @@ powershell_script 'set windows explorer properties' do
   timeout node['timeout']['default']
 end
 
+log_message "log_message" do  message "Finished setting up windows explorer properties" end
+
 end_time = DateTime.now
 log "recipe_end_Time(#{recipe_name}): #{end_time}"
 log "recipe_duration(#{recipe_name}): #{end_time.to_time - start_time.to_time} seconds"

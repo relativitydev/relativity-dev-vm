@@ -22,6 +22,8 @@ programs.each do |app, location|
   end
 end
 
+log_message "log_message" do  message "Finished adding program shortcuts to taskbar" end
+
 end_time = DateTime.now
 log "recipe_end_Time(#{recipe_name}): #{end_time}"
 log "recipe_duration(#{recipe_name}): #{end_time.to_time - start_time.to_time} seconds"

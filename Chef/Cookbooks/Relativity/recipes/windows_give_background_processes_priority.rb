@@ -8,6 +8,8 @@ registry_key 'HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\PriorityContro
   action :create
 end
 
+log_message "log_message" do  message "Finished setting up priority for background processes" end
+
 end_time = DateTime.now
 log "recipe_end_Time(#{recipe_name}): #{end_time}"
 log "recipe_duration(#{recipe_name}): #{end_time.to_time - start_time.to_time} seconds"

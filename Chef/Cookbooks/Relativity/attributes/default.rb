@@ -6,6 +6,8 @@ default['windows']['user']['admin']['login'] = 'Administrator'
 default['windows']['user']['admin']['password'] = 'Password1!'
 
 default['file']['installers']['default_destination_folder'] = 'C:\\Chef_Install'
+default['file']['log']['default_destination_folder'] = 'C:\\Chef_Logs'
+default['file']['log']['name'] = ''
 
 default['sql']['install']['source_folder'] = '\\\\kcura.corp\\shares\\Development\\DevEx\\Install_Files\\SQL_Server_Dev_Edition'
 default['sql']['install']['destination_folder'] = "#{default['file']['installers']['default_destination_folder']}\\Sql"
