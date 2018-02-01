@@ -2,11 +2,11 @@ log 'Starting Relativity install'
 start_time = DateTime.now
 log "recipe_start_time(#{recipe_name}): #{start_time}"
 
-relativity_installer_file_location = node['relativity']['installer_file_location']
-relativity_response_file = node['relativity']['response_file_location']
+relativity_install_file = "#{node['relativity']['install']['destination_folder']}\\#{node['relativity']['install']['file_name']}"
+relativity_response_file = node['relativity']['install']['response_file_destination_location']
 
 # update response file
-template node['relativity']['response_file_location'] do
+template relativity_response_file do
   source 'RelativityResponse.txt.erb'
 end
 
@@ -17,7 +17,7 @@ powershell_script 'install_relativity' do
   code <<-EOH
     #{IMPORT_MODULE}
     Start-SBFarm
-    $process = Start-Process -FilePath '#{relativity_installer_file_location}' -ArgumentList @(\"-Log #{node['relativity']['install_directory']}\\install_log.txt\", \"-ResponseFilePath=#{relativity_response_file}\") -Wait -WindowStyle Hidden -PassThru
+    $process = Start-Process -FilePath '#{relativity_install_file}' -ArgumentList @(\"-Log #{node['relativity']['install']['destination_folder']}\\install_log.txt\", \"-ResponseFilePath=#{relativity_response_file}\") -Wait -WindowStyle Hidden -PassThru
     exit $process.ExitCode
   EOH
   timeout node['timeout']['default']

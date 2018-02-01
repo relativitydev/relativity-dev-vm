@@ -2,8 +2,8 @@ log 'Starting Pre-Relativity Setup'
 start_time = DateTime.now
 log "recipe_start_time(#{recipe_name}): #{start_time}"
 
-# Install Nuget provider
-include_recipe 'Relativity::pre_relativity_install_nuget_provider'
+# Copy Installer Files
+include_recipe 'Relativity::pre_relativity_copy_install_files'
 
 # Install Windows Features and Services
 include_recipe 'Relativity::pre_relativity_install_windows_features_and_services'

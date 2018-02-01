@@ -2,29 +2,16 @@ log 'Starting Sql Server install'
 start_time = DateTime.now
 log "recipe_start_time(#{recipe_name}): #{start_time}"
 
-original_sql_server_installer_location = "#{node['sql']['installer_iso_file_original_location']}\\#{node['sql']['installer_iso_file_name']}"
-complete_sql_server_installer_location = "#{node['sql']['installer_iso_file_destination_location']}\\#{node['sql']['installer_iso_file_name']}"
-
-directory node['sql']['installer_iso_file_destination_location'] do
-  action :create
-end
-
-remote_file complete_sql_server_installer_location do
-  source original_sql_server_installer_location
-  action :create
-  remote_user                node["smb_username"]
-  remote_password            node["smb_password"]
-  remote_domain              node["smb_domain"]
-end
+# Install 7 zip software
+include_recipe 'seven_zip::default'
 
 # Extract Contents of iso file
 seven_zip_archive "extract sql iso" do
-  source	complete_sql_server_installer_location
-  path      node['sql']['installer_iso_file_destination_location']
+  source    "#{node['sql']['install']['destination_folder']}\\#{node['sql']['install']['file_name']}"
+  path      node['sql']['install']['destination_folder']
   overwrite true
   timeout   300
 end
-
 
 # Install xSQLServer powershell module
 powershell_script 'install_xSQLServer_module' do

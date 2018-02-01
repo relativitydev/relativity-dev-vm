@@ -8,6 +8,8 @@ powershell_script 'disable_firewall_profiles' do
   only_if { powershell_out!('(Get-NetFirewallProfile -Profile Domain,Public,Private).Enabled').stdout.include?('True') }
 end
 
+log_message "log_message" do  message "Finished disabling firewall" end
+
 end_time = DateTime.now
 log "recipe_end_Time(#{recipe_name}): #{end_time}"
 log "recipe_duration(#{recipe_name}): #{end_time.to_time - start_time.to_time} seconds"
