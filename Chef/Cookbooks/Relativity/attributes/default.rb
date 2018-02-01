@@ -40,11 +40,21 @@ default['relativity']['services_url'] = "http://" + node['fqdn'] +"/Relativity.S
 default['relativity']['admin']['login'] = 'relativity.admin@kcura.com'
 default['relativity']['admin']['password'] = 'Test1234!'
 default['relativity']['processing']['source']['location'] = "\\\\#{default['windows']['hostname']}\\ProcessingSourceLocation"
+default['relativity']['response_file']['file_name'] = 'RelativityResponse.txt'
+default['relativity']['response_file']['source_folder'] = default['relativity']['install']['source_folder']
+default['relativity']['response_file']['destination_folder'] = default['relativity']['install']['destination_folder']
+default['relativity']['response_file']['parsed_values'] = ''
+default['relativity']['response_file']['replacement_values'] = ''
 
 default['invariant']['install']['source_folder'] = '\\\\kcura.corp\\shares\\Development\\DevEx\\DevVm_Install_Files\\Invariant'
 default['invariant']['install']['destination_folder'] = "#{default['file']['installers']['default_destination_folder']}\\Invariant"
 default['invariant']['install']['file_name'] = 'Invariant.exe'
 default['invariant']['install']['response_file_destination_location'] = "#{default['invariant']['install']['destination_folder']}\\InvariantResponse.txt"
+default['invariant']['response_file']['file_name'] = 'InvariantResponse.txt'
+default['invariant']['response_file']['source_folder'] = default['invariant']['install']['source_folder']
+default['invariant']['response_file']['destination_folder'] = default['invariant']['install']['destination_folder']
+default['invariant']['response_file']['parsed_values'] = ''
+default['invariant']['response_file']['replacement_values'] = ''
 
 default['sample_workspace_name'] = 'Sample Workspace'
 
