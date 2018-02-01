@@ -1,6 +1,6 @@
-function CreateJsonConfigFile([string] $fileName, [string] $relativityUsername, [string] $relativityPassword, [string] $relativityLibraryFolder, [int] $numberOfDocuments, [bool] $importImagesWithDocuments, [bool] $importProductionImagesWithDocuments) {
+function CreateJsonConfigFile([string] $fileName, [string] $destinationFileLocation, [string] $relativityUsername, [string] $relativityPassword, [string] $relativityLibraryFolder, [int] $numberOfDocuments, [bool] $importImagesWithDocuments, [bool] $importProductionImagesWithDocuments) {
   Write-Host "Writing config file"
-  $fileLocation = [System.IO.Path]::Combine($env:TEMP, [System.Guid]::NewGuid())
+  $destinationFileLocation = [System.IO.Path]::Combine($destinationFileLocation, $fileName)
   $contents = 
   $(
     " {
@@ -11,9 +11,9 @@ function CreateJsonConfigFile([string] $fileName, [string] $relativityUsername, 
                 ""ImportImagesWithDocuments"": $($importImagesWithDocuments.ToString().ToLower()),
                 ""ImportProductionImagesWithDocuments"": $($importProductionImagesWithDocuments.ToString().ToLower())
             }")
-  $contents | Out-File $fileLocation 
-  Write-Host "Config file written: $($fileLocation)"
-  $fileLocation
+  $contents | Out-File $destinationFileLocation 
+  Write-Host "Config file written: $($destinationFileLocation)"
+  $destinationFileLocation
 }
     
 function GetRsapiClient([string] $relativityServicesUrl, [string] $username, [string] $password) {
@@ -71,7 +71,7 @@ function CreateWorkspace([kCura.Relativity.Client.RSAPIClient] $rsapiClient, [st
 
   if ($workspaceQueryResults.Success -and $workspaceQueryResults.TotalCount -gt 0) {
     #smallest workspace artifactID will represent the template workspace
-    $templateWorkspaceArtifactID = @($workspaceQueryResults.Results.Artifact.ArtifactID) | Sort-Object | Select-Object -First 1
+    $templateWorkspaceArtifactID = @($workspaceQueryResults.Results.Artifact.ArtifactID) | Sort-Object | Select-Object -Last 1
     $templateWorkspace = @($workspaceQueryResults.Results.Artifact) | Where-Object {$_.ArtifactID -eq $templateWorkspaceArtifactID}
     $templateWorkspace.Name = $workspaceName
 
@@ -163,25 +163,16 @@ function InstallApplication([kCura.Relativity.Client.RSAPIClient] $rsapiClient, 
   if ($installationRequest.Success) {
     $info = $rsapiClient.GetProcessState($rsapiClient.APIOptions, $installationRequest.ProcessID)
     $iteration = 0
-    while ($info.State -eq [kCura.Relativity.Client.ProcessStateValue]::Running) {
-      # Sleeping for 90 secs for the application installation to complete
-      Start-Sleep -s 90
+    while($info.State -eq [kCura.Relativity.Client.ProcessStateValue]::Running -and $iteration -lt 120){
+      Start-Sleep -s 10
       $info = $rsapiClient.GetProcessState($rsapiClient.APIOptions, $info.ProcessID)
-
-      if ($iteration -gt 6) {
-        Write-Error "Application Install creation timed out"
-        Return
-      }
       $iteration++
     }
-
-    if ($info.Success -and $info.State -ne [kCura.Relativity.Client.ProcessStateValue]::HandledException -and $info.State -ne [kCura.Relativity.Client.ProcessStateValue]::UnhandledException -and $info.State -ne [kCura.Relativity.Client.ProcessStateValue]::CompletedWithError) {
-      $retVal = $TRUE
-      Write-Host "Application $($rapFileLocation) successfully installed in Workspace: $($workspaceArtifactID)"
-    }
-    else {
-      Write-Error "Unable to install Application"
+    if($info.State -eq [kCura.Relativity.Client.ProcessStateValue]::HandledException -or $info.State -eq [kCura.Relativity.Client.ProcessStateValue]::UnhandledException) {
+      Write-Error "Application Install creation timed out"
       Return
+    }else{
+      $retVal = $TRUE
     }
   }
   else {

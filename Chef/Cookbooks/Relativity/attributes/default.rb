@@ -42,9 +42,24 @@ default['invariant']['install_rpc_exe_local'] = 'C:/Chef_Install/Invariant/RPC.e
 default['invariant']['nist_package_zip_file_location'] = 'C:/Chef_Install/Invariant/NISTPackage.zip'
 default['invariant']['response_file'] = 'C:/Chef_Install/Invariant/InvariantResponse.txt'
 
-default['sample_data_population']['workspace_name'] = 'Sample Workspace'
+default['sample_workspace_name'] = 'Sample Workspace'
+
+default['sample_data_population']['config_file_name'] = 'DataPopulateConfiguration.Json'
+default['sample_data_population']['config_file_path'] = Chef::Config[:file_cache_path] #Dir.tmpdir
 default['sample_data_population']['relativity_admin_account']['login'] = default['relativity']['admin']['login']
 default['sample_data_population']['relativity_admin_account']['password'] = default['relativity']['admin']['password']
 default['sample_data_population']['number_of_documents'] = '11'
 default['sample_data_population']['import_images_with_Documents'] = '$TRUE'
 default['sample_data_population']['import_production_images_with_documents'] = '$TRUE'
+
+# Add RAP files to this Array to install them into the sample workspace. Make sure they exist in files/default
+default['relativity_apps_to_install'] = [
+    "Relativity_App_Smoke_Test.rap",
+    "Relativity_App_Data_Sampler.rap",
+    "Single File Upload 1.2.0.16 (for Relativity 9.4 - 9.5 - RelOne).rap"
+    ]
+
+# Add resource files to this 2 dimensional Array to push them to Relativity. Make sure they exist in files/default
+default['relativity_resource_files_to_push'] = [
+    # 2 dimensional -> (resource file name located in files/default, Application Guid)
+]

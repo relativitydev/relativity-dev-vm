@@ -14,14 +14,17 @@ include_recipe 'Relativity::post_relativity_reset_iis'
 # Change Relativity windows services startup type to Automatic
 include_recipe 'Relativity::post_relativity_update_kcura_services_startup_type'
 
-# Create Workspace With Sample Data
-include_recipe 'Relativity::post_relativity_install_relativity_app_data_sampler'
+# Create Workspace
+include_recipe 'Relativity::post_relativity_create_workspace'
 
-# Install Single File Upload Relativity App
-include_recipe 'Relativity::post_relativity_install_relativity_app_single_file_upload'
+# Create Data Sampler Config File
+include_recipe 'Relativity::post_relativity_create_data_sampler_config_file'
 
-# Install Smoke Test Relativity App
-include_recipe 'Relativity::post_relativity_install_relativity_app_smoke_test'
+# Push Resource Files
+include_recipe 'Relativity::post_relativity_push_resource_file'
+
+# Install Relativity Applications
+include_recipe 'Relativity::post_relativity_install_rap_files'
 
 end_time = DateTime.now
 log "recipe_end_Time(#{recipe_name}): #{end_time}"

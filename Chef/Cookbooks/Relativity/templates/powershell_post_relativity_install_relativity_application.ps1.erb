@@ -1,8 +1,5 @@
 ##########################################################################
-# This script creates a workspaces and install a relativity application. #
-# The Data Sampler application imports documents with images and         #
-# productions that you specify in the config section in this script.     #
-#                                                                        #
+# This script installs a relativity application.                         #
 #                                                                        #
 # How to use:                                                            #
 # 1. Point the include section to the directory of your Relativity       #
@@ -22,14 +19,16 @@ Add-Type -Path "C:\Program Files\kCura Corporation\Relativity\Library\Relativity
 ##########################################################################
 
 ############################USER CONFIG SECTION###########################
-$newWorkspaceName = "<%= node['sample_data_population']['workspace_name'] %>"
-$fullFilePathRap = "$($ScriptDir)\Single File Upload 1.2.0.16 (for Relativity 9.4 - 9.5 - RelOne).rap"
-$relativityUrl = "<%= node['relativity']['services_url'] %>"
-$relativityUsername = "<%= node['sample_data_population']['relativity_admin_account']['login'] %>"
-$relativityPassword = "<%= node['sample_data_population']['relativity_admin_account']['password'] %>"
+$applicationRAPFileName = "<%= @rap_file_name %>"
+$appInstalled = $FALSE
+$newWorkspaceName = "<%= @sample_workspace_name %>"
+$fullFilePathRap = "<%= @rap_file_path %>"
+$relativityUrl = "<%= @relativity_services_url %>"
+$relativityUsername = "<%= @relativity_username %>"
+$relativityPassword = "<%= @relativity_password %>"
+$relativityLibraryFolder = "C:\\Program Files\\kCura Corporation\\Relativity\\Library" #Use double backslashes here
 $maxRetry = 3
 ###########################################################################
-
 
 if ([System.IO.File]::Exists($fullFilePathRap) -eq $FALSE) {
   Write-Error "RAP file does not exist $($fullFilePathRap)"
@@ -38,8 +37,8 @@ if ([System.IO.File]::Exists($fullFilePathRap) -eq $FALSE) {
 
 $relativityServicesUrl = New-Object -TypeName System.Uri -ArgumentList $relativityUrl
 
-# First check if workspace exists
-$doesWorkspaceExists
+# Retrieve the Workspace ArtifactID
+[Boolean]$workspaceExists
 $retryCnt = 0
 $existingWorkspaceArtifactID = 0
 while ($retryCnt -lt $maxRetry -and $existingWorkspaceArtifactID -eq 0) {
@@ -47,10 +46,9 @@ while ($retryCnt -lt $maxRetry -and $existingWorkspaceArtifactID -eq 0) {
 
   try {
     $rsapiClient = GetRsapiClient $relativityServicesUrl $relativityUsername $relativityPassword
-    $existingWorkspaceArtifactID = QueryWorkspace $rsapiClient $newWorkspaceName    
-    # $existingWorkspaceArtifactID = [convert]::ToInt32($existingWorkspaceArtifactID, 10)
+    $existingWorkspaceArtifactID = QueryWorkspace $rsapiClient $newWorkspaceName
     if ($existingWorkspaceArtifactID -gt 0) {
-      $doesWorkspaceExists = $true
+      $workspaceExists = $true
     }
   }
   Catch [Exception] {
@@ -65,39 +63,46 @@ while ($retryCnt -lt $maxRetry -and $existingWorkspaceArtifactID -eq 0) {
   $retryCnt++
 }
 
-if ($doesWorkspaceExists) {
-  # Install Relativity Smoke Test App into Workspace
-  $retryCnt = 0
-  $appInstalled = $FALSE
-  while ($retryCnt -lt $maxRetry -and $appInstalled -eq $FALSE) {
-    $rsapiClient = $NULL
+# Install App only if workspace exists
+if ($workspaceExists) {
+    Write-Host "Installing: $($applicationRAPFileName)"
 
-    try {
-      $rsapiClient = GetRsapiClient $relativityServicesUrl $relativityUsername $relativityPassword
-      Write-Host "Writing test value."
-      Write-Host $existingWorkspaceArtifactID
-      $appInstalled = InstallApplication $rsapiClient $existingWorkspaceArtifactID $fullFilePathRap
-    }
-    Catch [Exception] {
-      Write-Host "$($_.Exception.GetType().FullName) $($_.Exception.Message)"
-    }
-    finally {
-      if ($rsapiClient -ne $NULL) {
-        $rsapiClient.Dispose()
+    #Install Data Sampler Application into Newly Created Workspace
+    $retryCnt = 0
+
+    while ($retryCnt -lt $maxRetry -and $appInstalled -eq $FALSE) {
+      $rsapiClient = $NULL
+      try {
+        $rsapiClient = GetRsapiClient $relativityServicesUrl $relativityUsername $relativityPassword
+        $appInstalled = InstallApplication $rsapiClient $existingWorkspaceArtifactID $fullFilePathRap
+
+        # Sleep for 5 seconds after each application install
+        Start-Sleep -s 5
       }
+      Catch [Exception] {
+        Write-Host "$($_.Exception.GetType().FullName) $($_.Exception.Message)"
+      }
+      finally {
+        if ($rsapiClient -ne $NULL) {
+          $rsapiClient.Dispose()
+        }
+      }
+   
+      $retryCnt++
     }
+}
+else{
+  Write-Host "Could not find workspace: $($newWorkspaceName) to install RAP File: $($applicationRAPFileName)"
+}
 
-    $retryCnt++
-  }
-
-  if ($appInstalled) {
+if ($appInstalled) {
     #
     #SUCCESS
     exit 0
-  }
-  else {
+}
+else {
     #
     #FAILURE
     exit 1
-  }
 }
+
