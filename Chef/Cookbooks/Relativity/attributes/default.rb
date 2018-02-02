@@ -1,11 +1,3 @@
-class ResponseFileValue
-    attr_accessor :name, :value
-    
-    def initialize params = {}
-      params.each { |key, value| send "#{key}=", value }
-    end
-   end
-
 default['timeout']['default'] = 3600
 
 default['windows']['hostname'] = node['machinename'] 
@@ -51,113 +43,139 @@ default['relativity']['processing']['source']['location'] = "\\\\#{default['wind
 default['relativity']['response_file']['file_name'] = 'RelativityResponse.txt'
 default['relativity']['response_file']['source_folder'] = default['relativity']['install']['source_folder']
 default['relativity']['response_file']['destination_folder'] = default['relativity']['install']['destination_folder']
-default['relativity']['response_file']['parsed_values'] = ''
+default['relativity']['response_file']['parsed_values'] = Array.new
 default['relativity']['response_file']['replacement_values'] =
     [
-        ResponseFileValue.new({
+        {
             # 0 for: Do not install, do not upgrade, or uninstall if currently installed. 1 for: Install or upgrade.
             name: "INSTALLPRIMARYDATABASE", 
-            value: "1"}),
-        ResponseFileValue.new({
+            value: "1"
+        },
+        {
             # 0 for: Do not install, do not upgrade, or uninstall if currently installed. 1 for: Install or upgrade.
             name: "INSTALLDISTRIBUTEDDATABASE", 
-            value: "0"}),
-        ResponseFileValue.new({
+            value: "0"
+        },
+        {
             # 0 for: Do not install, do not upgrade, or uninstall if currently installed. 1 for: Install or upgrade.
             name: "INSTALLAGENTS", 
-            value: "1"}),
-        ResponseFileValue.new({
+            value: "1"
+        },
+        {
             # 0 for: Do not install, do not upgrade, or uninstall if currently installed. 1 for: Install or upgrade.
             name: "INSTALLWEB", 
-            value: "1"}),        
-        ResponseFileValue.new({
+            value: "1"
+        },        
+        {
             # 0 for: Do not install, do not upgrade, or uninstall if currently installed. 1 for: Install or upgrade.
             name: "INSTALLSERVICEBUS", 
-            value: "1"}),
-        ResponseFileValue.new({
+            value: "1"
+        },
+        {
             # Target directory for local installation files.
             name: "INSTALLDIR", 
-            value: "C:\\Program Files\\kCura Corporation\\Relativity\\"}),
-        ResponseFileValue.new({
+            value: "C:\\Program Files\\kCura Corporation\\Relativity\\"
+        },
+        {
             # The Primary SQL Server Instance Name.
             name: "PRIMARYSQLINSTANCE", 
-            value: "#{default['windows']['hostname']}"}),
-        ResponseFileValue.new({
+            value: "#{default['windows']['hostname']}"
+        },
+        {
             # The password for the EDDSDBO account on the SQL Primary SQL Instance
             name: "EDDSDBOPASSWORD", 
-            value: "#{default['sql']['user']['eddsdbo']['password']}"}),       
-        ResponseFileValue.new({
+            value: "#{default['sql']['user']['eddsdbo']['password']}"
+        },       
+        {
             # Domain (or Workgroup) and Username of the Relativity Service Account Windows login.
             name: "SERVICEUSERNAME", 
-            value: "#{default['windows']['user']['admin']['login']}"}),
-        ResponseFileValue.new({
+            value: "#{default['windows']['user']['admin']['login']}"
+        },
+        {
             # Password for the SERVICEUSERNAME.
             name: "SERVICEPASSWORD", 
-            value: "#{default['windows']['user']['admin']['password']}"}),
-        ResponseFileValue.new({
+            value: "#{default['windows']['user']['admin']['password']}"
+        },
+        {
             # Whether or not to use WinAuth to connect to the SQL Server.
             name: "USEWINAUTH", 
-            value: "1"}),
-        ResponseFileValue.new({
+            value: "1"
+        },
+        {
             # The name of a SQL Server login. This property is only needed if USEWINAUTH is set to 0.
             name: "SQLUSERNAME", 
-            value: ""}),        
-        ResponseFileValue.new({
+            value: ""
+        },        
+        {
             # The password for the SQLUSERNAME. This property is only needed if USEWINAUTH is set to 0
             name: "SQLPASSWORD", 
-            value: ""}),
-        ResponseFileValue.new({
+            value: ""
+        },
+        {
             # Whether or not to keep current connection strings in config files on upgrade.
             name: "KEEPCONNECTIONSTRINGS", 
-            value: "1"}),
-        ResponseFileValue.new({
+            value: "1"
+        },
+        {
             # Target UNC path for the default file repository.
             name: "DEFAULTFILEREPOSITORY", 
-            value: "\\\\#{default['windows']['hostname']}\\Fileshare"}),
-        ResponseFileValue.new({
+            value: "\\\\#{default['windows']['hostname']}\\Fileshare"
+        },
+        {
             # Target UNC path for the EDDS File Share.
             name: "EDDSFILESHARE", 
-            value: "\\\\#{default['windows']['hostname']}\\Fileshare\EDDS"}),      
-        ResponseFileValue.new({
+            value: "\\\\#{default['windows']['hostname']}\\Fileshare\EDDS"
+        },      
+        {
             # Target UNC path for the viewer cache location.
             name: "CACHELOCATION", 
-            value: "\\\\#{default['windows']['hostname']}\\ViewerCache"}),
-        ResponseFileValue.new({
+            value: "\\\\#{default['windows']['hostname']}\\ViewerCache"
+        },
+        {
             # Target UNC path for the dtSearch Indexes to be stored.
             name: "DTSEARCHINDEXPATH", 
-            value: "\\\\#{default['windows']['hostname']}\\dtSearchIndexes"}),
-        ResponseFileValue.new({
+            value: "\\\\#{default['windows']['hostname']}\\dtSearchIndexes"
+        },
+        {
             # The name of the Relativity instance.
             name: "RELATIVITYINSTANCENAME", 
-            value: "#{default['windows']['hostname']}"}),
-        ResponseFileValue.new({
+            value: "#{default['windows']['hostname']}"
+        },
+        {
             # The Distributed SQL Server Instance Name.
             name: "DISTRIBUTEDSQLINSTANCE", 
-            value: ""}),
-        ResponseFileValue.new({
+            value: ""
+        },
+        {
             # Target directory for the database backup (.bak) files.
             name: "DATABASEBACKUPDIR", 
-            value: "C:\\Backup"}),
-        ResponseFileValue.new({
+            value: "C:\\Backup"
+        },
+        {
             # Target directory for the database log (.ldf) files.
             name: "LDFDIR", 
-            value: "C:\\Logs"}),
-        ResponseFileValue.new({
+            value: "C:\\Logs"
+        },
+        {
             # Target directory for the database data (.mdf) files.
             name: "MDFDIR", 
-            value: "C:\\Data"}),        
-        ResponseFileValue.new({
+            value: "C:\\Data"
+        },        
+        {
             # Target directory for the database full text index (.ndf) files.
             name: "FULLTEXTDIR", 
-            value: "C:\\FullText"}),
-        ResponseFileValue.new({
+            value: "C:\\FullText"
+        },
+        {
             # Whether or not to create the default agents.
             name: "DEFAULTAGENTS", 
-            value: "1"}),
-        ResponseFileValue.new({
+            value: "1"
+        },
+        {
             # Whether or not to enable win auth for your Relativity environment.
             name: "ENABLEWINAUTH", 
-            value: "0"})
+            value: "0"
+        }
     ]
 
 default['invariant']['install']['source_folder'] = '\\\\kcura.corp\\shares\\Development\\DevEx\\DevVm_Install_Files\\Invariant'
@@ -167,101 +185,124 @@ default['invariant']['install']['response_file_destination_location'] = "#{defau
 default['invariant']['response_file']['file_name'] = 'InvariantResponse.txt'
 default['invariant']['response_file']['source_folder'] = default['invariant']['install']['source_folder']
 default['invariant']['response_file']['destination_folder'] = default['invariant']['install']['destination_folder']
-default['invariant']['response_file']['parsed_values'] = ''
+default['invariant']['response_file']['parsed_values'] = Array.new
 default['invariant']['response_file']['replacement_values'] =
 [
-    ResponseFileValue.new({
+    {
         # 0 for: Do not install or uninstall. 1 for: Install or upgrade.
         name: "INSTALLDATABASE", 
-        value: "1"}),
-    ResponseFileValue.new({
+        value: "1"
+    },
+    {
         # 0 for: Do not install or uninstall. 1 for: Install or upgrade.
         name: "INSTALLQUEUEMANAGER", 
-        value: "1"}),
-    ResponseFileValue.new({
+        value: "1"
+    },
+    {
         # 0 for: Do not install or uninstall. 1 for: Install or upgrade.
         name: "INSTALLWORKER", 
-        value: "1"}),
-    ResponseFileValue.new({
+        value: "1"
+    },
+    {
         # Target SQL server for Invariant install
         name: "SQLINSTANCE", 
-        value: "#{default['windows']['hostname']}"}),
-    ResponseFileValue.new({
+        value: "#{default['windows']['hostname']}"
+    },
+    {
         # Target SQL server port for Invariant install. This value only needs to be set it the default value (1433) is not being used.
         name: "SQLINSTANCEPORT", 
-        value: ""}),
-    ResponseFileValue.new({
+        value: ""
+    },
+    {
         # SQL instance for Relativity install
         name: "RELATIVITYSQLINSTANCE", 
-        value: "#{default['windows']['hostname']}"}),
-    ResponseFileValue.new({
+        value: "#{default['windows']['hostname']}"
+    },
+    {
         # Target SQL server port for Relativity install. This value only needs to be set it the default value (1433) is not being used.
         name: "RELATIVITYSQLINSTANCEPORT", 
-        value: ""}),
-    ResponseFileValue.new({
+        value: ""
+    },
+    {
         # Windows username to run queue manager service as
         name: "SERVICEUSERNAME", 
-        value: "#{default['windows']['user']['admin']['login']}"}),
-    ResponseFileValue.new({
+        value: "#{default['windows']['user']['admin']['login']}"
+    },
+    {
         # Password for Windows username to run queue manager service as
         name: "SERVICEPASSWORD", 
-        value: "#{default['windows']['user']['admin']['password']}"}),
-    ResponseFileValue.new({
+        value: "#{default['windows']['user']['admin']['password']}"
+    },
+    {
         # The EDDSDBO password for the target SQL instance
         name: "EDDSDBOPASSWORD", 
-        value: "#{default['sql']['user']['eddsdbo']['password']}"}),
-    ResponseFileValue.new({
+        value: "#{default['sql']['user']['eddsdbo']['password']}"
+    },
+    {
         # Whether or not to use Windows authorization for SQL access
         name: "USEWINAUTH", 
-        value: "1"}),
-    ResponseFileValue.new({
+        value: "1"
+    },
+    {
         # The name of a SQL Server login. This property is only needed if USEWINAUTH is set to 0.
         name: "SQLUSERNAME", 
-        value: ""}),
-    ResponseFileValue.new({
+        value: ""
+    },
+    {
         # The password for the SQLUSERNAME. This property is only needed if USEWINAUTH is set to 0.
         name: "SQLPASSWORD", 
-        value: ""}),
-    ResponseFileValue.new({
+        value: ""
+    },
+    {
         # The file share for worker files
         name: "WORKERNETWORKPATH", 
-        value: "\\\\#{default['windows']['hostname']}>\\InvariantNetworkShare\\"}),
-    ResponseFileValue.new({
+        value: "\\\\#{default['windows']['hostname']}>\\InvariantNetworkShare\\"
+    },
+    {
         # The URL for the Identity Server for user authentication when running the RPC
         name: "IDENTITYSERVERURL", 
-        value: "http://#{default['windows']['hostname']}/Relativity/Identity"}),
-    ResponseFileValue.new({
+        value: "http://#{default['windows']['hostname']}/Relativity/Identity"
+    },
+    {
         # The file path for database data files
         name: "MDFDIR", 
-        value: "C:\\Data"}),
-    ResponseFileValue.new({
+        value: "C:\\Data"
+    },
+    {
         # The file path for database log files
         name: "LDFDIR", 
-        value: "C:\\Logs"}),
-    ResponseFileValue.new({
+        value: "C:\\Logs"
+    },
+    {
         # The file share for dtSearch files
         name: "DTSEARCHINDEXPATH", 
-        value: "\\\\#{default['windows']['hostname']}\\dtSearchIndexes"}),
-    ResponseFileValue.new({
+        value: "\\\\#{default['windows']['hostname']}\\dtSearchIndexes"
+    },
+    {
         # The file share for data files
         name: "DATAFILESNETWORKPATH", 
-        value: "\\\\#{default['windows']['hostname']}\\fileshare"}),
-    ResponseFileValue.new({
+        value: "\\\\#{default['windows']['hostname']}\\fileshare"
+    },
+    {
         # The nist package path to install (OPTIONAL)
         name: "NISTPACKAGEPATH", 
-        value: ""}),
-    ResponseFileValue.new({
+        value: ""
+    },
+    {
         # The install path for database utilities (NISTUtility, DbUpdater, Deployment)
         name: "DATABASEINSTALLPATH", 
-        value: "C:\\Program Files\\kCura Corporation\\Invariant\\Database\\"}),
-    ResponseFileValue.new({
+        value: "C:\\Program Files\\kCura Corporation\\Invariant\\Database\\"
+    },
+    {
         # The install path for queue manager files
         name: "QUEUEMANAGERINSTALLPATH", 
-        value: "C:\\Program Files\\kCura Corporation\\Invariant\\QueueManager\\"}),
-    ResponseFileValue.new({
+        value: "C:\\Program Files\\kCura Corporation\\Invariant\\QueueManager\\"
+    },
+    {
         # The install path for worker files
         name: "WORKERINSTALLPATH", 
-        value: "C:\\Program Files\\kCura Corporation\\Invariant\\Worker\\"})
+        value: "C:\\Program Files\\kCura Corporation\\Invariant\\Worker\\"
+    }
 ]
 
 default['sample_workspace_name'] = 'Sample Workspace'
