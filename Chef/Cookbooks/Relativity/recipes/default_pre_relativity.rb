@@ -2,6 +2,9 @@ log 'Starting Pre-Relativity Setup'
 start_time = DateTime.now
 log "recipe_start_time(#{recipe_name}): #{start_time}"
 
+# Copy Installer Response Files
+include_recipe 'Relativity::pre_relativity_copy_install_response_files'
+
 # Copy Installer Files
 include_recipe 'Relativity::pre_relativity_copy_install_files'
 

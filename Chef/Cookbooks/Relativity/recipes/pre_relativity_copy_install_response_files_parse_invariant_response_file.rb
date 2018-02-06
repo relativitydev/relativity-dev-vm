@@ -2,13 +2,13 @@ log 'Starting Pre-Relativity Parse Invariant File'
 start_time = DateTime.now
 log "recipe_start_time(#{recipe_name}): #{start_time}"
 
-response_file_path = "#{node['invariant']['install']['destination_folder']}\\#{node['invariant']['response_file']['file_name']}"
+response_file_path = "#{node['invariant']['response_file']['destination_folder']}\\#{node['invariant']['response_file']['file_name_original']}"
 
 # Copy response file
 copy_file_to_vm_from_host "copy_relativity_response_file" do
-	file_source "#{node['invariant']['install']['source_folder']}\\#{node['invariant']['response_file']['file_name']}"
+	file_source "#{node['invariant']['response_file']['source_folder']}\\#{node['invariant']['response_file']['file_name']}"
     file_destination response_file_path
-    file_destination_folder node['invariant']['install']['destination_folder']
+    file_destination_folder node['invariant']['response_file']['destination_folder']
 end
 
 # Read File into String

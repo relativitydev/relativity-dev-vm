@@ -2,11 +2,6 @@ log 'Starting copying install files'
 start_time = DateTime.now
 log "recipe_start_time(#{recipe_name}): #{start_time}"
 
-# Create Default Destination folder if it not already exists
-directory node['file']['installers']['default_destination_folder'] do
-  action :create
-end
-
 # Copy SQL Install File
 copy_file_to_vm_from_host "copy_sql_install_file" do
   file_source "#{node['sql']['install']['source_folder']}\\#{node['sql']['install']['file_name']}"

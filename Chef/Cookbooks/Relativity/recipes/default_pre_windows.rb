@@ -2,6 +2,9 @@ log 'Starting Pre-Windows Setup'
 start_time = DateTime.now
 log "recipe_start_time(#{recipe_name}): #{start_time}"
 
+# Create default folders on VM
+include_recipe 'Relativity::default_pre_windows_create_default_folders'
+
 # Setup Log file
 include_recipe 'Relativity::pre_windows_setup_log_file'
 

@@ -2,11 +2,6 @@ log 'Starting Log file Setup'
 start_time = DateTime.now
 log "recipe_start_time(#{recipe_name}): #{start_time}"
 
-# Create Log Destination folder if it not already exists
-directory node['file']['log']['default_destination_folder'] do
-  action :create
-end
-
 log_file = "#{node['file']['log']['default_destination_folder']}\\#{node['file']['log']['name']}"
 
 # Delete log file if it already exists
