@@ -14,6 +14,9 @@ include_recipe 'Relativity::post_relativity_reset_iis'
 # Change Relativity windows services startup type to Automatic
 include_recipe 'Relativity::post_relativity_update_kcura_services_startup_type'
 
+# Make Sure Relativity Services are running
+include_recipe 'Relativity::default_start_services'
+
 # Create Workspace
 include_recipe 'Relativity::post_relativity_create_workspace'
 
