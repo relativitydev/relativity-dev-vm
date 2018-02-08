@@ -341,3 +341,55 @@ default['relativity_apps_to_install'] = [
 default['relativity_resource_files_to_push'] = [
     # 2 dimensional -> (resource file name located in files/default, Application Guid)
 ]
+
+default['services'] =
+[
+    {
+        name: "kCura EDDS Agent Manager", 
+        type: "Service",
+        serviceBus: "$False",
+        location: ""
+    },
+    {
+        name: "kCura Service Host Manager", 
+        type: "Service",
+        serviceBus: "$False",
+        location: ""
+    },
+    {
+        name: "kCura EDDS Web Processing Manager", 
+        type: "Service",
+        serviceBus: "$False",
+        location: ""
+    },
+    {
+        name: "Service Bus Gateway", 
+        type: "Service",
+        serviceBus: "$True",
+        location: ""
+    },
+    {
+        name: "Service Bus Message Broker", 
+        type: "Service",
+        serviceBus: "$True",
+        location: ""
+    },
+    {
+        name: "Service Bus Resource Provider", 
+        type: "Service",
+        serviceBus: "$True",
+        location: ""
+    },
+    {
+        name: "Service Bus VSS", 
+        type: "Service",
+        serviceBus: "$True",
+        location: ""
+    },
+    {
+        name: "InvariantWorker", 
+        type: "Process",
+        serviceBus: "$False",
+        location: "C:\\InvariantNetworkShare\\InvariantWorker.exe"
+    }
+]

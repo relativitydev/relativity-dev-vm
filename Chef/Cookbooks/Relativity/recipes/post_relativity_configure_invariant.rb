@@ -2,20 +2,8 @@ log 'Starting configuring Invariant'
 start_time = DateTime.now
 log "recipe_start_time(#{recipe_name}): #{start_time}"
 
-powershell_script 'Ensure worker process has started' do
-  code <<-EOH
-  Start-Process -FilePath "C:\\InvariantNetworkShare\\InvariantWorker.exe"
-  Get-Process -Name InvariantWorker
-  EOH
-  retries 12
-  retry_delay 10
-end
-
-powershell_script 'Ensure service host has started' do
-  code <<-EOH
-  Start-Service -Name "kCura Service Host Manager"
-  EOH
-end
+# Make Sure Relativity Services are running
+include_recipe 'Relativity::default_start_services'
 
 # Create Processing Choice for Processing Source Location
 include_recipe 'Relativity::post_relativity_configure_invariant_create_processing_choice'
