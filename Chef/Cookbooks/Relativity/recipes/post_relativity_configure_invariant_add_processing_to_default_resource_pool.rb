@@ -25,13 +25,8 @@ request_body_json = JSON.parse(
   QUERY
 )
 request.body = request_body_json.to_json
-response = http.request(request)
-is_http_request_success = (response.is_a? Net::HTTPSuccess)
-unless is_http_request_success
-  error_message = "An unexpected error occured when querying for 'Default' resource pool"
-  log error_message
-  raise error_message
-end
+error_message = "An unexpected error occured when querying for 'Default' resource pool"
+response = RetryHelper.execute_rest_call(http, request, 3, error_message)
 response_json = JSON.parse(response.body)
 if response_json['TotalCount'] > 0
   node.run_state['default_resource_pool_artifact_id'] = response_json['Results'][0]['Artifact']['ArtifactID']
@@ -50,13 +45,8 @@ http = Net::HTTP.new(uri.host, uri.port)
 request = Net::HTTP::Post.new(uri.request_uri)
 request.basic_auth(node['relativity']['admin']['login'], node['relativity']['admin']['password'])
 request['X-CSRF-Header'] = ' '
-response = http.request(request)
-is_http_request_success = (response.is_a? Net::HTTPSuccess)
-unless is_http_request_success
-  error_message = 'An unexpected error occured when querying for ResourceServerType Choices.'
-  log error_message
-  raise error_message
-end
+error_message = 'An unexpected error occured when querying for ResourceServerType Choices.'
+response = RetryHelper.execute_rest_call(http, request, 3, error_message)
 response_json = JSON.parse(response.body)
 response_json.each do |type|
   if type['Name'] == 'Worker Manager Server'
@@ -91,13 +81,9 @@ request_body_json = JSON.parse(
   QUERY
 )
 request.body = request_body_json.to_json
-response = http.request(request)
+error_message = "An unexpected error occured when adding Processing Server to 'Default' Resource Pool."
+response = RetryHelper.execute_rest_call(http, request, 3, error_message)
 is_http_request_success = (response.is_a? Net::HTTPSuccess)
-unless is_http_request_success
-  error_message = "An unexpected error occured when adding Processing Server to 'Default' Resource Pool."
-  log error_message
-  raise error_message
-end
 if is_http_request_success
   log "Added Processing Server to 'Default' Resource Pool."
 end
@@ -123,13 +109,8 @@ request_body_json = JSON.parse(
   QUERY
 )
 request.body = request_body_json.to_json
-response = http.request(request)
-is_http_request_success = (response.is_a? Net::HTTPSuccess)
-unless is_http_request_success
-  error_message = 'An unexpected error occured when querying Processing location.'
-  log error_message
-  raise error_message
-end
+error_message = 'An unexpected error occured when querying Processing location.'
+response = RetryHelper.execute_rest_call(http, request, 3, error_message)
 response_json = JSON.parse(response.body)
 node.run_state['processing_location_artifact_id'] = response_json['Results'][0]['Artifact ID']
 log "processing_location_artifact_id = #{node.run_state['processing_location_artifact_id']}"
@@ -157,13 +138,9 @@ request_body_json = JSON.parse(
   QUERY
 )
 request.body = request_body_json.to_json
-response = http.request(request)
+error_message = "An unexpected error occured when adding Processing Server Location to 'Default' Resource Pool. "
+response = RetryHelper.execute_rest_call(http, request, 3, error_message)
 is_http_request_success = (response.is_a? Net::HTTPSuccess)
-unless is_http_request_success
-  error_message = "An unexpected error occured when adding Processing Server Location to 'Default' Resource Pool."
-  log error_message
-  raise error_message
-end
 if is_http_request_success
   log "Added Processing Server Location to 'Default' Resource Pool."
 end

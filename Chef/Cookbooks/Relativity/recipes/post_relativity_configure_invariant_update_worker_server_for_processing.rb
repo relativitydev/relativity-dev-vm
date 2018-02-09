@@ -23,13 +23,8 @@ request_body_json = JSON.parse(
   QUERY
 )
 request.body = request_body_json.to_json
-response = http.request(request)
-is_http_request_success = (response.is_a? Net::HTTPSuccess)
-unless is_http_request_success
-  error_message = 'An unexpected error occured when using kepler to query resource server table and get the worker server ArtifactID'
-  log error_message
-  raise error_message
-end
+error_message = 'An unexpected error occured when using kepler to query resource server table and get the worker server ArtifactID'
+response = RetryHelper.execute_rest_call(http, request, 3, error_message)
 response_json = JSON.parse(response.body)
 node.run_state['agent']['agent_server'] = response_json
 node.run_state['agent']['agent_server']['Results'].each do |key|
@@ -64,13 +59,8 @@ request_body_json = JSON.parse(
   QUERY
 )
 request.body = request_body_json.to_json
-response = http.request(request)
-is_http_request_success = (response.is_a? Net::HTTPSuccess)
-unless is_http_request_success
-  error_message = 'An unexpected error occured when using Kepler call to enable\license a worker'
-  log error_message
-  raise error_message
-end
+error_message = 'An unexpected error occured when using Kepler call to enable\license a worker'
+response = RetryHelper.execute_rest_call(http, request, 3, error_message)
 log response.code
 
 
@@ -97,13 +87,8 @@ request_body_json = JSON.parse(
   QUERY
 )
 request.body = request_body_json.to_json
-response = http.request(request)
-is_http_request_success = (response.is_a? Net::HTTPSuccess)
-unless is_http_request_success
-  error_message = 'An unexpected error occured when using Kepler call to add processing designated work to a worker'
-  log error_message
-  raise error_message
-end
+error_message = 'An unexpected error occured when using Kepler call to add processing designated work to a worker'
+response = RetryHelper.execute_rest_call(http, request, 3, error_message)
 log response.code
 
 end_time = DateTime.now
