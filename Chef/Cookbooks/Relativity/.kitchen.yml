@@ -28,8 +28,8 @@ suites:
       - recipe[Relativity::default_pre_relativity]
       - recipe[Relativity::pre_relativity_install_servicebus]
       - recipe[Relativity::default_relativity]
-      - recipe[Relativity::default_post_relativity]
       - recipe[Relativity::post_relativity_configure_invariant]
+      - recipe[Relativity::default_post_relativity]      
     verifier:
       inspec_tests:
         - test/smoke/default
