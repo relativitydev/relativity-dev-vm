@@ -30,19 +30,13 @@ request_body_json = JSON.parse(
   QUERY
 )
 request.body = request_body_json.to_json
-response = http.request(request)
-is_http_request_success = (response.is_a? Net::HTTPSuccess)
-unless is_http_request_success
-  error_message = 'An unexpected error occured when Checking if Processing Exists.' +response.message
-  log error_message
-  raise error_message
-end
+error_message = 'An unexpected error occured when Checking if Processing Exists.'
+response = RetryHelper.execute_rest_call(http, request, 3, error_message)
 response_json = JSON.parse(response.body)
 unless response_json['Results'].empty?
   node.run_state['processing_server_artifact_id'] = response_json['Results'][0]['Artifact']['ArtifactID']
   log "Processing Server exists. processing_server_artifact_id = #{node.run_state['processing_server_artifact_id']}"
 end
-
 
 # Create Processing Server if it not already exists
 if node.run_state['processing_server_artifact_id'].nil?
@@ -73,13 +67,8 @@ if node.run_state['processing_server_artifact_id'].nil?
     QUERY
   )
   request.body = request_body_json.to_json
-  response = http.request(request)
-  is_http_request_success = (response.is_a? Net::HTTPSuccess)
-  unless is_http_request_success
-    error_message = 'An unexpected error occured when creating new Processing Server.' +response.message
-    log error_message
-    raise error_message
-  end
+  error_message = 'An unexpected error occured when creating new Processing Server.'
+  response = RetryHelper.execute_rest_call(http, request, 3, error_message)
   node.run_state['processing_server_artifact_id'] = response.body
   log "New Processing Server created. processing_server_artifact_id = #{node.run_state['processing_server_artifact_id']}"
 end
