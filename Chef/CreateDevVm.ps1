@@ -1,7 +1,17 @@
 [System.Int32]$global:maxRetry = 1
 [System.Int32]$global:count = 1
 
-function New-DevVm {
+function Export-DevVm([string] $vmExportPath) {
+  # Remove Export folder if it already exists
+  If (Test-Path $vmExportPath) {
+    Remove-Item –path $vmExportPath –recurse –force
+  }
+
+  # Export VM
+  Export-VM -Name $vmName -Path $vmExportPath
+}
+
+function New-DevVm([string] $vmName, [string] $vmCheckpointName, [string] $vmExportPath, [string] $compressPath, [string] $zipFileName) {
   try {
     Write-Host  "-----> [$(Get-Date -Format g)] Attempt #$($global:count)" -ForegroundColor Blue
     
@@ -18,7 +28,7 @@ function New-DevVm {
     Write-Host  "-----> [$(Get-Date -Format g)] Created VM Checkpoint" -ForegroundColor Blue
 
     Write-Host  "-----> [$(Get-Date -Format g)] Export VM" -ForegroundColor Blue
-    Export-VM -Name $vmName -Path $vmExportPath
+    Export-DevVm $vmExportPath
     Write-Host  "-----> [$(Get-Date -Format g)] Exported VM" -ForegroundColor Blue
 
     Write-Host  "-----> [$(Get-Date -Format g)] Compressing Exported VM to Zip" -ForegroundColor Blue
@@ -45,7 +55,7 @@ function Start-DevVm-Process() {
       $zipFileName = "$($vmExportPath)\$($vmName).7z"
       
       # Create New DevVm
-      New-DevVm
+      New-DevVm $vmName, $vmCheckpointName, $vmExportPath, $compressPath, $zipFileName
     }
     catch {
       $global:count++ 

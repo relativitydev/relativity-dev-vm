@@ -9,8 +9,7 @@ log_file_old = "#{node['file']['log']['default_destination_folder']}\\#{generate
 # Rename log file if it already exists
 ruby_block 'rename_previous_log_file' do
   block do
-    # FileUtils.rm_f(log_file)
-    File.rename(log_file, log_file_old)
+    File.rename(log_file, log_file_old) if File.exist? log_file
   end
   action :run
 end

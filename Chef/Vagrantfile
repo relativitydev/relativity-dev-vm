@@ -1,6 +1,6 @@
 require 'yaml'
 
-current_dir    = File.dirname(File.expand_path("../", Dir.pwd))
+current_dir    = File.dirname(File.expand_path('../', Dir.pwd))
 configs        = YAML.load_file("#{current_dir}/config.yaml")
 vm_username = configs['credentials']['vm_username']
 vm_password = configs['credentials']['vm_password']
@@ -9,25 +9,25 @@ network_share_smb_username = configs['credentials']['smb_username']
 network_share_smb_password = configs['credentials']['smb_password']
 network_share_smb_domain_and_username = "#{network_share_smb_domain}\\#{network_share_smb_username}"
 
-Vagrant.configure("2") do |config|
-  config.vm.define "RelativityDevVm"
+Vagrant.configure('2') do |config|
+  config.vm.define 'RelativityDevVm'
   config.berkshelf.enabled = true
-  config.berkshelf.berksfile_path = "Cookbooks\\Relativity\\Berksfile"
-  
+  config.berkshelf.berksfile_path = 'Cookbooks\\Relativity\\Berksfile'
+
   # Name of box to install with
-  config.vm.box = "DevVMBoxImg"
+  config.vm.box = 'DevVMBoxImg'
 
   # Communicator type
-  config.vm.communicator = "winrm"  
+  config.vm.communicator = 'winrm'
 
   # Guest OS
   config.vm.guest = :windows
   config.windows.halt_timeout = 15
 
   # Config networks on guest.
-  config.vm.network :forwarded_port, guest: 3389, host: 3389, id: "rdp", auto_correct: true
-  config.vm.network :forwarded_port, guest: 22, host: 2222, id: "ssh", auto_correct: true
-  config.vm.network :forwarded_port, guest: 5985, host: 5985, id: "winrm", auto_correct:true
+  config.vm.network :forwarded_port, guest: 3389, host: 3389, id: 'rdp', auto_correct: true
+  config.vm.network :forwarded_port, guest: 22, host: 2222, id: 'ssh', auto_correct: true
+  config.vm.network :forwarded_port, guest: 5985, host: 5985, id: 'winrm', auto_correct:true
 
   # Admin user name and password
   config.winrm.username = vm_username
@@ -35,135 +35,134 @@ Vagrant.configure("2") do |config|
 
   # Hyperv configuration
   config.vm.provider :hyperv do |h|
-    h.vmname = "RelativityDevVm"
+    h.vmname = 'RelativityDevVm'
     h.cpus = 6
     h.memory = 12288
   end
-  
-  config.vm.synced_folder ".", "/vagrant", 
+
+  config.vm.synced_folder '.', '/vagrant',
   disabled: false,
   smb_username: network_share_smb_domain_and_username,
   smb_password: network_share_smb_password
-  
+
 
   # Chef Recipes
   # Run Pre-Windows Chef Recipe
-  config.vm.provision "chef_zero" do |chef|
-    chef.cookbooks_path = "Cookbooks"
-      chef.data_bags_path = "DataBags"
-      chef.nodes_path = "Nodes"
-      chef.roles_path = "Roles"
+  config.vm.provision 'chef_zero' do |chef|
+    chef.cookbooks_path = 'Cookbooks'
+    chef.data_bags_path = 'DataBags'
+    chef.nodes_path = 'Nodes'
+    chef.roles_path = 'Roles'
     chef.json = {
-      "smb_domain" => network_share_smb_domain,
-        "smb_username" => network_share_smb_username,
-        "smb_password" => network_share_smb_password
-      }
-    chef.add_recipe("Relativity::default_pre_windows")
+      'smb_domain' => network_share_smb_domain,
+      'smb_username' => network_share_smb_username,
+      'smb_password' => network_share_smb_password,
+    }
+    chef.add_recipe('Relativity::default_pre_windows')
   end
-    
+
   # Restart VM
   config.vm.provision :reload
 
   # Run Pre-Windows Chef Recipe
-  config.vm.provision "chef_zero" do |chef|
-    chef.cookbooks_path = "Cookbooks"
-      chef.data_bags_path = "DataBags"
-      chef.nodes_path = "Nodes"
-      chef.roles_path = "Roles"
+  config.vm.provision 'chef_zero' do |chef|
+    chef.cookbooks_path = 'Cookbooks'
+    chef.data_bags_path = 'DataBags'
+    chef.nodes_path = 'Nodes'
+    chef.roles_path = 'Roles'
     chef.json = {
-      "smb_domain" => network_share_smb_domain,
-        "smb_username" => network_share_smb_username,
-        "smb_password" => network_share_smb_password
-      }
-    chef.add_recipe("Relativity::default_windows")
+      'smb_domain' => network_share_smb_domain,
+      'smb_username' => network_share_smb_username,
+      'smb_password' => network_share_smb_password,
+    }
+    chef.add_recipe('Relativity::default_windows')
   end
-  
+
   # Restart VM
   config.vm.provision :reload
 
   # Run Pre-Relativity Chef Recipe
-  config.vm.provision "chef_zero" do |chef|
-    chef.cookbooks_path = "Cookbooks"
-      chef.data_bags_path = "DataBags"
-      chef.nodes_path = "Nodes"
-      chef.roles_path = "Roles"
+  config.vm.provision 'chef_zero' do |chef|
+    chef.cookbooks_path = 'Cookbooks'
+    chef.data_bags_path = 'DataBags'
+    chef.nodes_path = 'Nodes'
+    chef.roles_path = 'Roles'
     chef.json = {
-      "smb_domain" => network_share_smb_domain,
-        "smb_username" => network_share_smb_username,
-        "smb_password" => network_share_smb_password
-      }
-    chef.add_recipe("Relativity::default_pre_relativity")
+      'smb_domain' => network_share_smb_domain,
+      'smb_username' => network_share_smb_username,
+      'smb_password' => network_share_smb_password,
+    }
+    chef.add_recipe('Relativity::default_pre_relativity')
   end
 
   # Restart VM
   config.vm.provision :reload
 
   # Run Pre-Relativity Install ServiceBus Chef Recipe
-  config.vm.provision "chef_zero" do |chef|
-    chef.cookbooks_path = "Cookbooks"
-      chef.data_bags_path = "DataBags"
-      chef.nodes_path = "Nodes"
-      chef.roles_path = "Roles"
+  config.vm.provision 'chef_zero' do |chef|
+    chef.cookbooks_path = 'Cookbooks'
+    chef.data_bags_path = 'DataBags'
+    chef.nodes_path = 'Nodes'
+    chef.roles_path = 'Roles'
     chef.json = {
-      "smb_domain" => network_share_smb_domain,
-        "smb_username" => network_share_smb_username,
-        "smb_password" => network_share_smb_password
-      }
-    chef.add_recipe("Relativity::pre_relativity_install_servicebus")
+      'smb_domain' => network_share_smb_domain,
+      'smb_username' => network_share_smb_username,
+      'smb_password' => network_share_smb_password,
+    }
+    chef.add_recipe('Relativity::pre_relativity_install_servicebus')
   end
 
   # Restart VM
   config.vm.provision :reload
 
   # Run Relativity Chef Recipe
-  config.vm.provision "chef_zero" do |chef|
-    chef.cookbooks_path = "Cookbooks"
-      chef.data_bags_path = "DataBags"
-      chef.nodes_path = "Nodes"
-      chef.roles_path = "Roles"
+  config.vm.provision 'chef_zero' do |chef|
+    chef.cookbooks_path = 'Cookbooks'
+    chef.data_bags_path = 'DataBags'
+    chef.nodes_path = 'Nodes'
+    chef.roles_path = 'Roles'
     chef.json = {
-      "smb_domain" => network_share_smb_domain,
-        "smb_username" => network_share_smb_username,
-        "smb_password" => network_share_smb_password
-      }
-    chef.add_recipe("Relativity::default_relativity")
+      'smb_domain' => network_share_smb_domain,
+      'smb_username' => network_share_smb_username,
+      'smb_password' => network_share_smb_password,
+    }
+    chef.add_recipe('Relativity::default_relativity')
   end
 
   # Restart VM
   config.vm.provision :reload
 
   # Run Post-Relativity Configure Invariant Chef Recipe
-  config.vm.provision "chef_zero" do |chef|
-    chef.cookbooks_path = "Cookbooks"
-      chef.data_bags_path = "DataBags"
-      chef.nodes_path = "Nodes"
-      chef.roles_path = "Roles"
+  config.vm.provision 'chef_zero' do |chef|
+    chef.cookbooks_path = 'Cookbooks'
+    chef.data_bags_path = 'DataBags'
+    chef.nodes_path = 'Nodes'
+    chef.roles_path = 'Roles'
     chef.json = {
-      "smb_domain" => network_share_smb_domain,
-        "smb_username" => network_share_smb_username,
-        "smb_password" => network_share_smb_password
-      }
-    chef.add_recipe("Relativity::post_relativity_configure_invariant")
+      'smb_domain' => network_share_smb_domain,
+      'smb_username' => network_share_smb_username,
+      'smb_password' => network_share_smb_password,
+    }
+    chef.add_recipe('Relativity::post_relativity_configure_invariant')
   end
-  
+
   # Restart VM
   config.vm.provision :reload
 
   # Run Post-Relativity Chef Recipe
-  config.vm.provision "chef_zero" do |chef|
-    chef.cookbooks_path = "Cookbooks"
-      chef.data_bags_path = "DataBags"
-      chef.nodes_path = "Nodes"
-      chef.roles_path = "Roles"
+  config.vm.provision 'chef_zero' do |chef|
+    chef.cookbooks_path = 'Cookbooks'
+    chef.data_bags_path = 'DataBags'
+    chef.nodes_path = 'Nodes'
+    chef.roles_path = 'Roles'
     chef.json = {
-      "smb_domain" => network_share_smb_domain,
-        "smb_username" => network_share_smb_username,
-        "smb_password" => network_share_smb_password
-      }
-    chef.add_recipe("Relativity::default_post_relativity")
-  end 
+      'smb_domain' => network_share_smb_domain,
+      'smb_username' => network_share_smb_username,
+      'smb_password' => network_share_smb_password,
+    }
+    chef.add_recipe('Relativity::default_post_relativity')
+  end
 
   # Restart VM
   config.vm.provision :reload
-
 end

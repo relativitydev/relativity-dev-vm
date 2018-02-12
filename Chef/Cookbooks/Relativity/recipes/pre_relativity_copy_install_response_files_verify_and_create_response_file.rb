@@ -1,6 +1,6 @@
 # Methods
-def does_parsed_and_replacement_values_count_match_method(parsed_values_count, replacement_values_count)
-  parsed_values_count == replacement_values_count
+def parsed_values_count_less_than_replacement_values_count_method(parsed_values_count, replacement_values_count)
+  parsed_values_count <= replacement_values_count
 end
 
 def does_parsed_and_replacement_values_match_method(name, parsed_values, replacement_values)
@@ -66,15 +66,15 @@ def create_new_response_file_with_replacement_values_method(name, response_file_
 end
 
 def verify_and_create_response_file_method(name, response_file_path, parsed_values, replacement_values)
-  # Check if parsed and replacement values array counts match
-  log_message 'log_message' do message "Start = #{name} - Check if parsed and replacement values array counts match" end
-  does_parsed_and_replacement_values_count_match = does_parsed_and_replacement_values_count_match_method(parsed_values.length, replacement_values.length)
-  log_message 'log_message' do message "Finish = #{name} - Check if parsed and replacement values array counts match" end
+  # Check if parsed values array count is less than or equal to replacement values array count
+  log_message 'log_message' do message "Start = #{name} - Check if parsed values array count is less than or equal to replacement values array count" end
+  is_parsed_values_count_less_than_replacement_values_count = parsed_values_count_less_than_replacement_values_count_method(parsed_values.length, replacement_values.length)
+  log_message 'log_message' do message "Finish = #{name} - Check if parsed values array count is less than or equal to replacement values array count" end
 
-  # If parsed and replacement values array counts match, verify each parsed value has a replacement value
-  log_message 'log_message' do message "Start - #{name} - If parsed and replacement values array counts match, verify each parsed value has a replacement value" end
-  if does_parsed_and_replacement_values_count_match
-    log_message 'log_message' do message "#{name} - Parsed and Replacement values count match" end
+  # If parsed values array count is less than or equal to replacement values array count, verify each parsed value has a replacement value
+  log_message 'log_message' do message "Start - #{name} - If parsed values array count is less than or equal to replacement values array count, verify each parsed value has a replacement value" end
+  if is_parsed_values_count_less_than_replacement_values_count
+    log_message 'log_message' do message "#{name} - Parsed values count is less than or equal to Replacement values count" end
     # Check if all parsed values exist in replacement values array
     does_parsed_and_replacement_values_match = does_parsed_and_replacement_values_match_method(name, parsed_values, replacement_values)
     if does_parsed_and_replacement_values_match
@@ -87,11 +87,11 @@ def verify_and_create_response_file_method(name, response_file_path, parsed_valu
       throw_custom_error 'throw_custom_error' do error_message "#{name} - Parsed and Replacement values do not match" end
     end
   else
-    log_message 'log_message' do message "#{name} - Parsed and Replacement values count do not match" end
+    log_message 'log_message' do message "#{name} - Parsed values count is greater than Replacement values count" end
     # Throw custom error
-    throw_custom_error 'throw_custom_error' do error_message "#{name} - Parsed and Replacement values count do not match" end
+    throw_custom_error 'throw_custom_error' do error_message "#{name} - Parsed values count is greater than Replacement values count" end
   end
-  log_message 'log_message' do message "Finish - #{name} - If parsed and replacement values array counts match, verify each parsed value has a replacement value" end
+  log_message 'log_message' do message "Finish - #{name} - If parsed values array count is less than or equal to replacement values array count, verify each parsed value has a replacement value" end
 end
 
 relativity_response_file_path = "#{node['relativity']['install']['destination_folder']}\\#{node['relativity']['response_file']['file_name']}"
