@@ -334,7 +334,8 @@ default['sample_data_population']['import_production_images_with_documents'] = '
 default['relativity_apps_to_install'] = [
     "Relativity_App_Smoke_Test.rap",
     "Relativity_App_Data_Sampler.rap",
-    "Single File Upload 1.2.0.16 (for Relativity 9.4 - 9.5 - RelOne).rap"
+    "Single File Upload 1.2.0.16 (for Relativity 9.4 - 9.5 - RelOne).rap",
+    "Relativity_App_Imaging_Set_Scheduler.rap"
     ]
 
 # Add resource files to this 2 dimensional Array to push them to Relativity. Make sure they exist in files/default
