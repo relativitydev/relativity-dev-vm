@@ -83,11 +83,13 @@ def verify_and_create_response_file_method(name, response_file_path, parsed_valu
       create_new_response_file_with_replacement_values_method(name, response_file_path, parsed_values, replacement_values)
     else
       log_message 'log_message' do message "#{name} - Parsed and Replacement values do not match" end
-      # raise
+      # Throw custom error
+      throw_custom_error 'throw_custom_error' do error_message "#{name} - Parsed and Replacement values do not match" end
     end
   else
     log_message 'log_message' do message "#{name} - Parsed and Replacement values count do not match" end
-    # raise
+    # Throw custom error
+    throw_custom_error 'throw_custom_error' do error_message "#{name} - Parsed and Replacement values count do not match" end
   end
   log_message 'log_message' do message "Finish - #{name} - If parsed and replacement values array counts match, verify each parsed value has a replacement value" end
 end

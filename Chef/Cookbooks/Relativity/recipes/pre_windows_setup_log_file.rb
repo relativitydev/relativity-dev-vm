@@ -3,14 +3,19 @@ start_time = DateTime.now
 log "recipe_start_time(#{recipe_name}): #{start_time}"
 
 log_file = "#{node['file']['log']['default_destination_folder']}\\#{node['file']['log']['name']}"
+generated_log_file_name = 'Chef_Old_Log_' + Time.now.strftime('%Y%m%dT%H%M%S%z') + '.txt'
+log_file_old = "#{node['file']['log']['default_destination_folder']}\\#{generated_log_file_name}"
 
-# Delete log file if it already exists
-ruby_block 'delete_log_file' do
+# Rename log file if it already exists
+ruby_block 'rename_previous_log_file' do
   block do
-    FileUtils.rm_f(log_file)
+    # FileUtils.rm_f(log_file)
+    File.rename(log_file, log_file_old)
   end
   action :run
 end
+
+log_message 'log_message' do message 'Renamed previous log file' end
 
 # Create log file if not already exists
 ruby_block 'create_log_file' do

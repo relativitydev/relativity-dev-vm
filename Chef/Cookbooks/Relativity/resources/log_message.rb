@@ -15,9 +15,7 @@ action :log do
   # Write to log file
   ruby_block 'write_to_log_file' do
     block do
-
       message_with_timestamp = "[#{Time.now.strftime('%FT%T%:z')}] #{message} \n"
-
       ::File.open(log_file, 'a') do |line|
         line.write message_with_timestamp
       end
