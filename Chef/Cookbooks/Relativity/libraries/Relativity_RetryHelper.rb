@@ -29,7 +29,7 @@ class Chef::Recipe::RetryHelper
     if result && error.nil?
       result
     elsif error
-      throw_custom_error 'throw_custom_error' do error_message 'error' end
+      raise error
     end
   end
 end

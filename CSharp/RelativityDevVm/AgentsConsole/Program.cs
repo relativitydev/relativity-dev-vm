@@ -13,6 +13,7 @@ namespace AgentsConsole
     public class Program
     {
         private static readonly Guid ImagingApplicationGuid = new Guid("C9E4322E-6BD8-4A37-AE9E-C3C9BE31776B");
+        private static readonly Guid ImagingSetSchedulerApplicationGuid = new Guid("6BE2880A-D951-4A98-A6FE-4A84835D3D06");
 
         public static void Main(string[] args)
         {
@@ -52,20 +53,29 @@ namespace AgentsConsole
 
                 int agentServerId = RetrieveAgentServerId(sqlDatabaseServerName, sqlUsername, sqlPassword);
 
-                List<AgentModel> imagingAgentsToCreate = RetrieveImagingApplicationAgentsToCreate(sqlDatabaseServerName, sqlUsername, sqlPassword);
+                //Create agents in Imaging Application
+                CreateAgentsInRelativityApplication(sqlDatabaseServerName, sqlUsername, sqlPassword, agentHelper, agentServerId, enableAgent, agentInterval, agentLoggingLevel, ImagingApplicationGuid);
 
-                foreach (AgentModel agentModel in imagingAgentsToCreate)
-                {
-                    //Create Agent
-                    CreateAgentAsync(
-                        agentHelper: agentHelper,
-                        agentName: agentModel.AgentName,
-                        agentTypeId: agentModel.AgentTypeId,
-                        agentServerId: agentServerId,
-                        enableAgent: enableAgent,
-                        agentInterval: agentInterval,
-                        agentLoggingLevel: agentLoggingLevel).Wait();
-                }
+                //Create agents in Imaging Set Scheduler Application
+                CreateAgentsInRelativityApplication(sqlDatabaseServerName, sqlUsername, sqlPassword, agentHelper, agentServerId, enableAgent, agentInterval, agentLoggingLevel, ImagingSetSchedulerApplicationGuid);
+            }
+        }
+
+        private static void CreateAgentsInRelativityApplication(string sqlDatabaseServerName, string sqlUsername, string sqlPassword, IAgentHelper agentHelper, int agentServerId, bool enableAgent, int agentInterval, Agent.LoggingLevelEnum agentLoggingLevel, Guid relativityApplicationGuid)
+        {
+            List<AgentModel> agentsToCreate = RetrieveAgentsToCreateInRelativityApplication(sqlDatabaseServerName, sqlUsername, sqlPassword, relativityApplicationGuid);
+
+            foreach (AgentModel agentModel in agentsToCreate)
+            {
+                //Create Agent
+                CreateAgentAsync(
+                    agentHelper: agentHelper,
+                    agentName: agentModel.AgentName,
+                    agentTypeId: agentModel.AgentTypeId,
+                    agentServerId: agentServerId,
+                    enableAgent: enableAgent,
+                    agentInterval: agentInterval,
+                    agentLoggingLevel: agentLoggingLevel).Wait();
             }
         }
 
@@ -137,10 +147,10 @@ namespace AgentsConsole
             }
         }
 
-        private static List<AgentModel> RetrieveImagingApplicationAgentsToCreate(string sqlDatabaseServerName, string sqlUsername, string sqlPassword)
+        private static List<AgentModel> RetrieveAgentsToCreateInRelativityApplication(string sqlDatabaseServerName, string sqlUsername, string sqlPassword, Guid relativityApplicationGuid)
         {
             List<AgentModel> agentsToCreate = new List<AgentModel>();
-            List<string> agentNames = RetrieveAgentNamesInRelativityApplication(sqlDatabaseServerName, sqlUsername, sqlPassword, ImagingApplicationGuid);
+            List<string> agentNames = RetrieveAgentNamesInRelativityApplication(sqlDatabaseServerName, sqlUsername, sqlPassword, relativityApplicationGuid);
             foreach (string agentName in agentNames)
             {
                 int agentTypeId = RetrieveAgentTypeId(sqlDatabaseServerName, sqlUsername, sqlPassword, agentName);
