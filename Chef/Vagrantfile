@@ -45,7 +45,6 @@ Vagrant.configure('2') do |config|
   smb_username: network_share_smb_domain_and_username,
   smb_password: network_share_smb_password
 
-
   # Chef Recipes
   # Run Pre-Windows Chef Recipe
   config.vm.provision 'chef_zero' do |chef|
@@ -144,13 +143,13 @@ Vagrant.configure('2') do |config|
       'smb_password' => network_share_smb_password,
     }
     chef.add_recipe('Relativity::post_relativity_instance_setting_update_cookie_secure')
-	chef.add_recipe('Relativity::default_start_services')
-	chef.add_recipe('Relativity::Relativity::post_relativity_configure_invariant_create_processing_choice')
-	chef.add_recipe('Relativity::Relativity::post_relativity_configure_invariant_create_worker_manager_server')
-	chef.add_recipe('Relativity::Relativity::post_relativity_configure_invariant_add_processing_to_default_resource_pool')
-	chef.add_recipe('Relativity::post_relativity_configure_invariant_add_agent_and_worker_servers_to_default_resource_pool')
+    chef.add_recipe('Relativity::default_start_services')
+    chef.add_recipe('Relativity::Relativity::post_relativity_configure_invariant_create_processing_choice')
+    chef.add_recipe('Relativity::Relativity::post_relativity_configure_invariant_create_worker_manager_server')
+    chef.add_recipe('Relativity::Relativity::post_relativity_configure_invariant_add_processing_to_default_resource_pool')
+    chef.add_recipe('Relativity::post_relativity_configure_invariant_add_agent_and_worker_servers_to_default_resource_pool')
   end
-  
+
   # Restart VM
   config.vm.provision :reload
 
@@ -165,14 +164,13 @@ Vagrant.configure('2') do |config|
       'smb_username' => network_share_smb_username,
       'smb_password' => network_share_smb_password,
     }
-	chef.add_recipe('Relativity::default_start_services')
+    chef.add_recipe('Relativity::default_start_services')
     chef.add_recipe('Relativity::post_relativity_instance_setting_update_developer_mode')
-	chef.add_recipe('Relativity::post_relativity_reset_iis')
-	chef.add_recipe('Relativity::post_relativity_update_kcura_services_startup_type')
-	chef.add_recipe('Relativity::post_relativity_create_workspace')
-	chef.add_recipe('Relativity::post_relativity_create_data_sampler_config_file')
-	chef.add_recipe('Relativity::post_relativity_push_resource_file')
-	chef.add_recipe('Relativity::post_relativity_install_rap_files')
+    chef.add_recipe('Relativity::post_relativity_reset_iis')
+    chef.add_recipe('Relativity::post_relativity_update_kcura_services_startup_type')
+    chef.add_recipe('Relativity::post_relativity_create_workspace')
+    chef.add_recipe('Relativity::post_relativity_create_data_sampler_config_file')
+    chef.add_recipe('Relativity::post_relativity_push_resource_file')
+    chef.add_recipe('Relativity::post_relativity_install_rap_files')
   end
-
 end
