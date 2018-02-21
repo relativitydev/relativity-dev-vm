@@ -6,13 +6,22 @@ using Relativity.Services.ServiceProxy;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace AgentsConsole
 {
     public class Program
     {
-        private static readonly Guid ImagingApplicationGuid = new Guid("C9E4322E-6BD8-4A37-AE9E-C3C9BE31776B");
+        public const char StringSplitter = ';';
+        public const String AgentResourceServerType = "AgentResourceServerType";
+        public const String WebProcessingServerType = "WebBackgroundProcessingServerType";
+        private static readonly Guid ImagingSetSchedulerApplicationGuid = new Guid("6BE2880A-D951-4A98-A6FE-4A84835D3D06");
+        //private static readonly Guid ImagingApplicationGuid = new Guid("C9E4322E-6BD8-4A37-AE9E-C3C9BE31776B");
+        //private static readonly Guid DocumentViewerApplicationGuid = new Guid("5725CAB5-EE63-4155-B227-C74CC9E26A76");
+        //private static readonly Guid ProductionApplicationGuid = new Guid("51B19AB2-3D45-406C-A85E-F98C01B033EC");
+        //private static readonly Guid ProcessingApplicationGuid = new Guid("ED0E23F9-DA60-4298-AF9A-AE6A9B6A9319");
+        //private static readonly Guid SmokeTestApplicationGuid = new Guid("0125C8D4-8354-4D8F-B031-01E73C866C7C");
 
         public static void Main(string[] args)
         {
@@ -21,7 +30,7 @@ namespace AgentsConsole
             const int agentInterval = 5;
             const Agent.LoggingLevelEnum agentLoggingLevel = Agent.LoggingLevelEnum.All;
             const string protocal = "http";
-            const string sqlDatabaseName = "EDDS";
+            const string eddsSqlDatabaseName = "EDDS";
 
             string serverName = args[0];
             string adminUsername = args[1];
@@ -29,6 +38,8 @@ namespace AgentsConsole
             string sqlDatabaseServerName = args[3];
             string sqlUsername = args[4];
             string sqlPassword = args[5];
+            string relativityApplicationGuidsString = args[6];
+            List<Guid> relativityApplicationGuids = ParseRelativityApplicationGuids(relativityApplicationGuidsString);
             Uri relativityServicesUri = new Uri($"{protocal}://{serverName}/Relativity.Services");
             Uri relativityRestUri = new Uri($"{protocal}://{serverName}/Relativity.Rest/Api");
 
@@ -46,36 +57,72 @@ namespace AgentsConsole
             {
                 IAgentHelper agentHelper = new AgentHelper(
                    agentManager: agentManager, sqlDatabaseServerName: sqlDatabaseServerName,
-                    sqlDatabaseName: sqlDatabaseName,
+                    sqlDatabaseName: eddsSqlDatabaseName,
                     sqlUsername: sqlUsername,
                     sqlPassword: sqlPassword);
 
-                int agentServerId = RetrieveAgentServerId(sqlDatabaseServerName, sqlUsername, sqlPassword);
+                int agentResourceServerArtifactId = RetrieveAgentResourceServerArtifactId(sqlDatabaseServerName, sqlUsername, sqlPassword);
+                int webProcessingResourceServerArtifactId = RetrieveWebProcessingResourceServerArtifactId(sqlDatabaseServerName, sqlUsername, sqlPassword);
 
-                List<AgentModel> imagingAgentsToCreate = RetrieveImagingApplicationAgentsToCreate(sqlDatabaseServerName, sqlUsername, sqlPassword);
-
-                foreach (AgentModel agentModel in imagingAgentsToCreate)
+                //Create agents in Relativity Application
+                foreach (Guid currentRelativityApplicationGuid in relativityApplicationGuids)
                 {
-                    //Create Agent
-                    CreateAgentAsync(
+                    int resourceServerArtifactId =
+                        currentRelativityApplicationGuid == ImagingSetSchedulerApplicationGuid
+                        ? webProcessingResourceServerArtifactId
+                        : agentResourceServerArtifactId;
+                    CreateAgentsInRelativityApplication(
+                        sqlDatabaseServerName: sqlDatabaseServerName,
+                        sqlUsername: sqlUsername,
+                        sqlPassword: sqlPassword,
                         agentHelper: agentHelper,
-                        agentName: agentModel.AgentName,
-                        agentTypeId: agentModel.AgentTypeId,
-                        agentServerId: agentServerId,
+                        agentResourceServerArtifactId: resourceServerArtifactId,
                         enableAgent: enableAgent,
                         agentInterval: agentInterval,
-                        agentLoggingLevel: agentLoggingLevel).Wait();
+                        agentLoggingLevel: agentLoggingLevel,
+                        relativityApplicationGuid: currentRelativityApplicationGuid);
                 }
             }
         }
 
-        private static async Task<int> CreateAgentAsync(IAgentHelper agentHelper, string agentName, int agentTypeId, int agentServerId, bool enableAgent, int agentInterval, Agent.LoggingLevelEnum agentLoggingLevel)
+        private static List<Guid> ParseRelativityApplicationGuids(string relativityApplicationGuidsString)
+        {
+            List<Guid> retVal = new List<Guid>();
+            List<string> relativityApplicationGuidsList = relativityApplicationGuidsString.Split(StringSplitter).ToList();
+
+            foreach (string currentGuidString in relativityApplicationGuidsList)
+            {
+                retVal.Add(new Guid(currentGuidString));
+            }
+
+            return retVal;
+        }
+
+        private static void CreateAgentsInRelativityApplication(string sqlDatabaseServerName, string sqlUsername, string sqlPassword, IAgentHelper agentHelper, int agentResourceServerArtifactId, bool enableAgent, int agentInterval, Agent.LoggingLevelEnum agentLoggingLevel, Guid relativityApplicationGuid)
+        {
+            List<AgentModel> agentsToCreate = RetrieveAgentsToCreateInRelativityApplication(sqlDatabaseServerName, sqlUsername, sqlPassword, relativityApplicationGuid);
+
+            foreach (AgentModel agentModel in agentsToCreate)
+            {
+                //Create Agent
+                CreateAgentAsync(
+                    agentHelper: agentHelper,
+                    agentName: agentModel.AgentName,
+                    agentTypeId: agentModel.AgentTypeId,
+                    agentResourceServerArtifactId: agentResourceServerArtifactId,
+                    enableAgent: enableAgent,
+                    agentInterval: agentInterval,
+                    agentLoggingLevel: agentLoggingLevel).Wait();
+            }
+        }
+
+        private static async Task<int> CreateAgentAsync(IAgentHelper agentHelper, string agentName, int agentTypeId, int agentResourceServerArtifactId, bool enableAgent, int agentInterval, Agent.LoggingLevelEnum agentLoggingLevel)
         {
             Console.WriteLine($"Creating Agent [{nameof(agentName)} = {agentName}]");
             int newAgentArtifactId = await agentHelper.CreateAgentAsync(
                 agentName: agentName,
                 agentTypeId: agentTypeId,
-                agentServer: agentServerId,
+                agentServer: agentResourceServerArtifactId,
                 enableAgent: enableAgent,
                 agentInterval: agentInterval,
                 agentLoggingLevel: agentLoggingLevel);
@@ -83,10 +130,8 @@ namespace AgentsConsole
             return newAgentArtifactId;
         }
 
-        private static int RetrieveAgentServerId(string sqlDatabaseServerName, string sqlUsername, string sqlPassword)
+        private static int RetrieveResourceServerArtifactId(string sqlDatabaseServerName, string sqlUsername, string sqlPassword, int agentResourceServerTypeArtifactId)
         {
-            int agentResourceServerTypeArtifactId = RetrieveAgentResourceServerTypeId(sqlDatabaseServerName, sqlUsername, sqlPassword);
-
             string sqlConnectionString = $"Data Source={sqlDatabaseServerName};Initial Catalog=EDDS;User Id={sqlUsername};Password={sqlPassword};";
             SqlConnection sqlConnection = new SqlConnection(sqlConnectionString);
             try
@@ -111,13 +156,25 @@ namespace AgentsConsole
             }
         }
 
-        private static int RetrieveAgentResourceServerTypeId(string sqlDatabaseServerName, string sqlUsername, string sqlPassword)
+        private static int RetrieveAgentResourceServerArtifactId(string sqlDatabaseServerName, string sqlUsername, string sqlPassword)
+        {
+            int agentResourceServerTypeArtifactId = RetrieveAgentResourceServerTypeArtifactId(sqlDatabaseServerName, sqlUsername, sqlPassword);
+            return RetrieveResourceServerArtifactId(sqlDatabaseServerName, sqlUsername, sqlPassword, agentResourceServerTypeArtifactId);
+        }
+
+        private static int RetrieveWebProcessingResourceServerArtifactId(string sqlDatabaseServerName, string sqlUsername, string sqlPassword)
+        {
+            int webProcessingResourceServerTypeArtifactId = RetrieveWebProcessingResourceServerTypeArtifactId(sqlDatabaseServerName, sqlUsername, sqlPassword);
+            return RetrieveResourceServerArtifactId(sqlDatabaseServerName, sqlUsername, sqlPassword, webProcessingResourceServerTypeArtifactId);
+        }
+
+        private static int RetrieveResourceServerTypeArtifactId(string sqlDatabaseServerName, string sqlUsername, string sqlPassword, string resourceServerType)
         {
             string sqlConnectionString = $"Data Source={sqlDatabaseServerName};Initial Catalog=EDDS;User Id={sqlUsername};Password={sqlPassword};";
             SqlConnection sqlConnection = new SqlConnection(sqlConnectionString);
             try
             {
-                string sql = "SELECT TOP 1 [ArtifactID] FROM [EDDSDBO].[SystemArtifact] WITH(NOLOCK) WHERE [SystemArtifactIdentifier] = 'AgentResourceServerType'";
+                string sql = $"SELECT TOP 1 [ArtifactID] FROM [EDDSDBO].[SystemArtifact] WITH(NOLOCK) WHERE [SystemArtifactIdentifier] = '{resourceServerType}'";
                 SqlCommand sqlCommand = new SqlCommand
                 {
                     Connection = sqlConnection,
@@ -137,10 +194,20 @@ namespace AgentsConsole
             }
         }
 
-        private static List<AgentModel> RetrieveImagingApplicationAgentsToCreate(string sqlDatabaseServerName, string sqlUsername, string sqlPassword)
+        private static int RetrieveAgentResourceServerTypeArtifactId(string sqlDatabaseServerName, string sqlUsername, string sqlPassword)
+        {
+            return RetrieveResourceServerTypeArtifactId(sqlDatabaseServerName, sqlUsername, sqlPassword, AgentResourceServerType);
+        }
+
+        private static int RetrieveWebProcessingResourceServerTypeArtifactId(string sqlDatabaseServerName, string sqlUsername, string sqlPassword)
+        {
+            return RetrieveResourceServerTypeArtifactId(sqlDatabaseServerName, sqlUsername, sqlPassword, WebProcessingServerType);
+        }
+
+        private static List<AgentModel> RetrieveAgentsToCreateInRelativityApplication(string sqlDatabaseServerName, string sqlUsername, string sqlPassword, Guid relativityApplicationGuid)
         {
             List<AgentModel> agentsToCreate = new List<AgentModel>();
-            List<string> agentNames = RetrieveAgentNamesInRelativityApplication(sqlDatabaseServerName, sqlUsername, sqlPassword, ImagingApplicationGuid);
+            List<string> agentNames = RetrieveAgentNamesInRelativityApplication(sqlDatabaseServerName, sqlUsername, sqlPassword, relativityApplicationGuid);
             foreach (string agentName in agentNames)
             {
                 int agentTypeId = RetrieveAgentTypeId(sqlDatabaseServerName, sqlUsername, sqlPassword, agentName);
