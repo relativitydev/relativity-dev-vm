@@ -127,7 +127,7 @@ default['relativity']['response_file']['replacement_values'] =
     {
         # Target UNC path for the EDDS File Share.
         name: "EDDSFILESHARE", 
-        value: "\\\\#{default['windows']['hostname']}\\Fileshare\EDDS"
+        value: "\\\\#{default['windows']['hostname']}\\Fileshare\\EDDS"
     },      
     {
         # Target UNC path for the viewer cache location.
@@ -276,7 +276,7 @@ default['invariant']['response_file']['replacement_values'] =
     {
         # The file share for worker files
         name: "WORKERNETWORKPATH", 
-        value: "\\\\#{default['windows']['hostname']}>\\InvariantNetworkShare\\"
+        value: "\\\\#{default['windows']['hostname']}\\InvariantNetworkShare\\"
     },
     {
         # The URL for the Identity Server for user authentication when running the RPC
