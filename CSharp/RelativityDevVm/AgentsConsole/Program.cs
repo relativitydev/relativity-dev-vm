@@ -6,7 +6,9 @@ using Relativity.Services.ServiceProxy;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace AgentsConsole
@@ -14,8 +16,8 @@ namespace AgentsConsole
     public class Program
     {
         public const char StringSplitter = ';';
-        public const String AgentResourceServerType = "AgentResourceServerType";
-        public const String WebProcessingServerType = "WebBackgroundProcessingServerType";
+        public const string AgentResourceServerType = "AgentResourceServerType";
+        public const string WebProcessingServerType = "WebBackgroundProcessingServerType";
         private static readonly Guid ImagingSetSchedulerApplicationGuid = new Guid("6BE2880A-D951-4A98-A6FE-4A84835D3D06");
         //private static readonly Guid ImagingApplicationGuid = new Guid("C9E4322E-6BD8-4A37-AE9E-C3C9BE31776B");
         //private static readonly Guid DocumentViewerApplicationGuid = new Guid("5725CAB5-EE63-4155-B227-C74CC9E26A76");
@@ -24,6 +26,57 @@ namespace AgentsConsole
         //private static readonly Guid SmokeTestApplicationGuid = new Guid("0125C8D4-8354-4D8F-B031-01E73C866C7C");
 
         public static void Main(string[] args)
+        {
+            LoadAssemblies();
+            CreateAgents(args);
+        }
+
+        private static void LoadAssemblies()
+        {
+            Assembly executingAssembly = Assembly.GetExecutingAssembly();
+            string executingAssemblyPath = executingAssembly.Location;
+            if (File.Exists(executingAssemblyPath))
+            {
+                FileInfo executingAssemblyFileInfo = new FileInfo(executingAssemblyPath);
+                DirectoryInfo executingAssemblyDirectoryInfo = executingAssemblyFileInfo.Directory;
+                if (executingAssemblyDirectoryInfo != null && executingAssemblyDirectoryInfo.Exists)
+                {
+                    string relativityLibraryDirectoryPath = @"C:\Program Files\kCura Corporation\Relativity\Library";
+                    DirectoryInfo relativityLibraryDirectoryInfo = new DirectoryInfo(relativityLibraryDirectoryPath);
+                    if (relativityLibraryDirectoryInfo.Exists)
+                    {
+                        List<string> relativityAssemblies = new List<string>
+                        {
+                            "Relativity.Kepler.dll",
+                            "Relativity.Services.DataContracts.dll",
+                            "Relativity.Services.Interfaces.dll",
+                            "Relativity.Services.Interfaces.Private.dll",
+                            "Relativity.Services.ServiceProxy.dll"
+                        };
+
+                        foreach (string relativityAssembly in relativityAssemblies)
+                        {
+                            string sourceAssemblyPath = Path.Combine(relativityLibraryDirectoryPath, relativityAssembly);
+                            string destinationAssemblyPath = Path.Combine(executingAssemblyDirectoryInfo.FullName, relativityAssembly);
+                            if (File.Exists(sourceAssemblyPath))
+                            {
+                                FileInfo sourceAssemblyFileInfo = new FileInfo(sourceAssemblyPath);
+                                sourceAssemblyFileInfo.CopyTo(destinationAssemblyPath);
+                                Assembly.LoadFrom(destinationAssemblyPath);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        string errorMessage = "Relativity Library Folder doesn't exist.";
+                        Console.WriteLine(errorMessage);
+                        throw new Exception(errorMessage);
+                    }
+                }
+            }
+        }
+
+        private static void CreateAgents(string[] args)
         {
             //Constants
             const bool enableAgent = true;
@@ -56,7 +109,7 @@ namespace AgentsConsole
             using (IAgentManager agentManager = serviceFactory.CreateProxy<IAgentManager>())
             {
                 IAgentHelper agentHelper = new AgentHelper(
-                   agentManager: agentManager, sqlDatabaseServerName: sqlDatabaseServerName,
+                    agentManager: agentManager, sqlDatabaseServerName: sqlDatabaseServerName,
                     sqlDatabaseName: eddsSqlDatabaseName,
                     sqlUsername: sqlUsername,
                     sqlPassword: sqlPassword);
@@ -69,8 +122,8 @@ namespace AgentsConsole
                 {
                     int resourceServerArtifactId =
                         currentRelativityApplicationGuid == ImagingSetSchedulerApplicationGuid
-                        ? webProcessingResourceServerArtifactId
-                        : agentResourceServerArtifactId;
+                            ? webProcessingResourceServerArtifactId
+                            : agentResourceServerArtifactId;
                     CreateAgentsInRelativityApplication(
                         sqlDatabaseServerName: sqlDatabaseServerName,
                         sqlUsername: sqlUsername,
