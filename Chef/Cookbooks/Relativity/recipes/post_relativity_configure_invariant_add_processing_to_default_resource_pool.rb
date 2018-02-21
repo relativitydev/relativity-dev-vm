@@ -112,8 +112,12 @@ request.body = request_body_json.to_json
 error_message = 'An unexpected error occured when querying Processing location.'
 response = RetryHelper.execute_rest_call(http, request, 3, error_message)
 response_json = JSON.parse(response.body)
-node.run_state['processing_location_artifact_id'] = response_json['Results'][0]['Artifact ID']
-log "processing_location_artifact_id = #{node.run_state['processing_location_artifact_id']}"
+if response_json['TotalResultCount'] > 0
+  node.run_state['processing_location_artifact_id'] = response_json['Results'][0]['Artifact ID']
+  log "processing_location_artifact_id = #{node.run_state['processing_location_artifact_id']}"
+else
+  raise "Unable to find Processing Location"
+end
 
 # Check if Processing Server Location already added to Default Resource Pool
 processing_server_already_exists_in_resourcepool = false

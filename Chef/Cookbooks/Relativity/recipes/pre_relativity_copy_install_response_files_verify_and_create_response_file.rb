@@ -58,7 +58,8 @@ def create_new_response_file_with_replacement_values_method(name, response_file_
       # If current replacement value is one of the parsed value then write it to Response File
       if parsed_values_keys.include?(replacement_value_key)
         line_to_write = "#{replacement_value_key}=#{replacement_value_value} \n"
-        line.write line_to_write
+        log_message 'log_message' do message "line that is written #{line_to_write}" end
+        line.write line_to_write.strip
       end
     end
   end

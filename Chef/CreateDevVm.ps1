@@ -4,7 +4,7 @@
 function Export-DevVm([string] $vmExportPath) {
   # Remove Export folder if it already exists
   If (Test-Path $vmExportPath) {
-    Remove-Item –path $vmExportPath –recurse –force
+    Remove-Item �path $vmExportPath �recurse �force
   }
 
   # Export VM
@@ -38,7 +38,7 @@ function New-DevVm([string] $vmName, [string] $vmCheckpointName, [string] $vmExp
   }
   finally {
     Write-Host  "-----> [$(Get-Date -Format g)] Deleting VM" -ForegroundColor Blue
-    vagrant destroy -f $vmName
+    #vagrant destroy -f $vmName
     Write-Host  "-----> [$(Get-Date -Format g)] Deleted VM" -ForegroundColor Blue
   }
 }
@@ -57,8 +57,12 @@ function Start-DevVm-Process() {
       # Create New DevVm
       New-DevVm $vmName, $vmCheckpointName, $vmExportPath, $compressPath, $zipFileName
     }
-    catch {
-      $global:count++ 
+    #catch {
+    #  $global:count++ 
+    #}
+    Catch [Exception] {
+        $global:count++
+        Write-Host "$($_.Exception.GetType().FullName) $($_.Exception.Message)"
     }
     finally {
       Write-Host  "-----> [$(Get-Date -Format g)] Total time: $($stopWatch.Elapsed.TotalMinutes) minutes" -ForegroundColor Blue

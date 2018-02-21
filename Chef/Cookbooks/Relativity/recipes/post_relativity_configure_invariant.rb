@@ -6,7 +6,7 @@ log "recipe_start_time(#{recipe_name}): #{start_time}"
 include_recipe 'Relativity::default_start_services'
 
 # Create Processing Choice for Processing Source Location
-include_recipe 'Relativity::post_relativity_configure_invariant_create_processing_choice'
+#include_recipe 'Relativity::post_relativity_configure_invariant_create_processing_choice'
 
 # Create a Worker Manager Server code that is backwards compatible
 include_recipe 'Relativity::post_relativity_configure_invariant_create_worker_manager_server'

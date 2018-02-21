@@ -13,7 +13,7 @@ class Chef::Recipe::RetryHelper
       begin
         error = nil
         result = http_obj.request(request)
-        if result.is_a?(Net::HTTPOK) || result.is_a?(Net::HTTPSuccess)
+        if result.is_a?(Net::HTTPOK) || result.is_a?(Net::HTTPSuccess) || result.is_a?(Net::HTTPCreated)
           success = true
         elsif result.is_a?(Net::HTTPUnauthorized)
           error = err_msg + ' ' + 'Unauthorized Request, double check credentials'
@@ -29,7 +29,7 @@ class Chef::Recipe::RetryHelper
     if result && error.nil?
       result
     elsif error
-      throw_custom_error 'throw_custom_error' do error_message 'error' end
+      raise error
     end
   end
 end
