@@ -11,7 +11,11 @@ action :log do
 
   # Write to console log
   log message
-  
+  # log 'message' do
+  #   message message
+  #   level :info
+  # end
+
   # Write to log file
   ruby_block 'write_to_log_file' do
     block do
