@@ -1,6 +1,6 @@
-log 'Starting giving background processes priority'
+custom_log 'custom_log' do msg 'Starting giving background processes priority' end
 start_time = DateTime.now
-log "recipe_start_time(#{recipe_name}): #{start_time}"
+custom_log 'custom_log' do msg "recipe_start_time(#{recipe_name}): #{start_time}" end
 
 # Gives background processes priority
 registry_key 'HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\PriorityControl' do
@@ -11,6 +11,7 @@ end
 custom_log 'custom_log' do msg 'Finished setting up priority for background processes' end
 
 end_time = DateTime.now
-log "recipe_end_Time(#{recipe_name}): #{end_time}"
-log "recipe_duration(#{recipe_name}): #{end_time.to_time - start_time.to_time} seconds"
-log 'Finished giving background processes priority'
+custom_log 'custom_log' do msg "recipe_end_Time(#{recipe_name}): #{end_time}" end
+custom_log 'custom_log' do msg "recipe_duration(#{recipe_name}): #{end_time.to_time - start_time.to_time} seconds" end
+custom_log 'custom_log' do msg 'Finished giving background processes priority' end
+  

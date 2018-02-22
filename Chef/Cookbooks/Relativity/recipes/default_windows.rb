@@ -1,6 +1,6 @@
-log 'Starting Windows Setup'
+custom_log 'custom_log' do msg 'Starting Windows Setup' end
 start_time = DateTime.now
-log "recipe_start_time(#{recipe_name}): #{start_time}"
+custom_log 'custom_log' do msg "recipe_start_time(#{recipe_name}): #{start_time}" end
 
 # Disable Windows Firewall
 include_recipe 'Relativity::windows_disable_firewall'
@@ -21,6 +21,6 @@ include_recipe 'Relativity::windows_install_software'
 include_recipe 'Relativity::windows_add_programs_to_taskbar'
 
 end_time = DateTime.now
-log "recipe_end_Time(#{recipe_name}): #{end_time}"
-log "recipe_duration(#{recipe_name}): #{end_time.to_time - start_time.to_time} seconds"
-log 'Finished Windows Setup'
+custom_log 'custom_log' do msg "recipe_end_Time(#{recipe_name}): #{end_time}" end
+custom_log 'custom_log' do msg "recipe_duration(#{recipe_name}): #{end_time.to_time - start_time.to_time} seconds" end
+custom_log 'custom_log' do msg 'Finished Windows Setup' end

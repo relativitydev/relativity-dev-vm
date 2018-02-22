@@ -1,11 +1,6 @@
-log 'Starting creating default folders'
+custom_log 'custom_log' do msg 'Starting creating default folders' end
 start_time = DateTime.now
-log "recipe_start_time(#{recipe_name}): #{start_time}"
-
-# Create Log Destination folder if it not already exists
-directory node['file']['log']['default_destination_folder'] do
-  action :create
-end
+custom_log 'custom_log' do msg "recipe_start_time(#{recipe_name}): #{start_time}" end
 
 # Create Install Destination folder if it not already exists
 directory node['file']['installers']['default_destination_folder'] do
@@ -33,6 +28,6 @@ directory node['invariant']['install']['destination_folder'] do
 end
 
 end_time = DateTime.now
-log "recipe_end_Time(#{recipe_name}): #{end_time}"
-log "recipe_duration(#{recipe_name}): #{end_time.to_time - start_time.to_time} seconds"
-log 'Finished creating default folders'
+custom_log 'custom_log' do msg "recipe_end_Time(#{recipe_name}): #{end_time}" end
+custom_log 'custom_log' do msg "recipe_duration(#{recipe_name}): #{end_time.to_time - start_time.to_time} seconds" end
+custom_log 'custom_log' do msg 'Finished creating default folders' end

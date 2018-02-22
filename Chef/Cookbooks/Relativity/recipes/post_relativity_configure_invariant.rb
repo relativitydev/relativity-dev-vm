@@ -1,12 +1,12 @@
-log 'Starting configuring Invariant'
+custom_log 'custom_log' do msg 'Starting configuring Invariant' end
 start_time = DateTime.now
-log "recipe_start_time(#{recipe_name}): #{start_time}"
+custom_log 'custom_log' do msg "recipe_start_time(#{recipe_name}): #{start_time}" end
 
 # Make Sure Relativity Services are running
 include_recipe 'Relativity::default_start_services'
 
 # Create Processing Choice for Processing Source Location
-#include_recipe 'Relativity::post_relativity_configure_invariant_create_processing_choice'
+include_recipe 'Relativity::post_relativity_configure_invariant_create_processing_choice'
 
 # Create a Worker Manager Server code that is backwards compatible
 include_recipe 'Relativity::post_relativity_configure_invariant_create_worker_manager_server'
@@ -22,6 +22,6 @@ include_recipe 'Relativity::post_relativity_configure_invariant_add_agent_and_wo
 # include_recipe 'Relativity::post_relativity_configure_invariant_update_worker_server_for_processing'
 
 end_time = DateTime.now
-log "recipe_end_Time(#{recipe_name}): #{end_time}"
-log "recipe_duration(#{recipe_name}): #{end_time.to_time - start_time.to_time} seconds"
-log 'Finished configuring Invariant'
+custom_log 'custom_log' do msg "recipe_end_Time(#{recipe_name}): #{end_time}" end
+custom_log 'custom_log' do msg "recipe_duration(#{recipe_name}): #{end_time.to_time - start_time.to_time} seconds" end
+custom_log 'custom_log' do msg 'Finished configuring Invariant' end

@@ -1,6 +1,6 @@
-log 'Starting Windows Update install for Service Bus defect'
+custom_log 'custom_log' do msg 'Starting Windows Update install for Service Bus defect' end
 start_time = DateTime.now
-log "recipe_start_time(#{recipe_name}): #{start_time}"
+custom_log 'custom_log' do msg "recipe_start_time(#{recipe_name}): #{start_time}" end
 
 service_bus_defect_windows_udpate_installer_location = "#{node['service_bus']['defect_windows_update']['install']['destination_folder']}/#{node['service_bus']['defect_windows_update']['install']['file_name']}"
 
@@ -18,6 +18,6 @@ windows_package 'Install Windows Update for Service Bus defect' do
 end
 
 end_time = DateTime.now
-log "recipe_end_Time(#{recipe_name}): #{end_time}"
-log "recipe_duration(#{recipe_name}): #{end_time.to_time - start_time.to_time} seconds"
-log 'Finished Windows Update install for Service Bus defect'
+custom_log 'custom_log' do msg "recipe_end_Time(#{recipe_name}): #{end_time}" end
+custom_log 'custom_log' do msg "recipe_duration(#{recipe_name}): #{end_time.to_time - start_time.to_time} seconds" end
+custom_log 'custom_log' do msg 'Finished Windows Update install for Service Bus defect' end

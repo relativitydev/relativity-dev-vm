@@ -1,6 +1,6 @@
-log 'Installing RAP File in Relativity'
+custom_log 'custom_log' do msg 'Installing RAP File in Relativity' end
 start_time = DateTime.now
-log "recipe_start_time(#{recipe_name}): #{start_time}"
+custom_log 'custom_log' do msg "recipe_start_time(#{recipe_name}): #{start_time}" end
 
 # Iteration variables
 script_count = 0
@@ -26,7 +26,7 @@ for rap_file_name in node['relativity_apps_to_install']
     rap_file_path = win_friendly_path(File.join(Chef::Config[:file_cache_path], rap_file_name))
 
     # Copy the powershell script template file from the cookbook to the Chef cache, 1 copy for each loop iteration
-    log "copying template for: #{rap_file_name}"
+    custom_log 'custom_log' do msg "copying template for: #{rap_file_name}" end
     template script_fullpath_with_number do
         variables(
             'rap_file_name': rap_file_name,
@@ -42,13 +42,13 @@ for rap_file_name in node['relativity_apps_to_install']
     rap_file_path = win_friendly_path(File.join(Chef::Config[:file_cache_path], rap_file_name))
     
     # Copy the RAP file from the cookbook to the Chef cache
-    log "copying the followign rap file to cache: #{rap_file_name}"
+    custom_log 'custom_log' do msg "copying the following rap file to cache: #{rap_file_name}" end
     cookbook_file rap_file_path do
         source rap_file_name
     end
 
     # Run the powershell scripts to install rap file
-    log "Running powershell script to install the following rap file: #{rap_file_name}"
+    custom_log 'custom_log' do msg "Running powershell script to install the following rap file: #{rap_file_name}" end
     powershell_script 'install Relativity Application' do
         code script_fullpath_with_number
     end
@@ -59,6 +59,6 @@ for rap_file_name in node['relativity_apps_to_install']
 end
 
 end_time = DateTime.now
-log "recipe_end_Time(#{recipe_name}): #{end_time}"
-log "recipe_duration(#{recipe_name}): #{end_time.to_time - start_time.to_time} seconds"
-log 'Finished Installing RAP Files'
+custom_log 'custom_log' do msg "recipe_end_Time(#{recipe_name}): #{end_time}" end
+custom_log 'custom_log' do msg "recipe_duration(#{recipe_name}): #{end_time.to_time - start_time.to_time} seconds" end
+custom_log 'custom_log' do msg 'Finished Installing RAP Files' end

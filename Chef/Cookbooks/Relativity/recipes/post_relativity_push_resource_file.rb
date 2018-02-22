@@ -1,6 +1,6 @@
-log 'Starting push resource file recipe'
+custom_log 'custom_log' do msg 'Starting push resource file recipe' end
 start_time = DateTime.now
-log "recipe_start_time(#{recipe_name}): #{start_time}"
+custom_log 'custom_log' do msg "recipe_start_time(#{recipe_name}): #{start_time}" end
 
 # Iteration variables
 script_count = 0
@@ -60,6 +60,6 @@ for resource in node['relativity_resource_files_to_push']
 end
 
 end_time = DateTime.now
-log "recipe_end_Time(#{recipe_name}): #{end_time}"
-log "recipe_duration(#{recipe_name}): #{end_time.to_time - start_time.to_time} seconds"
-log 'Finished Pushing Resource Files'
+custom_log 'custom_log' do msg "recipe_end_Time(#{recipe_name}): #{end_time}" end
+custom_log 'custom_log' do msg "recipe_duration(#{recipe_name}): #{end_time.to_time - start_time.to_time} seconds" end
+custom_log 'custom_log' do msg 'Finished Pushing Resource Files' end

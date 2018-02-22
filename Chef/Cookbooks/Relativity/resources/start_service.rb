@@ -18,12 +18,12 @@ action :start do
       $sleepSeconds = 5
       $serviceStatus = ""
       $process = $null
-    
+
       # Service
       if($itemType -eq "Service"){
         $serviceStatus = (Get-Service -Name $serviceOrProcessName).Status
         if ($serviceStatus -ne [System.ServiceProcess.ServiceControllerStatus]::Running){
-    
+
           # Service is already starting, wait until it finished
           if ($serviceStatus -eq [System.ServiceProcess.ServiceControllerStatus]::StartPending){
             while($serviceStatus -eq [System.ServiceProcess.ServiceControllerStatus]::StartPending -and  $currentWait -lt $maxWait){
@@ -59,14 +59,14 @@ action :start do
           }
         }
       }
-    
+
       if ( $process -ne $null -or $serviceStatus -eq [System.ServiceProcess.ServiceControllerStatus]::Running){
         exit 0 #Success
       }else{
         exit 1 #Failure
       }
     }
-    
+
     DevVMServiceLauncher "#{service_name}" "#{item_type}" #{serviceBusRelated} "#{location}"
 
     EOS

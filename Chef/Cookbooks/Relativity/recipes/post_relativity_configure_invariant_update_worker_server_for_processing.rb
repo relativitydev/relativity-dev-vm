@@ -1,9 +1,9 @@
-log 'Starting update worker server for processing'
+custom_log 'custom_log' do msg 'Starting update worker server for processing' end
 start_time = DateTime.now
-log "recipe_start_time(#{recipe_name}): #{start_time}"
+custom_log 'custom_log' do msg "recipe_start_time(#{recipe_name}): #{start_time}" end
 
 # uses kepler to query resource server table and get the worker server ArtifactID
-log 'using kepler to query resource server table and get the worker server ArtifactID.'
+custom_log 'custom_log' do msg 'using kepler to query resource server table and get the worker server ArtifactID.' end
 node.run_state['agent'] = {}
 node.run_state['agent']['servers'] = {}
 node.run_state['agent']['servers']['agent'] = {}
@@ -28,11 +28,11 @@ response = RetryHelper.execute_rest_call(http, request, 3, error_message)
 response_json = JSON.parse(response.body)
 node.run_state['agent']['agent_server'] = response_json
 node.run_state['agent']['agent_server']['Results'].each do |key|
-  log "Server name is #{key['Artifact']['ServerType']['Name']} and its Artifact ID is #{key['Artifact']['ServerType']['ArtifactID']}"
+  custom_log 'custom_log' do msg "Server name is #{key['Artifact']['ServerType']['Name']} and its Artifact ID is #{key['Artifact']['ServerType']['ArtifactID']}" end
   if key['Artifact']['Name'].casecmp(node['windows']['hostname']) == 0 && key['Artifact']['ServerType']['Name'] == 'Worker'
-    log key['Artifact']['ArtifactID']
+    custom_log 'custom_log' do msg key['Artifact']['ArtifactID'] end
     node.run_state['agent']['servers']['worker']['artifact_id'] = key['Artifact']['ArtifactID']
-    log "node.run_state['agent']['servers']['worker']['artifact_id'] = #{node.run_state['agent']['servers']['worker']['artifact_id']}"
+    custom_log 'custom_log' do msg "node.run_state['agent']['servers']['worker']['artifact_id'] = #{node.run_state['agent']['servers']['worker']['artifact_id']}" end
   else
     next
   end
@@ -41,9 +41,8 @@ if node.run_state['agent']['servers']['worker']['artifact_id'].nil?
   raise 'Worker artifact ID not found!'
 end
 
-
 # Kepler call to enable\license a worker
-log 'Kepler call to enable\license a worker'
+custom_log 'custom_log' do msg 'Kepler call to enable\license a worker' end
 url = "http://#{node['windows']['hostname']}/Relativity.Rest/api/Relativity.Services.WorkerStatus.IWorkerStatusModule/WorkerStatus/EnableProcessingOnWorkerAsync"
 uri = URI(url)
 http = Net::HTTP.new(uri.host, uri.port)
@@ -61,11 +60,10 @@ request_body_json = JSON.parse(
 request.body = request_body_json.to_json
 error_message = 'An unexpected error occured when using Kepler call to enable\license a worker'
 response = RetryHelper.execute_rest_call(http, request, 3, error_message)
-log response.code
-
+custom_log 'custom_log' do msg response.code end
 
 # Kepler call to add processing designated work to a worker
-log 'Kepler call to add processing designated work to a worker'
+custom_log 'custom_log' do msg 'Kepler call to add processing designated work to a worker' end
 url = "http://#{node['windows']['hostname']}/Relativity.Rest/api/Relativity.Services.WorkerStatus.IWorkerStatusModule/WorkerStatus/UpdateCategoriesOnWorkerAsync"
 uri = URI(url)
 http = Net::HTTP.new(uri.host, uri.port)
@@ -89,9 +87,9 @@ request_body_json = JSON.parse(
 request.body = request_body_json.to_json
 error_message = 'An unexpected error occured when using Kepler call to add processing designated work to a worker'
 response = RetryHelper.execute_rest_call(http, request, 3, error_message)
-log response.code
+custom_log 'custom_log' do msg response.code end
 
 end_time = DateTime.now
-log "recipe_end_Time(#{recipe_name}): #{end_time}"
-log "recipe_duration(#{recipe_name}): #{end_time.to_time - start_time.to_time} seconds"
-log 'Finished update worker server for processing'
+custom_log 'custom_log' do msg "recipe_end_Time(#{recipe_name}): #{end_time}" end
+custom_log 'custom_log' do msg "recipe_duration(#{recipe_name}): #{end_time.to_time - start_time.to_time} seconds" end
+custom_log 'custom_log' do msg 'Finished update worker server for processing' end

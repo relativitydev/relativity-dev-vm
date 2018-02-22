@@ -1,6 +1,6 @@
-log 'Starting Pre-Relativity Parse Relativity Response File'
+custom_log 'custom_log' do msg 'Starting Pre-Relativity Parse Relativity Response File' end
 start_time = DateTime.now
-log "recipe_start_time(#{recipe_name}): #{start_time}"
+custom_log 'custom_log' do msg "recipe_start_time(#{recipe_name}): #{start_time}" end
 
 response_file_path = "#{node['relativity']['response_file']['destination_folder']}\\#{node['relativity']['response_file']['file_name_original']}"
 
@@ -40,6 +40,6 @@ ruby_block "Read Relativity Response File" do
 	end
 
 end_time = DateTime.now
-log "recipe_end_Time(#{recipe_name}): #{end_time}"
-log "recipe_duration(#{recipe_name}): #{end_time.to_time - start_time.to_time} seconds"
-log 'Finished Pre-Relativity Parse Relativity Response File'
+custom_log 'custom_log' do msg "recipe_end_Time(#{recipe_name}): #{end_time}" end
+custom_log 'custom_log' do msg "recipe_duration(#{recipe_name}): #{end_time.to_time - start_time.to_time} seconds" end
+custom_log 'custom_log' do msg 'Finished Pre-Relativity Parse Relativity Response File' end

@@ -1,6 +1,6 @@
-log 'Starting Create Data Sampler Config File'
+custom_log 'custom_log' do msg 'Starting Create Data Sampler Config File' end
 start_time = DateTime.now
-log "recipe_start_time(#{recipe_name}): #{start_time}"
+custom_log 'custom_log' do msg "recipe_start_time(#{recipe_name}): #{start_time}" end
 
 # Create a path to the powershell scripts in the Chef cache.
 powershell_functions_script_path = win_friendly_path(File.join(Chef::Config[:file_cache_path], 'powershell_functions.ps1'))
@@ -36,6 +36,6 @@ node.default['relativity_resource_files_to_push'] <<
   [node['sample_data_population']['config_file_name'], '3E86B18F-8B55-45C4-9A57-9E0CBD7BAF46'] # This file is dynamically created by post_relativity_install_push_resource_file
   
 end_time = DateTime.now
-log "recipe_end_Time(#{recipe_name}): #{end_time}"
-log "recipe_duration(#{recipe_name}): #{end_time.to_time - start_time.to_time} seconds"
-log 'Finished Creating Data Sampler Config File'
+custom_log 'custom_log' do msg "recipe_end_Time(#{recipe_name}): #{end_time}" end
+custom_log 'custom_log' do msg "recipe_duration(#{recipe_name}): #{end_time.to_time - start_time.to_time} seconds" end
+custom_log 'custom_log' do msg 'Finished Creating Data Sampler Config File' end

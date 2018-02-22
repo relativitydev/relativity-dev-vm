@@ -2,6 +2,11 @@ log 'Starting Log file Setup'
 start_time = DateTime.now
 log "recipe_start_time(#{recipe_name}): #{start_time}"
 
+# Create Log Destination folder if it not already exists
+directory node['file']['log']['default_destination_folder'] do
+  action :create
+end
+
 log_file = "#{node['file']['log']['default_destination_folder']}\\#{node['file']['log']['name']}"
 generated_log_file_name = 'Chef_Old_Log_' + Time.now.strftime('%Y%m%dT%H%M%S%z') + '.txt'
 log_file_old = "#{node['file']['log']['default_destination_folder']}\\#{generated_log_file_name}"
@@ -14,7 +19,7 @@ ruby_block 'rename_previous_log_file' do
   action :run
 end
 
-custom_log 'custom_log' do msg 'Renamed previous log file' end
+log 'Renamed previous log file'
 
 # Create log file if not already exists
 ruby_block 'create_log_file' do
@@ -24,7 +29,7 @@ ruby_block 'create_log_file' do
   action :run
 end
 
-custom_log 'custom_log' do msg 'Finished setting up log file' end
+log 'Finished setting up log file'
 
 end_time = DateTime.now
 log "recipe_end_Time(#{recipe_name}): #{end_time}"

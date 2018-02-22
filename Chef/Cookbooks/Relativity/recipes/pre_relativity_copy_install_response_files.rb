@@ -1,6 +1,6 @@
-log 'Starting copying install response files'
+custom_log 'custom_log' do msg 'Starting copying install response files' end
 start_time = DateTime.now
-log "recipe_start_time(#{recipe_name}): #{start_time}"
+custom_log 'custom_log' do msg "recipe_start_time(#{recipe_name}): #{start_time}" end
 
 # Copy and Parse Relativity Response File
 include_recipe 'Relativity::pre_relativity_copy_install_response_files_parse_relativity_response_file'
@@ -12,6 +12,6 @@ include_recipe 'Relativity::pre_relativity_copy_install_response_files_parse_inv
 include_recipe 'Relativity::pre_relativity_copy_install_response_files_verify_and_create_response_file'
 
 end_time = DateTime.now
-log "recipe_end_Time(#{recipe_name}): #{end_time}"
-log "recipe_duration(#{recipe_name}): #{end_time.to_time - start_time.to_time} seconds"
-log 'Finished copying install response files'
+custom_log 'custom_log' do msg "recipe_end_Time(#{recipe_name}): #{end_time}" end
+custom_log 'custom_log' do msg "recipe_duration(#{recipe_name}): #{end_time.to_time - start_time.to_time} seconds" end
+custom_log 'custom_log' do msg 'Finished copying install response files' end

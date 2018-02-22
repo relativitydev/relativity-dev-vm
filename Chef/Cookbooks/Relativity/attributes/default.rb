@@ -1,6 +1,6 @@
 default['timeout']['default'] = 3600
 
-default['windows']['hostname'] = node['machinename'] 
+default['windows']['hostname'] = node['machinename']
 default['windows']['new_computer_name'] = 'RelativityDevVm'
 default['windows']['user']['admin']['login'] = 'Administrator'
 default['windows']['user']['admin']['password'] = 'Password1!'

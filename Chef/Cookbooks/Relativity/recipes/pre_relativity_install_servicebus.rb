@@ -1,6 +1,6 @@
-log 'Starting Service Bus install'
+custom_log 'custom_log' do msg 'Starting Service Bus install' end
 start_time = DateTime.now
-log "recipe_start_time(#{recipe_name}): #{start_time}"
+custom_log 'custom_log' do msg "recipe_start_time(#{recipe_name}): #{start_time}" end
 
 include_recipe 'webpi'
 
@@ -20,7 +20,7 @@ IMPORT_MODULE = 'Import-Module "C:/Program Files/Service Bus/1.1/ServiceBus/Serv
 sleep 30
 
 # Create the initial farm, if needed
-log 'Creating new service bus farm'
+custom_log 'custom_log' do msg 'Creating new service bus farm' end
 powershell_script 'new_sb_farm' do
   code <<-EOH
 #{IMPORT_MODULE}
@@ -29,12 +29,13 @@ New-SBFarm -SBFarmDBConnectionString '#{farm_connection_string}' -RunAsAccount '
     EOH
   not_if "#{IMPORT_MODULE}; (Get-SBFarm -SBFarmDBConnectionString '#{farm_catalog_connection_string}') -ne $null"
 end
-log 'Created new service bus farm'
+custom_log 'custom_log' do msg 'Created new service bus farm' end
 
+custom_log 'custom_log' do msg 'sleeping 30 secs' end
 sleep 30
 
 # Add the host to the newly created farm
-log 'Adding service bus host to farm'
+custom_log 'custom_log' do msg 'Adding service bus host to farm' end
 powershell_script 'add_sb_host' do
   code <<-EOH
 #{IMPORT_MODULE}
@@ -45,12 +46,12 @@ EOH
   # Check if the current machine is listed in the Farm's hosts
   not_if "#{IMPORT_MODULE}; (Get-SBFarm).Hosts.Name -contains '#{node['windows']['hostname']}'"
 end
-log 'Added service bus host to farm'
+custom_log 'custom_log' do msg 'Added service bus host to farm' end
 
 sleep 30
 
 # Create a new namespace
-log 'Creating new service bus namespace'
+custom_log 'custom_log' do msg 'Creating new service bus namespace' end
 powershell_script 'new_sb_namespace' do
   code <<-EOH
 #{IMPORT_MODULE}
@@ -58,12 +59,12 @@ New-SBNamespace -Name 'ServiceBusDefaultNamespace' -AddressingScheme 'Path' -Man
 EOH
   not_if "#{IMPORT_MODULE}; (Get-SBNamespace).Name -eq 'ServiceBusDefaultNamespace'"
 end
-log 'Created new service bus namespace'
+custom_log 'custom_log' do msg 'Created new service bus namespace' end
 
 sleep 30
 
 # Update the DNS
-log 'Setting service bus farm dns'
+custom_log 'custom_log' do msg 'Setting service bus farm dns' end
 powershell_script 'set_sb_farm_dns' do
   code <<-EOH
 #{IMPORT_MODULE}
@@ -75,11 +76,12 @@ Start-SBFarm
 EOH
   not_if "#{IMPORT_MODULE}; (Get-SBFarm).FarmDNS -eq '#{node['windows']['hostname']}'"
 end
-log 'Finished setting service bus farm dns'
+custom_log 'custom_log' do msg 'Finished setting service bus farm dns' end
 
+custom_log 'custom_log' do msg 'sleeping 30 secs' end
 sleep 30
 
-log 'Setting correct service bus credentials'
+custom_log 'custom_log' do msg 'Setting correct service bus credentials' end
 powershell_script 'correct_sb_creds' do
   code <<-EOH
 #{IMPORT_MODULE}
@@ -91,12 +93,12 @@ Start-SBFarm
     EOH
   not_if "#{IMPORT_MODULE}; (Get-SBFarm).RunAsAccount -eq '#{node['service_bus']['run_as_account']}'"
 end
-log 'Finished setting correct service bus credentials'
+custom_log 'custom_log' do msg 'Finished setting correct service bus credentials' end
 
-log 'sleeping for 2 mins for service bus services to start running'
+custom_log 'custom_log' do msg 'sleeping for 2 mins for service bus services to start running' end
 sleep 120
 
 end_time = DateTime.now
-log "recipe_end_Time(#{recipe_name}): #{end_time}"
-log "recipe_duration(#{recipe_name}): #{end_time.to_time - start_time.to_time} seconds"
-log 'Finished Service Bus install'
+custom_log 'custom_log' do msg "recipe_end_Time(#{recipe_name}): #{end_time}" end
+custom_log 'custom_log' do msg "recipe_duration(#{recipe_name}): #{end_time.to_time - start_time.to_time} seconds" end
+custom_log 'custom_log' do msg 'Finished Service Bus install' end

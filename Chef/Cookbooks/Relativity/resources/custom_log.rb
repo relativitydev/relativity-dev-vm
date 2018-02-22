@@ -3,14 +3,13 @@ resource_name :custom_log
 property :name, String, name_property: true
 property :msg, String
 
-actions :log
-default_action :log
+actions :logmessage
+default_action :logmessage
 
-action :log do
+action :logmessage do
   log_file = "#{node['file']['log']['default_destination_folder']}\\#{node['file']['log']['name']}"
 
   # Write to console log
-  # log msg
   log 'msg' do
     message msg
     level :info

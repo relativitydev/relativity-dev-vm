@@ -18,9 +18,9 @@ action :copy do
   remote_file file_destination do
     source file_source
     action :create
-    remote_user                node["smb_username"]
-    remote_password            node["smb_password"]
-    remote_domain              node["smb_domain"]
+    remote_user                node['smb_username']
+    remote_password            node['smb_password']
+    remote_domain              node['smb_domain']
   end
 end
 
