@@ -92,7 +92,7 @@ default['relativity']['response_file']['replacement_values'] =
     {
         # Domain (or Workgroup) and Username of the Relativity Service Account Windows login.
         name: "SERVICEUSERNAME", 
-        value: "#{default['windows']['user']['admin']['login']}"
+        value: "default['windows']['hostname']\\#{default['windows']['user']['admin']['login']}"
     },
     {
         # Password for the SERVICEUSERNAME.
@@ -246,7 +246,7 @@ default['invariant']['response_file']['replacement_values'] =
     {
         # Windows username to run queue manager service as
         name: "SERVICEUSERNAME", 
-        value: "#{default['windows']['user']['admin']['login']}"
+        value: "default['windows']['hostname']\\#{default['windows']['user']['admin']['login']}"
     },
     {
         # Password for Windows username to run queue manager service as
