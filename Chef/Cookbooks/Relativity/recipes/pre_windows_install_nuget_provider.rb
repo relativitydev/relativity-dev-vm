@@ -8,7 +8,7 @@ powershell_script 'install_nuget_provider' do
   not_if '(Get-PackageProvider).Name -Contains "NuGet"'
 end
 
-log_message "log_message" do  message "Finished setting up nuget provider" end
+custom_log 'custom_log' do msg 'Finished setting up nuget provider' end
 
 end_time = DateTime.now
 log "recipe_end_Time(#{recipe_name}): #{end_time}"

@@ -5,7 +5,7 @@ log "recipe_start_time(#{recipe_name}): #{start_time}"
 # Install Software
 include_recipe 'chocolatey'
 
-log_message "log_message" do  message "Finished installing chocolatey" end
+custom_log 'custom_log' do msg 'Finished installing chocolatey' end
 
 # Install Notepad++
 chocolatey_package 'notepadplusplus' do
@@ -13,7 +13,7 @@ chocolatey_package 'notepadplusplus' do
   action :install
 end
 
-log_message "log_message" do  message "Finished installing notepad++" end
+custom_log 'custom_log' do msg 'Finished installing notepad++' end
 
 # Install Visual Studio 2015 Remote Debugger
 chocolatey_package 'vs2015remotetools' do
@@ -21,7 +21,7 @@ chocolatey_package 'vs2015remotetools' do
   action :install
 end
 
-log_message "log_message" do  message "Finished installing Visual Studio 2015 Remote Debugger" end
+custom_log 'custom_log' do msg 'Finished installing Visual Studio 2015 Remote Debugger' end
 
 # Install Visual Studio 2017 Remote Debugger
 chocolatey_package 'visualstudio2017-remotetools' do
@@ -29,7 +29,7 @@ chocolatey_package 'visualstudio2017-remotetools' do
   action :install
 end
 
-log_message "log_message" do  message "Finished installing Visual Studio 2017 Remote Debugger" end
+custom_log 'custom_log' do msg 'Finished installing Visual Studio 2017 Remote Debugger' end
 
 end_time = DateTime.now
 log "recipe_end_Time(#{recipe_name}): #{end_time}"

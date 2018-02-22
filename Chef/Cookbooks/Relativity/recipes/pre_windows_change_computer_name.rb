@@ -18,7 +18,7 @@ dsc_resource 'change_computer_name' do
   timeout node['timeout']['default']
 end
 
-log_message "log_message" do  message "Finished changing computer name" end
+custom_log 'custom_log' do msg 'Finished changing computer name' end
 
 end_time = DateTime.now
 log "recipe_end_Time(#{recipe_name}): #{end_time}"

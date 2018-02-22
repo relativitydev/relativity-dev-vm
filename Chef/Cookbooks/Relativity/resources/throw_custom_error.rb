@@ -8,7 +8,7 @@ default_action :throw
 
 action :throw do
   # Log error message
-  log_message 'log_message' do message "Throwing custom error [Message: #{error_message}]" end
+  custom_log 'custom_log' do msg 'Throwing custom error [Message: #{error_message}]' end
 
   # Sleep 2 secs for the logs to be written to log file
   sleep 2

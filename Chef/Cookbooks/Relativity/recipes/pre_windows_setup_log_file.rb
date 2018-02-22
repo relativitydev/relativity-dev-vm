@@ -14,7 +14,7 @@ ruby_block 'rename_previous_log_file' do
   action :run
 end
 
-log_message 'log_message' do message 'Renamed previous log file' end
+custom_log 'custom_log' do msg 'Renamed previous log file' end
 
 # Create log file if not already exists
 ruby_block 'create_log_file' do
@@ -24,7 +24,7 @@ ruby_block 'create_log_file' do
   action :run
 end
 
-log_message "log_message" do  message "Finished setting up log file" end
+custom_log 'custom_log' do msg 'Finished setting up log file' end
 
 end_time = DateTime.now
 log "recipe_end_Time(#{recipe_name}): #{end_time}"
