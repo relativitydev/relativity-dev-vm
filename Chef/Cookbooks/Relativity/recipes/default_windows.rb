@@ -23,4 +23,4 @@ include_recipe 'Relativity::windows_add_programs_to_taskbar'
 end_time = DateTime.now
 custom_log 'custom_log' do msg "recipe_end_Time(#{recipe_name}): #{end_time}" end
 custom_log 'custom_log' do msg "recipe_duration(#{recipe_name}): #{end_time.to_time - start_time.to_time} seconds" end
-custom_log 'custom_log' do msg 'Finished Windows Setup' end
+custom_log 'custom_log' do msg "Finished Windows Setup\n\n\n" end

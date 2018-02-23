@@ -38,4 +38,4 @@ node.default['relativity_resource_files_to_push'] <<
 end_time = DateTime.now
 custom_log 'custom_log' do msg "recipe_end_Time(#{recipe_name}): #{end_time}" end
 custom_log 'custom_log' do msg "recipe_duration(#{recipe_name}): #{end_time.to_time - start_time.to_time} seconds" end
-custom_log 'custom_log' do msg 'Finished Creating Data Sampler Config File' end
+custom_log 'custom_log' do msg "Finished Creating Data Sampler Config File\n\n\n" end

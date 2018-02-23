@@ -24,4 +24,4 @@ include_recipe 'Relativity::post_relativity_configure_invariant_add_agent_and_wo
 end_time = DateTime.now
 custom_log 'custom_log' do msg "recipe_end_Time(#{recipe_name}): #{end_time}" end
 custom_log 'custom_log' do msg "recipe_duration(#{recipe_name}): #{end_time.to_time - start_time.to_time} seconds" end
-custom_log 'custom_log' do msg 'Finished configuring Invariant' end
+custom_log 'custom_log' do msg "Finished configuring Invariant\n\n\n" end

@@ -34,4 +34,4 @@ log 'Finished setting up log file'
 end_time = DateTime.now
 log "recipe_end_Time(#{recipe_name}): #{end_time}"
 log "recipe_duration(#{recipe_name}): #{end_time.to_time - start_time.to_time} seconds"
-log 'Finished Log file Setup'
+log 'Finished Log file Setup\n\n\n'

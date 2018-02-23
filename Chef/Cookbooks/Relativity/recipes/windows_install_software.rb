@@ -34,4 +34,4 @@ custom_log 'custom_log' do msg 'Finished installing Visual Studio 2017 Remote De
 end_time = DateTime.now
 custom_log 'custom_log' do msg "recipe_end_Time(#{recipe_name}): #{end_time}" end
 custom_log 'custom_log' do msg "recipe_duration(#{recipe_name}): #{end_time.to_time - start_time.to_time} seconds" end
-custom_log 'custom_log' do msg 'Finished software install' end
+custom_log 'custom_log' do msg "Finished software install\n\n\n" end
