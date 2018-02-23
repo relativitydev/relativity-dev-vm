@@ -146,7 +146,7 @@ Vagrant.configure('2') do |config|
   # Restart VM
   config.vm.provision :reload
 
-  # Configure Invariant Configuration
+  # Update settings to allow Relativity access through http
   config.vm.provision 'chef_zero' do |chef|
     chef.cookbooks_path = 'Cookbooks'
     chef.data_bags_path = 'DataBags'
@@ -163,7 +163,7 @@ Vagrant.configure('2') do |config|
   # Restart VM
   config.vm.provision :reload
 
-  # Configure Invariant Configuration
+  # Make sure services are running
   config.vm.provision 'chef_zero' do |chef|
     chef.cookbooks_path = 'Cookbooks'
     chef.data_bags_path = 'DataBags'
@@ -177,7 +177,7 @@ Vagrant.configure('2') do |config|
     chef.add_recipe('Relativity::default_start_services')
   end
 
-  # Configure Invariant Configuration
+  # Add processing choice which is used in the following Invariant Configuration scripts below
   config.vm.provision 'chef_zero' do |chef|
     chef.cookbooks_path = 'Cookbooks'
     chef.data_bags_path = 'DataBags'
@@ -209,6 +209,20 @@ Vagrant.configure('2') do |config|
 
   # Restart VM
   config.vm.provision :reload
+  
+  # Make sure services are running
+  config.vm.provision 'chef_zero' do |chef|
+    chef.cookbooks_path = 'Cookbooks'
+    chef.data_bags_path = 'DataBags'
+    chef.nodes_path = 'Nodes'
+    chef.roles_path = 'Roles'
+    chef.json = {
+      'smb_domain' => network_share_smb_domain,
+      'smb_username' => network_share_smb_username,
+      'smb_password' => network_share_smb_password,
+    }
+    chef.add_recipe('Relativity::default_start_services')
+  end
 
   # Run Post-Relativity Recipes
   config.vm.provision 'chef_zero' do |chef|
@@ -221,7 +235,6 @@ Vagrant.configure('2') do |config|
       'smb_username' => network_share_smb_username,
       'smb_password' => network_share_smb_password,
     }
-    chef.add_recipe('Relativity::default_start_services')
     chef.add_recipe('Relativity::post_relativity_instance_setting_update_developer_mode')
     chef.add_recipe('Relativity::post_relativity_reset_iis')
     chef.add_recipe('Relativity::post_relativity_update_kcura_services_startup_type')
