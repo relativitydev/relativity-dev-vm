@@ -346,13 +346,13 @@ default['relativity_resource_files_to_push'] = [
 default['services'] =
 [
     {
-        name: "kCura EDDS Agent Manager", 
+        name: "kCura Service Host Manager", 
         type: "Service",
         serviceBus: "$False",
         location: ""
     },
     {
-        name: "kCura Service Host Manager", 
+        name: "kCura EDDS Agent Manager", 
         type: "Service",
         serviceBus: "$False",
         location: ""

@@ -71,6 +71,8 @@ if node.run_state['processing_server_artifact_id'].nil?
   custom_log 'custom_log' do msg "New Processing Server created. processing_server_artifact_id = #{node.run_state['processing_server_artifact_id']}" end
 end
 
+sleep 120
+
 end_time = DateTime.now
 custom_log 'custom_log' do msg "recipe_end_Time(#{recipe_name}): #{end_time}" end
 custom_log 'custom_log' do msg "recipe_duration(#{recipe_name}): #{end_time.to_time - start_time.to_time} seconds" end
