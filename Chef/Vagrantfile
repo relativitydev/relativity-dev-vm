@@ -189,6 +189,7 @@ Vagrant.configure('2') do |config|
       'smb_password' => network_share_smb_password,
     }
     chef.add_recipe('Relativity::post_relativity_configure_invariant_create_processing_choice')
+	chef.add_recipe('Relativity::post_relativity_configure_invariant_update_processingwebapipath')
   end
 
   # Configure Invariant Configuration
