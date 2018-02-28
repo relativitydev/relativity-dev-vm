@@ -31,6 +31,13 @@ end
 
 custom_log 'custom_log' do msg 'Finished installing Visual Studio 2017 Remote Debugger' end
 
+# Install 7 zip software
+node.default['seven_zip']['syspath'] = true
+node.default['seven_zip']['home'] = "c:\\7-zip"
+include_recipe 'seven_zip::default'
+
+custom_log 'custom_log' do msg 'Finished installing 7zip' end
+  
 # Install Adobe Reader
 include_recipe 'Relativity::windows_install_adobereader'
 
@@ -50,6 +57,14 @@ custom_log 'custom_log' do msg 'Finished installing Lotus Notes' end
 include_recipe 'Relativity::windows_install_msoffice'
 
 custom_log 'custom_log' do msg 'Finished installing Microsoft Office' end
+
+#Install Visual Studio 2017 Remote Debugger
+# chocolatey_package 'officeproplus2013' do
+#   version '15.0.4747'
+#   action :install
+# end
+
+# custom_log 'custom_log' do msg 'Finished installing Microsoft Office' end
 
 # Install Microsoft Works Converter
 include_recipe 'Relativity::windows_install_msworksconverter'

@@ -22,13 +22,13 @@ else
     # Extract Contents of adobe zip
     seven_zip_archive "extract adobe zip" do
         source    install_file_destination
-        path      default['software']['adobe_reader']['destination_folder']
+        path      node['software']['adobe_reader']['destination_folder']
         overwrite true
         timeout   300
     end
 
     batch 'install Adobe Reader Packages' do
-        code "#{default['software']['adobe_reader']['destination_folder']}/setup.exe"
+        code "#{node['software']['adobe_reader']['destination_folder']}/setup.exe"
         action :nothing
     end
 end

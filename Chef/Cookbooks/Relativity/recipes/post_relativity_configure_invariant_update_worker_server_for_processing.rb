@@ -47,8 +47,13 @@ request_body_json = JSON.parse(
 )
 request.body = request_body_json.to_json
 error_message = 'An unexpected error occured when using Kepler call to add processing designated work to a worker'
-response = RetryHelper.execute_rest_call(http, request, 3, error_message)
-custom_log 'custom_log' do msg response.code end
+begin
+  response = RetryHelper.execute_rest_call(http, request, 3, error_message)
+  custom_log 'custom_log' do msg response.code end
+rescue Exception => e
+  # Exception eatin until we fullfil processing prerequisite apps.
+  custom_log 'custom_log' do msg "Error while enabling processing for Worker.S " +e.to_s end
+end
 
 
 end_time = DateTime.now

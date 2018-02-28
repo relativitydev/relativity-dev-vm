@@ -10,7 +10,7 @@ msworks_is_installed = File.exist?(node['software']['MSWorksConverter']['executa
 if msworks_is_installed
     custom_log 'custom_log' do msg 'MS Works Converter already Installed' end
 else
-    Copy Adobe Reader zip to VM
+    #Copy MS Works Converter install file to VM
     copy_file_to_vm_from_host 'ms_works_exe' do
         file_source node['software']['MSWorksConverter']['source']
         file_destination install_file_destination

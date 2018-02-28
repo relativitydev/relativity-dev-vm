@@ -3,8 +3,9 @@ start_time = DateTime.now
 custom_log 'custom_log' do msg "recipe_start_time(#{recipe_name}): #{start_time}" end
 
 install_file_destination = "#{node['software']['MSOffice']['destination_folder']}\\#{node['software']['MSOffice']['file_name']}"
-node.default['msoffice']['source'] = install_file_destination
-node.default['seven_zip']['home'] = 'C:\\Program Files\\7-Zip'
+node.default['msoffice']['source'] = node['software']['MSOffice']['destination_folder']
+node.default['msoffice']['professional']['filename'] = node['software']['MSOffice']['file_name']
+node.default['seven_zip']['home'] = 'c:/7-zip'
 
 # Copy JungUm install file to VM
 copy_file_to_vm_from_host 'copy_msoffice_iso' do
