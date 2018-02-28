@@ -49,7 +49,7 @@ for rap_file_name in node['relativity_apps_to_install']
 
     # Run the powershell scripts to install rap file
     custom_log 'custom_log' do msg "Running powershell script to install the following rap file: #{rap_file_name}" end
-    powershell_script 'install Relativity Application' do
+    powershell_script "install Relativity Application - #{rap_file_name}" do
         code script_fullpath_with_number
     end
 

@@ -34,6 +34,7 @@ default['sql']['install']['destination_folder'] = "#{default['file']['installers
 default['sql']['install']['file_name'] = 'Sql.iso'
 default['sql']['user']['sa']['login'] = 'sa'
 default['sql']['user']['sa']['password'] = 'Password1!'
+default['sql']['user']['eddsdbo']['login'] = 'eddsdbo'
 default['sql']['user']['eddsdbo']['password'] = 'Password1!'
 default['sql']['instance_name'] = 'MSSQLSERVER'
 default['sql']['directories']['backup'] = 'c:\bak'
@@ -357,6 +358,16 @@ default['relativity_apps_to_install'] = [
     "Single File Upload 1.2.0.16 (for Relativity 9.4 - 9.5 - RelOne).rap",
     "Relativity_App_Imaging_Set_Scheduler.rap"
     ]
+
+# Add RAP application GUIDs to this Array to create the packaged agents. Make sure the RAP application is installed in the environment
+default['relativity_apps_agents_to_install'] = {
+    'Imaging' => "C9E4322E-6BD8-4A37-AE9E-C3C9BE31776B",
+    'DocumentViewer' => "5725CAB5-EE63-4155-B227-C74CC9E26A76",
+    'Production' => "51B19AB2-3D45-406C-A85E-F98C01B033EC",
+    'Processing' => "ED0E23F9-DA60-4298-AF9A-AE6A9B6A9319",
+    # 'ImagingSetScheduler' => "6BE2880A-D951-4A98-A6FE-4A84835D3D06",
+    'SmokeTest' => "0125C8D4-8354-4D8F-B031-01E73C866C7C",
+}
 
 # Add resource files to this 2 dimensional Array to push them to Relativity. Make sure they exist in files/default
 default['relativity_resource_files_to_push'] = [
