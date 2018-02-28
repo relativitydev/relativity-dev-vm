@@ -9,6 +9,26 @@ default['file']['installers']['default_destination_folder'] = 'C:\\Chef_Install'
 default['file']['log']['default_destination_folder'] = 'C:\\Chef_Logs'
 default['file']['log']['name'] = 'log.txt'
 
+default['software']['jungum']['file_name'] = 'JungUm.msi'
+default['software']['jungum']['source'] = "\\\\kcura.corp\\shares\\Development\\DevEx\\DevVm_Install_Files\\Jungum\\#{default['software']['jungum']['file_name']}"
+default['software']['jungum']['destination_folder'] = "#{default['file']['installers']['default_destination_folder']}\\JungUm"
+default['software']['jungum']['executable'] = 'c:/Program Files (x86)/Samsung/JungUmGlobal/JungUm Global Viewer/JUGW_V.exe'
+default['software']['lotus_notes']['file_name'] = 'LotusNotes.msi'
+default['software']['lotus_notes']['source'] = "\\\\kcura.corp\\shares\\Development\\DevEx\\DevVm_Install_Files\\LotusNotes\\#{default['software']['lotus_notes']['file_name']}"
+default['software']['lotus_notes']['destination_folder'] = "#{default['file']['installers']['default_destination_folder']}\\LotusNotes"
+default['software']['lotus_notes']['executable'] = 'c:/Program Files (x86)/IBM/Lotus/Notes/notes.exe'
+default['software']['MSOffice']['file_name'] = 'SW_DVD5_Office_Professional_Plus_2010_W32_English_MLF_X16-52536.ISO'
+default['software']['MSOffice']['source'] = "\\\\kcura.corp\\shares\\Development\\DevEx\\DevVm_Install_Files\\MSOffice\\#{default['software']['MSOffice']['file_name']}"
+default['software']['MSOffice']['destination_folder'] = "#{default['file']['installers']['default_destination_folder']}\\MSOffice"
+default['software']['adobe_reader']['file_name'] = 'AcrobatReaderDC.zip'
+default['software']['adobe_reader']['source'] = "\\\\kcura.corp\\shares\\Development\\DevEx\\DevVm_Install_Files\\AdobeReader\\#{default['software']['adobe_reader']['file_name']}"
+default['software']['adobe_reader']['destination_folder'] = "#{default['file']['installers']['default_destination_folder']}\\AdobeReader"
+default['software']['adobe_reader']['executable'] = 'C:\Program Files (x86)\Adobe\Acrobat Reader DC\Reader\AcroRd32.exe'
+default['software']['MSWorksConverter']['file_name'] = 'WorksConv.exe'
+default['software']['MSWorksConverter']['source'] = "\\\\kcura.corp\\shares\\Development\\DevEx\\DevVm_Install_Files\\MSWorksConverter\\#{default['software']['MSWorksConverter']['file_name']}"
+default['software']['MSWorksConverter']['destination_folder'] = "#{default['file']['installers']['default_destination_folder']}\\MSWorksConverter"
+default['software']['MSWorksConverter']['executable'] = 'C:\Program Files (x86)\Common Files\Microsoft Shared\TextConv\WksConv\Wkconv.exe'
+
 default['sql']['install']['source_folder'] = '\\\\kcura.corp\\shares\\Development\\DevEx\\DevVm_Install_Files\\SQL_Server_2016_Developer_Edition'
 default['sql']['install']['destination_folder'] = "#{default['file']['installers']['default_destination_folder']}\\Sql"
 default['sql']['install']['file_name'] = 'Sql.iso'

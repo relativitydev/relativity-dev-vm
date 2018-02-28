@@ -189,6 +189,7 @@ Vagrant.configure('2') do |config|
       'smb_password' => network_share_smb_password,
     }
     chef.add_recipe('Relativity::post_relativity_configure_invariant_create_processing_choice')
+	chef.add_recipe('Relativity::post_relativity_configure_invariant_update_processingwebapipath')
   end
 
   # Configure Invariant Configuration
@@ -205,6 +206,7 @@ Vagrant.configure('2') do |config|
     chef.add_recipe('Relativity::post_relativity_configure_invariant_create_worker_manager_server')
     chef.add_recipe('Relativity::post_relativity_configure_invariant_add_processing_to_default_resource_pool')
     chef.add_recipe('Relativity::post_relativity_configure_invariant_add_agent_and_worker_servers_to_default_resource_pool')
+	chef.add_recipe('Relativity::post_relativity_configure_invariant_update_worker_server_for_processing')
   end
 
   # Restart VM

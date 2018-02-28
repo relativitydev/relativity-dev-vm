@@ -162,6 +162,45 @@ if is_http_request_success
   custom_log 'custom_log' do msg "Added Worker ResourceServer to 'Default' Resource Pool." end
 end
 
+# Verify Agent and Worker added to Resource pool
+agent_added_to_resource_pool = false
+worker_added_to_resource_pool = false
+awatrq_timer = 0
+awatrq_interval = 10
+awatrq_max_time = 30
+
+while awatrq_timer < awatrq_max_time && (agent_added_to_resource_pool == false || worker_added_to_resource_pool == false)
+  # Sleep
+  sleep(awatrq_interval)
+
+  # Get Resource Pool Resource Servers'
+  response = ProcessingHelper.query_resourcepool_resource_servers(node['windows']['hostname'], node['relativity']['admin']['login'], node['relativity']['admin']['password'], node.run_state['default_resource_pool_artifact_id'])
+  response_json = JSON.parse(response.body)
+  response_json.each do |server|
+    if server['ServerType']['Name'] == 'Agent' && server['ServerType']['ArtifactID'] == node.run_state['resource_server_types_choice_agent_artifact_id']
+      agent_added_to_resource_pool = true
+      custom_log 'custom_log' do msg "Verified that agent server added to default resource pool successfully." end
+    end
+    if server['ServerType']['Name'] == 'Worker' && server['ServerType']['ArtifactID'] == node.run_state['resource_server_types_choice_worker_artifact_id']
+      worker_added_to_resource_pool = true
+      custom_log 'custom_log' do msg "Verified that worder server added to default resource pool successfully." end
+    end
+  end
+
+  # Increment Interval
+  awatrq_timer += awatrq_interval
+end
+
+if awatrq_interval >= awatrq_max_time
+  raise "Timed out while waiting for newly created processing server to become queryable"
+end
+if agent_added_to_resource_pool == false
+  raise "Unable to verify Agent Server was added to default resource pool."
+end
+if worker_added_to_resource_pool == false
+  raise "Unable to verify Worker Server was added to default resource pool."
+end
+
 end_time = DateTime.now
 custom_log 'custom_log' do msg "recipe_end_Time(#{recipe_name}): #{end_time}" end
 custom_log 'custom_log' do msg "recipe_duration(#{recipe_name}): #{end_time.to_time - start_time.to_time} seconds" end
