@@ -1,5 +1,7 @@
 [System.Int32]$global:maxRetry = 1
 [System.Int32]$global:count = 1
+[System.Int32]$global:count = 1
+[Boolean] $global:exportVm = $false
 
 function Export-DevVm([string] $vmExportPath) {
   # Remove Export folder if it already exists
@@ -19,27 +21,37 @@ function New-DevVm([string] $vmName, [string] $vmCheckpointName, [string] $vmExp
     vagrant up
     Write-Host  "-----> [$(Get-Date -Format g)] Created VM" -ForegroundColor Blue
 
-    Write-Host  "-----> [$(Get-Date -Format g)] Stopping VM" -ForegroundColor Blue
-    Stop-VM -Name "RelativityDevVm"
-    Write-Host  "-----> [$(Get-Date -Format g)] Stopped VM" -ForegroundColor Blue
+    if ($global:exportVm) {
+      Write-Host  "-----> [$(Get-Date -Format g)] Stopping VM" -ForegroundColor Blue
+      Stop-VM -Name "RelativityDevVm"
+      Write-Host  "-----> [$(Get-Date -Format g)] Stopped VM" -ForegroundColor Blue
 
-    Write-Host  "-----> [$(Get-Date -Format g)] Creating VM Checkpoint" -ForegroundColor Blue
-    Checkpoint-VM -Name $vmName -SnapshotName $vmCheckpointName
-    Write-Host  "-----> [$(Get-Date -Format g)] Created VM Checkpoint" -ForegroundColor Blue
+      Write-Host  "-----> [$(Get-Date -Format g)] Creating VM Checkpoint" -ForegroundColor Blue
+      Checkpoint-VM -Name $vmName -SnapshotName $vmCheckpointName
+      Write-Host  "-----> [$(Get-Date -Format g)] Created VM Checkpoint" -ForegroundColor Blue
 
-    Write-Host  "-----> [$(Get-Date -Format g)] Export VM" -ForegroundColor Blue
-    Export-DevVm $vmExportPath
-    Write-Host  "-----> [$(Get-Date -Format g)] Exported VM" -ForegroundColor Blue
+      Write-Host  "-----> [$(Get-Date -Format g)] Export VM" -ForegroundColor Blue
+      Export-DevVm $vmExportPath
+      Write-Host  "-----> [$(Get-Date -Format g)] Exported VM" -ForegroundColor Blue
 
-    Write-Host  "-----> [$(Get-Date -Format g)] Compressing Exported VM to Zip" -ForegroundColor Blue
-    Install-Module -NugetPackageId 7Zip4Powershell -PackageVersion 1.8.0
-    Compress-7Zip -Path $compressPath -ArchiveFileName $zipFileName
-    Write-Host  "-----> [$(Get-Date -Format g)] Compressed Exported VM to Zip" -ForegroundColor Blue
+      Write-Host  "-----> [$(Get-Date -Format g)] Compressing Exported VM to Zip" -ForegroundColor Blue
+      Install-Module -NugetPackageId 7Zip4Powershell -PackageVersion 1.8.0
+      Compress-7Zip -Path $compressPath -ArchiveFileName $zipFileName
+      Write-Host  "-----> [$(Get-Date -Format g)] Compressed Exported VM to Zip" -ForegroundColor Blue
+    }
+    else {
+      Write-Host "Skipped VM Export!"
+    }
   }
   finally {
-    Write-Host  "-----> [$(Get-Date -Format g)] Deleting VM" -ForegroundColor Blue
-    #vagrant destroy -f $vmName
-    Write-Host  "-----> [$(Get-Date -Format g)] Deleted VM" -ForegroundColor Blue
+    if ($global:exportVm) {
+      Write-Host  "-----> [$(Get-Date -Format g)] Deleting VM" -ForegroundColor Blue
+      vagrant destroy -f $vmName
+      Write-Host  "-----> [$(Get-Date -Format g)] Deleted VM" -ForegroundColor Blue
+    }
+    else {
+      Write-Host "Skipped VM Deletion!"
+    }    
   }
 }
 
@@ -61,8 +73,8 @@ function Start-DevVm-Process() {
     #  $global:count++ 
     #}
     Catch [Exception] {
-        $global:count++
-        Write-Host "$($_.Exception.GetType().FullName) $($_.Exception.Message)"
+      $global:count++
+      Write-Host "$($_.Exception.GetType().FullName) $($_.Exception.Message)"
     }
     finally {
       Write-Host  "-----> [$(Get-Date -Format g)] Total time: $($stopWatch.Elapsed.TotalMinutes) minutes" -ForegroundColor Blue
