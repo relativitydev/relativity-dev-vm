@@ -242,5 +242,6 @@ Vagrant.configure('2') do |config|
     chef.add_recipe('Relativity::post_relativity_create_data_sampler_config_file')
     chef.add_recipe('Relativity::post_relativity_push_resource_file')
     chef.add_recipe('Relativity::post_relativity_install_rap_files')
+    chef.add_recipe('Relativity::post_relativity_create_rap_agents')
   end
 end
