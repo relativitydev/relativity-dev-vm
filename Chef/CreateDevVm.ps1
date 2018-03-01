@@ -58,29 +58,30 @@ function New-DevVm([string] $vmName, [string] $vmCheckpointName, [string] $vmExp
 function Start-DevVm-Process() {
   $stopWatch = [System.Diagnostics.Stopwatch]::StartNew() 
 
-  while ($global:count -le $global:maxRetry) {
-    try {
-      $vmName = "RelativityDevVm"
-      $vmCheckpointName = "RelativityDevVm Created"
-      $vmExportPath = "C:\DevVmExport"
-      $compressPath = "$($vmExportPath)\$($vmName)"
-      $zipFileName = "$($vmExportPath)\$($vmName).7z"
-      
-      # Create New DevVm
-      New-DevVm $vmName, $vmCheckpointName, $vmExportPath, $compressPath, $zipFileName
-    }
-    #catch {
-    #  $global:count++ 
-    #}
-    Catch [Exception] {
-      $global:count++
-      Write-Host "$($_.Exception.GetType().FullName) $($_.Exception.Message)"
-    }
-    finally {
-      Write-Host  "-----> [$(Get-Date -Format g)] Total time: $($stopWatch.Elapsed.TotalMinutes) minutes" -ForegroundColor Blue
-      $stopWatch.Stop() 
-    }
+  # while ($global:count -le $global:maxRetry) {
+  try {
+    $vmName = "RelativityDevVm"
+    $vmCheckpointName = "RelativityDevVm Created"
+    $vmExportPath = "C:\DevVmExport"
+    $compressPath = "$($vmExportPath)\$($vmName)"
+    $zipFileName = "$($vmExportPath)\$($vmName).7z"
+    
+    # Create New DevVm
+    New-DevVm $vmName, $vmCheckpointName, $vmExportPath, $compressPath, $zipFileName
   }
+  #catch {
+  #  $global:count++ 
+  #}
+  Catch [Exception] {
+    $global:count++
+    Write-Host "-----> Exception: $($_.Exception.GetType().FullName)"
+    Write-Host "-----> Exception Message: $($_.Exception.Message)"
+  }
+  finally {
+    Write-Host  "-----> [$(Get-Date -Format g)] Total time: $($stopWatch.Elapsed.TotalMinutes) minutes" -ForegroundColor Blue
+    $stopWatch.Stop() 
+  }
+  # }
 }
 
 Start-DevVm-Process
