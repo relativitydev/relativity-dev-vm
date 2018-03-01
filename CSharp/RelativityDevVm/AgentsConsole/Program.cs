@@ -34,119 +34,133 @@ namespace AgentsConsole
 
         private static void CopyAndLoadAssemblies()
         {
-            Assembly executingAssembly = Assembly.GetExecutingAssembly();
-            string executingAssemblyPath = executingAssembly.Location;
-            if (File.Exists(executingAssemblyPath))
+            try
             {
-                FileInfo executingAssemblyFileInfo = new FileInfo(executingAssemblyPath);
-                DirectoryInfo executingAssemblyDirectoryInfo = executingAssemblyFileInfo.Directory;
-                if (executingAssemblyDirectoryInfo != null && executingAssemblyDirectoryInfo.Exists)
+                Assembly executingAssembly = Assembly.GetExecutingAssembly();
+                string executingAssemblyPath = executingAssembly.Location;
+                if (File.Exists(executingAssemblyPath))
                 {
-                    DirectoryInfo relativityLibraryDirectoryInfo = new DirectoryInfo(RelativityLibraryDirectoryPath);
-                    if (relativityLibraryDirectoryInfo.Exists)
+                    FileInfo executingAssemblyFileInfo = new FileInfo(executingAssemblyPath);
+                    DirectoryInfo executingAssemblyDirectoryInfo = executingAssemblyFileInfo.Directory;
+                    if (executingAssemblyDirectoryInfo != null && executingAssemblyDirectoryInfo.Exists)
                     {
-                        List<string> relativityAssemblies = new List<string>
+                        DirectoryInfo relativityLibraryDirectoryInfo = new DirectoryInfo(RelativityLibraryDirectoryPath);
+                        if (relativityLibraryDirectoryInfo.Exists)
                         {
-                            "Relativity.Kepler.dll",
-                            "Relativity.Services.DataContracts.dll",
-                            "Relativity.Services.Interfaces.dll",
-                            "Relativity.Services.Interfaces.Private.dll",
-                            "Relativity.Services.ServiceProxy.dll"
-                        };
-
-                        foreach (string relativityAssembly in relativityAssemblies)
-                        {
-                            string sourceAssemblyPath = Path.Combine(RelativityLibraryDirectoryPath, relativityAssembly);
-                            string destinationAssemblyPath = Path.Combine(executingAssemblyDirectoryInfo.FullName, relativityAssembly);
-                            if (File.Exists(sourceAssemblyPath))
+                            List<string> relativityAssemblies = new List<string>
                             {
-                                FileInfo sourceAssemblyFileInfo = new FileInfo(sourceAssemblyPath);
-                                if (!File.Exists(destinationAssemblyPath))
+                                "Relativity.Kepler.dll",
+                                "Relativity.Services.DataContracts.dll",
+                                "Relativity.Services.Interfaces.dll",
+                                "Relativity.Services.Interfaces.Private.dll",
+                                "Relativity.Services.ServiceProxy.dll"
+                            };
+
+                            foreach (string relativityAssembly in relativityAssemblies)
+                            {
+                                string sourceAssemblyPath = Path.Combine(RelativityLibraryDirectoryPath, relativityAssembly);
+                                string destinationAssemblyPath = Path.Combine(executingAssemblyDirectoryInfo.FullName, relativityAssembly);
+                                if (File.Exists(sourceAssemblyPath))
                                 {
-                                    // Copy assembly file
-                                    sourceAssemblyFileInfo.CopyTo(destinationAssemblyPath);
+                                    FileInfo sourceAssemblyFileInfo = new FileInfo(sourceAssemblyPath);
+                                    if (!File.Exists(destinationAssemblyPath))
+                                    {
+                                        // Copy assembly file
+                                        sourceAssemblyFileInfo.CopyTo(destinationAssemblyPath);
+                                    }
+                                    // Load assembly file
+                                    Assembly.LoadFrom(destinationAssemblyPath);
                                 }
-                                // Load assembly file
-                                Assembly.LoadFrom(destinationAssemblyPath);
                             }
                         }
-                    }
-                    else
-                    {
-                        string errorMessage = "Relativity Library Folder doesn't exist.";
-                        Console.WriteLine(errorMessage);
-                        throw new Exception(errorMessage);
+                        else
+                        {
+                            string errorMessage = "Relativity Library Folder doesn't exist.";
+                            Console.WriteLine(errorMessage);
+                            throw new Exception(errorMessage);
+                        }
                     }
                 }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occured when Copying and Loading Assemblies.", ex);
             }
         }
 
         private static void CreateAgents(string[] args)
         {
-            //Constants
-            const bool enableAgent = true;
-            const int agentInterval = 5;
-            const Agent.LoggingLevelEnum agentLoggingLevel = Agent.LoggingLevelEnum.All;
-            const string protocal = "http";
-            const string eddsSqlDatabaseName = "EDDS";
-
-            string relativityServerName = args[0];
-            Console.WriteLine($"{nameof(relativityServerName)}: {relativityServerName}");
-            string relativityAdminUsername = args[1];
-            Console.WriteLine($"{nameof(relativityAdminUsername)}: {relativityAdminUsername}");
-            string relativityAdminPassword = args[2];
-            Console.WriteLine($"{nameof(relativityAdminPassword)}: {relativityAdminPassword}");
-            string sqlDatabaseServerName = args[3];
-            Console.WriteLine($"{nameof(sqlDatabaseServerName)}: {sqlDatabaseServerName}");
-            string sqlUsername = args[4];
-            Console.WriteLine($"{nameof(sqlUsername)}: {sqlUsername}");
-            string sqlPassword = args[5];
-            Console.WriteLine($"{nameof(sqlPassword)}: {sqlPassword}");
-            string relativityApplicationGuidsString = args[6];
-            Console.WriteLine($"{nameof(relativityApplicationGuidsString)}: {relativityApplicationGuidsString}");
-            List<Guid> relativityApplicationGuids = ParseRelativityApplicationGuids(relativityApplicationGuidsString);
-            Uri relativityServicesUri = new Uri($"{protocal}://{relativityServerName}/Relativity.Services");
-            Uri relativityRestUri = new Uri($"{protocal}://{relativityServerName}/Relativity.Rest/Api");
-
-            UsernamePasswordCredentials usernamePasswordCredentials = new UsernamePasswordCredentials(
-                username: relativityAdminUsername,
-                password: relativityAdminPassword);
-            ServiceFactorySettings serviceFactorySettings = new ServiceFactorySettings(
-                relativityServicesUri: relativityServicesUri,
-                relativityRestUri: relativityRestUri,
-                credentials: usernamePasswordCredentials);
-            ServiceFactory serviceFactory = new ServiceFactory(
-                settings: serviceFactorySettings);
-
-            using (IAgentManager agentManager = serviceFactory.CreateProxy<IAgentManager>())
+            try
             {
-                IAgentHelper agentHelper = new AgentHelper(
-                    agentManager: agentManager, sqlDatabaseServerName: sqlDatabaseServerName,
-                    sqlDatabaseName: eddsSqlDatabaseName,
-                    sqlUsername: sqlUsername,
-                    sqlPassword: sqlPassword);
+                //Constants
+                const bool enableAgent = true;
+                const int agentInterval = 5;
+                const Agent.LoggingLevelEnum agentLoggingLevel = Agent.LoggingLevelEnum.All;
+                const string protocal = "http";
+                const string eddsSqlDatabaseName = "EDDS";
 
-                int agentResourceServerArtifactId = RetrieveAgentResourceServerArtifactId(sqlDatabaseServerName, sqlUsername, sqlPassword);
-                int webProcessingResourceServerArtifactId = RetrieveWebProcessingResourceServerArtifactId(sqlDatabaseServerName, sqlUsername, sqlPassword);
+                string relativityServerName = args[0];
+                Console.WriteLine($"{nameof(relativityServerName)}: {relativityServerName}");
+                string relativityAdminUsername = args[1];
+                Console.WriteLine($"{nameof(relativityAdminUsername)}: {relativityAdminUsername}");
+                string relativityAdminPassword = args[2];
+                Console.WriteLine($"{nameof(relativityAdminPassword)}: {relativityAdminPassword}");
+                string sqlDatabaseServerName = args[3];
+                Console.WriteLine($"{nameof(sqlDatabaseServerName)}: {sqlDatabaseServerName}");
+                string sqlUsername = args[4];
+                Console.WriteLine($"{nameof(sqlUsername)}: {sqlUsername}");
+                string sqlPassword = args[5];
+                Console.WriteLine($"{nameof(sqlPassword)}: {sqlPassword}");
+                string relativityApplicationGuidsString = args[6];
+                Console.WriteLine($"{nameof(relativityApplicationGuidsString)}: {relativityApplicationGuidsString}");
+                List<Guid> relativityApplicationGuids = ParseRelativityApplicationGuids(relativityApplicationGuidsString);
+                Uri relativityServicesUri = new Uri($"{protocal}://{relativityServerName}/Relativity.Services");
+                Uri relativityRestUri = new Uri($"{protocal}://{relativityServerName}/Relativity.Rest/Api");
 
-                //Create agents in Relativity Application
-                foreach (Guid currentRelativityApplicationGuid in relativityApplicationGuids)
+                UsernamePasswordCredentials usernamePasswordCredentials = new UsernamePasswordCredentials(
+                    username: relativityAdminUsername,
+                    password: relativityAdminPassword);
+                ServiceFactorySettings serviceFactorySettings = new ServiceFactorySettings(
+                    relativityServicesUri: relativityServicesUri,
+                    relativityRestUri: relativityRestUri,
+                    credentials: usernamePasswordCredentials);
+                ServiceFactory serviceFactory = new ServiceFactory(
+                    settings: serviceFactorySettings);
+
+                using (IAgentManager agentManager = serviceFactory.CreateProxy<IAgentManager>())
                 {
-                    int resourceServerArtifactId = currentRelativityApplicationGuid == ImagingSetSchedulerApplicationGuid
-                        ? webProcessingResourceServerArtifactId
-                        : agentResourceServerArtifactId;
-
-                    CreateAgentsInRelativityApplication(
-                        sqlDatabaseServerName: sqlDatabaseServerName,
+                    IAgentHelper agentHelper = new AgentHelper(
+                        agentManager: agentManager, sqlDatabaseServerName: sqlDatabaseServerName,
+                        sqlDatabaseName: eddsSqlDatabaseName,
                         sqlUsername: sqlUsername,
-                        sqlPassword: sqlPassword,
-                        agentHelper: agentHelper,
-                        agentResourceServerArtifactId: resourceServerArtifactId,
-                        enableAgent: enableAgent,
-                        agentInterval: agentInterval,
-                        agentLoggingLevel: agentLoggingLevel,
-                        relativityApplicationGuid: currentRelativityApplicationGuid);
+                        sqlPassword: sqlPassword);
+
+                    int agentResourceServerArtifactId = RetrieveAgentResourceServerArtifactId(sqlDatabaseServerName, sqlUsername, sqlPassword);
+                    int webProcessingResourceServerArtifactId = RetrieveWebProcessingResourceServerArtifactId(sqlDatabaseServerName, sqlUsername, sqlPassword);
+
+                    //Create agents in Relativity Application
+                    foreach (Guid currentRelativityApplicationGuid in relativityApplicationGuids)
+                    {
+                        int resourceServerArtifactId = currentRelativityApplicationGuid == ImagingSetSchedulerApplicationGuid
+                            ? webProcessingResourceServerArtifactId
+                            : agentResourceServerArtifactId;
+
+                        CreateAgentsInRelativityApplication(
+                            sqlDatabaseServerName: sqlDatabaseServerName,
+                            sqlUsername: sqlUsername,
+                            sqlPassword: sqlPassword,
+                            agentHelper: agentHelper,
+                            agentResourceServerArtifactId: resourceServerArtifactId,
+                            enableAgent: enableAgent,
+                            agentInterval: agentInterval,
+                            agentLoggingLevel: agentLoggingLevel,
+                            relativityApplicationGuid: currentRelativityApplicationGuid);
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occured when Creating Agents in a Relativity Application.", ex);
             }
         }
 
