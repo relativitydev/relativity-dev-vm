@@ -10,6 +10,8 @@ custom_log 'custom_log' do msg 'Finished installing chocolatey' end
 # Install Notepad++
 chocolatey_package 'notepadplusplus' do
   version '7.4.2'
+  retries 5
+  retry_delay 5
   action :install
 end
 
@@ -18,6 +20,8 @@ custom_log 'custom_log' do msg 'Finished installing notepad++' end
 # Install Visual Studio 2015 Remote Debugger
 chocolatey_package 'vs2015remotetools' do
   version '14.0.25424.0'
+  retries 5
+  retry_delay 5
   action :install
 end
 
@@ -26,6 +30,8 @@ custom_log 'custom_log' do msg 'Finished installing Visual Studio 2015 Remote De
 # Install Visual Studio 2017 Remote Debugger
 chocolatey_package 'visualstudio2017-remotetools' do
   version '15.0.26430.2'
+  retries 5
+  retry_delay 5
   action :install
 end
 
@@ -41,6 +47,8 @@ custom_log 'custom_log' do msg 'Finished installing 7zip' end
 # Install Adobe Reader
 chocolatey_package 'adobereader' do
   version '2015.007.20033.02'
+  retries 5
+  retry_delay 5
   action :install
 end
 

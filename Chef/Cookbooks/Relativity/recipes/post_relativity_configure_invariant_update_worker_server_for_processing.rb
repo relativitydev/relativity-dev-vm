@@ -23,6 +23,9 @@ error_message = 'An unexpected error occured when using Kepler call to enable\li
 response = RetryHelper.execute_rest_call(http, request, 3, error_message)
 custom_log 'custom_log' do msg response.code end
 
+# At the time of development an endpoint to validate the call above we'll sleep for a minute to allow it to complete
+sleep 60
+
 # Kepler call to add processing designated work to a worker
 custom_log 'custom_log' do msg 'Kepler call to add processing designated work to a worker' end
 url = "http://#{node['windows']['hostname']}/Relativity.Rest/api/Relativity.Services.WorkerStatus.IWorkerStatusModule/WorkerStatus/UpdateCategoriesOnWorkerAsync"
@@ -51,8 +54,8 @@ begin
   response = RetryHelper.execute_rest_call(http, request, 3, error_message)
   custom_log 'custom_log' do msg response.code end
 rescue Exception => e
-  # Exception eatin until we fullfil processing prerequisite apps.
-  custom_log 'custom_log' do msg "Error while enabling processing for Worker.S " +e.to_s end
+  # Exception is eatin because an endpoint does not yet exist to verify the previous call completed and it is the most likely reason for the error
+  custom_log 'custom_log' do msg "Error while enabling processing for Worker. Go to the servers tab and manually enable processing. Error: " +e.to_s end
 end
 
 
