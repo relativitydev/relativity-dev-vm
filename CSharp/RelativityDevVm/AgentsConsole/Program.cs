@@ -17,9 +17,7 @@ namespace AgentsConsole
     {
         public const char StringSplitter = ';';
         public const string AgentResourceServerType = "AgentResourceServerType";
-        public const string WebProcessingServerType = "WebBackgroundProcessingServerType";
         public const string RelativityLibraryDirectoryPath = @"C:\Program Files\kCura Corporation\Relativity\ServiceHost";
-        private static readonly Guid ImagingSetSchedulerApplicationGuid = new Guid("6BE2880A-D951-4A98-A6FE-4A84835D3D06");
         //private static readonly Guid ImagingApplicationGuid = new Guid("C9E4322E-6BD8-4A37-AE9E-C3C9BE31776B");
         //private static readonly Guid DocumentViewerApplicationGuid = new Guid("5725CAB5-EE63-4155-B227-C74CC9E26A76");
         //private static readonly Guid ProductionApplicationGuid = new Guid("51B19AB2-3D45-406C-A85E-F98C01B033EC");
@@ -136,14 +134,11 @@ namespace AgentsConsole
                         sqlPassword: sqlPassword);
 
                     int agentResourceServerArtifactId = RetrieveAgentResourceServerArtifactId(sqlDatabaseServerName, sqlUsername, sqlPassword);
-                    int webProcessingResourceServerArtifactId = RetrieveWebProcessingResourceServerArtifactId(sqlDatabaseServerName, sqlUsername, sqlPassword);
 
                     //Create agents in Relativity Application
                     foreach (Guid currentRelativityApplicationGuid in relativityApplicationGuids)
                     {
-                        int resourceServerArtifactId = currentRelativityApplicationGuid == ImagingSetSchedulerApplicationGuid
-                            ? webProcessingResourceServerArtifactId
-                            : agentResourceServerArtifactId;
+                        int resourceServerArtifactId = agentResourceServerArtifactId;
 
                         CreateAgentsInRelativityApplication(
                             sqlDatabaseServerName: sqlDatabaseServerName,
@@ -301,22 +296,6 @@ namespace AgentsConsole
             }
         }
 
-        private static int RetrieveWebProcessingResourceServerArtifactId(string sqlDatabaseServerName, string sqlUsername, string sqlPassword)
-        {
-            Console.WriteLine("Retrieving WebProcessingResourceServerArtifactId");
-            try
-            {
-                int webProcessingResourceServerTypeArtifactId = RetrieveWebProcessingResourceServerTypeArtifactId(sqlDatabaseServerName, sqlUsername, sqlPassword);
-                int webProcessingResourceServerArtifactId = RetrieveResourceServerArtifactId(sqlDatabaseServerName, sqlUsername, sqlPassword, webProcessingResourceServerTypeArtifactId);
-                Console.WriteLine($"{nameof(webProcessingResourceServerArtifactId)}: {webProcessingResourceServerArtifactId }");
-                return webProcessingResourceServerArtifactId;
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("An error occured when retrieving WebProcessingResourceServerArtifactId", ex);
-            }
-        }
-
         private static int RetrieveResourceServerTypeArtifactId(string sqlDatabaseServerName, string sqlUsername, string sqlPassword, string resourceServerType)
         {
             Console.WriteLine("Retrieving ResourceServerTypeArtifactId");
@@ -357,21 +336,6 @@ namespace AgentsConsole
             catch (Exception ex)
             {
                 throw new Exception("An error occured when retrieving AgentResourceServerTypeArtifactId", ex);
-            }
-        }
-
-        private static int RetrieveWebProcessingResourceServerTypeArtifactId(string sqlDatabaseServerName, string sqlUsername, string sqlPassword)
-        {
-            Console.WriteLine("Retrieving WebProcessingResourceServerTypeArtifactId");
-            try
-            {
-                int webProcessingResourceServerTypeArtifactId = RetrieveResourceServerTypeArtifactId(sqlDatabaseServerName, sqlUsername, sqlPassword, WebProcessingServerType);
-                Console.WriteLine($"{nameof(webProcessingResourceServerTypeArtifactId)}: {webProcessingResourceServerTypeArtifactId}");
-                return webProcessingResourceServerTypeArtifactId;
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("An error occured when retrieving WebProcessingResourceServerTypeArtifactId", ex);
             }
         }
 

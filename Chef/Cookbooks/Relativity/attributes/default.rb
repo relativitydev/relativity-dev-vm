@@ -351,8 +351,7 @@ default['sample_data_population']['import_production_images_with_documents'] = '
 default['relativity_apps_to_install'] = [
     "Relativity_App_Smoke_Test.rap",
     "Relativity_App_Data_Sampler.rap",
-    "Single File Upload 1.2.0.16 (for Relativity 9.4 - 9.5 - RelOne).rap",
-    "Relativity_App_Imaging_Set_Scheduler.rap"
+    "Single File Upload 1.2.0.16 (for Relativity 9.4 - 9.5 - RelOne).rap"
     ]
 
 # Add RAP application GUIDs to this Array to create the packaged agents. Make sure the RAP application is installed in the environment
@@ -361,7 +360,6 @@ default['relativity_apps_agents_to_install'] = {
     'DocumentViewer' => "5725CAB5-EE63-4155-B227-C74CC9E26A76",
     'Production' => "51B19AB2-3D45-406C-A85E-F98C01B033EC",
     'Processing' => "ED0E23F9-DA60-4298-AF9A-AE6A9B6A9319",
-    # 'ImagingSetScheduler' => "6BE2880A-D951-4A98-A6FE-4A84835D3D06",
     'SmokeTest' => "0125C8D4-8354-4D8F-B031-01E73C866C7C",
 }
 
