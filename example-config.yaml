@@ -4,7 +4,11 @@
 
 credentials:
     vm_username: 'Administrator'
-    vm_password: 'examplePassword'
-    smb_domain: 'kcura'
-    smb_username: 'myUserName'
-    smb_password: 'exampleNetworkPassword'
+    vm_password: 'example_password'
+    smb_domain: 'relativity'
+    smb_username: 'my_user_name'
+    smb_password: 'example_network_password'
+    smtp_server: 'smtp.relativity.com'
+    smtp_port: '25'
+    email_from: 'noreply@relativity.com'
+    email_to: 'test.user1@relativity.com;test.user2@relativity.com'
