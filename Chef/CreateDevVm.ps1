@@ -6,7 +6,7 @@
 function Export-DevVm([string] $vmExportPath) {
   # Remove Export folder if it already exists
   If (Test-Path $vmExportPath) {
-    Remove-Item �path $vmExportPath �recurse �force
+    Remove-Item -path $vmExportPath -recurse -force
   }
 
   # Export VM
