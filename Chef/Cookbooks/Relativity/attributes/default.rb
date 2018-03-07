@@ -51,7 +51,7 @@ default['service_bus']['services']['service_bus_FabricHostSvc'] = 'FabricHostSvc
 
 default['relativity']['install']['source_folder'] = '\\\\kcura.corp\\shares\\Development\\DevEx\\DevVm_Install_Files\\Relativity'
 default['relativity']['install']['destination_folder'] = "#{default['file']['installers']['default_destination_folder']}\\Relativity"
-default['relativity']['install']['file_name'] = 'Relativity-9.6.53.73.exe'
+default['relativity']['install']['file_name'] = 'Relativity.exe'
 default['relativity']['install']['response_file_destination_location'] = "#{default['relativity']['install']['destination_folder']}\\RelativityResponse.txt"
 default['relativity']['services_url'] = "http://" + node['fqdn'] +"/Relativity.Services"
 default['relativity']['admin']['login'] = 'relativity.admin@relativity.com'
@@ -220,7 +220,7 @@ default['relativity']['response_file']['replacement_values'] =
 
 default['invariant']['install']['source_folder'] = '\\\\kcura.corp\\shares\\Development\\DevEx\\DevVm_Install_Files\\Invariant'
 default['invariant']['install']['destination_folder'] = "#{default['file']['installers']['default_destination_folder']}\\Invariant"
-default['invariant']['install']['file_name'] = 'Invariant-4.6.50.28.exe'
+default['invariant']['install']['file_name'] = 'Invariant.exe'
 default['invariant']['install']['response_file_destination_location'] = "#{default['invariant']['install']['destination_folder']}\\InvariantResponse.txt"
 default['invariant']['response_file']['file_name_original'] = 'InvariantResponse_Original.txt'
 default['invariant']['response_file']['file_name'] = 'InvariantResponse.txt'
