@@ -8,6 +8,8 @@ default['windows']['user']['admin']['password'] = 'Test1234!'
 default['file']['installers']['default_destination_folder'] = 'C:\\Chef_Install'
 default['file']['log']['default_destination_folder'] = 'C:\\Chef_Logs'
 default['file']['log']['name'] = 'log.txt'
+default['file']['result']['name'] = 'result_file.txt'
+default['file']['result']['destination_folder'] = 'C:\\vagrant'
 
 default['software']['jungum']['file_name'] = 'JungUm.msi'
 default['software']['jungum']['source'] = "\\\\kcura.corp\\shares\\Development\\DevEx\\DevVm_Install_Files\\Jungum\\#{default['software']['jungum']['file_name']}"

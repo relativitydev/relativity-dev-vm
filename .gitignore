@@ -54,3 +54,4 @@ StyleCop*
 *.suo
 *.user
 /config.yaml
+Chef/result_file.txt

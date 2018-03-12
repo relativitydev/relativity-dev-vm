@@ -1,6 +1,3 @@
-# Setup Log file
-include_recipe 'Relativity::pre_windows_setup_log_file'
-
 custom_log 'custom_log' do msg 'Starting Pre-Windows Setup' end
 start_time = DateTime.now
 custom_log 'custom_log' do msg "recipe_start_time(#{recipe_name}): #{start_time}" end
