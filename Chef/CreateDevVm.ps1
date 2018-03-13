@@ -1,107 +1,194 @@
-Clear-Host
-
 [System.Int32]$global:maxRetry = 1
 [System.Int32]$global:count = 1
 [System.Int32]$global:count = 1
-[Boolean] $global:exportVm = $false
+[Boolean] $global:exportVm = $true
 [string] $global:scriptResultFileName = "result_file.txt"
+[string] $global:vmName = "RelativityDevVm"
+[string] $global:vmExportPath = "C:\DevVmExport"
+[string] $global:vmCheckpointName = "RelativityDevVm Created"
 
 function Write-Message-To-Screen ([string] $writeMessage) {
   Write-Host  "-----> [$(Get-Date -Format g)] $($writeMessage)" -ForegroundColor Magenta
 }
 
-function Delete-File-If-It-Exists ([string] $fileName) {
-  If (Test-Path $fileName) {
-    Remove-Item -path $fileName -force
-    Write-Message-To-Screen  "File[$($fileName)] exists and deleted."
+function Remove-File-If-It-Exists ([string] $filePath) {
+  If (Test-Path $filePath) {
+    Remove-Item -path $filePath -Force
+    Write-Message-To-Screen  "File[$($filePath)] exists and deleted."
   }
   else {
-    Write-Message-To-Screen  "Skipped Deletion. File[$($fileName)] doesn't exist."
+    Write-Message-To-Screen  "File[$($filePath)] doesn't exist. Skipped Deletion."
   }
 }
 
-  function Export-DevVm([string] $vmExportPath) {
+function Remove-Directory-If-It-Exists ([string] $directoryPath) {
+  If (Test-Path $directoryPath) {
+    Remove-Item -path $directoryPath -Force -Recurse
+    Write-Message-To-Screen  "Directory[$($directoryPath)] exists and deleted."
+  }
+  else {
+    Write-Message-To-Screen  "Directory[$($directoryPath)] doesn't exist. Skipped Deletion."
+  }
+}
+
+function Create-DevVm() {
+  try {
+    Write-Message-To-Screen  "Creating VM"
+    vagrant up
+    Write-Message-To-Screen  "Created VM"
+  }
+  Catch [Exception] {
+    Write-Message-To-Screen "An error occured when creating VM."
+    Write-Message-To-Screen "-----> Exception: $($_.Exception.GetType().FullName)"
+    Write-Message-To-Screen "-----> Exception Message: $($_.Exception.Message)"
+    throw
+  }
+}
+
+function Stop-DevVm() {
+  try {
+    Write-Message-To-Screen  "Stopping VM"
+    Stop-VM -Name $global:vmName
+    Write-Message-To-Screen  "Stopped VM"
+  }
+  Catch [Exception] {
+    Write-Message-To-Screen "An error occured when stopping VM."
+    Write-Message-To-Screen "-----> Exception: $($_.Exception.GetType().FullName)"
+    Write-Message-To-Screen "-----> Exception Message: $($_.Exception.Message)"
+    throw
+  }
+}
+
+function Create-DevVm-Checkpoint() {
+  try {
+    Write-Message-To-Screen  "Creating VM Checkpoint"
+    Checkpoint-VM -Name $global:vmName -SnapshotName $global:vmCheckpointName
+    Write-Message-To-Screen  "Created VM Checkpoint"
+  }
+  Catch [Exception] {
+    Write-Message-To-Screen "An error occured when creating VM checkpoint."
+    Write-Message-To-Screen "-----> Exception: $($_.Exception.GetType().FullName)"
+    Write-Message-To-Screen "-----> Exception Message: $($_.Exception.Message)"
+    throw
+  }
+}
+
+function Export-DevVm() {
+  try {
+    Write-Message-To-Screen  "Exporting VM"
+    
     # Delete Export folder if it already exists
-    If (Test-Path $vmExportPath) {
-      Remove-Item -path $vmExportPath -recurse -force
-    }
+    Remove-Directory-If-It-Exists $global:vmExportPath  
 
     # Export VM
-    Export-VM -Name $vmName -Path $vmExportPath
-  }
+    Export-VM -Name $global:vmName -Path $global:vmExportPath
 
-  function New-DevVm([string] $vmName, [string] $vmCheckpointName, [string] $vmExportPath, [string] $compressPath, [string] $zipFileName) {
-    try {
-      Write-Message-To-Screen  "Attempt #$($global:count)"
+    Write-Message-To-Screen  "Exported VM"
+  }
+  Catch [Exception] {
+    Write-Message-To-Screen "An error occured when exporting VM."
+    Write-Message-To-Screen "-----> Exception: $($_.Exception.GetType().FullName)"
+    Write-Message-To-Screen "-----> Exception Message: $($_.Exception.Message)"
+    throw
+  }
+}
+
+function Compress-DevVm() {
+  try {
+    Write-Message-To-Screen  "Compressing Exported VM to 7Zip"
     
-      Write-Message-To-Screen  "Creating VM"
-      vagrant up
-      Write-Message-To-Screen  "Created VM"
+    [string] $folderToCompressPath = "$($global:vmExportPath)\$($global:vmName)"
+    [string] $zipFilePath = "$($global:vmExportPath)\$($global:vmName).7z"
 
-      if ($global:exportVm) {
-        Write-Message-To-Screen  "Stopping VM"
-        Stop-VM -Name "RelativityDevVm"
-        Write-Message-To-Screen  "Stopped VM"
+    Install-Module -NugetPackageId 7Zip4Powershell -PackageVersion 1.8.0
+    Compress-7Zip -CompressionLevel Fast -Path $folderToCompressPath -ArchiveFileName $zipFilePath
+    #todo: remove fast compression
 
-        Write-Message-To-Screen  "Creating VM Checkpoint"
-        Checkpoint-VM -Name $vmName -SnapshotName $vmCheckpointName
-        Write-Message-To-Screen  "Created VM Checkpoint"
-
-        Write-Message-To-Screen  "Export VM"
-        Export-DevVm $vmExportPath
-        Write-Message-To-Screen  "Exported VM"
-
-        Write-Message-To-Screen  "Compressing Exported VM to Zip"
-        Install-Module -NugetPackageId 7Zip4Powershell -PackageVersion 1.8.0
-        Compress-7Zip -Path $compressPath -ArchiveFileName $zipFileName
-        Write-Message-To-Screen  "Compressed Exported VM to Zip"
-      }
-      else {
-        Write-Message-To-Screen "Skipped VM Export!"
-      }
-    }
-    finally {
-      if ($global:exportVm) {
-        Write-Message-To-Screen  "Deleting VM"
-        vagrant destroy -f $vmName
-        Write-Message-To-Screen  "Deleted VM"
-      }
-      else {
-        Write-Message-To-Screen "Skipped VM Deletion!"
-      }    
-    }
+    Write-Message-To-Screen  "Compressed Exported VM to 7Zip"
   }
+  Catch [Exception] {
+    Write-Message-To-Screen "An error occured when compressing Exported VM to 7Zip."
+    Write-Message-To-Screen "-----> Exception: $($_.Exception.GetType().FullName)"
+    Write-Message-To-Screen "-----> Exception Message: $($_.Exception.Message)"
+    throw
+  }
+}
 
-  function Start-DevVm-Process() {
-    $stopWatch = [System.Diagnostics.Stopwatch]::StartNew() 
+function Start-DevVm() {
+  try {
+    Write-Message-To-Screen  "Starting VM"
+    Start-VM -Name $global:vmName
+    Write-Message-To-Screen  "Started VM"
+  }
+  Catch [Exception] {
+    Write-Message-To-Screen "An error occured when starting VM."
+    Write-Message-To-Screen "-----> Exception: $($_.Exception.GetType().FullName)"
+    Write-Message-To-Screen "-----> Exception Message: $($_.Exception.Message)"
+    throw
+  }
+}
 
+function Delete-DevVm() {
+  try {
+    Write-Message-To-Screen  "Deleting VM"
+    vagrant destroy $global:vmName -f
+    Write-Message-To-Screen  "Deleted VM"
+  }
+  Catch [Exception] {
+    Write-Message-To-Screen "An error occured when deleting VM."
+    Write-Message-To-Screen "-----> Exception: $($_.Exception.GetType().FullName)"
+    Write-Message-To-Screen "-----> Exception Message: $($_.Exception.Message)"
+    throw
+  }
+}
+
+function New-DevVm() {
+  try {
+    Write-Message-To-Screen  "Attempt #$($global:count)"    
+    
     # Delete Results file if it already exists
-    Delete-File-If-It-Exists $global:scriptResultFileName
+    Remove-File-If-It-Exists $global:scriptResultFileName
 
-    # while ($global:count -le $global:maxRetry) {
-    try {
-      $vmName = "RelativityDevVm"
-      $vmCheckpointName = "RelativityDevVm Created"
-      $vmExportPath = "C:\DevVmExport"
-      $compressPath = "$($vmExportPath)\$($vmName)"
-      $zipFileName = "$($vmExportPath)\$($vmName).7z"
-    
-      # Create New DevVm
-      New-DevVm $vmName, $vmCheckpointName, $vmExportPath, $compressPath, $zipFileName
+    Create-DevVm
+    if ($global:exportVm) {
+      Stop-DevVm
+      Create-DevVm-Checkpoint
+      Export-DevVm
+      Compress-DevVm
     }
-    #catch {
-    #  $global:count++ 
-    #}
-    Catch [Exception] {
-      $global:count++
-      Write-Message-To-Screen "-----> Exception: $($_.Exception.GetType().FullName)"
-      Write-Message-To-Screen "-----> Exception Message: $($_.Exception.Message)"
+    else {
+      Write-Message-To-Screen "Skipped VM Export!"
     }
-    finally {
-      Write-Message-To-Screen  "Total time: $($stopWatch.Elapsed.TotalMinutes) minutes"
-      $stopWatch.Stop() 
-    }
-    # }
   }
+  finally {
+    if ($global:exportVm) {
+      Start-DevVm
+      Delete-DevVm
+    }
+    else {
+      Write-Message-To-Screen "Skipped VM Deletion!"
+    }    
+  }
+}
 
-  Start-DevVm-Process
+function Start-DevVm-Process() {
+  $stopWatch = [System.Diagnostics.Stopwatch]::StartNew() 
+
+  # while ($global:count -le $global:maxRetry) {
+  try {    
+    # Create New DevVm
+    New-DevVm
+  }
+  Catch [Exception] {
+    $global:count++
+    Write-Message-To-Screen "-----> Exception: $($_.Exception.GetType().FullName)"
+    Write-Message-To-Screen "-----> Exception Message: $($_.Exception.Message)"
+  }
+  finally {
+    Write-Message-To-Screen  "Total time: $($stopWatch.Elapsed.TotalMinutes) minutes"
+    $stopWatch.Stop() 
+  }
+  # }
+}
+
+Start-DevVm-Process
