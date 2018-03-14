@@ -28,7 +28,8 @@ Write-Host "global:devVmAutomationLogsFolder = $($global:devVmAutomationLogsFold
 [string] $global:devVmNetworkStorageLocation = $jsonContents.devVmNetworkStorageLocation
 Write-Host "global:devVmNetworkStorageLocation = $($global:devVmNetworkStorageLocation)"
 
-
+[System.Int32]$global:maxRetry = 3
+[System.Int32]$global:count = 1
 [string] $global:regexForRelativityVersion = "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}"
 [string] $global:devVmAutomationLogFilePrefix = "DevVm_Automation_Log"
 [string] $global:devVmAutomationLogFileResetText = "empty"
@@ -198,7 +199,6 @@ function Find-Invariant-Version([string] $relativityVersion) {
   }
 
   Write-Message-To-Screen "Finished looking for Invariant version for Relativity version."
-  Write-Empty-Line-To-Screen
 }
 
 function Copy-Relativity-Installer-And-Response-Files([string] $relativityVersionToCopy) {
@@ -246,33 +246,6 @@ function Run-DevVm-Creation-Script([string] $relativityVersionToCreate) {
   &"$PSScriptroot\CreateDevVm.ps1"
 
   Write-Message-To-Screen "Ran DevVm creation script."
-  Write-Empty-Line-To-Screen
-}
-
-function Create-DevVm([string] $relativityVersionToCreate) {
-  Write-Message-To-Screen "Creating DevVm. [$($relativityVersionToCreate)]"
-
-  $global:devVmCreationWasSuccess = $false
-
-  # Find Invariant version
-  Find-Invariant-Version $relativityVersionToCreate
-
-  if ($global:foundCompatibleInvariantVersion) {
-    Copy-Relativity-Installer-And-Response-Files $relativityVersionToCreate
-    Copy-Invariant-Installer-And-Response-Files $global:invariantVersion
-    Run-DevVm-Creation-Script
-    Write-Message-To-Screen "Created DevVm. [$($relativityVersionToCreate)]"
-
-    # Copy 7zip file to network drive with the version number in name
-    Copy-DevVm-7Zip-To_Network-Storage $relativityVersionToCreate
-
-    # Update text file with DevVm version created
-    Update-Text-File-With-DevVm-Version-Created $relativityVersionToCreate
-  }
-  else {
-    Write-Message-To-Screen "Skipped DevVM Creation. Could not Identify Invariant Version for Relativity Version[$($relativityVersionToCreate)]"
-  }
-  
   Write-Empty-Line-To-Screen
 }
 
@@ -333,6 +306,49 @@ function Update-Text-File-With-DevVm-Version-Created([string] $relativityVersion
   }
   
   Write-Message-To-Screen "Written DevVm version created [$($relativityVersionCreated)] to text file. [$($global:devVmCreatedTextFile)]"
+  Write-Empty-Line-To-Screen
+}
+
+function Create-DevVm([string] $relativityVersionToCreate) {
+  Write-Message-To-Screen "Creating DevVm. [$($relativityVersionToCreate)]"
+
+  $global:devVmCreationWasSuccess = $false
+  Write-Message-To-Screen "Total attempts: $($global:maxRetry)"
+
+  while ($global:count -le $global:maxRetry) {
+    try {
+      Write-Message-To-Screen "Attempt #$($global:count)"
+    
+      # Find Invariant version
+      Find-Invariant-Version $relativityVersionToCreate
+
+      if ($global:foundCompatibleInvariantVersion) {
+        Copy-Relativity-Installer-And-Response-Files $relativityVersionToCreate
+        Copy-Invariant-Installer-And-Response-Files $global:invariantVersion
+        Run-DevVm-Creation-Script
+        Write-Message-To-Screen "Created DevVm. [$($relativityVersionToCreate)]"
+
+        # Copy 7zip file to network drive with the version number in name
+        Copy-DevVm-7Zip-To_Network-Storage $relativityVersionToCreate
+
+        # Update text file with DevVm version created
+        Update-Text-File-With-DevVm-Version-Created $relativityVersionToCreate
+      }
+      else {
+        throw "Skipped DevVM Creation. Could not Identify Invariant Version for Relativity Version[$($relativityVersionToCreate)]"
+      }
+    }
+    Catch [Exception] {
+      $global:count++
+      Write-Message-To-Screen "Exception: $($_.Exception.GetType().FullName)"
+      Write-Message-To-Screen "Exception Message: $($_.Exception.Message)"
+    }
+  }
+
+  if ($global:devVmCreationWasSuccess -eq $false) {
+    Write-Message-To-Screen "DevVM creation failed. Attempted $($global:maxRetry) times."
+  }
+
   Write-Empty-Line-To-Screen
 }
 
