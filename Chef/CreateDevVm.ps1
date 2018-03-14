@@ -1,7 +1,6 @@
+[Boolean] $global:exportVm = $false
 [System.Int32]$global:maxRetry = 1
 [System.Int32]$global:count = 1
-[System.Int32]$global:count = 1
-[Boolean] $global:exportVm = $false
 [string] $global:vmName = "RelativityDevVm"
 [string] $global:vmExportPath = "C:\DevVmExport"
 [string] $global:vmCheckpointName = "RelativityDevVm Created"
