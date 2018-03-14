@@ -1,11 +1,12 @@
 [System.Int32]$global:maxRetry = 1
 [System.Int32]$global:count = 1
 [System.Int32]$global:count = 1
-[Boolean] $global:exportVm = $true
-[string] $global:scriptResultFileName = "result_file.txt"
+[Boolean] $global:exportVm = $false
 [string] $global:vmName = "RelativityDevVm"
 [string] $global:vmExportPath = "C:\DevVmExport"
 [string] $global:vmCheckpointName = "RelativityDevVm Created"
+[string] $global:devVmCreationResultFileName = "result_file.txt"
+[Boolean] $global:devVmCreationWasSuccess = $false
 
 function Write-Message-To-Screen ([string] $writeMessage) {
   Write-Host  "-----> [$(Get-Date -Format g)] $($writeMessage)" -ForegroundColor Magenta
@@ -142,22 +143,68 @@ function Delete-DevVm() {
   }
 }
 
+function Check-DevVm-Result-Text-File-For-Success() {
+  Write-Message-To-Screen "Checking if DevVM creation was success."
+  
+  $global:devVmCreationWasSuccess = $false  
+  [string] $result_file_path = "$PSScriptroot\$($global:devVmCreationResultFileName)"
+  if (Test-Path $result_file_path) {
+    # Read text file
+    [string] $content = [IO.File]::ReadAllText($result_file_path)
+    [string] $contentTrimmed = ($content.Trim())
+    Write-Message-To-Screen "DevVM result file content: $($contentTrimmed)"
+
+    if (($content.Trim()) -eq "success") {
+      Write-Message-To-Screen "DevVM creation was success."
+      $global:devVmCreationWasSuccess = $true    
+    }
+  }
+  else {
+    $global:devVmCreationWasSuccess = $false  
+    Write-Error-Message-To-Screen "DevVM Result file doesn't exist."
+  }
+  
+  Write-Message-To-Screen "Checked if DevVM creation was success."
+  Write-Empty-Line-To-Screen
+}
+
+function Delete-DevVm-Creation-Result-File() {
+  Write-Message-To-Screen "Deleting DevVM Creation Result File."
+  
+  [string] $result_file_path = "$PSScriptroot\$($global:devVmCreationResultFileName)"
+  Remove-File-If-It-Exists $result_file_path
+  
+  Write-Message-To-Screen "Deleted DevVM Creation Result File. [$($result_file_path)]"
+  Write-Empty-Line-To-Screen
+}
+
 function New-DevVm() {
   try {
     Write-Message-To-Screen  "Attempt #$($global:count)"    
     
     # Delete Results file if it already exists
-    Remove-File-If-It-Exists $global:scriptResultFileName
+    Delete-DevVm-Creation-Result-File
 
+    # Create DevVM
     Create-DevVm
-    if ($global:exportVm) {
-      Stop-DevVm
-      Create-DevVm-Checkpoint
-      Export-DevVm
-      Compress-DevVm
+
+    # Check for DevVM creation result
+    Check-DevVm-Result-Text-File-For-Success
+
+    # If DevVM creation was success, export it
+    if ($global:devVmCreationWasSuccess -eq $true) {    
+      if ($global:exportVm) {
+        Stop-DevVm
+        Create-DevVm-Checkpoint
+        Export-DevVm
+        Compress-DevVm
+      }
+      else {
+        Write-Message-To-Screen "Skipped VM Export!"
+      }    
     }
     else {
-      Write-Message-To-Screen "Skipped VM Export!"
+      Write-Error-Message-To-Screen "DevVM creation FAILED!"
     }
   }
   finally {

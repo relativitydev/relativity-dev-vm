@@ -49,7 +49,7 @@ Vagrant.configure('2') do |config|
   smb_username: network_share_smb_domain_and_username,
   smb_password: network_share_smb_password
 
-  # # Chef Recipes
+  ######################### Chef Recipes #########################
   # Setup Log file
   config.vm.provision 'chef_zero' do |chef|
     chef.cookbooks_path = 'Cookbooks'
