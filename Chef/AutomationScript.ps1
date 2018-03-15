@@ -44,7 +44,7 @@ $global:devVmVersionsToCreate = New-Object System.Collections.ArrayList
 [string] $global:vmExportPath = "C:\DevVmExport"
 [Boolean] $global:foundCompatibleInvariantVersion = $false
 [string] $global:invariantVersion = ""
-[string] $global:devVmCreationResultFile = "result_file.txt"
+[string] $global:devVmCreationResultFileName = "result_file.txt"
 [Boolean] $global:devVmCreationWasSuccess = $false
 
 function Reset-Logs-Environment-Variable() {
@@ -280,7 +280,7 @@ function Check-DevVm-Result-Text-File-For-Success() {
   Write-Heading-Message-To-Screen "Checking if DevVM creation was success."
   
   $global:devVmCreationWasSuccess = $false  
-  [string] $result_file_path = "$PSScriptroot\$($global:devVmCreationResultFile)"
+  [string] $result_file_path = "$PSScriptroot\$($global:devVmCreationResultFileName)"
   if (Test-Path $result_file_path) {
     # Read text file
     [string] $content = [IO.File]::ReadAllText($result_file_path)
@@ -324,7 +324,7 @@ function Create-DevVm([string] $relativityVersionToCreate) {
 
   $global:devVmCreationWasSuccess = $false
   $env:DevVmCreationErrorStatus = "false"
-  Write-Heading-Message-To-Screen "Total attempts: $($global:maxRetry)"
+  Write-Message-To-Screen "Total attempts: $($global:maxRetry)"
 
   Do {
     try {
@@ -334,8 +334,8 @@ function Create-DevVm([string] $relativityVersionToCreate) {
       Find-Invariant-Version $relativityVersionToCreate
 
       if ($global:foundCompatibleInvariantVersion) {
-        Copy-Relativity-Installer-And-Response-Files $relativityVersionToCreate
-        Copy-Invariant-Installer-And-Response-Files $global:invariantVersion
+        # Copy-Relativity-Installer-And-Response-Files $relativityVersionToCreate
+        # Copy-Invariant-Installer-And-Response-Files $global:invariantVersion
         Run-DevVm-Creation-Script
         Write-Message-To-Screen "Created DevVm. [$($relativityVersionToCreate)]"
 
@@ -357,6 +357,12 @@ function Create-DevVm([string] $relativityVersionToCreate) {
     finally {
       Check-DevVm-Result-Text-File-For-Success
     }
+    
+    Write-Heading-Message-To-Screen "Retry variables:"
+    Write-Message-To-Screen "env:DevVmCreationErrorStatus: $($env:DevVmCreationErrorStatus)"
+    Write-Message-To-Screen "global:devVmCreationWasSuccess: $($global:devVmCreationWasSuccess)"
+    Write-Message-To-Screen "global:count: $($global:count)"
+    Write-Message-To-Screen "global:maxRetry: $($global:maxRetry)"
   }  while (($env:DevVmCreationErrorStatus -eq "true") -And ($global:devVmCreationWasSuccess -eq $false) -And ($global:count -le $global:maxRetry))
 
   if ($global:devVmCreationWasSuccess -eq $false) {
@@ -371,7 +377,7 @@ function Create-DevVms() {
     $global:devVmVersionsToCreate | ForEach-Object {
       [string] $relativityVersionToCreate = $_
 
-      Write-Heading-Message-To-Screen "#################### DevVm - [$($relativityVersionToCreate)] ####################"
+      Write-Message-To-Screen "#################### DevVm - [$($relativityVersionToCreate)] ####################"
     
       # Create DevVM as a 7Zip file
       Create-DevVm $relativityVersionToCreate
@@ -387,9 +393,28 @@ function Create-DevVms() {
   }
 }
 
+function Delete-DevVm-Creation-Result-File() {
+  try {
+    Write-Heading-Message-To-Screen "Deleting DevVM Creation Result File."
+  
+    [string] $result_file_path = "$PSScriptroot\$($global:devVmCreationResultFileName)"
+    Delete-File-If-It-Exists $result_file_path
+  
+    Write-Message-To-Screen "Deleted DevVM Creation Result File. [$($result_file_path)]"
+    Write-Empty-Line-To-Screen
+  }
+  Catch [Exception] {
+    $env:DevVmCreationErrorStatus = "true"
+    Write-Error-Message-To-Screen "An error occured when deleting DevVM Result file."
+    Write-Error-Message-To-Screen "-----> Exception: $($_.Exception.GetType().FullName)"
+    Write-Error-Message-To-Screen "-----> Exception Message: $($_.Exception.Message)"
+    throw
+  }
+}
+
 function Initialize() {
   Reset-Logs-Environment-Variable
-  
+ 
   # Create Logs file if it not already exists
   If ($env:DevVmAutomationLogFilePath -eq $global:devVmAutomationLogFileResetText) {
     Write-Host-Custom "DevVM Automation Logs file doesn't exist."
@@ -398,6 +423,7 @@ function Initialize() {
 }
 
 Initialize
+Delete-DevVm-Creation-Result-File
 Retrieve-All-Relativity-Versions-Released
 Retrieve-DevVms-Created
 Identify-DevVms-To-Create

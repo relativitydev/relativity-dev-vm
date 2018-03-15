@@ -325,7 +325,7 @@ function Start-DevVm-Process() {
   $stopWatch = [System.Diagnostics.Stopwatch]::StartNew() 
   try {
     $env:DevVmCreationErrorStatus = "false"
-    
+
     # Create New DevVm
     New-DevVm
   }
