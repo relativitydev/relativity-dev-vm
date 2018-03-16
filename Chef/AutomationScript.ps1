@@ -143,7 +143,7 @@ function Retrieve-All-Relativity-Versions-Released() {
   # Retrieve all child folders
   $allChildFolders = Get-ChildItem -Path $global:relativityVersionFolder
 
-  Write-Heading-Message-To-Screen "List of Child folders:"
+  Write-Heading-Message-To-Screen "List of Child items in folder [$($global:relativityVersionFolder)]:"
   
   $allChildFolders | ForEach-Object {
     $folderName = ($_.Name).Trim()
@@ -160,15 +160,24 @@ function Retrieve-All-Relativity-Versions-Released() {
   }
   Write-Empty-Line-To-Screen
 }
-
+  
 function Retrieve-DevVms-Created() {
-  # Read text file
-  foreach ($line in Get-Content $global:devVmCreatedTextFile) {
-    [string] $lineTrimmed = $line.Trim()
-    if ($lineTrimmed -match $global:regexForRelativityVersion) {
-      [void] $global:devVmVersionsCreated.Add($lineTrimmed)
+  # Retrieve all DevVM images
+  $allDevVmImagesCreated = Get-ChildItem -Path $global:devVmNetworkStorageLocation
+    
+  Write-Heading-Message-To-Screen "List of Child items in folder [$($global:devVmNetworkStorageLocation)]:"
+
+  $allDevVmImagesCreated | ForEach-Object {
+    [string] $imageName = ($_.Name).Trim()
+    Write-Message-To-Screen "$($imageName)"
+    [string] $versionWithExtension = $imageName -replace "$($global:vmName)-", ""
+    [string] $version = $versionWithExtension -replace ".7z", ""
+    if ($version -match $global:regexForRelativityVersion) {
+      [void] $global:devVmVersionsCreated.Add($version)      
     }
-  }  
+  }
+
+  Write-Empty-Line-To-Screen
 
   Write-Heading-Message-To-Screen "List of DevVm's created:"
   $global:devVmVersionsCreated | ForEach-Object {
@@ -400,24 +409,6 @@ function Check-DevVm-Result-Text-File-For-Success() {
   Write-Empty-Line-To-Screen
 }
 
-function Update-Text-File-With-DevVm-Version-Created([string] $relativityVersionCreated) {
-  Write-Heading-Message-To-Screen "Writing DevVm version created [$($relativityVersionCreated)] to text file. [$($global:devVmCreatedTextFile)]"
-  
-  Write-Message-To-Screen "DevVm Creation Status: $($global:devVmCreationWasSuccess)"
-
-  Check-DevVm-Result-Text-File-For-Success
-
-  if ($global:devVmCreationWasSuccess -eq $true) {
-    Add-Content -Path $global:devVmCreatedTextFile -Value "`r`n$($relativityVersionCreated)"
-  }
-  else {
-    Write-Error-Message-To-Screen "DevVM creation FAILED!"
-  }
-  
-  Write-Message-To-Screen "Written DevVm version created [$($relativityVersionCreated)] to text file. [$($global:devVmCreatedTextFile)]"
-  Write-Empty-Line-To-Screen
-}
-
 function Create-DevVm([string] $relativityVersionToCreate) {
   Write-Heading-Message-To-Screen "Creating DevVm. [$($relativityVersionToCreate)]"
 
@@ -435,14 +426,11 @@ function Create-DevVm([string] $relativityVersionToCreate) {
       if ($global:foundCompatibleInvariantVersion) {
         Copy-Relativity-Installer-And-Response-Files $relativityVersionToCreate
         Copy-Invariant-Installer-And-Response-Files $global:invariantVersion
-        # Run-DevVm-Creation-Script
+        Run-DevVm-Creation-Script
         Write-Message-To-Screen "Created DevVm. [$($relativityVersionToCreate)]"
 
         # Copy 7zip file to network drive with the version number in name
         Copy-DevVm-7Zip-To_Network-Storage $relativityVersionToCreate
-
-        # Update text file with DevVm version created
-        Update-Text-File-With-DevVm-Version-Created $relativityVersionToCreate
       }
       else {
         throw "Skipped DevVM Creation. Could not Identify Invariant Version for Relativity Version[$($relativityVersionToCreate)]"
