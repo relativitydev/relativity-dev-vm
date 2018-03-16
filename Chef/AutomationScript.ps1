@@ -17,14 +17,20 @@ function Write-Host-Custom-Green ([string] $writeMessage) {
 [string] $json = Get-Content -Path $devVmAutomationConfigFilePath
 $jsonContents = $json | ConvertFrom-Json
 
+[string] $global:releaseSqlServer = $jsonContents.releaseSqlServer
+Write-Host "global:releaseSqlServer = $($global:releaseSqlServer)"
+[string] $global:releaseSqlServerDatabase = $jsonContents.releaseSqlServerDatabase
+Write-Host "global:releaseSqlServerDatabase = $($global:releaseSqlServerDatabase)"
+[string] $global:releaseSqlServerLogin = $jsonContents.releaseSqlServerLogin
+Write-Host "global:releaseSqlServerLogin = $($global:releaseSqlServerLogin)"
+[string] $global:releaseSqlServerPassword = $jsonContents.releaseSqlServerPassword
+Write-Host "global:releaseSqlServerPassword = $($global:releaseSqlServerPassword)"
 [string] $global:relativityVersionFolder = $jsonContents.relativityVersionFolder
 Write-Host "global:relativityVersionFolder = $($global:relativityVersionFolder)"
 [string] $global:invariantVersionFolder = $jsonContents.invariantVersionFolder
 Write-Host "global:invariantVersionFolder = $($global:invariantVersionFolder)"
 [string] $global:devVmInstallFolder = $jsonContents.devVmInstallFolder
 Write-Host "global:devVmInstallFolder = $($global:devVmInstallFolder)"
-[string] $global:devVmRelativityInvariantCompatibilityTextFile = $jsonContents.devVmRelativityInvariantCompatibilityTextFile
-Write-Host "global:devVmRelativityInvariantCompatibilityTextFile = $($global:devVmRelativityInvariantCompatibilityTextFile)"
 [string] $global:devVmCreatedTextFile = $jsonContents.devVmCreatedTextFile
 Write-Host "global:devVmCreatedTextFile = $($global:devVmCreatedTextFile)"
 [string] $global:devVmAutomationLogsFolder = $jsonContents.devVmAutomationLogsFolder
@@ -44,6 +50,7 @@ $global:devVmVersionsToCreate = New-Object System.Collections.ArrayList
 [string] $global:vmExportPath = "C:\DevVmExport"
 [Boolean] $global:foundCompatibleInvariantVersion = $false
 [string] $global:invariantVersion = ""
+[Int32] $global:invariantVersionSqlRecordCount = 0
 [string] $global:devVmCreationResultFileName = "result_file.txt"
 [Boolean] $global:devVmCreationWasSuccess = $false
 
@@ -182,32 +189,124 @@ function Identify-DevVms-To-Create() {
   }
   Write-Empty-Line-To-Screen
 }
+  
+function Check-If-Only-One-Invariant-Sql-Record-Exists ([string] $relativityVersion) {
+  Write-Heading-Message-To-Screen "Checking if only 1 invariant sql record exists."
+
+  if ($relativityVersion -eq '') {
+    throw "relativityVersion passed is empty."
+  }
+  
+  $global:invariantVersionSqlRecordCount = 0
+  try {
+    # Create and open a database connection
+    $sqlConnection = new-object System.Data.SqlClient.SqlConnection "server=$($global:releaseSqlServer);database=$($global:releaseSqlServerDatabase);user id=$($global:releaseSqlServerLogin);password=$($global:releaseSqlServerPassword);trusted_connection=true;"
+    $sqlConnection.Open()
+
+    # Create a command object
+    $sqlCommand = $sqlConnection.CreateCommand()
+    $sqlCommand.CommandText = 
+    "
+      SELECT 
+        COUNT(0)
+      FROM 
+          [$($global:releaseSqlServer)].[$($global:releaseSqlServerDatabase)].[dbo].[Release]
+      WHERE
+        [VersionDescription] IN ('RelativityOne', 'On Premise')
+        AND [ReleaseNumber] = '$($relativityVersion)'"
+
+    # Execute the Command
+    $global:invariantVersionSqlRecordCount = $sqlCommand.ExecuteScalar()
+    Write-Message-To-Screen "global:invariantVersionSqlRecordCount: $($global:invariantVersionSqlRecordCount)"
+  }
+  Catch [Exception] {
+    Write-Error-Message-To-Screen "An error occured when checking if only 1 invariant sql record exists."
+    Write-Error-Message-To-Screen "-----> Exception: $($_.Exception.GetType().FullName)"
+    Write-Error-Message-To-Screen "-----> Exception Message: $($_.Exception.Message)"
+    throw
+  }
+  finally {
+    # Close the database connection
+    $sqlConnection.Close()
+  }
+  Write-Message-To-Screen "Checked if only 1 invariant sql record exists."
+}
+
+function Retrieve-Invariant-Version-From-Sql-Server ([string] $relativityVersion) {
+  Write-Heading-Message-To-Screen "Retrieving Invarint version from SQL server."
+    
+  if ($relativityVersion -eq '') {
+    throw "relativityVersion passed is empty."
+  }
+
+  $global:invariantVersion = ""
+  $global:foundCompatibleInvariantVersion = $false
+  try {
+    # Create and open a database connection
+    $sqlConnection = new-object System.Data.SqlClient.SqlConnection "server=$($global:releaseSqlServer); database=$($global:releaseSqlServerDatabase); user id=$($global:releaseSqlServerLogin); password=$($global:releaseSqlServerPassword); trusted_connection=true; "
+    $sqlConnection.Open()
+
+    # Create a command object
+    $sqlCommand = $sqlConnection.CreateCommand()
+    $sqlCommand.CommandText = 
+    "SELECT 
+      TOP (1) [InvariantReleaseNumber]
+    FROM 
+      [$($global:releaseSqlServer)].[$($global:releaseSqlServerDatabase)].[dbo].[Release]
+    WHERE
+      [VersionDescription] IN ('RelativityOne', 'On Premise')
+      AND [ReleaseNumber] = '$($relativityVersion)'"
+
+    $global:invariantVersion = $sqlCommand.ExecuteScalar()
+    $global:foundCompatibleInvariantVersion = $true
+    Write-Message-To-Screen "global:invariantVersion: $($global:invariantVersion)"
+    Write-Message-To-Screen "global:foundCompatibleInvariantVersion: $($global:foundCompatibleInvariantVersion)"
+  }
+  Catch [Exception] {
+    Write-Error-Message-To-Screen "An error occured when retrieving Invarint version from SQL server."
+    Write-Error-Message-To-Screen "-----> Exception: $($_.Exception.GetType().FullName)"
+    Write-Error-Message-To-Screen "-----> Exception Message: $($_.Exception.Message)"
+    throw
+  }
+  finally {
+    # Close the database connection
+    $sqlConnection.Close()
+  } 
+  Write-Message-To-Screen "Retrieved Invariant version from SQL server."
+}
 
 function Find-Invariant-Version([string] $relativityVersion) {
   Write-Heading-Message-To-Screen "Look for Invariant version for Relativity version."
   
-  $global:invariantVersion = ""
+  if ($relativityVersion -eq '') {
+    throw "relativityVersion passed is empty."
+  }
 
-  # Read text file
-  foreach ($line in Get-Content $global:devVmRelativityInvariantCompatibilityTextFile) {
-    [string] $lineTrimmed = $line.Trim()
-    $lineTrimmedStringSplitArray = $lineTrimmed.Split("=")
-    [string] $currentLineRelativityVersion = $lineTrimmedStringSplitArray[0].Trim()
-    [string] $currentLineInvariantVersion = $lineTrimmedStringSplitArray[1].Trim()
-
-    if ($currentLineRelativityVersion -eq $relativityVersion) {
-      $global:invariantVersion = $currentLineInvariantVersion
-      $global:foundCompatibleInvariantVersion = $true
+  try {
+    Check-If-Only-One-Invariant-Sql-Record-Exists $relativityVersion
+    if ($global:invariantVersionSqlRecordCount -eq 0) {
+      throw "No Invariant version exists in the Sql database."
     }
-  }  
+    if ($global:invariantVersionSqlRecordCount -gt 1) {
+      throw "More than one Invariant version exists in the Sql database."
+    }
 
-  if ($global:foundCompatibleInvariantVersion) {
-    Write-Message-To-Screen "Identified Invariant Version: $($global:invariantVersion)"
-  }
-  else {
-    Write-Message-To-Screen "Could not Identify Invariant Version."
-  }
+    Retrieve-Invariant-Version-From-Sql-Server $relativityVersion
 
+    if ($global:foundCompatibleInvariantVersion) {
+      Write-Message-To-Screen "Identified Invariant Version: $($global:invariantVersion)"
+    }
+    else {
+      Write-Message-To-Screen "Could not Identify Invariant Version."
+    }
+  }
+  Catch [Exception] {
+    Write-Error-Message-To-Screen "An error occured when looking for Invariant version for Relativity version."
+    Write-Error-Message-To-Screen "-----> Exception: $($_.Exception.GetType().FullName)"
+    Write-Error-Message-To-Screen "-----> Exception Message: $($_.Exception.Message)"
+    throw
+  }
+  
   Write-Message-To-Screen "Finished looking for Invariant version for Relativity version."
 }
 
@@ -334,9 +433,9 @@ function Create-DevVm([string] $relativityVersionToCreate) {
       Find-Invariant-Version $relativityVersionToCreate
 
       if ($global:foundCompatibleInvariantVersion) {
-        # Copy-Relativity-Installer-And-Response-Files $relativityVersionToCreate
-        # Copy-Invariant-Installer-And-Response-Files $global:invariantVersion
-        Run-DevVm-Creation-Script
+        Copy-Relativity-Installer-And-Response-Files $relativityVersionToCreate
+        Copy-Invariant-Installer-And-Response-Files $global:invariantVersion
+        # Run-DevVm-Creation-Script
         Write-Message-To-Screen "Created DevVm. [$($relativityVersionToCreate)]"
 
         # Copy 7zip file to network drive with the version number in name
