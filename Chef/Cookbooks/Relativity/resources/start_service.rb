@@ -11,6 +11,7 @@ default_action :start
 action :start do
 
   powershell_script "extract_#{name}" do
+    ignore_failure true
     code <<-EOS
     function DevVMServiceLauncher([string] $serviceOrProcessName, [string] $itemType, [bool] $serviceBusRelated, [string] $processLocation){
       $currentWait = 0
@@ -20,7 +21,7 @@ action :start do
       $process = $null
 
       # Service
-      if($itemType -eq "Service"){
+      if($itemType -eq "Service" -and (Get-Service $serviceOrProcessName -ErrorAction SilentlyContinue)){
         $serviceStatus = (Get-Service -Name $serviceOrProcessName).Status
         if ($serviceStatus -ne [System.ServiceProcess.ServiceControllerStatus]::Running){
 
@@ -48,7 +49,7 @@ action :start do
         }
       }
       # Process
-      elseIf($itemType -eq "Process"){
+      elseIf($itemType -eq "Process" -and (Get-Process $serviceOrProcessName -ErrorAction SilentlyContinue)){
         $process = Get-Process -Name $serviceOrProcessName -ErrorAction SilentlyContinue
         if ($process -eq $null){
           Start-Process -FilePath $processLocation

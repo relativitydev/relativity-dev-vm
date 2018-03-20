@@ -26,6 +26,16 @@ default['software']['MSWorksConverter']['file_name'] = 'WorksConv.exe'
 default['software']['MSWorksConverter']['source'] = "\\\\kcura.corp\\shares\\Development\\DevEx\\DevVm_Install_Files\\MSWorksConverter\\#{default['software']['MSWorksConverter']['file_name']}"
 default['software']['MSWorksConverter']['destination_folder'] = "#{default['file']['installers']['default_destination_folder']}\\MSWorksConverter"
 default['software']['MSWorksConverter']['executable'] = 'C:\Program Files (x86)\Common Files\Microsoft Shared\TextConv\WksConv\Wkconv.exe'
+default['software']['java_runtime']['home'] = "C:\\Program Files\\Java\\jre1.8.0_161"
+default['software']['elastic_search']['file_name'] = 'datagrid-2.3.3.79-install.zip'
+default['software']['elastic_search']['source'] = "\\\\kcura.corp\\shares\\Development\\DevEx\\DevVm_Install_Files\\ElasticSearch\\#{default['software']['elastic_search']['file_name']}"
+default['software']['elastic_search']['destination_folder'] = "#{default['file']['installers']['default_destination_folder']}\\ElasticSearch"
+default['software']['elastic_search']['config_file_location'] = "C:\\RelativityDataGrid\\elasticsearch-main\\config\\elasticsearch.yml"
+default['software']['elastic_search']['bin_folder'] = "C:\\RelativityDataGrid\\elasticsearch-main\\bin"
+default['software']['elastic_search']['bat_filename'] = "kservice.bat"
+default['software']['elastic_search']['max_memory_mb'] = "512"
+default['software']['elastic_search']['number_of_chards'] = "2"
+default['software']['elastic_search']['number_of_replicas'] = "0"
 
 default['sql']['install']['source_folder'] = '\\\\kcura.corp\\shares\\Development\\DevEx\\DevVm_Install_Files\\SQL_Server_2016_Developer_Edition'
 default['sql']['install']['destination_folder'] = "#{default['file']['installers']['default_destination_folder']}\\Sql"
@@ -340,6 +350,7 @@ default['invariant']['response_file']['replacement_values'] =
 ]
 
 default['sample_workspace_name'] = 'Sample Workspace'
+default['sample_data_grid_workspace_name'] = 'Sample Data Grid Workspace'
 
 default['sample_data_population']['config_file_name'] = 'DataPopulateConfiguration.Json'
 default['sample_data_population']['config_file_path'] = Chef::Config[:file_cache_path] #Dir.tmpdir
@@ -363,6 +374,8 @@ default['relativity_apps_agents_to_install'] = {
     'Production' => "51B19AB2-3D45-406C-A85E-F98C01B033EC",
     'Processing' => "ED0E23F9-DA60-4298-AF9A-AE6A9B6A9319",
     'SmokeTest' => "0125C8D4-8354-4D8F-B031-01E73C866C7C",
+    'DataGridCore' => "6A8C2341-6888-44DA-B1A4-5BDCE0D1A383",
+    'DataGridTextMigration' => "684B10BB-3B12-4BB1-83E9-A56A7D6CA67F"
 }
 
 # Add resource files to this 2 dimensional Array to push them to Relativity. Make sure they exist in files/default
@@ -412,6 +425,12 @@ default['services'] =
         name: "Service Bus VSS", 
         type: "Service",
         serviceBus: "$True",
+        location: ""
+    },
+    {
+        name: "elasticsearch-service-x64", 
+        type: "Service",
+        serviceBus: "$False",
         location: ""
     },
     {
