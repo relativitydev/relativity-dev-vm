@@ -51,6 +51,15 @@ default['service_bus']['services']['service_bus_resource_provider'] = 'Service B
 default['service_bus']['services']['service_bus_vss'] = 'Service Bus VSS'
 default['service_bus']['services']['service_bus_FabricHostSvc'] = 'FabricHostSvc'
 
+default['secret_store']['install']['source_folder'] = '\\\\kcura.corp\\shares\\Development\\DevEx\\DevVm_Install_Files\\SecretStore'
+default['secret_store']['install']['destination_folder'] = "#{default['file']['installers']['default_destination_folder']}\\SecretStore"
+default['secret_store']['install']['file_name'] = 'Relativity.SecretStore.Installer.exe'
+default['secret_store']['install']['client']['location'] = 'C:\\\"Program Files\"\\\"Relativity Secret Store\"\\Client\\secretstore.exe'
+default['secret_store']['service']['port'] = '9090'
+default['secret_store']['init_result'] = 'C:\\\"Program Files\"\\\"Relativity Secret Store\"\\Client\\init_output.txt'
+default['secret_store']['unseal_key_identifier'] = 'UNSEALKEY'
+default['secret_store']['unseal_key'] = 'C:\\Program Files\\Relativity Secret Store\\unseal.txt'
+
 default['relativity']['install']['source_folder'] = '\\\\kcura.corp\\shares\\Development\\DevEx\\DevVm_Install_Files\\Relativity'
 default['relativity']['install']['destination_folder'] = "#{default['file']['installers']['default_destination_folder']}\\Relativity"
 default['relativity']['install']['file_name'] = 'Relativity.exe'

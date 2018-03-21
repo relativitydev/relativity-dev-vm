@@ -331,10 +331,6 @@ function Copy-Relativity-Installer-And-Response-Files([string] $relativityVersio
   [string] $destinationRelativityResponseFile = "$($global:devVmInstallFolder)\Relativity\RelativityResponse.txt"
   Delete-File-If-It-Exists $destinationRelativityResponseFile
   Copy-File-Overwrite-If-It-Exists $sourceRelativityResponseFile $destinationRelativityResponseFile
-  
-  #todo: Testing only
-  Add-Content -Path $destinationRelativityResponseFile -Value "`n"
-  Add-Content -Path $destinationRelativityResponseFile -Value "SKIPSSECRETSTOREREQUIREMENT=1"
 
   Write-Message-To-Screen "Copied Relativity Installer and Response files."
   Write-Empty-Line-To-Screen

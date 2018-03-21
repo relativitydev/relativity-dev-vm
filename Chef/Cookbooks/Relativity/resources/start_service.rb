@@ -10,7 +10,7 @@ default_action :start
 
 action :start do
 
-  powershell_script "extract_#{name}" do
+  powershell_script "start service - #{name}" do
     code <<-EOS
     function DevVMServiceLauncher([string] $serviceOrProcessName, [string] $itemType, [bool] $serviceBusRelated, [string] $processLocation){
       $currentWait = 0

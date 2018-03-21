@@ -1,9 +1,15 @@
+Clear-Host
+
 [Boolean] $global:exportVm = $false
 [string] $global:vmName = "RelativityDevVm"
 [string] $global:vmExportPath = "C:\DevVmExport"
 [string] $global:vmCheckpointName = "RelativityDevVm Created"
 [string] $global:devVmCreationResultFileName = "result_file.txt"
 [Boolean] $global:devVmCreationWasSuccess = $false
+
+function Write-Empty-Line-To-Screen () {
+  Write-Host ""
+}
 
 function Write-Host-Custom ([string] $writeMessage) {
   Write-Host $writeMessage -ForegroundColor Magenta
