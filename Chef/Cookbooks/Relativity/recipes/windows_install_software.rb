@@ -7,6 +7,16 @@ include_recipe 'chocolatey'
 
 custom_log 'custom_log' do msg 'Finished installing chocolatey' end
 
+# Install Javaruntime
+chocolatey_package 'javaruntime' do
+  version '8.0.121'
+  retries 5
+  retry_delay 5
+  action :install
+end
+
+custom_log 'custom_log' do msg 'Finished installing Java Runtime' end
+
 # Install Notepad++
 chocolatey_package 'notepadplusplus' do
   version '7.4.2'

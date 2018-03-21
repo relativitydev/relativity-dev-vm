@@ -1,0 +1,96 @@
+##################### Elasticsearch Configuration Example #####################
+
+# This file contains an overview of various configuration settings,
+# targeted at operations staff. Application developers should
+# consult the guide at <http://elasticsearch.org/guide>.
+#
+# The installation procedure is covered at
+# <http://elasticsearch.org/guide/en/elasticsearch/reference/current/setup.html>.
+#
+# Elasticsearch comes with reasonable defaults for most settings,
+# so you can try it out without bothering with configuration.
+#
+# Most of the time, these defaults are just fine for running a production
+# cluster. If you're fine-tuning your cluster, or wondering about the
+# effect of certain configuration option, please _do ask_ on the
+# mailing list or IRC channel [http://elasticsearch.org/community].
+
+# Any element in the configuration can be replaced with environment variables
+# by placing them in ${...} notation. For example:
+#
+#node.rack: ${RACK_ENV_VAR}
+
+# For information on supported formats and syntax for the config file, see
+# <http://elasticsearch.org/guide/en/elasticsearch/reference/current/setup-configuration.html>
+
+################################# KCURA SETTINGS #############################@
+
+cluster.name: datagrid_cluster
+
+node.name: <%= node['windows']['hostname'] %>
+
+node.master: true
+
+node.data: true
+
+discovery.zen.minimum_master_nodes: 1
+discovery.zen.ping.multicast.enabled: false
+
+discovery.zen.ping.unicast.hosts: ["<%= @elasticsearch_master.join(':9300","') %>:9300"]
+
+#marvel agent settings
+marvel.agent.enabled: false
+
+# This prevents destructive actions w/ wildcards Ex: DELETE /*
+action.destructive_requires_name: true
+# This disables automatic index creation
+
+action.auto_create_index: false,.security
+
+# This is for global cluster state file to be readable
+format: json
+# This is an optimization that seems to work for our application
+transport.tcp.compress: true
+http.max_content_length: 201mb
+http.cors.enabled: false
+
+#This delays cluster recovery, providing additional time for all nodes to first come online
+gateway.expected_master_nodes: 0
+gateway.expected_data_nodes: 0
+gateway.recover_after_time: 5m
+
+# This puts all scripting functionality in a sandbox
+#script.disable_dynamic: true
+script.default_lang: groovy
+script.groovy.sandbox.enabled: true
+
+# Path to directory where to store index data allocated for this node.
+path.data: C:\RelativityDataGrid\data
+
+# Path to directory where to store backups
+path.repo: C:\RelativityDataGrid\backups
+
+# Delayed Allocation
+index.unassigned.node_left.delayed_timeout: 10m
+
+##################ES 2.1 changes#############
+script.inline: on
+script.indexed: on
+security.manager.enabled: false
+
+#network settings
+network.host: 0.0.0.0
+
+#set index result size.. default is 10000
+index.max_result_window: 2147483647
+
+###################### Shield settings ###############################
+shield.enabled: false
+shield.authc.realms:
+ custom:
+  type: kCuraBearerRealm
+  order: 0
+  publicJWKsUrl: <%= @idsrv_location %>.well-known/jwks
+ esusers1:
+  type: esusers
+  order: 1
