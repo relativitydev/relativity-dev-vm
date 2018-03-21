@@ -1,5 +1,3 @@
-Clear-Host
-
 [Boolean] $global:exportVm = $false
 [string] $global:vmName = "RelativityDevVm"
 [string] $global:vmExportPath = "C:\DevVmExport"
