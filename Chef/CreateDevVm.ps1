@@ -77,7 +77,12 @@ function Delete-Folder-If-It-Exists ([string] $directoryPath) {
 function Create-DevVm() {
   try {
     Write-Heading-Message-To-Screen  "Creating VM"
+
+    Write-Message-To-Screen "PSScriptroot: $($PSScriptroot)"
+    Set-Location $PSScriptroot
+
     vagrant up
+    
     Write-Message-To-Screen  "Created VM"
   }
   Catch [Exception] {
@@ -329,6 +334,9 @@ function Start-DevVm-Process() {
   $stopWatch = [System.Diagnostics.Stopwatch]::StartNew() 
   try {
     $env:DevVmCreationErrorStatus = "false"
+
+    Write-Message-To-Screen "PSScriptroot: $($PSScriptroot)"
+    Set-Location $PSScriptroot
 
     # Create New DevVm
     New-DevVm

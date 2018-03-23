@@ -356,6 +356,9 @@ function Copy-Invariant-Installer-And-Response-Files([string] $invariantVersionT
 function Run-DevVm-Creation-Script([string] $relativityVersionToCreate) {
   Write-Heading-Message-To-Screen "Running DevVm creation script."
 
+  Write-Message-To-Screen "PSScriptroot: $($PSScriptroot)"
+  Set-Location $PSScriptroot
+  
   # Run DevVm Script
   &"$PSScriptroot\CreateDevVm.ps1"
 
@@ -503,6 +506,9 @@ function Initialize() {
     Write-Host-Custom "DevVM Automation Logs file doesn't exist."
     Create-Log-File
   }
+
+  Write-Message-To-Screen "PSScriptroot: $($PSScriptroot)"
+  Set-Location $PSScriptroot
 }
 
 Initialize
