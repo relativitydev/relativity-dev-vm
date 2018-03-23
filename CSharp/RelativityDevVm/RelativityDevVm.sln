@@ -5,6 +5,8 @@ VisualStudioVersion = 15.0.27130.2027
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AgentsConsole", "AgentsConsole\AgentsConsole.csproj", "{3EB76D74-0FE5-4946-8DCE-F761193091B7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZipFolderConsole", "ZipFolderConsole\ZipFolderConsole.csproj", "{55182785-8A7A-43FA-87FA-A561CF241EDE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{3EB76D74-0FE5-4946-8DCE-F761193091B7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3EB76D74-0FE5-4946-8DCE-F761193091B7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3EB76D74-0FE5-4946-8DCE-F761193091B7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{55182785-8A7A-43FA-87FA-A561CF241EDE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{55182785-8A7A-43FA-87FA-A561CF241EDE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{55182785-8A7A-43FA-87FA-A561CF241EDE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{55182785-8A7A-43FA-87FA-A561CF241EDE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

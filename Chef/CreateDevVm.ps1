@@ -78,6 +78,7 @@ function Create-DevVm() {
   try {
     Write-Heading-Message-To-Screen  "Creating VM"
 
+    # Make sure we are in the folder where the running script exists
     Write-Message-To-Screen "PSScriptroot: $($PSScriptroot)"
     Set-Location $PSScriptroot
 
@@ -152,12 +153,15 @@ function Compress-DevVm() {
     [string] $folderToCompressPath = "$($global:vmExportPath)\$($global:vmName)"
     [string] $zipFilePath = "$($global:vmExportPath)\$($global:vmName).7z"
 
+    # Make sure we are in the folder where the running script exists
+    Write-Message-To-Screen "PSScriptroot: $($PSScriptroot)"
+    Set-Location $PSScriptroot
+
     # Remove previous zip file
     Delete-File-If-It-Exists $zipFilePath
 
-    Install-Module -NugetPackageId 7Zip4Powershell -PackageVersion 1.8.0
-    Compress-7Zip -CompressionLevel Fast -Path $folderToCompressPath -ArchiveFileName $zipFilePath
-    #todo: remove fast compression
+    # Create new zip file
+    .\ZipFolderConsole.exe $folderToCompressPath $zipFilePath
 
     Write-Message-To-Screen  "Compressed Exported VM to 7Zip"
   }
@@ -335,6 +339,7 @@ function Start-DevVm-Process() {
   try {
     $env:DevVmCreationErrorStatus = "false"
 
+    # Make sure we are in the folder where the running script exists
     Write-Message-To-Screen "PSScriptroot: $($PSScriptroot)"
     Set-Location $PSScriptroot
 
