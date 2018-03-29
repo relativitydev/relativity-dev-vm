@@ -51,205 +51,205 @@ Vagrant.configure('2') do |config|
 
   ######################### Chef Recipes #########################
   # Setup Log file
-  #config.vm.provision 'chef_zero' do |chef|
-  #  chef.cookbooks_path = 'Cookbooks'
-  #  chef.data_bags_path = 'DataBags'
-  #  chef.nodes_path = 'Nodes'
-  #  chef.roles_path = 'Roles'
-  #  chef.json = {
-  #    'smb_domain' => network_share_smb_domain,
-  #    'smb_username' => network_share_smb_username,
-  #    'smb_password' => network_share_smb_password,
-  #    'smtp_server' => relativity_smtp_server,
-  #    'smtp_port' => relativity_smtp_port,
-  #    'email_from' => relativity_email_from,
-  #    'email_to' => relativity_email_to,
-  #  }
-  #  chef.add_recipe('Relativity::default_setup_log_file')
-  #end
-  #
-  ## Run Pre-Windows Chef Recipe
-  #config.vm.provision 'chef_zero' do |chef|
-  #  chef.cookbooks_path = 'Cookbooks'
-  #  chef.data_bags_path = 'DataBags'
-  #  chef.nodes_path = 'Nodes'
-  #  chef.roles_path = 'Roles'
-  #  chef.json = {
-  #    'smb_domain' => network_share_smb_domain,
-  #    'smb_username' => network_share_smb_username,
-  #    'smb_password' => network_share_smb_password,
-  #    'smtp_server' => relativity_smtp_server,
-  #    'smtp_port' => relativity_smtp_port,
-  #    'email_from' => relativity_email_from,
-  #    'email_to' => relativity_email_to,
-  #  }
-  #  chef.add_recipe('Relativity::default_pre_windows')
-  #end
-  #
-  ## Restart VM
-  #config.vm.provision :reload
-  #
-  ## Run Pre-Windows Chef Recipe
-  #config.vm.provision 'chef_zero' do |chef|
-  #  chef.cookbooks_path = 'Cookbooks'
-  #  chef.data_bags_path = 'DataBags'
-  #  chef.nodes_path = 'Nodes'
-  #  chef.roles_path = 'Roles'
-  #  chef.json = {
-  #    'smb_domain' => network_share_smb_domain,
-  #    'smb_username' => network_share_smb_username,
-  #    'smb_password' => network_share_smb_password,
-  #    'smtp_server' => relativity_smtp_server,
-  #    'smtp_port' => relativity_smtp_port,
-  #    'email_from' => relativity_email_from,
-  #    'email_to' => relativity_email_to,
-  #  }
-  #  chef.add_recipe('Relativity::default_windows')
-  #end
-  #
-  ## Restart VM
-  #config.vm.provision :reload
-  #
-  ## Run Pre-Relativity Copy Response Files Chef Recipe
-  #config.vm.provision 'chef_zero' do |chef|
-  #  chef.cookbooks_path = 'Cookbooks'
-  #  chef.data_bags_path = 'DataBags'
-  #  chef.nodes_path = 'Nodes'
-  #  chef.roles_path = 'Roles'
-  #  chef.json = {
-  #    'smb_domain' => network_share_smb_domain,
-  #    'smb_username' => network_share_smb_username,
-  #    'smb_password' => network_share_smb_password,
-  #    'smtp_server' => relativity_smtp_server,
-  #    'smtp_port' => relativity_smtp_port,
-  #    'email_from' => relativity_email_from,
-  #    'email_to' => relativity_email_to,
-  #  }
-  #  chef.add_recipe('Relativity::pre_relativity_copy_install_response_files_relativity')
-  #  chef.add_recipe('Relativity::pre_relativity_copy_install_response_files_invariant')
-  #end
-
-  ## Run Pre-Relativity Chef Recipe
-  #config.vm.provision 'chef_zero' do |chef|
-  #  chef.cookbooks_path = 'Cookbooks'
-  #  chef.data_bags_path = 'DataBags'
-  #  chef.nodes_path = 'Nodes'
-  #  chef.roles_path = 'Roles'
-  #  chef.json = {
-  #    'smb_domain' => network_share_smb_domain,
-  #    'smb_username' => network_share_smb_username,
-  #    'smb_password' => network_share_smb_password,
-  #    'smtp_server' => relativity_smtp_server,
-  #    'smtp_port' => relativity_smtp_port,
-  #    'email_from' => relativity_email_from,
-  #    'email_to' => relativity_email_to,
-  #  }
-  #  chef.add_recipe('Relativity::default_pre_relativity')
-  #end
-  #
-  # Restart VM
-  #config.vm.provision :reload
-  #
-  ## Run Pre-Relativity Install ServiceBus Chef Recipe
-  #config.vm.provision 'chef_zero' do |chef|
-  #  chef.cookbooks_path = 'Cookbooks'
-  #  chef.data_bags_path = 'DataBags'
-  #  chef.nodes_path = 'Nodes'
-  #  chef.roles_path = 'Roles'
-  #  chef.json = {
-  #    'smb_domain' => network_share_smb_domain,
-  #    'smb_username' => network_share_smb_username,
-  #    'smb_password' => network_share_smb_password,
-  #    'smtp_server' => relativity_smtp_server,
-  #    'smtp_port' => relativity_smtp_port,
-  #    'email_from' => relativity_email_from,
-  #    'email_to' => relativity_email_to,
-  #  }
-  #  chef.add_recipe('Relativity::pre_relativity_install_servicebus')
-  #end
-  #
-  ## Restart VM
-  #config.vm.provision :reload
-  #
-  ## Make sure services are running
-  #config.vm.provision 'chef_zero' do |chef|
-  #  chef.cookbooks_path = 'Cookbooks'
-  #  chef.data_bags_path = 'DataBags'
-  #  chef.nodes_path = 'Nodes'
-  #  chef.roles_path = 'Roles'
-  #  chef.json = {
-  #    'smb_domain' => network_share_smb_domain,
-  #    'smb_username' => network_share_smb_username,
-  #    'smb_password' => network_share_smb_password,
-  #    'smtp_server' => relativity_smtp_server,
-  #    'smtp_port' => relativity_smtp_port,
-  #    'email_from' => relativity_email_from,
-  #    'email_to' => relativity_email_to,
-  #  }
-  #  chef.add_recipe('Relativity::default_start_services')
-  #end
-  #
-  ## Run Pre-Relativity Install Secret Store
-  #config.vm.provision 'chef_zero' do |chef|
-  #  chef.cookbooks_path = 'Cookbooks'
-  #  chef.data_bags_path = 'DataBags'
-  #  chef.nodes_path = 'Nodes'
-  #  chef.roles_path = 'Roles'
-  #  chef.json = {
-  #    'smb_domain' => network_share_smb_domain,
-  #    'smb_username' => network_share_smb_username,
-  #    'smb_password' => network_share_smb_password,
-  #    'smtp_server' => relativity_smtp_server,
-  #    'smtp_port' => relativity_smtp_port,
-  #    'email_from' => relativity_email_from,
-  #    'email_to' => relativity_email_to,
-  #  }
-  #  chef.add_recipe('Relativity::pre_relativity_secret_store_install')
-  #  chef.add_recipe('Relativity::pre_relativity_secret_store_add_response_file_properties')
-  #end
-  #
-  ## Run Relativity Chef Recipe
-  #config.vm.provision 'chef_zero' do |chef|
-  #  chef.cookbooks_path = 'Cookbooks'
-  #  chef.data_bags_path = 'DataBags'
-  #  chef.nodes_path = 'Nodes'
-  #  chef.roles_path = 'Roles'
-  #  chef.json = {
-  #    'smb_domain' => network_share_smb_domain,
-  #    'smb_username' => network_share_smb_username,
-  #    'smb_password' => network_share_smb_password,
-  #    'smtp_server' => relativity_smtp_server,
-  #    'smtp_port' => relativity_smtp_port,
-  #    'email_from' => relativity_email_from,
-  #    'email_to' => relativity_email_to,
-  #  }
-  #  chef.add_recipe('Relativity::default_relativity')
-  #  chef.add_recipe('Relativity::post_relativity_instance_setting_update_cookie_secure')
-  #  chef.add_recipe('Relativity::post_relativity_instance_setting_update_smtp_email_settings')
-  #end
-  #
-  ## Restart VM
-  #config.vm.provision :reload
-  #
-  ## Make sure services are running
-  #config.vm.provision 'chef_zero' do |chef|
-  #  chef.cookbooks_path = 'Cookbooks'
-  #  chef.data_bags_path = 'DataBags'
-  #  chef.nodes_path = 'Nodes'
-  #  chef.roles_path = 'Roles'
-  #  chef.json = {
-  #    'smb_domain' => network_share_smb_domain,
-  #    'smb_username' => network_share_smb_username,
-  #    'smb_password' => network_share_smb_password,
-  #    'smtp_server' => relativity_smtp_server,
-  #    'smtp_port' => relativity_smtp_port,
-  #    'email_from' => relativity_email_from,
-  #    'email_to' => relativity_email_to,
-  #  }
-  #  chef.add_recipe('Relativity::default_start_services')
-  #end
+  config.vm.provision 'chef_zero' do |chef|
+    chef.cookbooks_path = 'Cookbooks'
+    chef.data_bags_path = 'DataBags'
+    chef.nodes_path = 'Nodes'
+    chef.roles_path = 'Roles'
+    chef.json = {
+      'smb_domain' => network_share_smb_domain,
+      'smb_username' => network_share_smb_username,
+      'smb_password' => network_share_smb_password,
+      'smtp_server' => relativity_smtp_server,
+      'smtp_port' => relativity_smtp_port,
+      'email_from' => relativity_email_from,
+      'email_to' => relativity_email_to,
+    }
+    chef.add_recipe('Relativity::default_setup_log_file')
+  end
   
-  ## Configure Distributed Servers
+  # Run Pre-Windows Chef Recipe
+  config.vm.provision 'chef_zero' do |chef|
+    chef.cookbooks_path = 'Cookbooks'
+    chef.data_bags_path = 'DataBags'
+    chef.nodes_path = 'Nodes'
+    chef.roles_path = 'Roles'
+    chef.json = {
+      'smb_domain' => network_share_smb_domain,
+      'smb_username' => network_share_smb_username,
+      'smb_password' => network_share_smb_password,
+      'smtp_server' => relativity_smtp_server,
+      'smtp_port' => relativity_smtp_port,
+      'email_from' => relativity_email_from,
+      'email_to' => relativity_email_to,
+    }
+    chef.add_recipe('Relativity::default_pre_windows')
+  end
+  
+  # Restart VM
+  config.vm.provision :reload
+  
+  # Run Pre-Windows Chef Recipe
+  config.vm.provision 'chef_zero' do |chef|
+    chef.cookbooks_path = 'Cookbooks'
+    chef.data_bags_path = 'DataBags'
+    chef.nodes_path = 'Nodes'
+    chef.roles_path = 'Roles'
+    chef.json = {
+      'smb_domain' => network_share_smb_domain,
+      'smb_username' => network_share_smb_username,
+      'smb_password' => network_share_smb_password,
+      'smtp_server' => relativity_smtp_server,
+      'smtp_port' => relativity_smtp_port,
+      'email_from' => relativity_email_from,
+      'email_to' => relativity_email_to,
+    }
+    chef.add_recipe('Relativity::default_windows')
+  end
+  
+  # Restart VM
+  config.vm.provision :reload
+  
+  # Run Pre-Relativity Copy Response Files Chef Recipe
+  config.vm.provision 'chef_zero' do |chef|
+    chef.cookbooks_path = 'Cookbooks'
+    chef.data_bags_path = 'DataBags'
+    chef.nodes_path = 'Nodes'
+    chef.roles_path = 'Roles'
+    chef.json = {
+      'smb_domain' => network_share_smb_domain,
+      'smb_username' => network_share_smb_username,
+      'smb_password' => network_share_smb_password,
+      'smtp_server' => relativity_smtp_server,
+      'smtp_port' => relativity_smtp_port,
+      'email_from' => relativity_email_from,
+      'email_to' => relativity_email_to,
+    }
+    chef.add_recipe('Relativity::pre_relativity_copy_install_response_files_relativity')
+    chef.add_recipe('Relativity::pre_relativity_copy_install_response_files_invariant')
+  end
+
+  # Run Pre-Relativity Chef Recipe
+  config.vm.provision 'chef_zero' do |chef|
+    chef.cookbooks_path = 'Cookbooks'
+    chef.data_bags_path = 'DataBags'
+    chef.nodes_path = 'Nodes'
+    chef.roles_path = 'Roles'
+    chef.json = {
+      'smb_domain' => network_share_smb_domain,
+      'smb_username' => network_share_smb_username,
+      'smb_password' => network_share_smb_password,
+      'smtp_server' => relativity_smtp_server,
+      'smtp_port' => relativity_smtp_port,
+      'email_from' => relativity_email_from,
+      'email_to' => relativity_email_to,
+    }
+    chef.add_recipe('Relativity::default_pre_relativity')
+  end
+  
+   Restart VM
+  config.vm.provision :reload
+  
+  # Run Pre-Relativity Install ServiceBus Chef Recipe
+  config.vm.provision 'chef_zero' do |chef|
+    chef.cookbooks_path = 'Cookbooks'
+    chef.data_bags_path = 'DataBags'
+    chef.nodes_path = 'Nodes'
+    chef.roles_path = 'Roles'
+    chef.json = {
+      'smb_domain' => network_share_smb_domain,
+      'smb_username' => network_share_smb_username,
+      'smb_password' => network_share_smb_password,
+      'smtp_server' => relativity_smtp_server,
+      'smtp_port' => relativity_smtp_port,
+      'email_from' => relativity_email_from,
+      'email_to' => relativity_email_to,
+    }
+    chef.add_recipe('Relativity::pre_relativity_install_servicebus')
+  end
+  
+  # Restart VM
+  config.vm.provision :reload
+  
+  # Make sure services are running
+  config.vm.provision 'chef_zero' do |chef|
+    chef.cookbooks_path = 'Cookbooks'
+    chef.data_bags_path = 'DataBags'
+    chef.nodes_path = 'Nodes'
+    chef.roles_path = 'Roles'
+    chef.json = {
+      'smb_domain' => network_share_smb_domain,
+      'smb_username' => network_share_smb_username,
+      'smb_password' => network_share_smb_password,
+      'smtp_server' => relativity_smtp_server,
+      'smtp_port' => relativity_smtp_port,
+      'email_from' => relativity_email_from,
+      'email_to' => relativity_email_to,
+    }
+    chef.add_recipe('Relativity::default_start_services')
+  end
+  
+  # Run Pre-Relativity Install Secret Store
+  config.vm.provision 'chef_zero' do |chef|
+    chef.cookbooks_path = 'Cookbooks'
+    chef.data_bags_path = 'DataBags'
+    chef.nodes_path = 'Nodes'
+    chef.roles_path = 'Roles'
+    chef.json = {
+      'smb_domain' => network_share_smb_domain,
+      'smb_username' => network_share_smb_username,
+      'smb_password' => network_share_smb_password,
+      'smtp_server' => relativity_smtp_server,
+      'smtp_port' => relativity_smtp_port,
+      'email_from' => relativity_email_from,
+      'email_to' => relativity_email_to,
+    }
+    chef.add_recipe('Relativity::pre_relativity_secret_store_install')
+    chef.add_recipe('Relativity::pre_relativity_secret_store_add_response_file_properties')
+  end
+  
+  # Run Relativity Chef Recipe
+  config.vm.provision 'chef_zero' do |chef|
+    chef.cookbooks_path = 'Cookbooks'
+    chef.data_bags_path = 'DataBags'
+    chef.nodes_path = 'Nodes'
+    chef.roles_path = 'Roles'
+    chef.json = {
+      'smb_domain' => network_share_smb_domain,
+      'smb_username' => network_share_smb_username,
+      'smb_password' => network_share_smb_password,
+      'smtp_server' => relativity_smtp_server,
+      'smtp_port' => relativity_smtp_port,
+      'email_from' => relativity_email_from,
+      'email_to' => relativity_email_to,
+    }
+    chef.add_recipe('Relativity::default_relativity')
+    chef.add_recipe('Relativity::post_relativity_instance_setting_update_cookie_secure')
+    chef.add_recipe('Relativity::post_relativity_instance_setting_update_smtp_email_settings')
+  end
+  
+  # Restart VM
+  config.vm.provision :reload
+  
+  # Make sure services are running
+  config.vm.provision 'chef_zero' do |chef|
+    chef.cookbooks_path = 'Cookbooks'
+    chef.data_bags_path = 'DataBags'
+    chef.nodes_path = 'Nodes'
+    chef.roles_path = 'Roles'
+    chef.json = {
+      'smb_domain' => network_share_smb_domain,
+      'smb_username' => network_share_smb_username,
+      'smb_password' => network_share_smb_password,
+      'smtp_server' => relativity_smtp_server,
+      'smtp_port' => relativity_smtp_port,
+      'email_from' => relativity_email_from,
+      'email_to' => relativity_email_to,
+    }
+    chef.add_recipe('Relativity::default_start_services')
+  end
+  
+  # Configure Distributed Servers
   config.vm.provision 'chef_zero' do |chef|
     chef.cookbooks_path = 'Cookbooks'
     chef.data_bags_path = 'DataBags'
@@ -347,46 +347,46 @@ Vagrant.configure('2') do |config|
     chef.add_recipe('Relativity::default_start_services')
   end
   
-  ## Run Post-Relativity Recipes
-  #config.vm.provision 'chef_zero' do |chef|
-  #  chef.cookbooks_path = 'Cookbooks'
-  #  chef.data_bags_path = 'DataBags'
-  #  chef.nodes_path = 'Nodes'
-  #  chef.roles_path = 'Roles'
-  #  chef.json = {
-  #    'smb_domain' => network_share_smb_domain,
-  #    'smb_username' => network_share_smb_username,
-  #    'smb_password' => network_share_smb_password,
-  #    'smtp_server' => relativity_smtp_server,
-  #    'smtp_port' => relativity_smtp_port,
-  #    'email_from' => relativity_email_from,
-  #    'email_to' => relativity_email_to,
-  #  }
-  #  chef.add_recipe('Relativity::post_relativity_instance_setting_update_developer_mode')
-  #  chef.add_recipe('Relativity::post_relativity_reset_iis')
-  #  chef.add_recipe('Relativity::post_relativity_update_kcura_services_startup_type')
-  #  chef.add_recipe('Relativity::post_relativity_create_workspace')
-  #  chef.add_recipe('Relativity::post_relativity_create_data_sampler_config_file')
-  #  chef.add_recipe('Relativity::post_relativity_push_resource_file')
-  #  chef.add_recipe('Relativity::post_relativity_install_rap_files')
-  #  chef.add_recipe('Relativity::post_relativity_create_rap_agents')
-  #end
-  #
-  ## Create Result file with VM Creation Status
-  #config.vm.provision 'chef_zero' do |chef|
-  #  chef.cookbooks_path = 'Cookbooks'
-  #  chef.data_bags_path = 'DataBags'
-  #  chef.nodes_path = 'Nodes'
-  #  chef.roles_path = 'Roles'
-  #  chef.json = {
-  #    'smb_domain' => network_share_smb_domain,
-  #    'smb_username' => network_share_smb_username,
-  #    'smb_password' => network_share_smb_password,
-  #    'smtp_server' => relativity_smtp_server,
-  #    'smtp_port' => relativity_smtp_port,
-  #    'email_from' => relativity_email_from,
-  #    'email_to' => relativity_email_to,
-  #  }
-  #  chef.add_recipe('Relativity::post_relativity_write_script_result_success')
-  #end
+  # Run Post-Relativity Recipes
+  config.vm.provision 'chef_zero' do |chef|
+    chef.cookbooks_path = 'Cookbooks'
+    chef.data_bags_path = 'DataBags'
+    chef.nodes_path = 'Nodes'
+    chef.roles_path = 'Roles'
+    chef.json = {
+      'smb_domain' => network_share_smb_domain,
+      'smb_username' => network_share_smb_username,
+      'smb_password' => network_share_smb_password,
+      'smtp_server' => relativity_smtp_server,
+      'smtp_port' => relativity_smtp_port,
+      'email_from' => relativity_email_from,
+      'email_to' => relativity_email_to,
+    }
+    chef.add_recipe('Relativity::post_relativity_instance_setting_update_developer_mode')
+    chef.add_recipe('Relativity::post_relativity_reset_iis')
+    chef.add_recipe('Relativity::post_relativity_update_kcura_services_startup_type')
+    chef.add_recipe('Relativity::post_relativity_create_workspace')
+    chef.add_recipe('Relativity::post_relativity_create_data_sampler_config_file')
+    chef.add_recipe('Relativity::post_relativity_push_resource_file')
+    chef.add_recipe('Relativity::post_relativity_install_rap_files')
+    chef.add_recipe('Relativity::post_relativity_create_rap_agents')
+  end
+  
+  # Create Result file with VM Creation Status
+  config.vm.provision 'chef_zero' do |chef|
+    chef.cookbooks_path = 'Cookbooks'
+    chef.data_bags_path = 'DataBags'
+    chef.nodes_path = 'Nodes'
+    chef.roles_path = 'Roles'
+    chef.json = {
+      'smb_domain' => network_share_smb_domain,
+      'smb_username' => network_share_smb_username,
+      'smb_password' => network_share_smb_password,
+      'smtp_server' => relativity_smtp_server,
+      'smtp_port' => relativity_smtp_port,
+      'email_from' => relativity_email_from,
+      'email_to' => relativity_email_to,
+    }
+    chef.add_recipe('Relativity::post_relativity_write_script_result_success')
+  end
 end
