@@ -5,13 +5,11 @@ custom_log 'custom_log' do msg "recipe_start_time(#{recipe_name}): #{start_time}
 relativity_install_file = "#{node['relativity']['install']['destination_folder']}\\#{node['relativity']['install']['file_name']}"
 relativity_response_file = node['relativity']['install']['response_file_destination_location']
 
-# Import Service Bus module
-IMPORT_MODULE = 'Import-Module "C:/Program Files/Service Bus/1.1/ServiceBus/ServiceBus.psd1" -ErrorAction Stop'.freeze
+# Start Services
+include_recipe 'Relativity::default_start_services'
 
 powershell_script 'install_relativity' do
   code <<-EOH
-    #{IMPORT_MODULE}
-    Start-SBFarm
     $process = Start-Process -FilePath '#{relativity_install_file}' -ArgumentList @(\"-Log #{node['relativity']['install']['destination_folder']}\\install_log.txt\", \"-ResponseFilePath=#{relativity_response_file}\") -Wait -WindowStyle Hidden -PassThru
     exit $process.ExitCode
   EOH

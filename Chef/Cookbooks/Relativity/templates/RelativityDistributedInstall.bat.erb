@@ -1,0 +1,28 @@
+@echo off
+
+
+REM Required parameters:
+
+SET MDFPATH=C:\MDF
+SET LDFPATH=C:\LDF
+
+SET NDFPATH=C:\NDF
+
+SET BAKPATH=C:\Backup
+
+SET FILESHARE=\\RelativityDevVM\fileshare\EDDS
+
+SET EDDSDBOPASSWORD=<%= @eddsdbo_password %>
+
+SET SQLINSTANCE=<%= @full_distributed_server_instance_name %>
+SET INSTALLDIR="C:\Program Files\kCura Corporation\Relativity"
+
+
+SET USERNAME=<%= @sa_username %>
+
+SET PASSWORD=<%= @sa_password %>
+
+
+ "C:\Program Files\kCura Corporation\Relativity\Procuro\kCura.EDDS.Procuro.exe" -s  -f  -secondaryinstalltoggle -u:%USERNAME% -pw:%PASSWORD% -mdf:%MDFPATH% -ldf:%LDFPATH% -ndf:%NDFPATH% -bak:%BAKPATH%  -fileshare:%FILESHARE% -eddsdbopassword:%EDDSDBOPASSWORD% -sqlinstance:%SQLINSTANCE% -installdir:%INSTALLDIR% -distributed -xml:.\UpgradeResults_dist.xml
+
+exit 0
