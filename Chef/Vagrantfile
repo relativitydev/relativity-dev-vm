@@ -147,7 +147,7 @@ Vagrant.configure('2') do |config|
     chef.add_recipe('Relativity::default_pre_relativity')
   end
   
-   Restart VM
+  # Restart VM
   config.vm.provision :reload
   
   # Run Pre-Relativity Install ServiceBus Chef Recipe
@@ -371,7 +371,25 @@ Vagrant.configure('2') do |config|
     chef.add_recipe('Relativity::post_relativity_install_rap_files')
     chef.add_recipe('Relativity::post_relativity_create_rap_agents')
   end
-  
+
+  # Cleanup VM
+  config.vm.provision 'chef_zero' do |chef|
+    chef.cookbooks_path = 'Cookbooks'
+    chef.data_bags_path = 'DataBags'
+    chef.nodes_path = 'Nodes'
+    chef.roles_path = 'Roles'
+    chef.json = {
+      'smb_domain' => network_share_smb_domain,
+      'smb_username' => network_share_smb_username,
+      'smb_password' => network_share_smb_password,
+      'smtp_server' => relativity_smtp_server,
+      'smtp_port' => relativity_smtp_port,
+      'email_from' => relativity_email_from,
+      'email_to' => relativity_email_to,
+    }
+    chef.add_recipe('Relativity::post_relativity_cleanup')
+  end
+
   # Create Result file with VM Creation Status
   config.vm.provision 'chef_zero' do |chef|
     chef.cookbooks_path = 'Cookbooks'
