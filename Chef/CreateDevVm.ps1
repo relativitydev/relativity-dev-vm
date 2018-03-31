@@ -238,6 +238,24 @@ function Check-DevVm-Result-Text-File-For-Success() {
   }
 }
 
+function Delete-DevVm-Export-Folder() {
+  try {
+    Write-Heading-Message-To-Screen "Deleting DevVM Export folder."
+  
+    Delete-Folder-If-It-Exists $global:vmExportPath
+  
+    Write-Message-To-Screen "Deleted DevVM Export folder. [$($global:vmExportPath)]"
+    Write-Empty-Line-To-Screen
+  }
+  Catch [Exception] {
+    $env:DevVmCreationErrorStatus = "true"
+    Write-Error-Message-To-Screen "An error occured when deleting DevVM Export folder."
+    Write-Error-Message-To-Screen "-----> Exception: $($_.Exception.GetType().FullName)"
+    Write-Error-Message-To-Screen "-----> Exception Message: $($_.Exception.Message)"
+    throw
+  }
+}
+
 function Delete-DevVm-Creation-Result-File() {
   try {
     Write-Heading-Message-To-Screen "Deleting DevVM Creation Result File."
@@ -288,7 +306,7 @@ function New-DevVm() {
 
   try {
     # Delete Export folder if it already exists
-    Delete-Folder-If-It-Exists $global:vmExportPath  
+    Delete-DevVm-Export-Folder  
 		
     # Delete Results file if it already exists
     Delete-DevVm-Creation-Result-File
