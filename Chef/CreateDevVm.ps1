@@ -287,6 +287,9 @@ function New-DevVm() {
   Write-Heading-Message-To-Screen "Creating new DevVM."
 
   try {
+    # Delete Export folder if it already exists
+    Delete-Folder-If-It-Exists $global:vmExportPath  
+		
     # Delete Results file if it already exists
     Delete-DevVm-Creation-Result-File
 

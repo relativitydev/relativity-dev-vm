@@ -365,7 +365,7 @@ function Run-DevVm-Creation-Script([string] $relativityVersionToCreate) {
   Write-Empty-Line-To-Screen
 }
 
-function Copy-DevVm-7Zip-To_Network-Storage([string] $relativityVersionToCopy) {
+function Copy-DevVm-Zip-To_Network-Storage([string] $relativityVersionToCopy) {
   Write-Heading-Message-To-Screen "Copying DevVm created [$($relativityVersionToCopy)] to Network storage."
 
   [string] $sourceZipFilePath = "$($global:vmExportPath)\$($global:vmName).7z"
@@ -427,8 +427,15 @@ function Create-DevVm([string] $relativityVersionToCreate) {
         Run-DevVm-Creation-Script
         Write-Message-To-Screen "Created DevVm. [$($relativityVersionToCreate)]"
 
-        # Copy 7zip file to network drive with the version number in name
-        Copy-DevVm-7Zip-To_Network-Storage $relativityVersionToCreate
+        Check-DevVm-Result-Text-File-For-Success
+
+        if ($global:devVmCreationWasSuccess -eq $true) {
+          # Copy Zip file to network drive with the version number in name
+          Copy-DevVm-Zip-To_Network-Storage $relativityVersionToCreate
+        }
+        else {
+          Write-Message-To-Screen "DevVm creation failed. Skipped copying zip file to network storage."
+        }
       }
       else {
         throw "Skipped DevVM Creation. Could not Identify Invariant Version for Relativity Version[$($relativityVersionToCreate)]"
@@ -464,7 +471,7 @@ function Create-DevVms() {
 
       Write-Message-To-Screen "#################### DevVm - [$($relativityVersionToCreate)] ####################"
     
-      # Create DevVM as a 7Zip file
+      # Create DevVM as a Zip file
       Create-DevVm $relativityVersionToCreate
 
       Write-Message-To-Screen "#################### DevVm - [$($relativityVersionToCreate)] ####################"
