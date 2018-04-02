@@ -12,7 +12,7 @@ function Write-Host-Custom-Green ([string] $writeMessage) {
   Write-Host $writeMessage -ForegroundColor Green
 }
 
-# Retrieve values from DevVm_Automation_Config.yaml file
+# Retrieve values from DevVm_Automation_Config.json file
 [string] $devVmAutomationConfigFilePath = "C:\DevVm_Automation_Config.json"
 [string] $json = Get-Content -Path $devVmAutomationConfigFilePath
 $jsonContents = $json | ConvertFrom-Json
