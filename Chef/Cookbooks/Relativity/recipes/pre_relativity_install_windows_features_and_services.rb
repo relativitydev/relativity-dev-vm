@@ -10,7 +10,7 @@ custom_log 'custom_log' do msg "recipe_start_time(#{recipe_name}): #{start_time}
 # 	- Non-HTTP Activation => NET-Non-HTTp-Activ
 # - .NET Framework 4.5 Features => NET-Framework-45-Features
 # 	- .NET Framework 4.5 => NET-Framework-45-Core
-# 	- APS.NET 4.5 => NET-Framework-45-ASPNET
+# 	- ASP.NET 4.5 => NET-Framework-45-ASPNET
 # 	- WCF Services => NET-WCF-Services45
 # 		- HTTP Activation =>  NET-WCF-HTTP-Activation45
 # 		- Named Pipe Activation => NET-WCF-Pipe-Activation45
