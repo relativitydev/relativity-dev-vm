@@ -1,7 +1,9 @@
 [Boolean] $global:exportVm = $false
 [string] $global:vmName = "RelativityDevVm"
 [string] $global:vmExportPath = "C:\DevVmExport"
-[string] $global:vmCheckpointName = "RelativityDevVm Created"
+[string] $global:vmDocumentationTextFilePath = "$($global:vmExportPath)\$($global:vmName)\DevVm_Documentation.txt"
+[string] $global:vmDocumentationOnline = "https://github.com/relativitydev/relativity-dev-vm/blob/master/Documentation/PDF/Relativity%20Dev%20VM%20-%20Pre-built%20VM%20-%20Documentation.pdf"
+[string] $global:vmCheckpointName = "$($global:vmName) Created"
 [string] $global:devVmCreationResultFileName = "result_file.txt"
 [Boolean] $global:devVmCreationWasSuccess = $false
 
@@ -119,6 +121,30 @@ function Create-DevVm-Checkpoint() {
   Catch [Exception] {
     $env:DevVmCreationErrorStatus = "true"
     Write-Error-Message-To-Screen "An error occured when creating VM checkpoint."
+    Write-Error-Message-To-Screen "-----> Exception: $($_.Exception.GetType().FullName)"
+    Write-Error-Message-To-Screen "-----> Exception Message: $($_.Exception.Message)"
+    throw
+  }
+}
+
+function Create-DevVm-Documentation-Text-File() {
+  try {
+    Write-Heading-Message-To-Screen  "Creating DevVM Documentation text file"
+
+    [string] $documentation_text_file_path = ""
+
+    # Delete DevVM Documentation text file if it already exists
+    Delete-File-If-It-Exists $global:vmDocumentationTextFilePath
+
+    # Create DevVM Documentation text file
+    New-Item $global:vmDocumentationTextFilePath -type file -Force
+    Set-Content -Path $global:vmDocumentationTextFilePath -Value $global:vmDocumentationOnline -Force
+
+    Write-Message-To-Screen  "Created DevVM Documentation text file"
+  }
+  Catch [Exception] {
+    $env:DevVmCreationErrorStatus = "true"
+    Write-Error-Message-To-Screen "An error occured when creating DevVM Documentation text file"
     Write-Error-Message-To-Screen "-----> Exception: $($_.Exception.GetType().FullName)"
     Write-Error-Message-To-Screen "-----> Exception Message: $($_.Exception.Message)"
     throw
@@ -326,6 +352,7 @@ function New-DevVm() {
         Stop-DevVm
         Create-DevVm-Checkpoint
         Export-DevVm
+        Create-DevVm-Documentation-Text-File
         Compress-DevVm
       }
       else {
