@@ -4,7 +4,7 @@ custom_log 'custom_log' do msg "recipe_start_time(#{recipe_name}): #{start_time}
 
 file_source_folder = node['file']['installers']['default_destination_folder']
 file_source = "#{file_source_folder}\\#{node['file']['result']['name']}"
-file_destination = node['file']['result']['destination_folder']
+file_destination_folder = node['file']['result']['destination_folder']
 
 custom_log 'custom_log' do msg 'Creating and writing script result to a text file.' end
 # Create Source folder if it not already exists
@@ -12,7 +12,7 @@ directory file_source_folder do
   action :create
 end
 
-# Create file
+# Create and copy file
 powershell_script 'Create and write script result to a text file.' do
   code <<-EOH
     If (Test-Path "#{file_source}") {
@@ -20,7 +20,7 @@ powershell_script 'Create and write script result to a text file.' do
     }
     New-Item "#{file_source}" -type file -Force
     Set-Content -Path "#{file_source}" -Value "success" -Force
-    Copy-Item -Path "#{file_source}" -Destination "#{file_destination}" -Force
+    Copy-Item -Path "#{file_source}" -Destination "#{file_destination_folder}" -Force
   EOH
 end
 custom_log 'custom_log' do msg 'Created and written script result to a text file.' end

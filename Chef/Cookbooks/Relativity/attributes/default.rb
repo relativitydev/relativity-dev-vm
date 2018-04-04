@@ -6,7 +6,7 @@ default['windows']['user']['admin']['login'] = 'Administrator'
 default['windows']['user']['admin']['password'] = 'Test1234!'
 
 default['file']['installers']['default_destination_folder'] = 'C:\\Chef_Install'
-default['file']['log']['default_destination_folder'] = 'C:\\Chef_Logs'
+default['file']['log']['default_destination_folder'] = 'C:\\vagrant\\Logs'
 default['file']['log']['name'] = 'log.txt'
 default['file']['result']['name'] = 'result_file.txt'
 default['file']['result']['destination_folder'] = 'C:\\vagrant'
