@@ -219,7 +219,7 @@ function Check-If-Only-One-Invariant-Sql-Record-Exists ([string] $relativityVers
       FROM 
           [$($global:releaseSqlServer)].[$($global:releaseSqlServerDatabase)].[dbo].[Release]
       WHERE
-        [VersionDescription] IN ('RelativityOne', 'On Premise')
+        [VersionDescription] IN ('RelativityOne', 'RelativityOne EA', 'On Premise')
         AND [ReleaseNumber] = '$($relativityVersion)'"
 
     # Execute the Command
@@ -261,7 +261,7 @@ function Retrieve-Invariant-Version-From-Sql-Server ([string] $relativityVersion
     FROM 
       [$($global:releaseSqlServer)].[$($global:releaseSqlServerDatabase)].[dbo].[Release]
     WHERE
-      [VersionDescription] IN ('RelativityOne', 'On Premise')
+      [VersionDescription] IN ('RelativityOne', 'RelativityOne EA', 'On Premise')
       AND [ReleaseNumber] = '$($relativityVersion)'"
 
     $global:invariantVersion = $sqlCommand.ExecuteScalar()
