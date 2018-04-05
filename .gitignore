@@ -23,6 +23,7 @@ Policyfile.lock.json
 # vagrant
 /Chef/Nodes/
 /Chef/DataBags/
+/Chef/Logs/
 
 # Visual Studio Project
 /bin/
