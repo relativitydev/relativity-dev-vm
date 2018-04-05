@@ -2,7 +2,7 @@
 [string] $global:vmName = "RelativityDevVm"
 [string] $global:vmExportPath = "C:\DevVmExport"
 [string] $global:vmDocumentationTextFilePath = "$($global:vmExportPath)\$($global:vmName)\DevVm_Documentation.txt"
-[string] $global:vmDocumentationOnline = "https://github.com/relativitydev/relativity-dev-vm/blob/master/Documentation/PDF/Relativity%20Dev%20VM%20-%20Pre-built%20VM%20-%20Documentation.pdf"
+[string] $global:vmDocumentationOnline = "Relativity Dev VM documentation can be found at this link - https://github.com/relativitydev/relativity-dev-vm/blob/master/Documentation/PDF/Relativity%20Dev%20VM%20-%20Pre-built%20VM%20-%20Documentation.pdf"
 [string] $global:vmCheckpointName = "$($global:vmName) Created"
 [string] $global:devVmCreationResultFileName = "result_file.txt"
 [Boolean] $global:devVmCreationWasSuccess = $false
@@ -174,7 +174,7 @@ function Export-DevVm() {
 
 function Compress-DevVm() {
   try {
-    Write-Heading-Message-To-Screen  "Compressing Exported VM to 7Zip"
+    Write-Heading-Message-To-Screen  "Converting Exported VM to a Zip file"
     
     [string] $folderToCompressPath = "$($global:vmExportPath)\$($global:vmName)"
     [string] $zipFilePath = "$($global:vmExportPath)\$($global:vmName).7z"
@@ -189,11 +189,11 @@ function Compress-DevVm() {
     # Create new zip file
     .\ZipFolderConsole.exe $folderToCompressPath $zipFilePath
 
-    Write-Message-To-Screen  "Compressed Exported VM to 7Zip"
+    Write-Message-To-Screen  "Converted Exported VM to a Zip filep"
   }
   Catch [Exception] {
     $env:DevVmCreationErrorStatus = "true"
-    Write-Error-Message-To-Screen "An error occured when compressing Exported VM to 7Zip."
+    Write-Error-Message-To-Screen "An error occured when converting Exported VM to a Zip file"
     Write-Error-Message-To-Screen "-----> Exception: $($_.Exception.GetType().FullName)"
     Write-Error-Message-To-Screen "-----> Exception Message: $($_.Exception.Message)"
     throw
