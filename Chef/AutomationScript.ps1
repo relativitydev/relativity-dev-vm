@@ -51,6 +51,7 @@ $global:devVmVersionsToCreate = New-Object System.Collections.ArrayList
 [Int32] $global:invariantVersionSqlRecordCount = 0
 [string] $global:devVmCreationResultFileName = "result_file.txt"
 [Boolean] $global:devVmCreationWasSuccess = $false
+[string] $global:compressedFileExtension = "zip"
 
 function Reset-Logs-Environment-Variable() {
   Write-Host-Custom-Green "Resetting Logs Environment variable."
@@ -169,7 +170,7 @@ function Retrieve-DevVms-Created() {
     [string] $imageName = ($_.Name).Trim()
     Write-Message-To-Screen "$($imageName)"
     [string] $versionWithExtension = $imageName -replace "$($global:vmName)-", ""
-    [string] $version = $versionWithExtension -replace ".7z", ""
+    [string] $version = $versionWithExtension -replace ".$($global:compressedFileExtension)", ""
     if ($version -match $global:regexForRelativityVersion) {
       [void] $global:devVmVersionsCreated.Add($version)      
     }
@@ -368,8 +369,8 @@ function Run-DevVm-Creation-Script([string] $relativityVersionToCreate) {
 function Copy-DevVm-Zip-To_Network-Storage([string] $relativityVersionToCopy) {
   Write-Heading-Message-To-Screen "Copying DevVm created [$($relativityVersionToCopy)] to Network storage."
 
-  [string] $sourceZipFilePath = "$($global:vmExportPath)\$($global:vmName).7z"
-  [string] $destinationFilePath = "$($global:devVmNetworkStorageLocation)\$($global:vmName)-$($relativityVersionToCopy).7z"
+  [string] $sourceZipFilePath = "$($global:vmExportPath)\$($global:vmName).$($global:compressedFileExtension)"
+  [string] $destinationFilePath = "$($global:devVmNetworkStorageLocation)\$($global:vmName)-$($relativityVersionToCopy).$($global:compressedFileExtension)"
   
   if (Test-Path $sourceZipFilePath) {
     Copy-File-Overwrite-If-It-Exists $sourceZipFilePath $destinationFilePath  
