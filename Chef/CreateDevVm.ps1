@@ -189,7 +189,7 @@ function Compress-DevVm() {
     # Create new zip file
     .\ZipFolderConsole.exe $folderToCompressPath $zipFilePath
 
-    Write-Message-To-Screen  "Converted Exported VM to a Zip filep"
+    Write-Message-To-Screen  "Converted Exported VM to a Zip file"
   }
   Catch [Exception] {
     $env:DevVmCreationErrorStatus = "true"
