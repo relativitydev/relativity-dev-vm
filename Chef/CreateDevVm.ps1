@@ -6,6 +6,7 @@
 [string] $global:vmCheckpointName = "$($global:vmName) Created"
 [string] $global:devVmCreationResultFileName = "result_file.txt"
 [Boolean] $global:devVmCreationWasSuccess = $false
+[string] $global:compressedFileExtension = "zip"
 
 function Write-Empty-Line-To-Screen () {
   Write-Host ""
@@ -177,7 +178,7 @@ function Compress-DevVm() {
     Write-Heading-Message-To-Screen  "Converting Exported VM to a Zip file"
     
     [string] $folderToCompressPath = "$($global:vmExportPath)\$($global:vmName)"
-    [string] $zipFilePath = "$($global:vmExportPath)\$($global:vmName).7z"
+    [string] $zipFilePath = "$($global:vmExportPath)\$($global:vmName).$($global:compressedFileExtension)"
 
     # Make sure we are in the folder where the running script exists
     Write-Message-To-Screen "PSScriptroot: $($PSScriptroot)"
