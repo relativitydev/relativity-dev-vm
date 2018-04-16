@@ -1,10 +1,6 @@
-custom_log 'custom_log' do msg 'Starting SMTPServer/Email Instance Setting Update' end
+custom_log 'custom_log' do msg 'Starting SMTPServer/Email Instance Setting Cleanup' end
 start_time = DateTime.now
 custom_log 'custom_log' do msg "recipe_start_time(#{recipe_name}): #{start_time}" end
-
-#########################################################################################################
-#NOTE: When you add any new STMP settings added to this recipe, don't forget to add to the clean up SMTP recipe.
-#########################################################################################################
 
 # Get the full path to the SQLPS module.
 sqlps_module_path = ::File.join(ENV['programfiles(x86)'], 'Microsoft SQL Server\130\Tools\PowerShell\Modules\SQLPS')
@@ -18,7 +14,7 @@ powershell_script 'update_instance_setting - SMTPServer' do
       UPDATE
           [EDDS].[eddsdbo].[InstanceSetting]
       SET
-          [Value] = '#{node['smtp_server']}'
+          [Value] = ''
       WHERE
           [Section] = 'kCura.Notification' AND
           [Name] = 'SMTPServer'
@@ -36,7 +32,7 @@ powershell_script 'update_instance_setting - SMTPPort' do
       UPDATE
           [EDDS].[eddsdbo].[InstanceSetting]
       SET
-          [Value] = '#{node['smtp_port']}'
+          [Value] = ''
       WHERE
           [Section] = 'kCura.Notification' AND
           [Name] = 'SMTPPort'
@@ -54,7 +50,7 @@ powershell_script 'update_instance_setting - EmailFrom' do
       UPDATE
           [EDDS].[eddsdbo].[InstanceSetting]
       SET
-          [Value] = '#{node['email_from']}'
+          [Value] = ''
       WHERE
           [Section] = 'kCura.Notification' AND
           [Name] = 'EmailFrom'
@@ -72,7 +68,7 @@ powershell_script 'update_instance_setting - EmailTo' do
       UPDATE
           [EDDS].[eddsdbo].[InstanceSetting]
       SET
-          [Value] = '#{node['email_to']}'
+          [Value] = ''
       WHERE
           [Section] = 'kCura.Notification' AND
           [Name] = 'EmailTo'
@@ -84,4 +80,4 @@ custom_log 'custom_log' do msg 'Updated EmailTo Instance Setting.' end
 end_time = DateTime.now
 custom_log 'custom_log' do msg "recipe_end_Time(#{recipe_name}): #{end_time}" end
 custom_log 'custom_log' do msg "recipe_duration(#{recipe_name}): #{end_time.to_time - start_time.to_time} seconds" end
-custom_log 'custom_log' do msg "Finished SMTPServer/Email Instance Setting Update\n\n\n" end
+custom_log 'custom_log' do msg "Finished SMTPServer/Email Instance Setting Cleanup\n\n\n" end
