@@ -29,6 +29,10 @@ Write-Host "global:releaseSqlServerPassword = $($global:releaseSqlServerPassword
 Write-Host "global:relativityVersionFolder = $($global:relativityVersionFolder)"
 [string] $global:invariantVersionFolder = $jsonContents.invariantVersionFolder
 Write-Host "global:invariantVersionFolder = $($global:invariantVersionFolder)"
+[string] $global:relativity95VersionFolder = $jsonContents.relativity95VersionFolder
+Write-Host "global:relativity95VersionFolder = $($global:relativity95VersionFolder)"
+[string] $global:invariant95VersionFolder = $jsonContents.invariant95VersionFolder
+Write-Host "global:invariant95VersionFolder = $($global:invariant95VersionFolder)"
 [string] $global:devVmInstallFolder = $jsonContents.devVmInstallFolder
 Write-Host "global:devVmInstallFolder = $($global:devVmInstallFolder)"
 [string] $global:devVmAutomationLogsFolder = $jsonContents.devVmAutomationLogsFolder
@@ -52,6 +56,8 @@ $global:devVmVersionsToCreate = New-Object System.Collections.ArrayList
 [string] $global:devVmCreationResultFileName = "result_file.txt"
 [Boolean] $global:devVmCreationWasSuccess = $false
 [string] $global:compressedFileExtension = "zip"
+[string] $global:last95RelativityVersion = "9.5.411.4"
+[string] $global:last95InvariantVersion = "4.5.404.1"
 
 function Reset-Logs-Environment-Variable() {
   Write-Host-Custom-Green "Resetting Logs Environment variable."
@@ -139,11 +145,23 @@ function Copy-File-Overwrite-If-It-Exists ([string] $sourceFilePath, [string] $d
 }
 
 function Retrieve-All-Relativity-Versions-Released() {
+  # Retrieve all Relativity 9.5 child folders
+  $all95ChildFolders = Get-ChildItem -Path $global:relativity95VersionFolder
+  Write-Heading-Message-To-Screen "List of Child items in folder [$($global:relativity95VersionFolder)]:"
+  $all95ChildFolders | ForEach-Object {
+    $folderName = ($_.Name).Trim()
+    Write-Message-To-Screen "$($folderName)"
+    if ($folderName -match $global:regexForRelativityVersion) {
+      if ($folderName -eq $global:last95RelativityVersion) {
+        [void] $global:allRelativityVersions.Add($folderName)      
+      }
+    }
+  }
+  Write-Empty-Line-To-Screen
+
   # Retrieve all child folders
   $allChildFolders = Get-ChildItem -Path $global:relativityVersionFolder
-
   Write-Heading-Message-To-Screen "List of Child items in folder [$($global:relativityVersionFolder)]:"
-  
   $allChildFolders | ForEach-Object {
     $folderName = ($_.Name).Trim()
     Write-Message-To-Screen "$($folderName)"
@@ -187,9 +205,9 @@ function Retrieve-DevVms-Created() {
 
 function Identify-DevVms-To-Create() {
   foreach ($currentRelativityVersion in $global:allRelativityVersions) {
-    if (-Not $global:devVmVersionsCreated.Contains($currentRelativityVersion)) {
-      [void] $global:devVmVersionsToCreate.Add($currentRelativityVersion)      
-    }
+    # if (-Not $global:devVmVersionsCreated.Contains($currentRelativityVersion)) {
+    [void] $global:devVmVersionsToCreate.Add($currentRelativityVersion)      
+    # }
   }
   Write-Heading-Message-To-Screen "List of DevVm's To Create:"
   $global:devVmVersionsToCreate | ForEach-Object {
@@ -197,7 +215,7 @@ function Identify-DevVms-To-Create() {
   }
   Write-Empty-Line-To-Screen
 }
-  
+
 function Check-If-Only-One-Invariant-Sql-Record-Exists ([string] $relativityVersion) {
   Write-Heading-Message-To-Screen "Checking if only 1 invariant sql record exists."
 
@@ -321,12 +339,21 @@ function Find-Invariant-Version([string] $relativityVersion) {
 function Copy-Relativity-Installer-And-Response-Files([string] $relativityVersionToCopy) {
   Write-Heading-Message-To-Screen "Copying Relativity Installer and Response files."
 
-  [string] $sourceRelativityFile = "$($global:relativityVersionFolder)\$($relativityVersionToCopy)\RelativityInstallation\GOLD $($relativityVersionToCopy) Relativity.exe"
+  [string] $sourceRelativityFile = ""
+  [string] $sourceRelativityResponseFile = ""
+  if ($relativityVersionToCreate -eq $global:last95RelativityVersion) {
+    $sourceRelativityFile = "$($global:relativity95VersionFolder)\$($relativityVersionToCopy)\RelativityInstallation\GOLD $($relativityVersionToCopy) Relativity.exe"
+    $sourceRelativityResponseFile = "$($global:relativity95VersionFolder)\$($relativityVersionToCopy)\RelativityInstallation\RelativityResponse.txt"
+  }
+  else {
+    $sourceRelativityFile = "$($global:relativityVersionFolder)\$($relativityVersionToCopy)\RelativityInstallation\GOLD $($relativityVersionToCopy) Relativity.exe"
+    $sourceRelativityResponseFile = "$($global:relativityVersionFolder)\$($relativityVersionToCopy)\RelativityInstallation\RelativityResponse.txt"
+  }
+
   [string] $destinationRelativityFile = "$($global:devVmInstallFolder)\Relativity\Relativity.exe"
   Delete-File-If-It-Exists $destinationRelativityFile
   Copy-File-Overwrite-If-It-Exists $sourceRelativityFile $destinationRelativityFile
 
-  [string] $sourceRelativityResponseFile = "$($global:relativityVersionFolder)\$($relativityVersionToCopy)\RelativityInstallation\RelativityResponse.txt"
   [string] $destinationRelativityResponseFile = "$($global:devVmInstallFolder)\Relativity\RelativityResponse.txt"
   Delete-File-If-It-Exists $destinationRelativityResponseFile
   Copy-File-Overwrite-If-It-Exists $sourceRelativityResponseFile $destinationRelativityResponseFile
@@ -338,12 +365,22 @@ function Copy-Relativity-Installer-And-Response-Files([string] $relativityVersio
 function Copy-Invariant-Installer-And-Response-Files([string] $invariantVersionToCopy) {
   Write-Heading-Message-To-Screen "Copying Invariant Installer and Response files."
   
-  [string] $sourceInvariantFile = "$($global:invariantVersionFolder)\Invariant $($invariantVersionToCopy)\GOLD $($invariantVersionToCopy) Invariant.exe"
+  [string] $sourceInvariantFile = ""
+  [string] $sourceInvariantResponseFile = ""
+
+  if ($invariantVersionToCopy -eq $global:last95InvariantVersion) {
+    $sourceInvariantFile = "$($global:invariant95VersionFolder)\Invariant $($invariantVersionToCopy)\GOLD $($invariantVersionToCopy) Invariant.exe"
+    $sourceInvariantResponseFile = "$($global:invariant95VersionFolder)\Invariant $($invariantVersionToCopy)\InvariantResponse.txt"
+  }
+  else {
+    $sourceInvariantFile = "$($global:invariantVersionFolder)\Invariant $($invariantVersionToCopy)\GOLD $($invariantVersionToCopy) Invariant.exe"
+    $sourceInvariantResponseFile = "$($global:invariantVersionFolder)\Invariant $($invariantVersionToCopy)\InvariantResponse.txt"
+  }
+
   [string] $destinationInvariantFile = "$($global:devVmInstallFolder)\Invariant\Invariant.exe"
   Delete-File-If-It-Exists $destinationInvariantFile
   Copy-File-Overwrite-If-It-Exists $sourceInvariantFile $destinationInvariantFile
   
-  [string] $sourceInvariantResponseFile = "$($global:invariantVersionFolder)\Invariant $($invariantVersionToCopy)\InvariantResponse.txt"
   [string] $destinationInvariantResponseFile = "$($global:devVmInstallFolder)\Invariant\InvariantResponse.txt"
   Delete-File-If-It-Exists $destinationInvariantResponseFile
   Copy-File-Overwrite-If-It-Exists $sourceInvariantResponseFile $destinationInvariantResponseFile
@@ -366,7 +403,7 @@ function Run-DevVm-Creation-Script([string] $relativityVersionToCreate) {
   Write-Empty-Line-To-Screen
 }
 
-function Copy-DevVm-Zip-To_Network-Storage([string] $relativityVersionToCopy) {
+function Copy-DevVm-Zip-To-Network-Storage([string] $relativityVersionToCopy) {
   Write-Heading-Message-To-Screen "Copying DevVm created [$($relativityVersionToCopy)] to Network storage."
 
   [string] $sourceZipFilePath = "$($global:vmExportPath)\$($global:vmName).$($global:compressedFileExtension)"
@@ -432,7 +469,7 @@ function Create-DevVm([string] $relativityVersionToCreate) {
 
         if ($global:devVmCreationWasSuccess -eq $true) {
           # Copy Zip file to network drive with the version number in name
-          Copy-DevVm-Zip-To_Network-Storage $relativityVersionToCreate
+          Copy-DevVm-Zip-To-Network-Storage $relativityVersionToCreate
         }
         else {
           Write-Message-To-Screen "DevVm creation failed. Skipped copying zip file to network storage."
