@@ -204,10 +204,16 @@ function Retrieve-DevVms-Created() {
 }
 
 function Identify-DevVms-To-Create() {
-  foreach ($currentRelativityVersion in $global:allRelativityVersions) {
-    # if (-Not $global:devVmVersionsCreated.Contains($currentRelativityVersion)) {
-    [void] $global:devVmVersionsToCreate.Add($currentRelativityVersion)      
-    # }
+  # First Add the ones which aren't already created 
+  foreach ($currentRelativityVersion1 in $global:allRelativityVersions) {
+    if (-Not $global:devVmVersionsCreated.Contains($currentRelativityVersion1)) {
+      [void] $global:devVmVersionsToCreate.Add($currentRelativityVersion1)      
+    }
+  }
+
+  # Then Add the ones which were alredy created
+  foreach ($currentRelativityVersion2 in $global:devVmVersionsCreated) {
+    [void] $global:devVmVersionsToCreate.Add($currentRelativityVersion2)      
   }
   Write-Heading-Message-To-Screen "List of DevVm's To Create:"
   $global:devVmVersionsToCreate | ForEach-Object {
