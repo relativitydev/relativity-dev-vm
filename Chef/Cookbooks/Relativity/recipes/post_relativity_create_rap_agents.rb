@@ -31,6 +31,8 @@ node['relativity_apps_agents_to_install'].each do |app, guid|
   custom_log 'custom_log' do msg "Creating #{current_context}" end
   execute "Create #{current_context}" do
     command "#{agents_console_exe_path} \"#{node['windows']['hostname']}\" \"#{node['relativity']['admin']['login']}\" \"#{node['relativity']['admin']['password']}\" \"#{node['windows']['hostname']}\" \"#{node['sql']['user']['eddsdbo']['login']}\" \"#{node['sql']['user']['eddsdbo']['password']}\" \"#{guid}\""
+    retries 5
+    retry_delay 5
   end
   custom_log 'custom_log' do msg "Created #{current_context}" end
 end
