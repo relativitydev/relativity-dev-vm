@@ -58,6 +58,7 @@ $global:devVmVersionsToCreate = New-Object System.Collections.ArrayList
 [string] $global:compressedFileExtension = "zip"
 [string] $global:last95RelativityVersion = "9.5.411.4"
 [string] $global:last95InvariantVersion = "4.5.404.1"
+[string] $global:relativityInvariantVersionNumberFileName = "relativity_invariant_version.txt"
 
 function Reset-Logs-Environment-Variable() {
   Write-Host-Custom-Green "Resetting Logs Environment variable."
@@ -395,6 +396,23 @@ function Copy-Invariant-Installer-And-Response-Files([string] $invariantVersionT
   Write-Empty-Line-To-Screen
 }
 
+function Copy-Relativity-And-Invariant-Version-Numbers-To-Text-File([string] $relativityVersionToCopy, [string] $invariantVersionToCopy) {
+  Write-Heading-Message-To-Screen "Copying Relativity and Invariant Version Numbers to Text File."
+
+  # Copy Relativity and Invariant version number 
+  [string] $relativityInvairantVersionNumberFileNameWithPath = "$($global:devVmInstallFolder)\Relativity\$($global:relativityInvariantVersionNumberFileName)"
+  Delete-File-If-It-Exists $relativityInvairantVersionNumberFileNameWithPath
+  If (Test-Path $relativityInvairantVersionNumberFileNameWithPath) {
+    Remove-Item -path $relativityInvairantVersionNumberFileNameWithPath -Force
+  }
+  New-Item $relativityInvairantVersionNumberFileNameWithPath -type file -Force
+  [string] $fileContent = "Relativity_Version: $($relativityVersionToCopy), Invariant_Version: $($invariantVersionToCopy)"
+  Set-Content -Path $relativityInvairantVersionNumberFileNameWithPath -Value $fileContent -Force
+
+  Write-Message-To-Screen "Copied Relativity and Invariant Version Numbers to Text File. [$($relativityInvairantVersionNumberFileNameWithPath)]"
+  Write-Empty-Line-To-Screen
+}
+
 function Run-DevVm-Creation-Script([string] $relativityVersionToCreate) {
   Write-Heading-Message-To-Screen "Running DevVm creation script."
 
@@ -468,6 +486,7 @@ function Create-DevVm([string] $relativityVersionToCreate) {
       if ($global:foundCompatibleInvariantVersion) {
         Copy-Relativity-Installer-And-Response-Files $relativityVersionToCreate
         Copy-Invariant-Installer-And-Response-Files $global:invariantVersion
+        Copy-Relativity-And-Invariant-Version-Numbers-To-Text-File $relativityVersionToCreate $global:invariantVersion
         Run-DevVm-Creation-Script
         Write-Message-To-Screen "Created DevVm. [$($relativityVersionToCreate)]"
 
