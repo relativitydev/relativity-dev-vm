@@ -59,6 +59,7 @@ $global:devVmVersionsToCreate = New-Object System.Collections.ArrayList
 [string] $global:last95RelativityVersion = "9.5.411.4"
 [string] $global:last95InvariantVersion = "4.5.404.1"
 [string] $global:relativityInvariantVersionNumberFileName = "relativity_invariant_version.txt"
+[string] $global:testSingleRelativityVersion = "" # Leave it blank when in Production mode
 
 function Reset-Logs-Environment-Variable() {
   Write-Host-Custom-Green "Resetting Logs Environment variable."
@@ -534,8 +535,22 @@ function Create-DevVms() {
 
       Write-Message-To-Screen "#################### DevVm - [$($relativityVersionToCreate)] ####################"
     
-      # Create DevVM as a Zip file
-      Create-DevVm $relativityVersionToCreate
+      # Check for testing mode
+      if ($global:testSingleRelativityVersion -eq "") {
+        # In Production mode
+        # Create DevVM as a Zip file
+        Create-DevVm $relativityVersionToCreate
+      }
+      else {
+        # In Testing mode
+        if ($relativityVersionToCreate -eq $global:testSingleRelativityVersion) {
+          # Create DevVM as a Zip file
+          Create-DevVm $relativityVersionToCreate
+        }
+        else {
+          Write-Message-To-Screen "In Testing mode - skipped DevVM creation."
+        }
+      }
 
       Write-Message-To-Screen "#################### DevVm - [$($relativityVersionToCreate)] ####################"
       Write-Empty-Line-To-Screen
