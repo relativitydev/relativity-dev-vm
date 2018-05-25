@@ -11,9 +11,7 @@ end
 
 files_to_copy = {
   'AgentsConsole' => 'AgentsConsole.exe',
-  'AgentUtilities' => 'AgentUtilities.dll',
   'Newtonsoft.Json' => 'Newtonsoft.Json.dll',
-  # 'Relativity.Kepler.dll' => 'Relativity.Kepler.dll',
 }
 
 # Copy files from cookbook to the Chef cache
