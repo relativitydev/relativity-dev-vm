@@ -314,7 +314,6 @@ Vagrant.configure('2') do |config|
     chef.add_recipe('Relativity::post_relativity_sqlserver_distributed_relativity_install')
   end
 
-
   # DataGrid Pre-setup
   config.vm.provision 'chef_zero' do |chef|
     chef.cookbooks_path = 'Cookbooks'
@@ -334,7 +333,7 @@ Vagrant.configure('2') do |config|
     }
     chef.add_recipe('Relativity::post_relativity_Install_datagrid-presetup')
   end
-  
+
   # Install DataGrid
   config.vm.provision 'chef_zero' do |chef|
     chef.cookbooks_path = 'Cookbooks'
@@ -447,6 +446,7 @@ Vagrant.configure('2') do |config|
     chef.add_recipe('Relativity::post_relativity_push_resource_file')
     chef.add_recipe('Relativity::post_relativity_install_rap_files')
     chef.add_recipe('Relativity::post_relativity_create_rap_agents')
+    chef.add_recipe('Relativity::windows_disable_firewall')
   end
 
   # Cleanup VM
