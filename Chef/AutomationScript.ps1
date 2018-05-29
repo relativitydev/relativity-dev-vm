@@ -45,7 +45,7 @@ Write-Host "global:devVmNetworkStorageLocation = $($global:devVmNetworkStorageLo
 [string] $global:regexForRelativityVersion = "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}"
 [string] $global:devVmAutomationLogFilePrefix = "DevVm_Automation_Log"
 [string] $global:devVmAutomationLogFileResetText = "empty"
-$global:allRelativityVersions = New-Object System.Collections.ArrayList
+$global:allRelativityVersionsReleased = New-Object System.Collections.ArrayList
 $global:devVmVersionsCreated = New-Object System.Collections.ArrayList
 $global:devVmVersionsToCreate = New-Object System.Collections.ArrayList
 [string] $global:vmName = "RelativityDevVm"
@@ -155,7 +155,7 @@ function Retrieve-All-Relativity-Versions-Released() {
     Write-Message-To-Screen "$($folderName)"
     if ($folderName -match $global:regexForRelativityVersion) {
       if ($folderName -eq $global:last95RelativityVersion) {
-        [void] $global:allRelativityVersions.Add($folderName)      
+        [void] $global:allRelativityVersionsReleased.Add($folderName)      
       }
     }
   }
@@ -168,13 +168,13 @@ function Retrieve-All-Relativity-Versions-Released() {
     $folderName = ($_.Name).Trim()
     Write-Message-To-Screen "$($folderName)"
     if ($folderName -match $global:regexForRelativityVersion) {
-      [void] $global:allRelativityVersions.Add($folderName)      
+      [void] $global:allRelativityVersionsReleased.Add($folderName)      
     }
   }
   Write-Empty-Line-To-Screen
 
   Write-Heading-Message-To-Screen "List of Relativity versions identified:"
-  $global:allRelativityVersions | ForEach-Object {
+  $global:allRelativityVersionsReleased | ForEach-Object {
     Write-Message-To-Screen "$($_)"
   }
   Write-Empty-Line-To-Screen
@@ -182,7 +182,7 @@ function Retrieve-All-Relativity-Versions-Released() {
   
 function Retrieve-DevVms-Created() {
   # Retrieve all DevVM images
-  $allDevVmImagesCreated = Get-ChildItem -Path $global:devVmNetworkStorageLocation
+  $allDevVmImagesCreated = Get-ChildItem -Path $global:devVmNetworkStorageLocation | Sort-Object -Property LastWriteTime
     
   Write-Heading-Message-To-Screen "List of Child items in folder [$($global:devVmNetworkStorageLocation)]:"
 
@@ -207,13 +207,13 @@ function Retrieve-DevVms-Created() {
 
 function Identify-DevVms-To-Create() {
   # First Add the ones which aren't already created 
-  foreach ($currentRelativityVersion1 in $global:allRelativityVersions) {
+  foreach ($currentRelativityVersion1 in $global:allRelativityVersionsReleased) {
     if (-Not $global:devVmVersionsCreated.Contains($currentRelativityVersion1)) {
       [void] $global:devVmVersionsToCreate.Add($currentRelativityVersion1)      
     }
   }
 
-  # Then Add the ones which were alredy created
+  # Then Add the ones which were already created, old ones first
   foreach ($currentRelativityVersion2 in $global:devVmVersionsCreated) {
     [void] $global:devVmVersionsToCreate.Add($currentRelativityVersion2)      
   }
