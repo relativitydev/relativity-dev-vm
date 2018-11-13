@@ -201,6 +201,7 @@ Vagrant.configure('2') do |config|
       'email_to' => relativity_email_to,
     }
     chef.add_recipe('Relativity::pre_relativity_install_servicebus')
+    chef.add_recipe('Relativity::pre_relativity_install_servicebus_sleep_5_minutes')
   end
 
   # Restart VM
