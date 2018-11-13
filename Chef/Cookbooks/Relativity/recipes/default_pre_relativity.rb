@@ -9,7 +9,7 @@ include_recipe 'Relativity::pre_relativity_copy_install_response_files'
 include_recipe 'Relativity::pre_relativity_copy_install_files'
 
 # Install Windows Features and Services
-include_recipe 'Relativity::pre_relativity_install_windows_features_and_services'
+# include_recipe 'Relativity::pre_relativity_install_windows_features_and_services'
 
 # Create shared folders
 include_recipe 'Relativity::pre_relativity_create_shared_folders'
