@@ -213,10 +213,11 @@ function Identify-DevVms-To-Create() {
     }
   }
 
-  # Then Add the ones which were already created, old ones first
-  foreach ($currentRelativityVersion2 in $global:devVmVersionsCreated) {
-    [void] $global:devVmVersionsToCreate.Add($currentRelativityVersion2)      
-  }
+  # # Then Add the ones which were already created, old ones first
+  # foreach ($currentRelativityVersion2 in $global:devVmVersionsCreated) {
+  #   [void] $global:devVmVersionsToCreate.Add($currentRelativityVersion2)      
+  # }
+
   Write-Heading-Message-To-Screen "List of DevVm's To Create:"
   $global:devVmVersionsToCreate | ForEach-Object {
     Write-Message-To-Screen "$($_)"
