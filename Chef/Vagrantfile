@@ -353,6 +353,7 @@ Vagrant.configure('2') do |config|
       'email_to' => relativity_email_to,
     }
     chef.add_recipe('Relativity::post_relativity_Install_datagrid')
+    chef.add_recipe('Relativity::post_relativity_instance_setting_update_datagridendpoint')
   end
 
   # Add processing choice which is used in the following Invariant Configuration scripts below
