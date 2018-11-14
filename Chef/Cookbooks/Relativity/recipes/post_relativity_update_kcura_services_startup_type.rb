@@ -1,6 +1,6 @@
-log 'Starting kCura Services Startup Type update'
+custom_log 'custom_log' do msg 'Starting kCura Services Startup Type update' end
 start_time = DateTime.now
-log "recipe_start_time(#{recipe_name}): #{start_time}"
+custom_log 'custom_log' do msg "recipe_start_time(#{recipe_name}): #{start_time}" end
 
 dsc_resource 'Start kCura EDDS Agent Manager' do
   resource :service
@@ -27,6 +27,6 @@ dsc_resource 'Start kCura Service Host Manager' do
 end
 
 end_time = DateTime.now
-log "recipe_end_Time(#{recipe_name}): #{end_time}"
-log "recipe_duration(#{recipe_name}): #{end_time.to_time - start_time.to_time} seconds"
-log 'Finished kCura Services Startup Type update'
+custom_log 'custom_log' do msg "recipe_end_Time(#{recipe_name}): #{end_time}" end
+custom_log 'custom_log' do msg "recipe_duration(#{recipe_name}): #{end_time.to_time - start_time.to_time} seconds" end
+custom_log 'custom_log' do msg "Finished kCura Services Startup Type update\n\n\n" end

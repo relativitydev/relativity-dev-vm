@@ -23,7 +23,7 @@ Policyfile.lock.json
 # vagrant
 /Chef/Nodes/
 /Chef/DataBags/
-/Chef/Logs/
+/Chef/Logs
 
 # Visual Studio Project
 /bin/
@@ -54,3 +54,5 @@ StyleCop*
 *.pubxml.user
 *.suo
 *.user
+/config.yaml
+Chef/result_file.txt

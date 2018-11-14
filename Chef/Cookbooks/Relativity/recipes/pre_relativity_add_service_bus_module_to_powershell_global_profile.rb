@@ -1,6 +1,6 @@
-log 'Starting adding service bus module to powershell global profile'
+custom_log 'custom_log' do msg 'Starting adding service bus module to powershell global profile' end
 start_time = DateTime.now
-log "recipe_start_time(#{recipe_name}): #{start_time}"
+custom_log 'custom_log' do msg "recipe_start_time(#{recipe_name}): #{start_time}" end
 
 powershell_script 'add service bus module to powershell global profile' do
   code <<-EOH
@@ -9,7 +9,6 @@ powershell_script 'add service bus module to powershell global profile' do
     $global_powershell_profile_file_name_with_location = $global_powershell_profile_file_location + '/' + $global_powershell_profile_file_name
     $import_service_bus_module = "Import-Module 'C:/Program Files/Service Bus/1.1/ServiceBus/ServiceBus.psd1'"
     $import_service_bus_module_with_newline = "`n" + $import_service_bus_module + "`n"
-
 
     if (!(Test-Path $global_powershell_profile_file_name_with_location))
     {
@@ -34,6 +33,6 @@ powershell_script 'add service bus module to powershell global profile' do
 end
 
 end_time = DateTime.now
-log "recipe_end_Time(#{recipe_name}): #{end_time}"
-log "recipe_duration(#{recipe_name}): #{end_time.to_time - start_time.to_time} seconds"
-log 'Finished adding service bus module to powershell global profile'
+custom_log 'custom_log' do msg "recipe_end_Time(#{recipe_name}): #{end_time}" end
+custom_log 'custom_log' do msg "recipe_duration(#{recipe_name}): #{end_time.to_time - start_time.to_time} seconds" end
+custom_log 'custom_log' do msg "Finished adding service bus module to powershell global profile\n\n\n" end

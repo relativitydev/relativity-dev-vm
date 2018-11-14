@@ -1,0 +1,64 @@
+##########################################################################
+# This script creates a workspaces and install a relativity application. #
+# The Data Sampler application imports documents with images and         #
+# productions that you specify in the config section in this script.     #
+#                                                                        #
+#                                                                        #
+# How to use:                                                            #
+# 1. Point the include section to the directory of your Relativity       #
+#    Client Dlls                                                         #
+#                                                                        #
+# 2. Update the Config section dlls                                      #
+#                                                                        #
+# 3. Execute the script                                                  #
+#                                                                        #
+##########################################################################
+
+#############################INCLUDE SECTION##############################
+$ScriptDir = Split-Path -parent $MyInvocation.MyCommand.Path
+Import-Module $ScriptDir\powershell_functions.ps1 -force
+Add-Type -Path "C:\Program Files\kCura Corporation\Relativity\Library\kCura.Relativity.Client.dll"
+Add-Type -Path "C:\Program Files\kCura Corporation\Relativity\Library\Relativity.API.dll"
+##########################################################################
+
+
+############################USER CONFIG SECTION###########################
+$fileName = "<%= @file_name %>"
+$resourceFileLocation = "<%= @file_location %>"
+$applicationGuid= "<%= @application_guid %>"
+$relativityUrl = "<%= @relativity_services_url %>"
+$relativityUsername = "<%= @relativity_username %>"
+$relativityPassword = "<%= @relativity_password %>"
+$maxRetry = 3
+###########################################################################
+
+
+if ([System.IO.File]::Exists($resourceFileLocation) -eq $FALSE) {
+  Write-Error "Resource file does not exist $($resourceFileLocation)"
+  Return
+}
+
+$relativityServicesUrl = New-Object -TypeName System.Uri -ArgumentList $relativityUrl
+
+# Upload Config File as a resource to the Default Application
+$retryCnt = 0
+$resourceFilePushed = $FALSE
+while ($retryCnt -lt $maxRetry -and $resourceFilePushed -eq $false) {
+  $rsapiClient = $NULL
+
+  try {
+    $rsapiClient = GetRsapiClient $relativityServicesUrl $relativityUsername $relativityPassword
+    $resourceFilePushed = PushResource $rsapiClient $fileName $resourceFileLocation $applicationGuid
+  }
+  Catch [Exception] {
+    Write-Host "$($_.Exception.GetType().FullName) $($_.Exception.Message)"
+  }
+  finally {
+    if ($rsapiClient -ne $NULL) {
+      $rsapiClient.Dispose()
+    }
+  }
+
+  $retryCnt++
+}
+

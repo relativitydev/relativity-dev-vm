@@ -1,6 +1,6 @@
-log 'Starting Windows Features and Services install'
+custom_log 'custom_log' do msg 'Starting Windows Features and Services install' end
 start_time = DateTime.now
-log "recipe_start_time(#{recipe_name}): #{start_time}"
+custom_log 'custom_log' do msg "recipe_start_time(#{recipe_name}): #{start_time}" end
 
 # Features:
 
@@ -10,7 +10,7 @@ log "recipe_start_time(#{recipe_name}): #{start_time}"
 # 	- Non-HTTP Activation => NET-Non-HTTp-Activ
 # - .NET Framework 4.5 Features => NET-Framework-45-Features
 # 	- .NET Framework 4.5 => NET-Framework-45-Core
-# 	- APS.NET 4.5 => NET-Framework-45-ASPNET
+# 	- ASP.NET 4.5 => NET-Framework-45-ASPNET
 # 	- WCF Services => NET-WCF-Services45
 # 		- HTTP Activation =>  NET-WCF-HTTP-Activation45
 # 		- Named Pipe Activation => NET-WCF-Pipe-Activation45
@@ -52,12 +52,13 @@ log "recipe_start_time(#{recipe_name}): #{start_time}"
 #       - IIS 6 Scripting Tools => Web-Lgcy-Scripting
 #       - IIS 6 WMI Compatibility => Web-WMI
 #     - IIS Management Scripts and Tools => Web-Scripting-Tools
-#     - Management Service => Web-Mgmt-Service		
-	
+#     - Management Service => Web-Mgmt-Service
+
 # Install Windows Features and Services
 features = %w(NET-Framework-Features NET-Framework-Core NET-HTTP-Activation NET-Non-HTTp-Activ NET-Framework-45-Features NET-Framework-45-Core NET-Framework-45-ASPNET NET-WCF-Services45 NET-WCF-HTTP-Activation45 NET-WCF-Pipe-Activation45 NET-WCF-TCP-Activation45 NET-WCF-TCP-PortSharing45 Web-WebServer Web-Common-Http Web-Default-Doc Web-Dir-Browsing Web-Http-Errors Web-Static-Content Web-Http-Redirect Web-Health Web-Http-Logging Web-Request-Monitor Web-Http-Tracing Web-Performance Web-Stat-Compression Web-Security Web-Filtering Web-Basic-Auth Web-Windows-Auth Web-App-Dev Web-Net-Ext Web-Net-Ext45 Web-Asp-Net Web-Asp-Net45 Web-ISAPI-Ext Web-ISAPI-Filter Web-WebSockets Web-Mgmt-Tools Web-Mgmt-Console Web-Mgmt-Compat Web-Metabase Web-Lgcy-Mgmt-Console Web-Lgcy-Scripting Web-WMI Web-Scripting-Tools Web-Mgmt-Service)
 
 features.each do |feature|
+  custom_log 'custom_log' do msg "Installing Windows Feature - #{feature}" end
   dsc_resource "windowsfeature_#{feature}" do
     resource :windowsfeature
     property :ensure, 'Present'
@@ -66,6 +67,6 @@ features.each do |feature|
 end
 
 end_time = DateTime.now
-log "recipe_end_Time(#{recipe_name}): #{end_time}"
-log "recipe_duration(#{recipe_name}): #{end_time.to_time - start_time.to_time} seconds"
-log 'Finished Windows Features and Services install'
+custom_log 'custom_log' do msg "recipe_end_Time(#{recipe_name}): #{end_time}" end
+custom_log 'custom_log' do msg "recipe_duration(#{recipe_name}): #{end_time.to_time - start_time.to_time} seconds" end
+custom_log 'custom_log' do msg "Finished Windows Features and Services install\n\n\n" end

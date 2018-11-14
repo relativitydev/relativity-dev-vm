@@ -1,6 +1,6 @@
-log 'Starting setting Explorer properties'
+custom_log 'custom_log' do msg 'Starting setting Explorer properties' end
 start_time = DateTime.now
-log "recipe_start_time(#{recipe_name}): #{start_time}"
+custom_log 'custom_log' do msg "recipe_start_time(#{recipe_name}): #{start_time}" end
 
 powershell_script 'set windows explorer properties' do
   code <<-EOH
@@ -27,7 +27,9 @@ powershell_script 'set windows explorer properties' do
   timeout node['timeout']['default']
 end
 
+custom_log 'custom_log' do msg 'Finished setting up windows explorer properties' end
+
 end_time = DateTime.now
-log "recipe_end_Time(#{recipe_name}): #{end_time}"
-log "recipe_duration(#{recipe_name}): #{end_time.to_time - start_time.to_time} seconds"
-log 'Finished setting Explorer properties'
+custom_log 'custom_log' do msg "recipe_end_Time(#{recipe_name}): #{end_time}" end
+custom_log 'custom_log' do msg "recipe_duration(#{recipe_name}): #{end_time.to_time - start_time.to_time} seconds" end
+custom_log 'custom_log' do msg "Finished setting Explorer properties\n\n\n" end

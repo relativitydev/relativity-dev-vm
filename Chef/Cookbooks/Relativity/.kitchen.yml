@@ -4,8 +4,8 @@ driver:
   parent_vhd_folder: 'C:\Chef_Windows_Base'
   parent_vhd_name: WindowsServer2012R2.vhdx
   vm_switch: DevVmExternalSwitch
-  memory_startup_bytes: 4GB 
-  processor_count: 2
+  memory_startup_bytes: 12GB 
+  processor_count: 6
 
 provisioner:
   name: chef_zero
@@ -23,12 +23,13 @@ platforms:
 suites:
   - name: default
     run_list:
+      - recipe[Relativity::default_pre_windows]
       - recipe[Relativity::default_windows]
       - recipe[Relativity::default_pre_relativity]
       - recipe[Relativity::pre_relativity_install_servicebus]
       - recipe[Relativity::default_relativity]
-      - recipe[Relativity::default_post_relativity]
       - recipe[Relativity::post_relativity_configure_invariant]
+      - recipe[Relativity::default_post_relativity]      
     verifier:
       inspec_tests:
         - test/smoke/default

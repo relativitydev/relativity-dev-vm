@@ -1,6 +1,6 @@
-function CreateJsonConfigFile([string] $fileName, [string] $relativityUsername, [string] $relativityPassword, [string] $relativityLibraryFolder, [int] $numberOfDocuments, [bool] $importImagesWithDocuments, [bool] $importProductionImagesWithDocuments) {
+function CreateJsonConfigFile([string] $fileName, [string] $destinationFileLocation, [string] $relativityUsername, [string] $relativityPassword, [string] $relativityLibraryFolder, [int] $numberOfDocuments, [bool] $importImagesWithDocuments, [bool] $importProductionImagesWithDocuments) {
   Write-Host "Writing config file"
-  $fileLocation = [System.IO.Path]::Combine($env:TEMP, [System.Guid]::NewGuid())
+  $destinationFileLocation = [System.IO.Path]::Combine($destinationFileLocation, $fileName)
   $contents = 
   $(
     " {
@@ -11,18 +11,14 @@ function CreateJsonConfigFile([string] $fileName, [string] $relativityUsername, 
                 ""ImportImagesWithDocuments"": $($importImagesWithDocuments.ToString().ToLower()),
                 ""ImportProductionImagesWithDocuments"": $($importProductionImagesWithDocuments.ToString().ToLower())
             }")
-  $contents | Out-File $fileLocation 
-  Write-Host "Config file written: $($fileLocation)"
-  $fileLocation
+  $contents | Out-File $destinationFileLocation 
+  Write-Host "Config file written: $($destinationFileLocation)"
+  $destinationFileLocation
 }
     
 function GetRsapiClient([string] $relativityServicesUrl, [string] $username, [string] $password) {
   Write-Host "Creating Rsapi Client"
   $retVal = $NULL
-
-  $app = New-Object -TypeName kCura.Relativity.Client.AppInstallRequest -Property @{
-    'FullFilePath' = $rapFileLocation
-  }
 
   $credentials = New-Object -TypeName kCura.Relativity.Client.UsernamePasswordCredentials -ArgumentList $username, $password
   $clientSettings = New-Object -TypeName kCura.Relativity.Client.RSAPIClientSettings
@@ -71,7 +67,7 @@ function CreateWorkspace([kCura.Relativity.Client.RSAPIClient] $rsapiClient, [st
 
   if ($workspaceQueryResults.Success -and $workspaceQueryResults.TotalCount -gt 0) {
     #smallest workspace artifactID will represent the template workspace
-    $templateWorkspaceArtifactID = @($workspaceQueryResults.Results.Artifact.ArtifactID) | Sort-Object | Select-Object -First 1
+    $templateWorkspaceArtifactID = @($workspaceQueryResults.Results.Artifact.ArtifactID) | Sort-Object | Select-Object -Last 1
     $templateWorkspace = @($workspaceQueryResults.Results.Artifact) | Where-Object {$_.ArtifactID -eq $templateWorkspaceArtifactID}
     $templateWorkspace.Name = $workspaceName
 
@@ -148,6 +144,23 @@ function QueryWorkspace([kCura.Relativity.Client.RSAPIClient] $rsapiClient, [str
 
   $existingWorkspaceArtifactID
 }
+
+function EnableDataGrid([kCura.Relativity.Client.RSAPIClient] $rsapiClient, [int] $workspaceArtifactID) {
+  Write-Host "Enabling DataGrid in Workspace: ($workspaceArtifactID)"
+
+  $fieldName = [kCura.Relativity.Client.DTOs.WorkspaceFieldNames]::EnableDataGrid
+  $dgField = New-Object -TypeName kCura.Relativity.Client.DTOs.FieldValue -ArgumentList $fieldName, $TRUE
+  $fieldList = New-Object -TypeName System.Collections.Generic.List[kCura.Relativity.Client.DTOs.FieldValue]
+  $fieldList.Add($dgField)
+
+  $rsapiClient.APIOptions.WorkspaceID = -1
+ 
+  $workspace = New-Object -TypeName kCura.Relativity.Client.DTOs.Workspace -ArgumentList $workspaceArtifactID -Property @{
+    'Fields'    = $fieldList
+  }
+
+  $rsapiClient.Repositories.Workspace.UpdateSingle($workspace)
+}
     
 function InstallApplication([kCura.Relativity.Client.RSAPIClient] $rsapiClient, [int] $workspaceArtifactID, [string] $rapFileLocation) {
   Write-Host "Installing Application in Workspace $($workspaceArtifactID)"
@@ -163,25 +176,16 @@ function InstallApplication([kCura.Relativity.Client.RSAPIClient] $rsapiClient, 
   if ($installationRequest.Success) {
     $info = $rsapiClient.GetProcessState($rsapiClient.APIOptions, $installationRequest.ProcessID)
     $iteration = 0
-    while ($info.State -eq [kCura.Relativity.Client.ProcessStateValue]::Running) {
-      # Sleeping for 90 secs for the application installation to complete
-      Start-Sleep -s 90
+    while($info.State -eq [kCura.Relativity.Client.ProcessStateValue]::Running -and $iteration -lt 120){
+      Start-Sleep -s 10
       $info = $rsapiClient.GetProcessState($rsapiClient.APIOptions, $info.ProcessID)
-
-      if ($iteration -gt 6) {
-        Write-Error "Application Install creation timed out"
-        Return
-      }
       $iteration++
     }
-
-    if ($info.Success -and $info.State -ne [kCura.Relativity.Client.ProcessStateValue]::HandledException -and $info.State -ne [kCura.Relativity.Client.ProcessStateValue]::UnhandledException -and $info.State -ne [kCura.Relativity.Client.ProcessStateValue]::CompletedWithError) {
-      $retVal = $TRUE
-      Write-Host "Application $($rapFileLocation) successfully installed in Workspace: $($workspaceArtifactID)"
-    }
-    else {
-      Write-Error "Unable to install Application"
+    if($info.State -eq [kCura.Relativity.Client.ProcessStateValue]::HandledException -or $info.State -eq [kCura.Relativity.Client.ProcessStateValue]::UnhandledException) {
+      Write-Error "Application Install creation timed out"
       Return
+    }else{
+      $retVal = $TRUE
     }
   }
   else {
@@ -190,4 +194,133 @@ function InstallApplication([kCura.Relativity.Client.RSAPIClient] $rsapiClient, 
   }
 
   $retVal
+}
+
+function InstallLibraryApplication([string] $serverName, [string] $userName, [string] $password, [int] $workspaceArtifactID, [System.Guid] $applicationGuid) {
+  Write-Host "Installing Library Application in Workspace $($workspaceArtifactID)"
+  $retVal = $FALSE
+  $proxy = $NULL
+  $formattedUrl = [string]::Format("http://{0}/Relativity.Rest/Api", $serverName)
+  $uri = New-Object -TypeName System.Uri -ArgumentList $formattedUrl
+  $usernamePasswordCredentials = New-Object -TypeName Relativity.Services.ServiceProxy.UsernamePasswordCredentials -ArgumentList $userName, $password
+  $serviceFactorySettings = New-Object -TypeName Relativity.Services.ServiceProxy.ServiceFactorySettings -ArgumentList $uri, $uri, $usernamePasswordCredentials
+  $serviceFactory = New-Object -TypeName Relativity.Services.ServiceProxy.ServiceFactory -ArgumentList $serviceFactorySettings
+
+  try {
+    # The easiest way to call a generic method in powershell
+    $proxy = $serviceFactory.GetType().GetMethod("CreateProxy").MakeGenericMethod([Relativity.Services.ApplicationInstallManager.IApplicationInstallManager]).Invoke($serviceFactory, $null)
+    $retVal = $proxy.InitiateLibraryApplicationInstallAsync($workspaceArtifactID, $applicationGuid).Result;
+
+    if ($result -eq $FALSE) {
+        Write-Error "Error Installing Libarry Application"
+    }
+  }
+  catch [Exception] {
+    Write-Host "$($_.Exception.GetType().FullName) $($_.Exception.Message)"
+  }
+  finally {
+    if ($proxy -ne $NULL){
+        $proxy.Dispose()
+    }
+  }
+  $retVal
+}
+
+function QueryInstanceSetting([string] $serverName, [string] $userName, [string] $password, [string] $section, [string] $name) {
+  Write-Host "Querying Instance Setting"
+  $retVal = $NULL
+  $proxy = $NULL
+  $formattedUrl = [string]::Format("http://{0}/Relativity.Rest/Api", $serverName)
+  $uri = New-Object -TypeName System.Uri -ArgumentList $formattedUrl
+  $usernamePasswordCredentials = New-Object -TypeName Relativity.Services.ServiceProxy.UsernamePasswordCredentials -ArgumentList $userName, $password
+  $serviceFactorySettings = New-Object -TypeName Relativity.Services.ServiceProxy.ServiceFactorySettings -ArgumentList $uri, $uri, $usernamePasswordCredentials
+  $serviceFactory = New-Object -TypeName Relativity.Services.ServiceProxy.ServiceFactory -ArgumentList $serviceFactorySettings
+
+  try {
+    $query = New-Object -TypeName Relativity.Services.Query -Property @{
+        'Condition' = "'Section' == '$($section)' AND 'Name' == '$($name)'"
+    }
+    # The easiest way to call a generic method in powershell
+    $proxy = $serviceFactory.GetType().GetMethod("CreateProxy").MakeGenericMethod([Relativity.Services.InstanceSetting.IInstanceSettingManager]).Invoke($serviceFactory, $null)
+    $retVal = $proxy.QueryAsync($query).Result;
+
+    if ($retVal.Success -eq $FALSE) {
+        throw $retVal.Message
+    }
+  }
+  catch [Exception] {
+    Write-Host "$($_.Exception.GetType().FullName) $($_.Exception.Message)"
+  }
+  finally {
+    if ($proxy -ne $NULL){
+        $proxy.Dispose()
+    }
+  }
+  $retVal
+}
+
+function CreateInstanceSetting([string] $serverName, [string] $userName, [string] $password, [string] $section, [string] $name, [Relativity.Services.InstanceSetting.ValueType] $valueType, [string] $value) {
+  Write-Host "Creating Instance Setting"
+  $retVal = $NULL
+  $proxy = $NULL
+  $formattedUrl = [string]::Format("http://{0}/Relativity.Rest/Api", $serverName)
+  $uri = New-Object -TypeName System.Uri -ArgumentList $formattedUrl
+  $usernamePasswordCredentials = New-Object -TypeName Relativity.Services.ServiceProxy.UsernamePasswordCredentials -ArgumentList $userName, $password
+  $serviceFactorySettings = New-Object -TypeName Relativity.Services.ServiceProxy.ServiceFactorySettings -ArgumentList $uri, $uri, $usernamePasswordCredentials
+  $serviceFactory = New-Object -TypeName Relativity.Services.ServiceProxy.ServiceFactory -ArgumentList $serviceFactorySettings
+
+  try {
+    $instanceSetting = New-Object -TypeName Relativity.Services.InstanceSetting.InstanceSetting -Property @{
+        'Section' = $section
+        'Name' = $name
+        'Value' = $value
+        'ValueType' = $valueType
+    }
+    # The easiest way to call a generic method in powershell
+    $proxy = $serviceFactory.GetType().GetMethod("CreateProxy").MakeGenericMethod([Relativity.Services.InstanceSetting.IInstanceSettingManager]).Invoke($serviceFactory, $null)
+    $retVal = $proxy.CreateSingleAsync($instanceSetting).Result;
+  }
+  catch [Exception] {
+    Write-Host "$($_.Exception.GetType().FullName) $($_.Exception.Message)"
+  }
+  finally {
+    if ($proxy -ne $NULL){
+        $proxy.Dispose()
+    }
+  }
+  $retVal
+}
+
+function UpdateInstanceSettingValue([string] $serverName, [string] $userName, [string] $password, [string] $section, [string] $name, [string] $value) {
+  Write-Host "Updating Instance Setting"
+  $retVal = $NULL
+  $proxy = $NULL
+  $instanceSettingResults = QueryInstanceSetting $serverName $userName $password $section $name
+
+  if($instanceSettingResults.Success -eq $FALSE -or $instanceSettingResults.Results.Count -lt 1){
+    Write-Host "Unable to find Instance Setting"
+  }else{
+    $instanceSetting = $instanceSettingResults.Results[0].Artifact
+    $instanceSetting.Value = "True"
+
+    $formattedUrl = [string]::Format("http://{0}/Relativity.Rest/Api", $serverName)
+    $uri = New-Object -TypeName System.Uri -ArgumentList $formattedUrl
+    $usernamePasswordCredentials = New-Object -TypeName Relativity.Services.ServiceProxy.UsernamePasswordCredentials -ArgumentList $userName, $password
+    $serviceFactorySettings = New-Object -TypeName Relativity.Services.ServiceProxy.ServiceFactorySettings -ArgumentList $uri, $uri, $usernamePasswordCredentials
+    $serviceFactory = New-Object -TypeName Relativity.Services.ServiceProxy.ServiceFactory -ArgumentList $serviceFactorySettings
+
+    try {
+        # The easiest way to call a generic method in powershell
+        $proxy = $serviceFactory.GetType().GetMethod("CreateProxy").MakeGenericMethod([Relativity.Services.InstanceSetting.IInstanceSettingManager]).Invoke($serviceFactory, $null)
+        $proxy.UpdateSingleAsync($instanceSetting).Wait();
+    }
+    catch [Exception] {
+      Write-Host "$($_.Exception.GetType().FullName) $($_.Exception.Message)"
+    }
+    finally {
+      if ($proxy -ne $NULL){
+          $proxy.Dispose()
+      }
+    }
+  }
 }

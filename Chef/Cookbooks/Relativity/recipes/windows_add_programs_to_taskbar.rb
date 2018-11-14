@@ -1,12 +1,11 @@
-log 'Starting adding programs to taskbar'
+custom_log 'custom_log' do msg 'Starting adding programs to taskbar' end
 start_time = DateTime.now
-log "recipe_start_time(#{recipe_name}): #{start_time}"
+custom_log 'custom_log' do msg "recipe_start_time(#{recipe_name}): #{start_time}" end
 
 programs = {
   'powershell.exe' => 'C:\Windows\System32\WindowsPowerShell\v1.0',
-  'msvsmon.exe' => 'C:\Program Files\Microsoft Visual Studio 14.0\Common7\IDE\Remote Debugger\x64',
+  'msvsmon.exe' => 'C:\Program Files\Microsoft Visual Studio 15.0\Common7\IDE\Remote Debugger\x64',
   'notepad++.exe' => 'C:\Program Files\Notepad++',
-  'Code.exe' => 'C:\Program Files (x86)\Microsoft VS Code',
   'services.msc' => 'C:\Windows\system32',
 }
 
@@ -23,7 +22,9 @@ programs.each do |app, location|
   end
 end
 
+custom_log 'custom_log' do msg 'Finished adding program shortcuts to taskbar' end
+
 end_time = DateTime.now
-log "recipe_end_Time(#{recipe_name}): #{end_time}"
-log "recipe_duration(#{recipe_name}): #{end_time.to_time - start_time.to_time} seconds"
-log 'Finished adding programs to taskbar'
+custom_log 'custom_log' do msg "recipe_end_Time(#{recipe_name}): #{end_time}" end
+custom_log 'custom_log' do msg "recipe_duration(#{recipe_name}): #{end_time.to_time - start_time.to_time} seconds" end
+custom_log 'custom_log' do msg "Finished adding programs to taskbar\n\n\n" end

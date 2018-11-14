@@ -1,12 +1,12 @@
-log 'Starting addition of agent and worker servers to default resource pool'
+custom_log 'custom_log' do msg 'Starting addition of agent and worker servers to default resource pool' end
 start_time = DateTime.now
-log "recipe_start_time(#{recipe_name}): #{start_time}"
+custom_log 'custom_log' do msg "recipe_start_time(#{recipe_name}): #{start_time}" end
 
 require 'net/http'
 require 'json'
 
 # Check Resource Pool Exists
-log "Querying for 'Default' resource pool artifact id."
+custom_log 'custom_log' do msg "Querying for 'Default' resource pool artifact id." end
 url = "http://#{node['windows']['hostname']}/Relativity.Rest/api/Relativity.Services.ResourcePool.IResourcePoolModule/Resource%20Pool%20Service/QueryAsync"
 uri = URI(url)
 http = Net::HTTP.new(uri.host, uri.port)
@@ -25,53 +25,42 @@ request_body_json = JSON.parse(
   QUERY
 )
 request.body = request_body_json.to_json
-response = http.request(request)
+error_message = "An unexpected error occured when querying for 'Default' resource pool."
+response = RetryHelper.execute_rest_call(http, request, 3, error_message)
 is_http_request_success = (response.is_a? Net::HTTPSuccess)
-unless is_http_request_success
-  error_message = "An unexpected error occured when querying for 'Default' resource pool"
-  log error_message
-  raise error_message
-end
 response_json = JSON.parse(response.body)
 if response_json['TotalCount'] > 0
   node.run_state['default_resource_pool_artifact_id'] = response_json['Results'][0]['Artifact']['ArtifactID']
-  log "default_resource_pool_artifact_id = #{node.run_state['default_resource_pool_artifact_id']}"
+  custom_log 'custom_log' do msg "default_resource_pool_artifact_id = #{node.run_state['default_resource_pool_artifact_id']}" end
 elsif response_json['TotalCount'] == 0
-  log "Coundn't find 'Default' resource pool artifact id."
+  custom_log 'custom_log' do msg "Coundn't find 'Default' resource pool artifact id." end
   raise "Unexpected Failure in check for 'Default' Resource Pool."
 end
 
-
 # Get ResourceServerType Choices
-log 'Querying for ResourceServerType Choices.'
+custom_log 'custom_log' do msg 'Querying for ResourceServerType Choices.' end
 url = "http://#{node['windows']['hostname']}/Relativity.Rest/api/Relativity.Services.ResourcePool.IResourcePoolModule/Resource%20Pool%20Service/GetResourceServerTypeChoicesAsync"
 uri = URI(url)
 http = Net::HTTP.new(uri.host, uri.port)
 request = Net::HTTP::Post.new(uri.request_uri)
 request.basic_auth(node['relativity']['admin']['login'], node['relativity']['admin']['password'])
 request['X-CSRF-Header'] = ' '
-response = http.request(request)
-is_http_request_success = (response.is_a? Net::HTTPSuccess)
-unless is_http_request_success
-  error_message = 'An unexpected error occured when querying for ResourceServerType Choices.'
-  log error_message
-  raise error_message
-end
+error_message = 'An unexpected error occured when querying for ResourceServerType Choices.'
+response = RetryHelper.execute_rest_call(http, request, 3, error_message)
 response_json = JSON.parse(response.body)
 response_json.each do |type|
   if type['Name'] == 'Agent'
     node.run_state['resource_server_types_choice_agent_artifact_id'] = type['ArtifactID']
-    log "resource_server_types_choice_agent_artifact_id = #{node.run_state['resource_server_types_choice_agent_artifact_id']}"
+    custom_log 'custom_log' do msg "resource_server_types_choice_agent_artifact_id = #{node.run_state['resource_server_types_choice_agent_artifact_id']}" end
   end
   if type['Name'] == 'Worker'
     node.run_state['resource_server_types_choice_worker_artifact_id'] = type['ArtifactID']
-    log "resource_server_types_choice_worker_artifact_id = #{node.run_state['resource_server_types_choice_worker_artifact_id']}"
+    custom_log 'custom_log' do msg "resource_server_types_choice_worker_artifact_id = #{node.run_state['resource_server_types_choice_worker_artifact_id']}" end
   end
 end
 
-
 # Get All ResourceServers
-log 'Querying for All ResourceServers.'
+custom_log 'custom_log' do msg 'Querying for All ResourceServers.' end
 url = "http://#{node['windows']['hostname']}/Relativity.Rest/api/Relativity.Services.ResourceServer.IResourceServerModule/Resource%20Server%20Manager/QueryAsync"
 uri = URI(url)
 http = Net::HTTP.new(uri.host, uri.port)
@@ -90,33 +79,27 @@ request_body_json = JSON.parse(
   QUERY
 )
 request.body = request_body_json.to_json
-response = http.request(request)
-is_http_request_success = (response.is_a? Net::HTTPSuccess)
-unless is_http_request_success
-  error_message = 'An unexpected error occured when querying for All ResourceServers.'
-  log error_message
-  raise error_message
-end
+error_message = 'An unexpected error occured when querying for All ResourceServers.'
+response = RetryHelper.execute_rest_call(http, request, 3, error_message)
 response_json = JSON.parse(response.body)
 if response_json['TotalCount'] > 0
   response_json['Results'].each do |ser|
     if ser['Artifact']['ServerType']['Name'] == 'Agent'
       node.run_state['agent_resource_server_artifact_id'] = ser['Artifact']['ArtifactID']
-      log "agent_resource_server_artifact_id = #{node.run_state['agent_resource_server_artifact_id']}"
+      custom_log 'custom_log' do msg "agent_resource_server_artifact_id = #{node.run_state['agent_resource_server_artifact_id']}" end
     end
     if ser['Artifact']['ServerType']['Name'] == 'Worker'
       node.run_state['worker_resource_server_artifact_id'] = ser['Artifact']['ArtifactID']
-      log "worker_resource_server_artifact_id = #{node.run_state['worker_resource_server_artifact_id']}"
+      custom_log 'custom_log' do msg "worker_resource_server_artifact_id = #{node.run_state['worker_resource_server_artifact_id']}" end
     end
   end
 elsif response_json['TotalCount'] == 0
-  log 'Cound not retrieve a list of all resource servers.'
+  custom_log 'custom_log' do msg 'Cound not retrieve a list of all resource servers.' end
   raise 'Unexpected Failure when querying for all resource servers.'
 end
 
-
 # Add Agent ResourceServer to Default Resource Pool
-log "Adding Agent Server to 'Default' Resource Pool."
+custom_log 'custom_log' do msg "Adding Agent Server to 'Default' Resource Pool." end
 url = "http://#{node['windows']['hostname']}/Relativity.Rest/api/Relativity.Services.ResourcePool.IResourcePoolModule/Resource%20Pool%20Service/AddServerAsync"
 uri = URI(url)
 http = Net::HTTP.new(uri.host, uri.port)
@@ -140,19 +123,15 @@ request_body_json = JSON.parse(
   QUERY
 )
 request.body = request_body_json.to_json
-response = http.request(request)
+error_message = "An unexpected error occured when adding Agent ResourceServer to 'Default' Resource Pool."
+response = RetryHelper.execute_rest_call(http, request, 3, error_message)
 is_http_request_success = (response.is_a? Net::HTTPSuccess)
-unless is_http_request_success
-  error_message = "An unexpected error occured when adding Agent ResourceServer to 'Default' Resource Pool."
-  log error_message
-  raise error_message
-end
 if is_http_request_success
-  log "Added Agent ResourceServer to 'Default' Resource Pool."
+  custom_log 'custom_log' do msg "Added Agent ResourceServer to 'Default' Resource Pool." end
 end
 
 # Add Worker ResourceServer to Default Resource Pool
-log "Adding Worker Server to 'Default' Resource Pool."
+custom_log 'custom_log' do msg "Adding Worker Server to 'Default' Resource Pool." end
 url = "http://#{node['windows']['hostname']}/Relativity.Rest/api/Relativity.Services.ResourcePool.IResourcePoolModule/Resource%20Pool%20Service/AddServerAsync"
 uri = URI(url)
 http = Net::HTTP.new(uri.host, uri.port)
@@ -176,18 +155,53 @@ request_body_json = JSON.parse(
   QUERY
 )
 request.body = request_body_json.to_json
-response = http.request(request)
+error_message = "An unexpected error occured when adding Worker ResourceServer to 'Default' Resource Pool."
+response = RetryHelper.execute_rest_call(http, request, 3, error_message)
 is_http_request_success = (response.is_a? Net::HTTPSuccess)
-unless is_http_request_success
-  error_message = "An unexpected error occured when adding Worker ResourceServer to 'Default' Resource Pool."
-  log error_message
-  raise error_message
-end
 if is_http_request_success
-  log "Added Worker ResourceServer to 'Default' Resource Pool."
+  custom_log 'custom_log' do msg "Added Worker ResourceServer to 'Default' Resource Pool." end
+end
+
+# Verify Agent and Worker added to Resource pool
+agent_added_to_resource_pool = false
+worker_added_to_resource_pool = false
+awatrq_timer = 0
+awatrq_interval = 10
+awatrq_max_time = 30
+
+while awatrq_timer < awatrq_max_time && (agent_added_to_resource_pool == false || worker_added_to_resource_pool == false)
+  # Sleep
+  sleep(awatrq_interval)
+
+  # Get Resource Pool Resource Servers'
+  response = ProcessingHelper.query_resourcepool_resource_servers(node['windows']['hostname'], node['relativity']['admin']['login'], node['relativity']['admin']['password'], node.run_state['default_resource_pool_artifact_id'])
+  response_json = JSON.parse(response.body)
+  response_json.each do |server|
+    if server['ServerType']['Name'] == 'Agent' && server['ServerType']['ArtifactID'] == node.run_state['resource_server_types_choice_agent_artifact_id']
+      agent_added_to_resource_pool = true
+      custom_log 'custom_log' do msg "Verified that agent server added to default resource pool successfully." end
+    end
+    if server['ServerType']['Name'] == 'Worker' && server['ServerType']['ArtifactID'] == node.run_state['resource_server_types_choice_worker_artifact_id']
+      worker_added_to_resource_pool = true
+      custom_log 'custom_log' do msg "Verified that worder server added to default resource pool successfully." end
+    end
+  end
+
+  # Increment Interval
+  awatrq_timer += awatrq_interval
+end
+
+if awatrq_interval >= awatrq_max_time
+  raise "Timed out while waiting for newly created processing server to become queryable"
+end
+if agent_added_to_resource_pool == false
+  raise "Unable to verify Agent Server was added to default resource pool."
+end
+if worker_added_to_resource_pool == false
+  raise "Unable to verify Worker Server was added to default resource pool."
 end
 
 end_time = DateTime.now
-log "recipe_end_Time(#{recipe_name}): #{end_time}"
-log "recipe_duration(#{recipe_name}): #{end_time.to_time - start_time.to_time} seconds"
-log 'Finished addition of agent and worker servers to default resource pool'
+custom_log 'custom_log' do msg "recipe_end_Time(#{recipe_name}): #{end_time}" end
+custom_log 'custom_log' do msg "recipe_duration(#{recipe_name}): #{end_time.to_time - start_time.to_time} seconds" end
+custom_log 'custom_log' do msg "Finished addition of agent and worker servers to default resource pool\n\n\n" end
