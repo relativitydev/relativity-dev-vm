@@ -6,7 +6,7 @@ file_source_folder = node['file']['installers']['default_destination_folder']
 file_source = "#{file_source_folder}\\#{node['file']['result']['name']}"
 file_destination_folder = node['file']['result']['destination_folder']
 
-custom_log 'custom_log' do msg 'Creating and writing script result to a text file.' end
+custom_log 'custom_log' do msg 'Creating source folder if it not already exists' end
 # Create Source folder if it not already exists
 directory file_source_folder do
   action :create

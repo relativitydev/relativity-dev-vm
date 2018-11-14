@@ -71,6 +71,8 @@ default['secret_store']['service']['port'] = '9090'
 default['secret_store']['init_result'] = 'C:\\\"Program Files\"\\\"Relativity Secret Store\"\\Client\\init_output.txt'
 default['secret_store']['unseal_key_identifier'] = 'UNSEALKEY'
 default['secret_store']['unseal_key'] = 'C:\\Program Files\\Relativity Secret Store\\unseal.txt'
+default['secret_store']['unseal_key']['save_to_local_file_destination_folder'] = 'C:\\Relativity Secret Store'
+default['secret_store']['unseal_key']['save_to_local_file_destination_path'] = "#{default['secret_store']['unseal_key']['save_to_local_file_destination_folder']}\\relativity_secret_store_unseal_key.txt"
 
 default['relativity']['install']['source_folder'] = '\\\\kcura.corp\\shares\\Development\\DevEx\\DevVm\\Testing\\DevVm_Install_Files\\Relativity'
 default['relativity']['install']['destination_folder'] = "#{default['file']['installers']['default_destination_folder']}\\Relativity"

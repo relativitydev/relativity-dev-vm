@@ -245,6 +245,7 @@ Vagrant.configure('2') do |config|
       'email_to' => relativity_email_to,
     }
     chef.add_recipe('Relativity::pre_relativity_secret_store_install')
+    chef.add_recipe('Relativity::pre_relativity_secret_store_install_save_secret_store_unseal_key_to_local_file')
     chef.add_recipe('Relativity::pre_relativity_secret_store_add_response_file_properties')
   end
 
