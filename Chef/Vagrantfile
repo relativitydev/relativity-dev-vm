@@ -267,7 +267,6 @@ Vagrant.configure('2') do |config|
       'email_to' => relativity_email_to,
     }
     chef.add_recipe('Relativity::default_relativity')
-    chef.add_recipe('Relativity::post_relativity_instance_setting_update_cookie_secure')
     chef.add_recipe('Relativity::post_relativity_instance_setting_update_smtp_email_settings')
     # chef.add_recipe('Relativity::post_relativity_instance_setting_update_turn_telemetry_off')
   end
@@ -375,7 +374,6 @@ Vagrant.configure('2') do |config|
       'email_to' => relativity_email_to,
     }
     chef.add_recipe('Relativity::post_relativity_configure_invariant_create_processing_choice')
-    chef.add_recipe('Relativity::post_relativity_configure_invariant_instance_setting_update_processingwebapipath')
   end
 
   # Configure Invariant Configuration
