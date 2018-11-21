@@ -27,8 +27,6 @@ Write-Host "global:releaseSqlServerLogin = $($global:releaseSqlServerLogin)"
 Write-Host "global:releaseSqlServerPassword = $($global:releaseSqlServerPassword)"
 [string] $global:relativityVersionFolders = $jsonContents.relativityVersionFolders
 Write-Host "global:relativityVersionFolders = $($global:relativityVersionFolders)"
-[string] $global:invariantVersionFolders = $jsonContents.invariantVersionFolders
-Write-Host "global:invariantVersionFolders = $($global:invariantVersionFolders)"
 [string] $global:devVmInstallFolder = $jsonContents.devVmInstallFolder
 Write-Host "global:devVmInstallFolder = $($global:devVmInstallFolder)"
 [string] $global:devVmAutomationLogsFolder = $jsonContents.devVmAutomationLogsFolder
@@ -40,10 +38,9 @@ Write-Host "global:devVmNetworkStorageLocation = $($global:devVmNetworkStorageLo
 Write-Host ""
 $global:relativityVersionFoldersList = $global:relativityVersionFolders.Split(";")
 Write-Host "global:relativityVersionFoldersList = $($global:relativityVersionFoldersList)"
-$global:invariantVersionFoldersList = $global:invariantVersionFolders.Split(";")
-Write-Host "global:invariantVersionFoldersList = $($global:invariantVersionFoldersList)"
 Write-Host ""
 
+[string] $global:currentRelativityVersionCreating = ""
 [System.Int32]$global:maxRetry = 3
 [System.Int32]$global:count = 1
 [string] $global:regexForRelativityVersion = "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}"
@@ -60,8 +57,6 @@ $global:devVmVersionsToCreate = New-Object System.Collections.ArrayList
 [string] $global:devVmCreationResultFileName = "result_file.txt"
 [Boolean] $global:devVmCreationWasSuccess = $false
 [string] $global:compressedFileExtension = "zip"
-[string] $global:last95RelativityVersion = "9.5.411.4"
-[string] $global:last95InvariantVersion = "4.5.404.1"
 [string] $global:relativityInvariantVersionNumberFileName = "relativity_invariant_version.txt"
 [string] $global:testSingleRelativityVersion = "" # Leave it blank when in Production mode
 
@@ -350,6 +345,7 @@ function Copy-Relativity-Installer-And-Response-Files([string] $relativityVersio
     [string] $majorRelativityVersion = "$($relativityVersionToCopySplit[0]).$($relativityVersionToCopySplit[1])"
 
     if ($currentRelativityVersionFolder.Contains($majorRelativityVersion)) {
+      $global:currentRelativityVersionCreating = "$($currentRelativityVersionFolder)" # This vairable will be used when copying invariant install file
       $sourceRelativityFile = "$($currentRelativityVersionFolder)\$($relativityVersionToCopy)\RelativityInstallation\GOLD $($relativityVersionToCopy) Relativity.exe"
       $sourceRelativityResponseFile = "$($currentRelativityVersionFolder)\$($relativityVersionToCopy)\RelativityInstallation\RelativityResponse.txt"
     }
@@ -373,14 +369,15 @@ function Copy-Invariant-Installer-And-Response-Files([string] $invariantVersionT
   [string] $sourceInvariantFile = ""
   [string] $sourceInvariantResponseFile = ""
 
-  $global:invariantVersionFoldersList | ForEach-Object {
-    [string] $currentInvariantVersionFolder = $_
-    $invariantVersionToCopySplit = $invariantVersionToCopy.Split(".")
-    [string] $majorInvariantVersion = "$($invariantVersionToCopySplit[0]).$($invariantVersionToCopySplit[1])"
+  $global:relativityVersionFoldersList | ForEach-Object {
+    [string] $currentRelativityVersionFolder = $_
+    $global:currentRelativityVersionCreatingSplit = $global:currentRelativityVersionCreating.Split(".")
+    [string] $majorRelativityVersion = "$($global:currentRelativityVersionCreatingSplit[0]).$($global:currentRelativityVersionCreatingSplit[1])"
 
-    if ($currentInvariantVersionFolder.Contains($majorInvariantVersion)) {
-      $sourceInvariantFile = "$($currentInvariantVersionFolder)\Invariant $($invariantVersionToCopy)\GOLD $($invariantVersionToCopy) Invariant.exe"
-      $sourceInvariantResponseFile = "$($currentInvariantVersionFolder)\Invariant $($invariantVersionToCopy)\InvariantResponse.txt"
+    if ($currentRelativityVersionFolder.Contains($majorRelativityVersion)) {
+      $global:currentRelativityVersionCreating = "$($currentRelativityVersionFolder)"
+      $sourceInvariantFile = "$($currentRelativityVersionFolder)\Invariant\Invariant $($invariantVersionToCopy)\GOLD $($invariantVersionToCopy) Invariant.exe"
+      $sourceInvariantResponseFile = "$($currentRelativityVersionFolder)\Invariant\Invariant $($invariantVersionToCopy)\InvariantResponse.txt"
     }
   }
 
