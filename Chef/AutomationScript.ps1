@@ -25,20 +25,24 @@ Write-Host "global:releaseSqlServerDatabase = $($global:releaseSqlServerDatabase
 Write-Host "global:releaseSqlServerLogin = $($global:releaseSqlServerLogin)"
 [string] $global:releaseSqlServerPassword = $jsonContents.releaseSqlServerPassword
 Write-Host "global:releaseSqlServerPassword = $($global:releaseSqlServerPassword)"
-[string] $global:relativityVersionFolder = $jsonContents.relativityVersionFolder
-Write-Host "global:relativityVersionFolder = $($global:relativityVersionFolder)"
-[string] $global:invariantVersionFolder = $jsonContents.invariantVersionFolder
-Write-Host "global:invariantVersionFolder = $($global:invariantVersionFolder)"
-[string] $global:relativity95VersionFolder = $jsonContents.relativity95VersionFolder
-Write-Host "global:relativity95VersionFolder = $($global:relativity95VersionFolder)"
-[string] $global:invariant95VersionFolder = $jsonContents.invariant95VersionFolder
-Write-Host "global:invariant95VersionFolder = $($global:invariant95VersionFolder)"
+[string] $global:relativityVersionFolders = $jsonContents.relativityVersionFolders
+Write-Host "global:relativityVersionFolders = $($global:relativityVersionFolders)"
+[string] $global:invariantVersionFolders = $jsonContents.invariantVersionFolders
+Write-Host "global:invariantVersionFolders = $($global:invariantVersionFolders)"
 [string] $global:devVmInstallFolder = $jsonContents.devVmInstallFolder
 Write-Host "global:devVmInstallFolder = $($global:devVmInstallFolder)"
 [string] $global:devVmAutomationLogsFolder = $jsonContents.devVmAutomationLogsFolder
 Write-Host "global:devVmAutomationLogsFolder = $($global:devVmAutomationLogsFolder)"
 [string] $global:devVmNetworkStorageLocation = $jsonContents.devVmNetworkStorageLocation
 Write-Host "global:devVmNetworkStorageLocation = $($global:devVmNetworkStorageLocation)"
+
+# Display parsed Relativity and Invariant folder arrays
+Write-Host ""
+$global:relativityVersionFoldersList = $global:relativityVersionFolders.Split(";")
+Write-Host "global:relativityVersionFoldersList = $($global:relativityVersionFoldersList)"
+$global:invariantVersionFoldersList = $global:invariantVersionFolders.Split(";")
+Write-Host "global:invariantVersionFoldersList = $($global:invariantVersionFoldersList)"
+Write-Host ""
 
 [System.Int32]$global:maxRetry = 3
 [System.Int32]$global:count = 1
@@ -147,31 +151,22 @@ function Copy-File-Overwrite-If-It-Exists ([string] $sourceFilePath, [string] $d
 }
 
 function Retrieve-All-Relativity-Versions-Released() {
-  # Retrieve all Relativity 9.5 child folders
-  $all95ChildFolders = Get-ChildItem -Path $global:relativity95VersionFolder
-  Write-Heading-Message-To-Screen "List of Child items in folder [$($global:relativity95VersionFolder)]:"
-  $all95ChildFolders | ForEach-Object {
-    $folderName = ($_.Name).Trim()
-    Write-Message-To-Screen "$($folderName)"
-    if ($folderName -match $global:regexForRelativityVersion) {
-      if ($folderName -eq $global:last95RelativityVersion) {
+  # Retrieve all child folders
+
+  $global:relativityVersionFoldersList | ForEach-Object {
+    $currentRelativityVersionFolder = $_
+
+    $allChildFolders = Get-ChildItem -Path $currentRelativityVersionFolder
+    Write-Heading-Message-To-Screen "List of Child items in folder [$($currentRelativityVersionFolder)]:"
+    $allChildFolders | ForEach-Object {
+      $folderName = ($_.Name).Trim()
+      Write-Message-To-Screen "$($folderName)"
+      if ($folderName -match $global:regexForRelativityVersion) {
         [void] $global:allRelativityVersionsReleased.Add($folderName)      
       }
     }
+    Write-Empty-Line-To-Screen
   }
-  Write-Empty-Line-To-Screen
-
-  # Retrieve all child folders
-  $allChildFolders = Get-ChildItem -Path $global:relativityVersionFolder
-  Write-Heading-Message-To-Screen "List of Child items in folder [$($global:relativityVersionFolder)]:"
-  $allChildFolders | ForEach-Object {
-    $folderName = ($_.Name).Trim()
-    Write-Message-To-Screen "$($folderName)"
-    if ($folderName -match $global:regexForRelativityVersion) {
-      [void] $global:allRelativityVersionsReleased.Add($folderName)      
-    }
-  }
-  Write-Empty-Line-To-Screen
 
   Write-Heading-Message-To-Screen "List of Relativity versions identified:"
   $global:allRelativityVersionsReleased | ForEach-Object {
@@ -348,13 +343,16 @@ function Copy-Relativity-Installer-And-Response-Files([string] $relativityVersio
 
   [string] $sourceRelativityFile = ""
   [string] $sourceRelativityResponseFile = ""
-  if ($relativityVersionToCreate -eq $global:last95RelativityVersion) {
-    $sourceRelativityFile = "$($global:relativity95VersionFolder)\$($relativityVersionToCopy)\RelativityInstallation\GOLD $($relativityVersionToCopy) Relativity.exe"
-    $sourceRelativityResponseFile = "$($global:relativity95VersionFolder)\$($relativityVersionToCopy)\RelativityInstallation\RelativityResponse.txt"
-  }
-  else {
-    $sourceRelativityFile = "$($global:relativityVersionFolder)\$($relativityVersionToCopy)\RelativityInstallation\GOLD $($relativityVersionToCopy) Relativity.exe"
-    $sourceRelativityResponseFile = "$($global:relativityVersionFolder)\$($relativityVersionToCopy)\RelativityInstallation\RelativityResponse.txt"
+
+  $global:relativityVersionFoldersList | ForEach-Object {
+    [string] $currentRelativityVersionFolder = $_
+    $relativityVersionToCopySplit = $relativityVersionToCopy.Split(".")
+    [string] $majorRelativityVersion = "$($relativityVersionToCopySplit[0]).$($relativityVersionToCopySplit[1])"
+
+    if ($currentRelativityVersionFolder.Contains($majorRelativityVersion)) {
+      $sourceRelativityFile = "$($currentRelativityVersionFolder)\$($relativityVersionToCopy)\RelativityInstallation\GOLD $($relativityVersionToCopy) Relativity.exe"
+      $sourceRelativityResponseFile = "$($currentRelativityVersionFolder)\$($relativityVersionToCopy)\RelativityInstallation\RelativityResponse.txt"
+    }
   }
 
   [string] $destinationRelativityFile = "$($global:devVmInstallFolder)\Relativity\Relativity.exe"
@@ -375,13 +373,15 @@ function Copy-Invariant-Installer-And-Response-Files([string] $invariantVersionT
   [string] $sourceInvariantFile = ""
   [string] $sourceInvariantResponseFile = ""
 
-  if ($invariantVersionToCopy -eq $global:last95InvariantVersion) {
-    $sourceInvariantFile = "$($global:invariant95VersionFolder)\Invariant $($invariantVersionToCopy)\GOLD $($invariantVersionToCopy) Invariant.exe"
-    $sourceInvariantResponseFile = "$($global:invariant95VersionFolder)\Invariant $($invariantVersionToCopy)\InvariantResponse.txt"
-  }
-  else {
-    $sourceInvariantFile = "$($global:invariantVersionFolder)\Invariant $($invariantVersionToCopy)\GOLD $($invariantVersionToCopy) Invariant.exe"
-    $sourceInvariantResponseFile = "$($global:invariantVersionFolder)\Invariant $($invariantVersionToCopy)\InvariantResponse.txt"
+  $global:invariantVersionFoldersList | ForEach-Object {
+    [string] $currentInvariantVersionFolder = $_
+    $invariantVersionToCopySplit = $invariantVersionToCopy.Split(".")
+    [string] $majorInvariantVersion = "$($invariantVersionToCopySplit[0]).$($invariantVersionToCopySplit[1])"
+
+    if ($currentInvariantVersionFolder.Contains($majorInvariantVersion)) {
+      $sourceInvariantFile = "$($currentInvariantVersionFolder)\Invariant $($invariantVersionToCopy)\GOLD $($invariantVersionToCopy) Invariant.exe"
+      $sourceInvariantResponseFile = "$($currentInvariantVersionFolder)\Invariant $($invariantVersionToCopy)\InvariantResponse.txt"
+    }
   }
 
   [string] $destinationInvariantFile = "$($global:devVmInstallFolder)\Invariant\Invariant.exe"
