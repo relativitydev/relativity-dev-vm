@@ -13,7 +13,7 @@ function Write-Host-Custom-Green ([string] $writeMessage) {
 }
 
 # Retrieve values from DevVm_Automation_Config.json file
-[string] $devVmAutomationConfigFilePath = "C:\DevVm_Automation_Config.json"
+[string] $devVmAutomationConfigFilePath = "D:\DevVm_Automation_Config.json"
 [string] $json = Get-Content -Path $devVmAutomationConfigFilePath
 $jsonContents = $json | ConvertFrom-Json
 
@@ -50,7 +50,7 @@ $global:allRelativityVersionsReleased = New-Object System.Collections.ArrayList
 $global:devVmVersionsCreated = New-Object System.Collections.ArrayList
 $global:devVmVersionsToCreate = New-Object System.Collections.ArrayList
 [string] $global:vmName = "RelativityDevVm"
-[string] $global:vmExportPath = "C:\DevVmExport"
+[string] $global:vmExportPath = "D:\DevVmExport"
 [Boolean] $global:foundCompatibleInvariantVersion = $false
 [string] $global:invariantVersion = ""
 [Int32] $global:invariantVersionSqlRecordCount = 0

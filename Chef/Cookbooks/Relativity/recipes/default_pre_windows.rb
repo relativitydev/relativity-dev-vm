@@ -3,13 +3,13 @@ start_time = DateTime.now
 custom_log 'custom_log' do msg "recipe_start_time(#{recipe_name}): #{start_time}" end
 
 # Create default folders on VM
-include_recipe 'Relativity::pre_windows_create_default_folders'
+# include_recipe 'Relativity::pre_windows_create_default_folders' #already setup in base
 
 # Install Nuget provider
-include_recipe 'Relativity::pre_windows_install_nuget_provider'
+# include_recipe 'Relativity::pre_windows_install_nuget_provider' #already setup in base
 
 # Change Computer Name
-include_recipe 'Relativity::pre_windows_change_computer_name'
+# include_recipe 'Relativity::pre_windows_change_computer_name' #already setup in base
 
 end_time = DateTime.now
 custom_log 'custom_log' do msg "recipe_end_Time(#{recipe_name}): #{end_time}" end
