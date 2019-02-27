@@ -240,6 +240,36 @@ default['relativity']['response_file']['replacement_values'] =
         # Whether or not to enable win auth for your Relativity environment.
         name: "ENABLEWINAUTH", 
         value: "0"
+    },
+    {
+        # Used to configure Relativity with the messaging provider you are using.
+        name: "SERVICEBUSPROVIDER", 
+        value: "Windows"
+    },
+    {
+        # Fully qualified domain name of your message bus.
+        name: "SERVERFQDN", 
+        value: "localhost"
+    },
+    {
+        # Shared access key or admin password used to authenticate to the bus.
+        name: "SHAREDACCESSKEY", 
+        value: "guest"
+    },
+    {
+        # Shared access key name or admin user used to authenticate to the bus.
+        name: "SHAREDACCESSKEYNAME", 
+        value: "guest"
+    },
+    {
+        # Service namespace used when creating entities on the bus.
+        name: "SERVICENAMESPACE", 
+        value: "Relativity"
+    },
+    {
+        # Enable TLS communication when connecting to the service bus.
+        name: "TLSENABLED", 
+        value: "1"
     }
 ]
 
