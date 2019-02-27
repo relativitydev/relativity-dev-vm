@@ -58,7 +58,7 @@ $global:devVmVersionsToCreate = New-Object System.Collections.ArrayList
 [Boolean] $global:devVmCreationWasSuccess = $false
 [string] $global:compressedFileExtension = "zip"
 [string] $global:relativityInvariantVersionNumberFileName = "relativity_invariant_version.txt"
-[string] $global:testSingleRelativityVersion = "" # Leave it blank when in Production mode
+[string] $global:testSingleRelativityVersion = "10.1.139.8" # Leave it blank when in Production mode
 
 function Reset-Logs-Environment-Variable() {
   Write-Host-Custom-Green "Resetting Logs Environment variable."
@@ -478,7 +478,10 @@ function Create-DevVm([string] $relativityVersionToCreate) {
       Write-Heading-Message-To-Screen "Attempt #$($global:count)"
     
       # Find Invariant version
-      Find-Invariant-Version $relativityVersionToCreate
+      # Find-Invariant-Version $relativityVersionToCreate
+
+      $global:foundCompatibleInvariantVersion = $true
+      $global:invariantVersion = "5.1.138.5"
 
       if ($global:foundCompatibleInvariantVersion) {
         Copy-Relativity-Installer-And-Response-Files $relativityVersionToCreate
