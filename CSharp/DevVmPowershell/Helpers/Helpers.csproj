@@ -57,11 +57,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AgentHelper.cs" />
-    <Compile Include="ApplicationHelper.cs" />
     <Compile Include="ConnectionHelper.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="IAgentHelper.cs" />
-    <Compile Include="IApplicationHelper.cs" />
     <Compile Include="IConnectionHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
