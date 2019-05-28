@@ -1,5 +1,4 @@
 ﻿using System.Management.Automation;
-using System.Threading.Tasks;
 
 namespace DevVmPsModules
 {
@@ -15,17 +14,14 @@ namespace DevVmPsModules
 		[Alias("Person", "FirstName")]
 		public string[] Name { get; set; }
 
-		protected override async Task ProcessRecordAsync()
+		protected override void ProcessRecordCode()
 		{
-			await Task.Run(() =>
+			foreach (string name in Name)
 			{
-				foreach (string name in Name)
-				{
-					WriteVerbose("Creating salutation for " + name);
-					string salutation = "Hello, " + name;
-					WriteObject(salutation);
-				}
-			});
+				WriteVerbose("Creating salutation for " + name);
+				string salutation = "Hello, " + name;
+				WriteObject(salutation);
+			}
 		}
 	}
 }

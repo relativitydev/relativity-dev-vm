@@ -64,12 +64,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\DevVmPsModules\DevVmPsModules.csproj">
-      <Project>{64CAC790-5494-46B0-9B3B-3E7D6C85584B}</Project>
-      <Name>DevVmPsModules</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

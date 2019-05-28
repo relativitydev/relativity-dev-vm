@@ -1,25 +1,23 @@
-﻿// ReSharper disable ExpressionIsAlwaysNull
-using System;
+﻿using System;
 using System.Management.Automation;
-using System.Threading.Tasks;
 
 namespace DevVmPsModules
 {
 	public class BaseModule : PSCmdlet
 	{
-		protected virtual async Task BeginProcessingAsync()
+		protected virtual void BeginProcessingCode()
 		{
-			await Task.Run(() => base.BeginProcessing());
+
 		}
 
-		protected virtual async Task ProcessRecordAsync()
+		protected virtual void ProcessRecordCode()
 		{
-			await Task.Run(() => base.ProcessRecord());
+
 		}
 
-		protected virtual async Task EndProcessingAsync()
+		protected virtual void EndProcessingCode()
 		{
-			await Task.Run(() => base.EndProcessing());
+
 		}
 
 		protected override void BeginProcessing()
@@ -28,15 +26,15 @@ namespace DevVmPsModules
 			{
 				WriteVerbose($"Start - {nameof(BeginProcessing)} method");
 
-				BeginProcessingAsync().Wait();
+				base.BeginProcessing();
+				BeginProcessingCode();
 			}
 			catch (Exception ex)
 			{
 				Exception exception = new Exception($"An error occured in {nameof(BeginProcessing)} method when writing Salutation", ex);
 				string errorId = $"{nameof(BeginProcessing)}";
 				const ErrorCategory errorCategory = ErrorCategory.DeviceError;
-				object targetObject = null;
-				ErrorRecord errorRecord = new ErrorRecord(exception, errorId, errorCategory, targetObject);
+				ErrorRecord errorRecord = new ErrorRecord(exception, errorId, errorCategory, null);
 				WriteError(errorRecord);
 			}
 			finally
@@ -51,15 +49,15 @@ namespace DevVmPsModules
 			{
 				WriteVerbose($"Start - {nameof(ProcessRecord)} method");
 
-				ProcessRecordAsync().Wait();
+				base.ProcessRecord();
+				ProcessRecordCode();
 			}
 			catch (Exception ex)
 			{
 				Exception exception = new Exception($"An error occured in {nameof(ProcessRecord)} method when writing Salutation", ex);
 				string errorId = $"{nameof(ProcessRecord)}";
 				const ErrorCategory errorCategory = ErrorCategory.DeviceError;
-				object targetObject = null;
-				ErrorRecord errorRecord = new ErrorRecord(exception, errorId, errorCategory, targetObject);
+				ErrorRecord errorRecord = new ErrorRecord(exception, errorId, errorCategory, null);
 				WriteError(errorRecord);
 			}
 			finally
@@ -74,15 +72,15 @@ namespace DevVmPsModules
 			{
 				WriteVerbose($"Start - {nameof(EndProcessing)} method");
 
-				EndProcessingAsync().Wait();
+				base.EndProcessing();
+				EndProcessingCode();
 			}
 			catch (Exception ex)
 			{
 				Exception exception = new Exception($"An error occured in {nameof(EndProcessing)} method when writing Salutation", ex);
 				string errorId = $"{nameof(EndProcessing)}";
 				const ErrorCategory errorCategory = ErrorCategory.DeviceError;
-				object targetObject = null;
-				ErrorRecord errorRecord = new ErrorRecord(exception, errorId, errorCategory, targetObject);
+				ErrorRecord errorRecord = new ErrorRecord(exception, errorId, errorCategory, null);
 				WriteError(errorRecord);
 			}
 			finally
