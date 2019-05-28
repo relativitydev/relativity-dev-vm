@@ -20,5 +20,11 @@ namespace Helpers
 			public const int AGENT_INTERVAL = 20;
 			public const Agent.LoggingLevelEnum AGENT_LOGGING_LEVEL = Agent.LoggingLevelEnum.All;
 		}
+
+		public class Waiting
+		{
+			public const int MAX_WAIT_TIME_IN_MINUTES = 10;
+			public const int SLEEP_TIME_IN_SECONDS = 15;
+		}
 	}
 }

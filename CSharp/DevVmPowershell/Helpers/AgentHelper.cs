@@ -20,7 +20,7 @@ namespace Helpers
 			ServiceFactory = connectionHelper.GetServiceFactory();
 		}
 
-		private async Task<bool> CheckIfAgentExistsAsync(string agentName)
+		private async Task<bool> CheckIfAtLeastSingleInstanceOfAgentExistsAsync(string agentName)
 		{
 			List<int> agentArtifactIds = await GetAgentArtifactIdsAsync(agentName);
 
@@ -112,6 +112,21 @@ namespace Helpers
 			}
 		}
 
+		private async Task DeleteAgentAsync(int agentArtifactId)
+		{
+			using (Relativity.Services.Interfaces.Agent.IAgentManager agentManager = ServiceFactory.CreateProxy<Relativity.Services.Interfaces.Agent.IAgentManager>())
+			{
+				try
+				{
+					await agentManager.DeleteAsync(Constants.Agents.EDDS_WORKSPACE_ARTIFACT_ID, agentArtifactId);
+				}
+				catch (Exception ex)
+				{
+					throw new Exception($"An error occured when deleting Agent. [{nameof(agentArtifactId)}: {agentArtifactId}]", ex);
+				}
+			}
+		}
+
 		public async Task<int> CreateAgentsInRelativityApplicationAsync(string applicationName)
 		{
 			try
@@ -133,7 +148,7 @@ namespace Helpers
 					int defaultLoggingLevel = agentTypeResponse.DefaultLoggingLevel ?? (int)Constants.Agents.AGENT_LOGGING_LEVEL;
 
 					//Check if Agent already exists
-					bool doesAgentExists = await CheckIfAgentExistsAsync(agentName);
+					bool doesAgentExists = await CheckIfAtLeastSingleInstanceOfAgentExistsAsync(agentName);
 
 					if (doesAgentExists)
 					{
@@ -147,6 +162,7 @@ namespace Helpers
 
 						//Create Single Agent
 						await CreateAgentAsync(agentTypeArtifactId, firstAgentServerArtifactId, defaultInterval, defaultLoggingLevel);
+						Console.WriteLine($"Agent Created. [{nameof(agentName)}: {agentName}]");
 
 						numberOfAgentsCreated++;
 					}
@@ -156,7 +172,7 @@ namespace Helpers
 			}
 			catch (Exception ex)
 			{
-				throw new Exception($"An error occured when creating agents in Relativity Application. [{nameof(applicationName)}: {applicationName}]", ex);
+				throw new Exception($"An error occured when creating Agents in Relativity Application. [{nameof(applicationName)}: {applicationName}]", ex);
 			}
 		}
 
@@ -178,7 +194,7 @@ namespace Helpers
 					string agentName = agentTypeResponse.Name;
 
 					//Check if Agent already exists
-					bool doesAgentExists = await CheckIfAgentExistsAsync(agentName);
+					bool doesAgentExists = await CheckIfAtLeastSingleInstanceOfAgentExistsAsync(agentName);
 
 					if (doesAgentExists)
 					{
@@ -190,6 +206,7 @@ namespace Helpers
 						{
 							//Delete Single Agent
 							await DeleteAgentAsync(agentArtifactId);
+							Console.WriteLine($"Agent Deleted. [{nameof(agentName)}: {agentName}]");
 
 							numberOfAgentsDeleted++;
 						}
@@ -204,22 +221,41 @@ namespace Helpers
 			}
 			catch (Exception ex)
 			{
-				throw new Exception($"An error occured when deleting agents in Relativity Application. [{nameof(applicationName)}: {applicationName}]", ex);
+				throw new Exception($"An error occured when deleting Agents in Relativity Application. [{nameof(applicationName)}: {applicationName}]", ex);
 			}
 		}
 
-		private async Task DeleteAgentAsync(int agentArtifactId)
+		public async Task<int> CheckIfAtLeastSingleInstanceOfAgentExistsInRelativityApplicationAsync(string applicationName)
 		{
-			using (Relativity.Services.Interfaces.Agent.IAgentManager agentManager = ServiceFactory.CreateProxy<Relativity.Services.Interfaces.Agent.IAgentManager>())
+			try
 			{
-				try
+				int numberOfAgentsExists = 0;
+
+				//Query all Agent Types in the Instance
+				List<AgentTypeResponse> agentTypesInInstance = await GetAgentTypesInInstanceAsync();
+
+				//Filter Agent Types from Relativity application
+				List<AgentTypeResponse> agentTypesInApplication = agentTypesInInstance.Where(x => x.ApplicationName.Equals(applicationName)).ToList();
+
+				//Create Agents if not already exists
+				foreach (AgentTypeResponse agentTypeResponse in agentTypesInApplication)
 				{
-					await agentManager.DeleteAsync(Constants.Agents.EDDS_WORKSPACE_ARTIFACT_ID, agentArtifactId);
+					string agentName = agentTypeResponse.Name;
+
+					//Check if Agent already exists
+					bool doesAgentExists = await CheckIfAtLeastSingleInstanceOfAgentExistsAsync(agentName);
+
+					if (doesAgentExists)
+					{
+						numberOfAgentsExists++;
+					}
 				}
-				catch (Exception ex)
-				{
-					throw new Exception($"An error occured when deleting Agent. [{nameof(agentArtifactId)}: {agentArtifactId}]", ex);
-				}
+
+				return numberOfAgentsExists;
+			}
+			catch (Exception ex)
+			{
+				throw new Exception($"An error occured when checking if at least Single Instance of Agents exists in Relativity Application. [{nameof(applicationName)}: {applicationName}]", ex);
 			}
 		}
 	}
