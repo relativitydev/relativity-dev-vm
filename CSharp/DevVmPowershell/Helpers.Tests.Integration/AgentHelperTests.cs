@@ -24,7 +24,6 @@ namespace Helpers.Tests.Integration
 			Sut = null;
 		}
 
-
 		[Test]
 		public async Task CreateAgentsInRelativityApplicationAsyncTest()
 		{

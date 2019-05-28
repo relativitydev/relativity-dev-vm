@@ -22,32 +22,10 @@ namespace Helpers
 
 		private async Task<bool> CheckIfAgentExistsAsync(string agentName)
 		{
-			QueryRequest agentQueryRequest = new QueryRequest
-			{
-				ObjectType = new ObjectTypeRef
-				{
-					Name = Constants.Agents.AGENT_OBJECT_TYPE
-				},
-				Fields = new List<FieldRef>
-				{
-					new FieldRef
-					{
-						Name = Constants.Agents.AGENT_FIELD_NAME
-					}
-				},
-				Condition = $"(('{Constants.Agents.AGENT_FIELD_NAME}' LIKE '{agentName}'))"
-			};
-			using (IObjectManager objectManager = ServiceFactory.CreateProxy<IObjectManager>())
-			{
-				QueryResult agentQueryResult = await objectManager.QueryAsync(
-					Constants.Agents.EDDS_WORKSPACE_ARTIFACT_ID,
-					agentQueryRequest,
-					1,
-					3);
+			List<int> agentArtifactIds = await GetAgentArtifactIdsAsync(agentName);
 
-				bool doesAgentExists = agentQueryResult.Objects.Count > 0;
-				return doesAgentExists;
-			}
+			bool doesAgentExists = agentArtifactIds.Count > 0;
+			return doesAgentExists;
 		}
 
 		private async Task<List<int>> GetAgentArtifactIdsAsync(string agentName)
