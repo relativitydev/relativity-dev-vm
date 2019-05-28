@@ -3,6 +3,6 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
     <StartAction>Program</StartAction>
     <StartProgram>C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe</StartProgram>
-    <StartArguments>-ExecutionPolicy Unrestricted -noexit -command "&amp;{ import-module .\DevVmPsModules.dll -verbose}"</StartArguments>
+    <StartArguments>-noexit -command "&amp;{ import-module .\DevVmPsModules.dll -verbose}"</StartArguments>
   </PropertyGroup>
 </Project>
