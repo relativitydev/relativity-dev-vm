@@ -6,6 +6,5 @@ namespace Helpers
 	{
 		Task<int> CreateAgentsInRelativityApplicationAsync(string applicationName);
 		Task<int> DeleteAgentsInRelativityApplicationAsync(string applicationName);
-		Task<int> CheckIfAtLeastSingleInstanceOfAgentExistsInRelativityApplicationAsync(string applicationName);
 	}
 }

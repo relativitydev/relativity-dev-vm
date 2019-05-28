@@ -224,39 +224,5 @@ namespace Helpers
 				throw new Exception($"An error occured when deleting Agents in Relativity Application. [{nameof(applicationName)}: {applicationName}]", ex);
 			}
 		}
-
-		public async Task<int> CheckIfAtLeastSingleInstanceOfAgentExistsInRelativityApplicationAsync(string applicationName)
-		{
-			try
-			{
-				int numberOfAgentsExists = 0;
-
-				//Query all Agent Types in the Instance
-				List<AgentTypeResponse> agentTypesInInstance = await GetAgentTypesInInstanceAsync();
-
-				//Filter Agent Types from Relativity application
-				List<AgentTypeResponse> agentTypesInApplication = agentTypesInInstance.Where(x => x.ApplicationName.Equals(applicationName)).ToList();
-
-				//Create Agents if not already exists
-				foreach (AgentTypeResponse agentTypeResponse in agentTypesInApplication)
-				{
-					string agentName = agentTypeResponse.Name;
-
-					//Check if Agent already exists
-					bool doesAgentExists = await CheckIfAtLeastSingleInstanceOfAgentExistsAsync(agentName);
-
-					if (doesAgentExists)
-					{
-						numberOfAgentsExists++;
-					}
-				}
-
-				return numberOfAgentsExists;
-			}
-			catch (Exception ex)
-			{
-				throw new Exception($"An error occured when checking if at least Single Instance of Agents exists in Relativity Application. [{nameof(applicationName)}: {applicationName}]", ex);
-			}
-		}
 	}
 }
