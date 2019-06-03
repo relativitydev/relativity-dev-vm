@@ -41,8 +41,8 @@ Vagrant.configure('2') do |config|
   # Hyperv configuration
   config.vm.provider :hyperv do |h|
     h.vmname = 'RelativityDevVm'
-    h.cpus = 6
-    h.memory = 12288
+    h.cpus = 8
+    h.memory = 32000
   end
 
   config.vm.synced_folder '.', '/vagrant',
@@ -89,7 +89,7 @@ Vagrant.configure('2') do |config|
       'email_to' => relativity_email_to,
     }
     chef.add_recipe('Relativity::default_delete_script_result_file')
-    chef.add_recipe('Relativity::default_pre_windows')
+    # chef.add_recipe('Relativity::default_pre_windows') #already setup in base
     chef.add_recipe('Relativity::initial_setup_write_relativity_invariant_version_to_log_file_copy_file')
   end
 
@@ -116,28 +116,28 @@ Vagrant.configure('2') do |config|
   # Restart VM
   config.vm.provision :reload
 
-  # Run Pre-Windows Chef Recipe
-  config.vm.provision 'chef_zero' do |chef|
-    chef.cookbooks_path = 'Cookbooks'
-    chef.data_bags_path = 'DataBags'
-    chef.nodes_path = 'Nodes'
-    chef.roles_path = 'Roles'
-    chef.channel = 'stable'
-    chef.version = '13.8.5'
-    chef.json = {
-      'smb_domain' => network_share_smb_domain,
-      'smb_username' => network_share_smb_username,
-      'smb_password' => network_share_smb_password,
-      'smtp_server' => relativity_smtp_server,
-      'smtp_port' => relativity_smtp_port,
-      'email_from' => relativity_email_from,
-      'email_to' => relativity_email_to,
-    }
-    chef.add_recipe('Relativity::default_windows')
-  end
+  # # Run Pre-Windows Chef Recipe
+  # config.vm.provision 'chef_zero' do |chef|
+  #   chef.cookbooks_path = 'Cookbooks'
+  #   chef.data_bags_path = 'DataBags'
+  #   chef.nodes_path = 'Nodes'
+  #   chef.roles_path = 'Roles'
+  #   chef.channel = 'stable'
+  #   chef.version = '13.8.5'
+  #   chef.json = {
+  #     'smb_domain' => network_share_smb_domain,
+  #     'smb_username' => network_share_smb_username,
+  #     'smb_password' => network_share_smb_password,
+  #     'smtp_server' => relativity_smtp_server,
+  #     'smtp_port' => relativity_smtp_port,
+  #     'email_from' => relativity_email_from,
+  #     'email_to' => relativity_email_to,
+  #   }
+  #   chef.add_recipe('Relativity::default_windows')
+  # end #already setup in base
 
-  # Restart VM
-  config.vm.provision :reload
+  # # Restart VM
+  # config.vm.provision :reload
 
   # Run Pre-Relativity Copy Response Files Chef Recipe
   config.vm.provision 'chef_zero' do |chef|
@@ -183,29 +183,29 @@ Vagrant.configure('2') do |config|
   # Restart VM
   config.vm.provision :reload
 
-  # Run Pre-Relativity Install ServiceBus Chef Recipe
-  config.vm.provision 'chef_zero' do |chef|
-    chef.cookbooks_path = 'Cookbooks'
-    chef.data_bags_path = 'DataBags'
-    chef.nodes_path = 'Nodes'
-    chef.roles_path = 'Roles'
-    chef.channel = 'stable'
-    chef.version = '13.8.5'
-    chef.json = {
-      'smb_domain' => network_share_smb_domain,
-      'smb_username' => network_share_smb_username,
-      'smb_password' => network_share_smb_password,
-      'smtp_server' => relativity_smtp_server,
-      'smtp_port' => relativity_smtp_port,
-      'email_from' => relativity_email_from,
-      'email_to' => relativity_email_to,
-    }
-    chef.add_recipe('Relativity::pre_relativity_install_servicebus')
-    chef.add_recipe('Relativity::pre_relativity_install_servicebus_sleep_5_minutes')
-  end
+  # # Run Pre-Relativity Install ServiceBus Chef Recipe
+  # config.vm.provision 'chef_zero' do |chef|
+  #   chef.cookbooks_path = 'Cookbooks'
+  #   chef.data_bags_path = 'DataBags'
+  #   chef.nodes_path = 'Nodes'
+  #   chef.roles_path = 'Roles'
+  #   chef.channel = 'stable'
+  #   chef.version = '13.8.5'
+  #   chef.json = {
+  #     'smb_domain' => network_share_smb_domain,
+  #     'smb_username' => network_share_smb_username,
+  #     'smb_password' => network_share_smb_password,
+  #     'smtp_server' => relativity_smtp_server,
+  #     'smtp_port' => relativity_smtp_port,
+  #     'email_from' => relativity_email_from,
+  #     'email_to' => relativity_email_to,
+  #   }
+  #   chef.add_recipe('Relativity::pre_relativity_install_servicebus')
+  #   chef.add_recipe('Relativity::pre_relativity_install_servicebus_sleep_5_minutes')
+  # end #already setup in base
 
-  # Restart VM
-  config.vm.provision :reload
+  # # Restart VM
+  # config.vm.provision :reload
 
   # Make sure services are running
   config.vm.provision 'chef_zero' do |chef|
@@ -245,7 +245,7 @@ Vagrant.configure('2') do |config|
       'email_to' => relativity_email_to,
     }
     chef.add_recipe('Relativity::pre_relativity_secret_store_install')
-    # chef.add_recipe('Relativity::pre_relativity_secret_store_install_save_secret_store_unseal_key_to_local_file')
+    # chef.add_recipe('Relativity::pre_relativity_secret_store_install_save_secret_store_unseal_key_to_local_file') #has defect. so failing. need to be fixed.
     chef.add_recipe('Relativity::pre_relativity_secret_store_add_response_file_properties')
   end
 
@@ -446,8 +446,8 @@ Vagrant.configure('2') do |config|
     chef.add_recipe('Relativity::post_relativity_create_data_sampler_config_file')
     chef.add_recipe('Relativity::post_relativity_push_resource_file')
     chef.add_recipe('Relativity::post_relativity_install_rap_files')
-    chef.add_recipe('Relativity::post_relativity_create_rap_agents')
-    chef.add_recipe('Relativity::windows_disable_firewall')
+    # chef.add_recipe('Relativity::post_relativity_create_rap_agents') #agent api discontinued. so failing. need to be fixed.
+    # chef.add_recipe('Relativity::windows_disable_firewall') #already setup in base
   end
 
   # Cleanup VM
