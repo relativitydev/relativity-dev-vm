@@ -100,7 +100,7 @@ namespace AgentsConsole
 				List<Guid> relativityApplicationGuids = ParseRelativityApplicationGuids();
 				int agentResourceServerArtifactId = RetrieveAgentResourceServerArtifactId();
 
-				//Create agents in Relativity Application
+				//vs in Relativity Application
 				foreach (Guid currentRelativityApplicationGuid in relativityApplicationGuids)
 				{
 					int resourceServerArtifactId = agentResourceServerArtifactId;

@@ -61,6 +61,7 @@
     <Compile Include="CustomExceptions\DevVmPowerShellModuleException.cs" />
     <Compile Include="SampleModule.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="WorkspaceModule.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
