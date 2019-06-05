@@ -27,7 +27,7 @@ namespace Helpers
 		{
 			int numDocsBefore = await GetNumberOfDocumentsAsync(ServiceFactory, workspaceId, fileType);
 
-			CreateAndExecuteJob(workspaceId, fileType, fileCount);
+			CreateAndExecuteJob(workspaceId, fileType, fileCount, numDocsBefore);
 
 			int numDocsAfter = await GetNumberOfDocumentsAsync(ServiceFactory, workspaceId, fileType);
 
@@ -41,7 +41,7 @@ namespace Helpers
 			return $"REL-{Guid.NewGuid()}";
 		}
 
-		protected static DataTable GenerateDocumentDataTable(string fileType, int fileCount)
+		protected static DataTable GenerateDocumentDataTable(string fileType, int fileCount, int currentFileCount)
 		{
 			DataTable dataSource = new DataTable();
 
@@ -60,12 +60,12 @@ namespace Helpers
 					break;
 			}
 
-			AddFilesToDataTable(dataSource, fileType, fileCount);
+			AddFilesToDataTable(dataSource, fileType, fileCount, currentFileCount);
 
 			return dataSource;
 		}
 
-		public static void AddFilesToDataTable(DataTable dataSource, string fileType, int fileCount)
+		public static void AddFilesToDataTable(DataTable dataSource, string fileType, int fileCount, int currentFileCount)
 		{
 			string executableLocation = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 			string resourcePath = Path.Combine(executableLocation, $@"Resources\{fileType}");
@@ -79,10 +79,10 @@ namespace Helpers
 					switch (fileType.ToLower())
 					{
 						case Constants.FileTypes.Documents:
-							dataSource.Rows.Add(GenerateControlNumber(), filePath, "", Path.GetFileName(filePath));
+							dataSource.Rows.Add($"DOC_{currentFileCount + i}", filePath, "", Path.GetFileName(filePath));
 							break;
 						case Constants.FileTypes.Images:
-							dataSource.Rows.Add($"A_{i}", $"A_{i}", filePath);
+							dataSource.Rows.Add($"IMG_{currentFileCount + i}", $"IMG_{currentFileCount + i}", filePath);
 							break;
 					}
 					i++;
@@ -136,10 +136,10 @@ namespace Helpers
 				switch (fileType.ToLower())
 				{
 					case Constants.FileTypes.Documents:
-						queryRequest.Condition = "(('Control Number' LIKE 'REL'))";
+						queryRequest.Condition = "(('Control Number' LIKE 'DOC_'))";
 						break;
 					case Constants.FileTypes.Images:
-						queryRequest.Condition = "(('Control Number' LIKE 'A_'))";
+						queryRequest.Condition = "(('Control Number' LIKE 'IMG_'))";
 						break;
 				}
 
@@ -149,7 +149,7 @@ namespace Helpers
 			}
 		}
 
-		public void CreateAndExecuteJob(int workspaceId, string fileType, int fileCount)
+		public void CreateAndExecuteJob(int workspaceId, string fileType, int fileCount, int currentFileCount)
 		{
 			switch (fileType.ToLower())
 			{
@@ -179,7 +179,7 @@ namespace Helpers
 					documentJob.Settings.IdentityFieldId = Constants.CommonArtifactIds.ControlNumber;
 
 					// Add the files to the data source.
-					documentJob.SourceData.SourceData = GenerateDocumentDataTable(fileType, fileCount).CreateDataReader();
+					documentJob.SourceData.SourceData = GenerateDocumentDataTable(fileType, fileCount, currentFileCount).CreateDataReader();
 					documentJob.Execute();
 
 					break;
@@ -208,10 +208,9 @@ namespace Helpers
 					// Specifies the ArtifactID of a document identifier field, such as a control number.
 					imageJob.Settings.IdentityFieldId = Constants.CommonArtifactIds.ControlNumber;
 					imageJob.Settings.OverwriteMode = OverwriteModeEnum.AppendOverlay;
-					imageJob.SourceData.SourceData = GenerateDocumentDataTable(fileType, fileCount);
 
 					// Add the files to the data source.
-					imageJob.SourceData.SourceData = GenerateDocumentDataTable(fileType, fileCount);
+					imageJob.SourceData.SourceData = GenerateDocumentDataTable(fileType, fileCount, currentFileCount);
 					imageJob.Execute();
 
 					break;
