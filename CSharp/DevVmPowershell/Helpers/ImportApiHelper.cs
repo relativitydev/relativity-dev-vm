@@ -1,27 +1,37 @@
 ﻿using kCura.Relativity.DataReaderClient;
 using kCura.Relativity.ImportAPI;
+using Relativity.Services.Objects;
+using Relativity.Services.Objects.DataContracts;
+using Relativity.Services.ServiceProxy;
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Reflection;
+using System.Threading.Tasks;
 
 namespace Helpers
 {
 	public class ImportApiHelper : IImportApiHelper
 	{
 		private ImportAPI importApi;
-		public ImportApiHelper(string userName, string password, string webServiceUrl)
+		private ServiceFactory ServiceFactory { get; }
+
+		public ImportApiHelper(IConnectionHelper connectionHelper, string userName, string password, string webServiceUrl)
 		{
+			ServiceFactory = connectionHelper.GetServiceFactory();
 			importApi = new ImportAPI(userName, password, webServiceUrl);
 		}
 
-		public int /*Task<int>*/ AddDocumentsToWorkspace(int workspaceId, string fileType, int fileCount)
+		public async Task<int> AddDocumentsToWorkspace(int workspaceId, string fileType, int fileCount)
 		{
+			int numDocsBefore = await GetNumberOfDocumentsAsync(ServiceFactory, workspaceId, fileType);
+
 			CreateAndExecuteJob(workspaceId, fileType, fileCount);
 
-			int totalDocuments = 0;//job.SourceData.SourceData.RecordsAffected;
+			int numDocsAfter = await GetNumberOfDocumentsAsync(ServiceFactory, workspaceId, fileType);
 
-			return totalDocuments;
+			return numDocsAfter - numDocsBefore;
 		}
 
 
@@ -104,10 +114,40 @@ namespace Helpers
 			Console.WriteLine($"Job Finished With {jobReport.ErrorRowCount} Errors: ");
 		}
 
-		//static Task<int> GetNumberOfDocumentsAsync()
-		//{
+		static async Task<int> GetNumberOfDocumentsAsync(ServiceFactory serviceFactory, int workspaceId, string fileType)
+		{
+			using (IObjectManager objectManager = serviceFactory.CreateProxy<IObjectManager>())
+			{
+				QueryRequest queryRequest = new QueryRequest();
+				queryRequest.ObjectType = new ObjectTypeRef() { Name = "Document" };
+				queryRequest.Fields = new List<FieldRef>()
+				{
+					new FieldRef() {
+						Name = "Control Number"
+					},
+					new FieldRef() {
+						Name = "Has Images"
+					},
+					new FieldRef() {
+						Name = "Has Native"
+					}
+				};
 
-		//}
+				switch (fileType.ToLower())
+				{
+					case Constants.FileTypes.Documents:
+						queryRequest.Condition = "(('Control Number' LIKE 'REL'))";
+						break;
+					case Constants.FileTypes.Images:
+						queryRequest.Condition = "(('Control Number' LIKE 'A_'))";
+						break;
+				}
+
+				QueryResult results = await objectManager.QueryAsync(workspaceId, queryRequest, 1, 100);
+
+				return results.TotalCount;
+			}
+		}
 
 		public void CreateAndExecuteJob(int workspaceId, string fileType, int fileCount)
 		{

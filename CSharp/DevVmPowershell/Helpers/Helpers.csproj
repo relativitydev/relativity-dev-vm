@@ -96,6 +96,9 @@
     <Reference Include="Relativity, Version=10.2.137.8, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.Other.10.2.137.8\lib\net462\Relativity.dll</HintPath>
     </Reference>
+    <Reference Include="Relativity.API, Version=10.2.137.8, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.Api.10.2.137.8\lib\net462\Relativity.API.dll</HintPath>
+    </Reference>
     <Reference Include="Relativity.DataTransfer.MessageService, Version=1.0.21.3, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.Import.Client.10.2.137.8\lib\net462\Relativity.DataTransfer.MessageService.dll</HintPath>
     </Reference>

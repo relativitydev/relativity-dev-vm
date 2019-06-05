@@ -1,7 +1,9 @@
-﻿namespace Helpers
+﻿using System.Threading.Tasks;
+
+namespace Helpers
 {
 	public interface IImportApiHelper
 	{
-		int AddDocumentsToWorkspace(int workspaceId, string fileType, int count);
+		Task<int> AddDocumentsToWorkspace(int workspaceId, string fileType, int count);
 	}
 }
