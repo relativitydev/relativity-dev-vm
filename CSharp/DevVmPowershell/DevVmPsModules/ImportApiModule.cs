@@ -60,8 +60,8 @@ namespace DevVmPsModules
 			//Validate Input arguments
 			ValidateInputArguments();
 
-			//IConnectionHelper connectionHelper = new ConnectionHelper(RelativityWebServiceUrl, RelativityAdminUserName, RelativityAdminPassword);
-			IImportApiHelper importApi = new ImportApiHelper(RelativityAdminUserName, RelativityAdminPassword, RelativityWebServiceUrl);
+			IConnectionHelper connectionHelper = new ConnectionHelper(RelativityWebServiceUrl, RelativityAdminUserName, RelativityAdminPassword);
+			IImportApiHelper importApi = new ImportApiHelper(connectionHelper, RelativityAdminUserName, RelativityAdminPassword, RelativityWebServiceUrl);
 
 			// Add documents for each Workspace ID specified
 			importApi.AddDocumentsToWorkspace(WorkspaceId, FileType, FileCount);
