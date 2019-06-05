@@ -12,14 +12,22 @@ namespace DevVmPsModules
 			ValueFromPipelineByPropertyName = true,
 			ValueFromPipeline = true,
 			Position = 0,
-			HelpMessage = "URL of the Relativity Web Service (Ex: http://IpAddress/relativitywebapi/)")]
-		public string RelativityWebServiceUrl { get; set; }
+			HelpMessage = "Name of the Relativity Instance")]
+		public string RelativityInstanceName { get; set; }
 
 		[Parameter(
 			Mandatory = true,
 			ValueFromPipelineByPropertyName = true,
 			ValueFromPipeline = true,
 			Position = 1,
+			HelpMessage = "Protocol (Http or Https) of the Relativity Instance")]
+		public string RelativityProtocol { get; set; }
+
+		[Parameter(
+			Mandatory = true,
+			ValueFromPipelineByPropertyName = true,
+			ValueFromPipeline = true,
+			Position = 2,
 			HelpMessage = "Username of the Relativity Admin")]
 		public string RelativityAdminUserName { get; set; }
 
@@ -27,7 +35,7 @@ namespace DevVmPsModules
 			Mandatory = true,
 			ValueFromPipelineByPropertyName = true,
 			ValueFromPipeline = true,
-			Position = 2,
+			Position = 3,
 			HelpMessage = "Password of the Relativity Admin")]
 		public string RelativityAdminPassword { get; set; }
 
@@ -35,7 +43,7 @@ namespace DevVmPsModules
 			Mandatory = true,
 			ValueFromPipelineByPropertyName = true,
 			ValueFromPipeline = true,
-			Position = 3,
+			Position = 4,
 			HelpMessage = "Relativity Workspace ID to receive the files")]
 		public int WorkspaceId { get; set; }
 
@@ -43,7 +51,7 @@ namespace DevVmPsModules
 			Mandatory = true,
 			ValueFromPipelineByPropertyName = true,
 			ValueFromPipeline = true,
-			Position = 4,
+			Position = 5,
 			HelpMessage = "Either documents or images")]
 		public string FileType { get; set; }
 
@@ -51,7 +59,7 @@ namespace DevVmPsModules
 			Mandatory = true,
 			ValueFromPipelineByPropertyName = true,
 			ValueFromPipeline = true,
-			Position = 5,
+			Position = 6,
 			HelpMessage = "How many documents or images you want to upload")]
 		public int FileCount { get; set; }
 
@@ -60,18 +68,35 @@ namespace DevVmPsModules
 			//Validate Input arguments
 			ValidateInputArguments();
 
-			IConnectionHelper connectionHelper = new ConnectionHelper(RelativityWebServiceUrl, RelativityAdminUserName, RelativityAdminPassword);
-			IImportApiHelper importApi = new ImportApiHelper(connectionHelper, RelativityAdminUserName, RelativityAdminPassword, RelativityWebServiceUrl);
+			IConnectionHelper connectionHelper = new ConnectionHelper(RelativityInstanceName, RelativityAdminUserName, RelativityAdminPassword);
+
+			string webServiceUrl = $@"{RelativityProtocol}://{RelativityInstanceName}/relativitywebapi/";
+
+			IImportApiHelper importApi = new ImportApiHelper(connectionHelper, RelativityAdminUserName, RelativityAdminPassword, webServiceUrl);
 
 			// Add documents for each Workspace ID specified
-			importApi.AddDocumentsToWorkspace(WorkspaceId, FileType, FileCount);
+			try
+			{
+				importApi.AddDocumentsToWorkspace(WorkspaceId, FileType, FileCount);
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine(ex.Message);
+				Console.WriteLine(ex.StackTrace);
+			}
+
 		}
 
 		private void ValidateInputArguments()
 		{
-			if (string.IsNullOrWhiteSpace(RelativityWebServiceUrl))
+			if (string.IsNullOrWhiteSpace(RelativityInstanceName))
 			{
-				throw new ArgumentNullException(nameof(RelativityWebServiceUrl), $"{nameof(RelativityWebServiceUrl)} cannot be NULL or Empty.");
+				throw new ArgumentNullException(nameof(RelativityInstanceName), $"{nameof(RelativityInstanceName)} cannot be NULL or Empty.");
+			}
+
+			if (string.IsNullOrWhiteSpace(RelativityProtocol))
+			{
+				throw new ArgumentNullException(nameof(RelativityProtocol), $"{nameof(RelativityProtocol)} cannot be NULL or Empty.");
 			}
 
 			if (string.IsNullOrWhiteSpace(RelativityAdminUserName))

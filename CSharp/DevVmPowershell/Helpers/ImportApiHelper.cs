@@ -34,13 +34,6 @@ namespace Helpers
 			return numDocsAfter - numDocsBefore;
 		}
 
-
-
-		protected static string GenerateControlNumber()
-		{
-			return $"REL-{Guid.NewGuid()}";
-		}
-
 		protected static DataTable GenerateDocumentDataTable(string fileType, int fileCount, int currentFileCount)
 		{
 			DataTable dataSource = new DataTable();
