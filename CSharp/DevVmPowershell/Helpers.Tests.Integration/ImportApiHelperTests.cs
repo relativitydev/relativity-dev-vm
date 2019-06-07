@@ -25,8 +25,8 @@ namespace Helpers.Tests.Integration
 		}
 
 		[Test]
-		[TestCase(TestConstants.RELATIVITY_WORKSPACE_ID, "document", 15)]
-		[TestCase(TestConstants.RELATIVITY_WORKSPACE_ID, "image", 15)]
+		[TestCase(TestConstants.RELATIVITY_WORKSPACE_ID, Constants.FileType.Document, 15)]
+		[TestCase(TestConstants.RELATIVITY_WORKSPACE_ID, Constants.FileType.Image, 15)]
 		public void/*async Task*/ AddDocumentsToWorkspaceTest(int workspaceId, string fileType, int numberOfFiles)
 		{
 			//Arrange

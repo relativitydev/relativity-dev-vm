@@ -1,4 +1,5 @@
-﻿using Relativity.Services.ServiceProxy;
+﻿using kCura.Relativity.ImportAPI;
+using Relativity.Services.ServiceProxy;
 
 namespace Helpers
 {
@@ -6,8 +7,6 @@ namespace Helpers
 	{
 		ServiceFactory GetServiceFactory(string protocol = Constants.Connection.PROTOCOL);
 
-		string GetUserName();
-		string GetPassword();
-		string GetInstanceName();
+		ImportAPI GetImportApi();
 	}
 }

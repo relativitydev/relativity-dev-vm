@@ -21,9 +21,7 @@ namespace Helpers
 		{
 			ServiceFactory = connectionHelper.GetServiceFactory();
 
-			string webServiceUrl = $@"{Constants.Connection.PROTOCOL}://{connectionHelper.GetInstanceName()}/relativitywebapi/";
-
-			importApi = new ImportAPI(connectionHelper.GetUserName(), connectionHelper.GetPassword(), webServiceUrl);
+			importApi = connectionHelper.GetImportApi();
 		}
 
 		public async Task<int> AddDocumentsToWorkspace(int workspaceId, string fileType, int fileCount)
@@ -211,7 +209,7 @@ namespace Helpers
 
 					break;
 				default:
-					throw new Exception("Job must be either for documents or images");
+					throw new Exception($"Job must be either for {Constants.FileType.Document} or {Constants.FileType.Image}");
 			}
 		}
 	}

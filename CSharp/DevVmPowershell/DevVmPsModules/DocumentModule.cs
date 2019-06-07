@@ -44,7 +44,7 @@ namespace DevVmPsModules
 			ValueFromPipelineByPropertyName = true,
 			ValueFromPipeline = true,
 			Position = 4,
-			HelpMessage = "Either document or image")]
+			HelpMessage = "Either " + Constants.FileType.Document + " or " + Constants.FileType.Image)]
 		public string FileType { get; set; }
 
 		[Parameter(
@@ -52,7 +52,7 @@ namespace DevVmPsModules
 			ValueFromPipelineByPropertyName = true,
 			ValueFromPipeline = true,
 			Position = 5,
-			HelpMessage = "How many documents or images you want to upload")]
+			HelpMessage = "How many files you want to upload")]
 		public int FileCount { get; set; }
 
 		protected override void ProcessRecordCode()
@@ -95,9 +95,9 @@ namespace DevVmPsModules
 				throw new ArgumentNullException(nameof(FileType), $"{nameof(FileType)} cannot be NULL or Empty.");
 			}
 
-			if (!FileType.ToLower().Equals("document", StringComparison.OrdinalIgnoreCase) && !FileType.ToLower().Equals("image", StringComparison.OrdinalIgnoreCase))
+			if (!FileType.Equals(Constants.FileType.Document, StringComparison.OrdinalIgnoreCase) && !FileType.Equals(Constants.FileType.Image, StringComparison.OrdinalIgnoreCase))
 			{
-				throw new ArgumentNullException(nameof(FileType), $"{nameof(FileType)} must be either document or image.");
+				throw new ArgumentNullException(nameof(FileType), $"{nameof(FileType)} must be either {Constants.FileType.Document} or {Constants.FileType.Image}.");
 			}
 
 			if (FileCount < 0)
