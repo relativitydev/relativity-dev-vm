@@ -181,7 +181,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ApplicationInstallationModule.cs" />
+    <Compile Include="AddApplicationFromApplicationLibraryModule.cs" />
+    <Compile Include="AddApplicationFromRapModule.cs" />
     <Compile Include="BaseModule.cs" />
     <Compile Include="AgentModule.cs" />
     <Compile Include="CustomExceptions\DevVmPowerShellModuleException.cs" />

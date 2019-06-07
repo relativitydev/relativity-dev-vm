@@ -5,7 +5,12 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using kCura.Relativity.Client;
+using Relativity.Services.ResourcePool;
 using Relativity.Services.ServiceProxy;
+using Relativity.Services;
+using Relativity.Services.ApplicationInstallManager;
+using Relativity.Services.ApplicationInstallManager.Models;
+using Relativity.Services.LibraryApplicationsManager;
 
 namespace Helpers
 {
@@ -47,12 +52,12 @@ namespace Helpers
 						if (state.State == ProcessStateValue.CompletedWithError)
 						{
 							installationResult = false;
-							Console.WriteLine("Application Installation completed with Errors");
+							Console.WriteLine("Application Installation completed with errors");
 						}
 						else if (state.State == ProcessStateValue.HandledException || state.State == ProcessStateValue.UnhandledException)
 						{
 							installationResult = false;
-							Console.WriteLine("Application Installation failed with an unknown Error");
+							Console.WriteLine("Application Installation failed with an unknown error");
 						}
 						else
 						{
@@ -65,6 +70,50 @@ namespace Helpers
 				catch (Exception ex)
 				{
 					throw new Exception("An error occured installing an application from a RAP file", ex);
+				}
+			}
+		}
+
+		public bool InstallApplicationFromApplicationLibrary(int workspaceId, string applicationGuid)
+		{
+			Guid appGuid = new Guid(applicationGuid);
+			// ILibraryApplicationsManager is a private kepler service
+			using (ILibraryApplicationsManager libraryApplicationsManager = ServiceFactory.CreateProxy<ILibraryApplicationsManager>())
+			{
+				List<LibraryApplication> libraryApplications = libraryApplicationsManager.GetAllLibraryApplicationsAsync().Result.ToList();
+				if (libraryApplications.Any(x => x.GUID == appGuid))
+				{
+					Console.WriteLine("Application is installed in the Application Library");
+				}
+				else
+				{
+					Console.WriteLine("Application is not installed in the Application Library");
+					return false;
+				}
+			}
+
+			// IApplicationInstallManager is a private kepler service
+			using (IApplicationInstallManager applicationInstallManager = ServiceFactory.CreateProxy<IApplicationInstallManager>())
+			{
+				try
+				{
+					// Check if the application is already installed in the workspace
+					ApplicationInstallStatus applicationInstallStatus = applicationInstallManager.GetApplicationInstallStatusAsync(workspaceId, appGuid).Result;
+					if (applicationInstallStatus != ApplicationInstallStatus.Installed)
+					{
+						applicationInstallManager.InstallLibraryApplicationByGuid(workspaceId, appGuid).Wait();
+						Console.WriteLine($"Application is successfully installed in the workspace from the Application Library");
+						return true;
+					}
+					else
+					{
+						Console.WriteLine("Application is already installed in the workspace");
+						return true;
+					}
+				}
+				catch (Exception ex)
+				{
+					throw new Exception("Error Installing Application From the Application Library", ex);
 				}
 			}
 		}

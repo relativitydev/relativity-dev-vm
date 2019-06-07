@@ -8,8 +8,8 @@ using Helpers;
 
 namespace DevVmPsModules
 {
-	[Cmdlet(VerbsCommon.Add, "Applications")]
-	public class ApplicationInstallationModule : BaseModule
+	[Cmdlet(VerbsCommon.Add, "ApplicationFromRapFile")]
+	public class AddApplicationFromRapFileModule : BaseModule
 	{
 		[Parameter(
 			Mandatory = true,
