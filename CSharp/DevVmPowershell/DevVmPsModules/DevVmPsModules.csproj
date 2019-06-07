@@ -185,6 +185,8 @@
     <Compile Include="AgentModule.cs" />
     <Compile Include="CustomExceptions\DevVmPowerShellModuleException.cs" />
     <Compile Include="DocumentModule.cs" />
+    <Compile Include="ProcessingAddProcessingSourceLocationChoiceToDefaultResourcePoolModule.cs" />
+    <Compile Include="ProcessingCreateSourceLocationChoiceModule.cs" />
     <Compile Include="SampleModule.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

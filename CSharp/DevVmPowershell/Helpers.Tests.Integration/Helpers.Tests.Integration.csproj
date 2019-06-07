@@ -184,6 +184,7 @@
   <ItemGroup>
     <Compile Include="AgentHelperTests.cs" />
     <Compile Include="ImportApiHelperTests.cs" />
+    <Compile Include="ProcessingHelperTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestConstants.cs" />
   </ItemGroup>
