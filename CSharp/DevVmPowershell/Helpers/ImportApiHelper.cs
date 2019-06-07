@@ -17,10 +17,13 @@ namespace Helpers
 		private ImportAPI importApi;
 		private ServiceFactory ServiceFactory { get; }
 
-		public ImportApiHelper(IConnectionHelper connectionHelper, string userName, string password, string webServiceUrl)
+		public ImportApiHelper(IConnectionHelper connectionHelper)
 		{
 			ServiceFactory = connectionHelper.GetServiceFactory();
-			importApi = new ImportAPI(userName, password, webServiceUrl);
+
+			string webServiceUrl = $@"{Constants.Connection.PROTOCOL}://{connectionHelper.GetInstanceName()}/relativitywebapi/";
+
+			importApi = new ImportAPI(connectionHelper.GetUserName(), connectionHelper.GetPassword(), webServiceUrl);
 		}
 
 		public async Task<int> AddDocumentsToWorkspace(int workspaceId, string fileType, int fileCount)
@@ -40,16 +43,16 @@ namespace Helpers
 
 			switch (fileType.ToLower())
 			{
-				case Constants.FileTypes.Documents:
-					dataSource.Columns.Add(Constants.CommonFields.ControlNumber, typeof(string));
-					dataSource.Columns.Add(Constants.CommonFields.FilePath, typeof(string));
-					dataSource.Columns.Add(Constants.CommonFields.ParentDocId, typeof(string));
-					dataSource.Columns.Add(Constants.CommonFields.FileName, typeof(string));
+				case Constants.FileType.Document:
+					dataSource.Columns.Add(Constants.DocumentCommonFields.ControlNumber, typeof(string));
+					dataSource.Columns.Add(Constants.DocumentCommonFields.FilePath, typeof(string));
+					dataSource.Columns.Add(Constants.DocumentCommonFields.ParentDocId, typeof(string));
+					dataSource.Columns.Add(Constants.DocumentCommonFields.FileName, typeof(string));
 					break;
-				case Constants.FileTypes.Images:
-					dataSource.Columns.Add(Constants.CommonFields.Bates, typeof(string));
-					dataSource.Columns.Add(Constants.CommonFields.Doc, typeof(string));
-					dataSource.Columns.Add(Constants.CommonFields.File, typeof(string));
+				case Constants.FileType.Image:
+					dataSource.Columns.Add(Constants.DocumentCommonFields.Bates, typeof(string));
+					dataSource.Columns.Add(Constants.DocumentCommonFields.Doc, typeof(string));
+					dataSource.Columns.Add(Constants.DocumentCommonFields.File, typeof(string));
 					break;
 			}
 
@@ -61,7 +64,7 @@ namespace Helpers
 		public static void AddFilesToDataTable(DataTable dataSource, string fileType, int fileCount, int currentFileCount)
 		{
 			string executableLocation = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-			string resourcePath = Path.Combine(executableLocation, $@"Resources\{fileType}");
+			string resourcePath = Path.Combine(executableLocation, $@"Resources\{fileType}s");
 			string[] files = Directory.GetFiles(resourcePath);
 
 			for (int i = 0; i < fileCount;)
@@ -71,10 +74,10 @@ namespace Helpers
 				{
 					switch (fileType.ToLower())
 					{
-						case Constants.FileTypes.Documents:
+						case Constants.FileType.Document:
 							dataSource.Rows.Add($"DOC_{currentFileCount + i}", filePath, "", Path.GetFileName(filePath));
 							break;
-						case Constants.FileTypes.Images:
+						case Constants.FileType.Image:
 							dataSource.Rows.Add($"IMG_{currentFileCount + i}", $"IMG_{currentFileCount + i}", filePath);
 							break;
 					}
@@ -112,27 +115,27 @@ namespace Helpers
 			using (IObjectManager objectManager = serviceFactory.CreateProxy<IObjectManager>())
 			{
 				QueryRequest queryRequest = new QueryRequest();
-				queryRequest.ObjectType = new ObjectTypeRef() { Name = "Document" };
+				queryRequest.ObjectType = new ObjectTypeRef() { Name = Constants.DocumentCommonFields.DocumentTypeRef };
 				queryRequest.Fields = new List<FieldRef>()
 				{
 					new FieldRef() {
-						Name = "Control Number"
+						Name = Constants.DocumentCommonFields.ControlNumber
 					},
 					new FieldRef() {
-						Name = "Has Images"
+						Name = Constants.DocumentCommonFields.HasImages
 					},
 					new FieldRef() {
-						Name = "Has Native"
+						Name = Constants.DocumentCommonFields.HasNative
 					}
 				};
 
 				switch (fileType.ToLower())
 				{
-					case Constants.FileTypes.Documents:
-						queryRequest.Condition = "(('Control Number' LIKE 'DOC_'))";
+					case Constants.FileType.Document:
+						queryRequest.Condition = $"(('{Constants.DocumentCommonFields.ControlNumber}' LIKE 'DOC_'))";
 						break;
-					case Constants.FileTypes.Images:
-						queryRequest.Condition = "(('Control Number' LIKE 'IMG_'))";
+					case Constants.FileType.Image:
+						queryRequest.Condition = $"(('{Constants.DocumentCommonFields.ControlNumber}' LIKE 'IMG_'))";
 						break;
 				}
 
@@ -146,7 +149,7 @@ namespace Helpers
 		{
 			switch (fileType.ToLower())
 			{
-				case Constants.FileTypes.Documents:
+				case Constants.FileType.Document:
 					ImportBulkArtifactJob documentJob = importApi.NewNativeDocumentImportJob();
 
 					documentJob.OnMessage += ImportJobOnMessage;
@@ -157,14 +160,14 @@ namespace Helpers
 					documentJob.Settings.ExtractedTextFieldContainsFilePath = false;
 
 					// Indicates file path for the native file.
-					documentJob.Settings.NativeFilePathSourceFieldName = Constants.CommonFields.FilePath;//"Native File";
+					documentJob.Settings.NativeFilePathSourceFieldName = Constants.DocumentCommonFields.FilePath;//"Native File";
 
 					// Indicates the column containing the ID of the parent document.
-					documentJob.Settings.ParentObjectIdSourceFieldName = Constants.CommonFields.ParentDocId;
+					documentJob.Settings.ParentObjectIdSourceFieldName = Constants.DocumentCommonFields.ParentDocId;
 
 					// The name of the document identifier column must match the name of the document identifier field
 					// in the workspace.
-					documentJob.Settings.SelectedIdentifierFieldName = Constants.CommonFields.ControlNumber;//"Doc ID Beg";
+					documentJob.Settings.SelectedIdentifierFieldName = Constants.DocumentCommonFields.ControlNumber;//"Doc ID Beg";
 					documentJob.Settings.NativeFileCopyMode = NativeFileCopyModeEnum.CopyFiles;
 					documentJob.Settings.OverwriteMode = OverwriteModeEnum.Append;
 
@@ -176,7 +179,7 @@ namespace Helpers
 					documentJob.Execute();
 
 					break;
-				case Constants.FileTypes.Images:
+				case Constants.FileType.Image:
 					ImageImportBulkArtifactJob imageJob = importApi.NewImageImportJob();
 
 					imageJob.OnMessage += ImportJobOnMessage;
@@ -186,14 +189,14 @@ namespace Helpers
 					imageJob.Settings.AutoNumberImages = false;
 
 					// You can use the Bates number as an identifier for an image.
-					imageJob.Settings.BatesNumberField = Constants.CommonFields.Bates;
+					imageJob.Settings.BatesNumberField = Constants.DocumentCommonFields.Bates;
 					imageJob.Settings.CaseArtifactId = workspaceId;
 
 					// Use this code for grouping images associated with a document.
-					imageJob.Settings.DocumentIdentifierField = Constants.CommonFields.Doc;
+					imageJob.Settings.DocumentIdentifierField = Constants.DocumentCommonFields.Doc;
 
 					// Indicates filepath for an image.
-					imageJob.Settings.FileLocationField = Constants.CommonFields.File;
+					imageJob.Settings.FileLocationField = Constants.DocumentCommonFields.File;
 
 					//Indicates that the images must be copied to the document repository
 					imageJob.Settings.CopyFilesToDocumentRepository = true;

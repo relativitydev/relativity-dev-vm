@@ -4,8 +4,8 @@ using System.Management.Automation;
 
 namespace DevVmPsModules
 {
-	[Cmdlet(VerbsCommon.New, "ImportApi")]
-	public class ImportApiModule : BaseModule
+	[Cmdlet(VerbsCommon.New, "Documents")]
+	public class DocumentModule : BaseModule
 	{
 		[Parameter(
 			Mandatory = true,
@@ -20,14 +20,6 @@ namespace DevVmPsModules
 			ValueFromPipelineByPropertyName = true,
 			ValueFromPipeline = true,
 			Position = 1,
-			HelpMessage = "Protocol (Http or Https) of the Relativity Instance")]
-		public string RelativityProtocol { get; set; }
-
-		[Parameter(
-			Mandatory = true,
-			ValueFromPipelineByPropertyName = true,
-			ValueFromPipeline = true,
-			Position = 2,
 			HelpMessage = "Username of the Relativity Admin")]
 		public string RelativityAdminUserName { get; set; }
 
@@ -35,7 +27,7 @@ namespace DevVmPsModules
 			Mandatory = true,
 			ValueFromPipelineByPropertyName = true,
 			ValueFromPipeline = true,
-			Position = 3,
+			Position = 2,
 			HelpMessage = "Password of the Relativity Admin")]
 		public string RelativityAdminPassword { get; set; }
 
@@ -43,7 +35,7 @@ namespace DevVmPsModules
 			Mandatory = true,
 			ValueFromPipelineByPropertyName = true,
 			ValueFromPipeline = true,
-			Position = 4,
+			Position = 3,
 			HelpMessage = "Relativity Workspace ID to receive the files")]
 		public int WorkspaceId { get; set; }
 
@@ -51,15 +43,15 @@ namespace DevVmPsModules
 			Mandatory = true,
 			ValueFromPipelineByPropertyName = true,
 			ValueFromPipeline = true,
-			Position = 5,
-			HelpMessage = "Either documents or images")]
+			Position = 4,
+			HelpMessage = "Either document or image")]
 		public string FileType { get; set; }
 
 		[Parameter(
 			Mandatory = true,
 			ValueFromPipelineByPropertyName = true,
 			ValueFromPipeline = true,
-			Position = 6,
+			Position = 5,
 			HelpMessage = "How many documents or images you want to upload")]
 		public int FileCount { get; set; }
 
@@ -70,21 +62,10 @@ namespace DevVmPsModules
 
 			IConnectionHelper connectionHelper = new ConnectionHelper(RelativityInstanceName, RelativityAdminUserName, RelativityAdminPassword);
 
-			string webServiceUrl = $@"{RelativityProtocol}://{RelativityInstanceName}/relativitywebapi/";
-
-			IImportApiHelper importApi = new ImportApiHelper(connectionHelper, RelativityAdminUserName, RelativityAdminPassword, webServiceUrl);
+			IImportApiHelper importApi = new ImportApiHelper(connectionHelper);
 
 			// Add documents for each Workspace ID specified
-			try
-			{
-				importApi.AddDocumentsToWorkspace(WorkspaceId, FileType, FileCount);
-			}
-			catch (Exception ex)
-			{
-				Console.WriteLine(ex.Message);
-				Console.WriteLine(ex.StackTrace);
-			}
-
+			importApi.AddDocumentsToWorkspace(WorkspaceId, FileType, FileCount);
 		}
 
 		private void ValidateInputArguments()
@@ -92,11 +73,6 @@ namespace DevVmPsModules
 			if (string.IsNullOrWhiteSpace(RelativityInstanceName))
 			{
 				throw new ArgumentNullException(nameof(RelativityInstanceName), $"{nameof(RelativityInstanceName)} cannot be NULL or Empty.");
-			}
-
-			if (string.IsNullOrWhiteSpace(RelativityProtocol))
-			{
-				throw new ArgumentNullException(nameof(RelativityProtocol), $"{nameof(RelativityProtocol)} cannot be NULL or Empty.");
 			}
 
 			if (string.IsNullOrWhiteSpace(RelativityAdminUserName))
@@ -114,14 +90,14 @@ namespace DevVmPsModules
 				throw new ArgumentException(nameof(WorkspaceId), $"{nameof(WorkspaceId)} cannot be less than or equal to 0.");
 			}
 
-			if (string.IsNullOrWhiteSpace(FileType) && (FileType.ToLower().Contains("documents") || FileType.ToLower().Contains("images")))
+			if (string.IsNullOrWhiteSpace(FileType))
 			{
 				throw new ArgumentNullException(nameof(FileType), $"{nameof(FileType)} cannot be NULL or Empty.");
 			}
 
-			if (!FileType.ToLower().Contains("documents") && !FileType.ToLower().Contains("images"))
+			if (!FileType.ToLower().Equals("document", StringComparison.OrdinalIgnoreCase) && !FileType.ToLower().Equals("image", StringComparison.OrdinalIgnoreCase))
 			{
-				throw new ArgumentNullException(nameof(FileType), $"{nameof(FileType)} must be either documents or images.");
+				throw new ArgumentNullException(nameof(FileType), $"{nameof(FileType)} must be either document or image.");
 			}
 
 			if (FileCount < 0)

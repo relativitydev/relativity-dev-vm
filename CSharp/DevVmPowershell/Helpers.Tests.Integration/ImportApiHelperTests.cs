@@ -15,7 +15,7 @@ namespace Helpers.Tests.Integration
 				TestConstants.RELATIVITY_ADMIN_USER_NAME,
 				TestConstants.RELATIVITY_ADMIN_PASSWORD);
 
-			Sut = new ImportApiHelper(connectionHelper, TestConstants.RELATIVITY_ADMIN_USER_NAME, TestConstants.RELATIVITY_ADMIN_PASSWORD, TestConstants.RELATIVITY_INSTANCE_WEB_SERVICE_URL);
+			Sut = new ImportApiHelper(connectionHelper);
 		}
 
 		[TearDown]
@@ -25,8 +25,8 @@ namespace Helpers.Tests.Integration
 		}
 
 		[Test]
-		[TestCase(1017751, "documents", 15)]
-		[TestCase(1017751, "images", 15)]
+		[TestCase(TestConstants.RELATIVITY_WORKSPACE_ID, "document", 15)]
+		[TestCase(TestConstants.RELATIVITY_WORKSPACE_ID, "image", 15)]
 		public void/*async Task*/ AddDocumentsToWorkspaceTest(int workspaceId, string fileType, int numberOfFiles)
 		{
 			//Arrange

@@ -36,5 +36,20 @@ namespace Helpers
 
 			return _serviceFactory;
 		}
+
+		public string GetUserName()
+		{
+			return RelativityAdminUserName;
+		}
+
+		public string GetPassword()
+		{
+			return RelativityAdminPassword;
+		}
+
+		public string GetInstanceName()
+		{
+			return RelativityInstanceName;
+		}
 	}
 }

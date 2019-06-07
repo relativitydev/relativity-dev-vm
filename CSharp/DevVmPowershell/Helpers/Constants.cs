@@ -21,8 +21,11 @@ namespace Helpers
 			public const Agent.LoggingLevelEnum AGENT_LOGGING_LEVEL = Agent.LoggingLevelEnum.All;
 		}
 
-		public class CommonFields
+		public class DocumentCommonFields
 		{
+			public const string DocumentTypeRef = "Document";
+			public const string HasImages = "Has Images";
+			public const string HasNative = "Has Native";
 			public const string ControlNumber = "Control Number";
 			public const string FilePath = "file path";
 			public const string FolderName = "folder name";
@@ -38,10 +41,10 @@ namespace Helpers
 			public const int ControlNumber = 1003667;
 		}
 
-		public class FileTypes
+		public class FileType
 		{
-			public const string Documents = "documents";
-			public const string Images = "images";
+			public const string Document = "document";
+			public const string Image = "image";
 		}
 	}
 }
