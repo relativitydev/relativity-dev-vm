@@ -43,9 +43,11 @@ namespace DevVmPsModules
 			Mandatory = true,
 			ValueFromPipelineByPropertyName = true,
 			ValueFromPipeline = true,
-			Position = 3,
+			Position = 4,
 			HelpMessage = "Indicator to enable DataGrid in the workspace")]
-		public bool EnableDataGrid { get; set; }
+		public string EnableDataGrid { get; set; }
+
+		private bool _enableDataGrid;
 
 		protected override void ProcessRecordCode()
 		{
@@ -55,13 +57,13 @@ namespace DevVmPsModules
 			IConnectionHelper connectionHelper = new ConnectionHelper(RelativityInstanceName, RelativityAdminUserName, RelativityAdminPassword);
 			IAgentHelper agentHelper = new AgentHelper(connectionHelper);
 
-			//Create Agents for all Applications
-			foreach (string applicationName in ApplicationNames)
-			{
-				//Create Agents for Application
-				string trimmedApplicationName = applicationName.Trim();
-				agentHelper.CreateAgentsInRelativityApplicationAsync(trimmedApplicationName).Wait();
-			}
+			////Create Agents for all Applications
+			//foreach (string applicationName in ApplicationNames)
+			//{
+			//	//Create Agents for Application
+			//	string trimmedApplicationName = applicationName.Trim();
+			//	agentHelper.CreateAgentsInRelativityApplicationAsync(trimmedApplicationName).Wait();
+			//}
 		}
 
 		private void ValidateInputArguments()
@@ -81,17 +83,19 @@ namespace DevVmPsModules
 				throw new ArgumentNullException(nameof(RelativityAdminPassword), $"{nameof(RelativityAdminPassword)} cannot be NULL or Empty.");
 			}
 
-			if (ApplicationNames.Length == 0)
+			if (string.IsNullOrWhiteSpace(WorkspaceName))
 			{
-				throw new ArgumentException($"{nameof(RelativityAdminPassword)} cannot be an Empty Array.", nameof(RelativityAdminPassword));
+				throw new ArgumentNullException(nameof(WorkspaceName), $"{nameof(WorkspaceName)} cannot be NULL or Empty.");
 			}
 
-			foreach (string applicationName in ApplicationNames)
+			if (string.IsNullOrWhiteSpace(EnableDataGrid))
 			{
-				if (string.IsNullOrWhiteSpace(applicationName))
-				{
-					throw new ArgumentNullException(nameof(applicationName), $"{nameof(applicationName)} cannot be NULL or Empty.");
-				}
+				throw new ArgumentNullException(nameof(EnableDataGrid), $"{nameof(EnableDataGrid)} cannot be NULL or Empty.");
+			}
+
+			if (!bool.TryParse(EnableDataGrid, out _enableDataGrid))
+			{
+				throw new ArgumentNullException(nameof(EnableDataGrid), $"{nameof(EnableDataGrid)} is not a valid value. [Valid values: True or False]");
 			}
 		}
 	}
