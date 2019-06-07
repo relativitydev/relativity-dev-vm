@@ -31,8 +31,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="kCura.Relativity.Client, Version=10.0.119.1, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.Rsapi.10.0.119.1\lib\kCura.Relativity.Client.dll</HintPath>
+    <Reference Include="kCura.Relativity.Client, Version=10.0.318.5, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.Rsapi.10.0.318.5\lib\net462\kCura.Relativity.Client.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.Kepler, Version=1.0.1.557, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.ObjectManager.10.0.119.1\lib\Relativity.Kepler.dll</HintPath>
@@ -57,9 +57,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AgentHelper.cs" />
+    <Compile Include="ApplicationInstallHelper.cs" />
     <Compile Include="ConnectionHelper.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="IAgentHelper.cs" />
+    <Compile Include="IApplicationInstallHelper.cs" />
     <Compile Include="IConnectionHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
