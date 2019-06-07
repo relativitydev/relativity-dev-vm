@@ -35,7 +35,7 @@ namespace Helpers.Tests.Integration
 		public void InstallApplicationFromARapFileTest()
 		{
 			// Act
-			bool installationResult = Sut.InstallApplicationFromRapFile(TestConstants.WORKSPACE_ID_TO_INSTALL_APPLICATION, TestConstants.APPLICATION_FILE_PATH);
+			bool installationResult = Sut.InstallApplicationFromRapFile(TestConstants.RELATIVITY_WORKSPACE_ID, TestConstants.APPLICATION_FILE_PATH);
 
 			// Assert
 			Assert.That(installationResult, Is.True);
