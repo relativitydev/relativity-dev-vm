@@ -50,7 +50,7 @@ namespace Helpers
 			using (IObjectManager objectManager = ServiceFactory.CreateProxy<IObjectManager>())
 			{
 				QueryResult agentQueryResult = await objectManager.QueryAsync(
-					Constants.Agents.EDDS_WORKSPACE_ARTIFACT_ID,
+					Constants.EDDS_WORKSPACE_ARTIFACT_ID,
 					agentQueryRequest,
 					1,
 					3);
@@ -68,7 +68,7 @@ namespace Helpers
 		{
 			using (Relativity.Services.Interfaces.Agent.IAgentManager agentManager = ServiceFactory.CreateProxy<Relativity.Services.Interfaces.Agent.IAgentManager>())
 			{
-				List<AgentTypeResponse> agentTypeResponseList = await agentManager.GetAgentTypesAsync(Constants.Agents.EDDS_WORKSPACE_ARTIFACT_ID);
+				List<AgentTypeResponse> agentTypeResponseList = await agentManager.GetAgentTypesAsync(Constants.EDDS_WORKSPACE_ARTIFACT_ID);
 				Console.WriteLine($"Total Agent Types in Instance: {agentTypeResponseList.Count}");
 				return agentTypeResponseList;
 			}
@@ -78,7 +78,7 @@ namespace Helpers
 		{
 			using (Relativity.Services.Interfaces.Agent.IAgentManager agentManager = ServiceFactory.CreateProxy<Relativity.Services.Interfaces.Agent.IAgentManager>())
 			{
-				List<AgentServerResponse> agentServerResponseList = await agentManager.GetAvailableAgentServersAsync(Constants.Agents.EDDS_WORKSPACE_ARTIFACT_ID, agentTypeArtifactId);
+				List<AgentServerResponse> agentServerResponseList = await agentManager.GetAvailableAgentServersAsync(Constants.EDDS_WORKSPACE_ARTIFACT_ID, agentTypeArtifactId);
 				Console.WriteLine($"Total Available Agent Servers for Agent Type: {agentServerResponseList.Count}");
 				return agentServerResponseList;
 			}
@@ -107,7 +107,7 @@ namespace Helpers
 
 			using (Relativity.Services.Interfaces.Agent.IAgentManager agentManager = ServiceFactory.CreateProxy<Relativity.Services.Interfaces.Agent.IAgentManager>())
 			{
-				int newAgentArtifactId = await agentManager.CreateAsync(Constants.Agents.EDDS_WORKSPACE_ARTIFACT_ID, newAgentRequest);
+				int newAgentArtifactId = await agentManager.CreateAsync(Constants.EDDS_WORKSPACE_ARTIFACT_ID, newAgentRequest);
 				Console.WriteLine($"{nameof(newAgentArtifactId)}: {newAgentArtifactId}");
 			}
 		}
@@ -118,7 +118,7 @@ namespace Helpers
 			{
 				try
 				{
-					await agentManager.DeleteAsync(Constants.Agents.EDDS_WORKSPACE_ARTIFACT_ID, agentArtifactId);
+					await agentManager.DeleteAsync(Constants.EDDS_WORKSPACE_ARTIFACT_ID, agentArtifactId);
 				}
 				catch (Exception ex)
 				{

@@ -55,15 +55,10 @@ namespace DevVmPsModules
 			ValidateInputArguments();
 
 			IConnectionHelper connectionHelper = new ConnectionHelper(RelativityInstanceName, RelativityAdminUserName, RelativityAdminPassword);
-			IAgentHelper agentHelper = new AgentHelper(connectionHelper);
+			IWorkspaceHelper workspaceHelper = new WorkspaceHelper(connectionHelper);
 
-			////Create Agents for all Applications
-			//foreach (string applicationName in ApplicationNames)
-			//{
-			//	//Create Agents for Application
-			//	string trimmedApplicationName = applicationName.Trim();
-			//	agentHelper.CreateAgentsInRelativityApplicationAsync(trimmedApplicationName).Wait();
-			//}
+			//Create Workspace
+			workspaceHelper.CreateWorkspaceAsync(Constants.Workspace.DEFAULT_WORKSPACE_TEMPLATE_NAME, WorkspaceName).Wait();
 		}
 
 		private void ValidateInputArguments()
