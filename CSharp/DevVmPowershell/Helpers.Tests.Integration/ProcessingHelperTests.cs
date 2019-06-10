@@ -25,7 +25,7 @@ namespace Helpers.Tests.Integration
 			Sut = null;
 		}
 
-		[Test]
+		[Test, Order(10)]
 		[TestCase(true)]
 		public void CreateProcessingSourceLocationChoiceTest(bool expectedResult)
 		{
@@ -38,7 +38,7 @@ namespace Helpers.Tests.Integration
 			Assert.That(wasSourceLocationChoiceCreated, Is.EqualTo(expectedResult));
 		}
 
-		[Test]
+		[Test, Order(20)]
 		[TestCase(true)]
 		public async Task AddProcessingSourceLocationChoiceToDefaultResourcePoolTest(bool expectedResult)
 		{
@@ -51,7 +51,7 @@ namespace Helpers.Tests.Integration
 			Assert.That(wasSourceLocationChoiceCreated, Is.EqualTo(expectedResult));
 		}
 
-		[Test]
+		[Test, Order(30)]
 		[TestCase(true)]
 		public async Task CreateWorkerManagerServerTest(bool expectedResult)
 		{
@@ -64,7 +64,7 @@ namespace Helpers.Tests.Integration
 			Assert.That(wasWorkerManagerServerCreated, Is.EqualTo(expectedResult));
 		}
 
-		[Test]
+		[Test, Order(40)]
 		[TestCase(true)]
 		public async Task AddWorkerManagerServerToDefaultResourcePoolTest(bool expectedResult)
 		{
@@ -77,7 +77,7 @@ namespace Helpers.Tests.Integration
 			Assert.That(wasWorkerManagerServerAddedToPool, Is.EqualTo(expectedResult));
 		}
 
-		[Test]
+		[Test, Order(50)]
 		[TestCase(true)]
 		public async Task AddWorkerServerToDefaultResourcePoolTest(bool expectedResult)
 		{
@@ -90,7 +90,7 @@ namespace Helpers.Tests.Integration
 			Assert.That(wasWorkerServerAddedToPool, Is.EqualTo(expectedResult));
 		}
 
-		[Test]
+		[Test, Order(60)]
 		[TestCase(true)]
 		public async Task AddAgentServerToDefaultResourcePoolTest(bool expectedResult)
 		{

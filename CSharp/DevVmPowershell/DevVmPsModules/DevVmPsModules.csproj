@@ -186,6 +186,10 @@
     <Compile Include="CustomExceptions\DevVmPowerShellModuleException.cs" />
     <Compile Include="DocumentModule.cs" />
     <Compile Include="ProcessingAddProcessingSourceLocationChoiceToDefaultResourcePoolModule.cs" />
+    <Compile Include="ProcessingAddAddAgentServerToDefaultResourcePoolModule.cs" />
+    <Compile Include="ProcessingAddWorkerServerToDefaultResourcePoolModule.cs" />
+    <Compile Include="ProcessingAddWorkerManagerServerToDefaultResourcePoolModule.cs" />
+    <Compile Include="ProcessingCreateWorkerManagerServerModule.cs" />
     <Compile Include="ProcessingCreateSourceLocationChoiceModule.cs" />
     <Compile Include="SampleModule.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

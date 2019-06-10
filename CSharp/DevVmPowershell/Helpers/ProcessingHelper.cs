@@ -64,8 +64,17 @@ namespace Helpers
 
 				if (result.Success)
 				{
-					wasChoiceCreated = true;
-					Console.WriteLine($"{nameof(CreateProcessingSourceLocationChoice)} - Successfully created Processing Source Location Choice ({Constants.Processing.ChoiceName})");
+					choiceQuery = rsapiClient.Repositories.Choice.Query(new Query<Choice>() { Condition = cond });
+					if (choiceQuery.Success && choiceQuery.TotalCount > 0)
+					{
+						wasChoiceCreated = true;
+						Console.WriteLine($"{nameof(CreateProcessingSourceLocationChoice)} - Successfully created Processing Source Location Choice ({Constants.Processing.ChoiceName})");
+					}
+					else
+					{
+						Console.WriteLine($"{nameof(CreateProcessingSourceLocationChoice)} - Failed to create Processing Source Location Choice ({Constants.Processing.ChoiceName})");
+					}
+
 				}
 				else
 				{
@@ -144,9 +153,16 @@ namespace Helpers
 						// Add Processing Server Location to Default Resource Pool
 						if (!resultProcessingSourceLocations.Exists(x => x.ArtifactID == choice.ArtifactID))
 						{
-							Console.WriteLine($"{nameof(AddProcessingSourceLocationChoiceToDefaultResourcePool)} - Adding Processing Source Location Choice to Default Resource Pool");
 							await resourcePoolManager.AddProcessingSourceLocationAsync(choice, defaultResourcePoolRef);
-							wasChoiceAddedToPool = true;
+
+							resultProcessingSourceLocations = await resourcePoolManager.GetProcessingSourceLocationsAsync(defaultResourcePoolRef);
+
+							// Add Processing Server Location to Default Resource Pool
+							if (resultProcessingSourceLocations.Exists(x => x.ArtifactID == choice.ArtifactID))
+							{
+								wasChoiceAddedToPool = true;
+								Console.WriteLine($"{nameof(AddProcessingSourceLocationChoiceToDefaultResourcePool)} - Added Processing Source Location Choice to Default Resource Pool");
+							}
 						}
 						else
 						{
@@ -216,7 +232,7 @@ namespace Helpers
 				if (queryResult.Success && queryResult.TotalCount == 0)
 				{
 					int workerServerArtifactId = await workerServerManager.CreateSingleAsync(server);
-					Console.WriteLine($"Worker Server Artifact ID: {workerServerArtifactId}");
+					Console.WriteLine($"{nameof(CreateWorkerManagerServer)} - Worker Server Artifact ID: {workerServerArtifactId}");
 					wasWorkerManagerServerCreated = true;
 					Console.WriteLine($"{nameof(CreateWorkerManagerServer)} - Successfully created Worker Manager Server ({Constants.Processing.ResourceServerName})");
 				}
