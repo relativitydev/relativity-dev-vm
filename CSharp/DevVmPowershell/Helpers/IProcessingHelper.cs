@@ -6,5 +6,9 @@ namespace Helpers
 	{
 		bool CreateProcessingSourceLocationChoice();
 		Task<bool> AddProcessingSourceLocationChoiceToDefaultResourcePool();
+		Task<bool> CreateWorkerManagerServer();
+		Task<bool> AddWorkerManagerServerToDefaultResourcePool();
+		Task<bool> AddWorkerServerToDefaultResourcePool();
+		Task<bool> AddAgentServerToDefaultResourcePool();
 	}
 }

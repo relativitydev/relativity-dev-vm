@@ -132,9 +132,9 @@
     <Reference Include="Relativity.Services.Interfaces, Version=10.0.318.5, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.ObjectManager.10.0.318.5\lib\net462\Relativity.Services.Interfaces.dll</HintPath>
     </Reference>
-    <Reference Include="Relativity.Services.Interfaces.Private, Version=10.0.275.2, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Relativity.Services.Interfaces.Private, Version=10.0.318.5, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Dlls\Relativity.Services.Interfaces.Private.dll</HintPath>
+      <HintPath>..\packages\DLL\Relativity.Services.Interfaces.Private.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.Services.ServiceProxy, Version=1.0.1.557, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.ObjectManager.10.0.318.5\lib\net462\Relativity.Services.ServiceProxy.dll</HintPath>

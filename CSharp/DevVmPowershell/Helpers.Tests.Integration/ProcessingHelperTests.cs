@@ -50,5 +50,57 @@ namespace Helpers.Tests.Integration
 			//Assert
 			Assert.That(wasSourceLocationChoiceCreated, Is.EqualTo(expectedResult));
 		}
+
+		[Test]
+		[TestCase(true)]
+		public async Task CreateWorkerManagerServerTest(bool expectedResult)
+		{
+			//Arrange
+
+			//Act
+			bool wasWorkerManagerServerCreated = await Sut.CreateWorkerManagerServer();
+
+			//Assert
+			Assert.That(wasWorkerManagerServerCreated, Is.EqualTo(expectedResult));
+		}
+
+		[Test]
+		[TestCase(true)]
+		public async Task AddWorkerManagerServerToDefaultResourcePoolTest(bool expectedResult)
+		{
+			//Arrange
+
+			//Act
+			bool wasWorkerManagerServerAddedToPool = await Sut.AddWorkerManagerServerToDefaultResourcePool();
+
+			//Assert
+			Assert.That(wasWorkerManagerServerAddedToPool, Is.EqualTo(expectedResult));
+		}
+
+		[Test]
+		[TestCase(true)]
+		public async Task AddWorkerServerToDefaultResourcePoolTest(bool expectedResult)
+		{
+			//Arrange
+
+			//Act
+			bool wasWorkerServerAddedToPool = await Sut.AddWorkerServerToDefaultResourcePool();
+
+			//Assert
+			Assert.That(wasWorkerServerAddedToPool, Is.EqualTo(expectedResult));
+		}
+
+		[Test]
+		[TestCase(true)]
+		public async Task AddAgentServerToDefaultResourcePoolTest(bool expectedResult)
+		{
+			//Arrange
+
+			//Act
+			bool wasAgentServerAddedToPool = await Sut.AddAgentServerToDefaultResourcePool();
+
+			//Assert
+			Assert.That(wasAgentServerAddedToPool, Is.EqualTo(expectedResult));
+		}
 	}
 }
