@@ -36,6 +36,9 @@
     <Reference Include="BCrypt.Net, Version=0.1.5073.29922, Culture=neutral, PublicKeyToken=6bcd409ee6bc9292, processorArchitecture=MSIL">
       <HintPath>..\packages\BCrypt-Official.0.1.109\lib\BCrypt.Net.dll</HintPath>
     </Reference>
+    <Reference Include="DbContextHelper, Version=3.0.0.2, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\RelativityDev.DbContextHelper.3.0.0.2\lib\DbContextHelper.dll</HintPath>
+    </Reference>
     <Reference Include="FaspManager, Version=3.7.2.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.Transfer.Client.5.0.2\lib\net462\FaspManager.dll</HintPath>
     </Reference>
@@ -132,9 +135,8 @@
     <Reference Include="Relativity.Services.Interfaces, Version=10.0.318.5, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.ObjectManager.10.0.318.5\lib\net462\Relativity.Services.Interfaces.dll</HintPath>
     </Reference>
-    <Reference Include="Relativity.Services.Interfaces.Private, Version=10.0.318.5, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\DLL\Relativity.Services.Interfaces.Private.dll</HintPath>
+    <Reference Include="Relativity.Services.Interfaces.Private">
+      <HintPath>..\packages\Dll\Relativity.Services.Interfaces.Private.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.Services.ServiceProxy, Version=1.0.1.557, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.ObjectManager.10.0.318.5\lib\net462\Relativity.Services.ServiceProxy.dll</HintPath>
@@ -189,17 +191,17 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AgentHelper.cs" />
-    <Compile Include="AgentServerHelper.cs" />
+    <Compile Include="ApplicationInstallHelper.cs" />
     <Compile Include="ConnectionHelper.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="IAgentHelper.cs" />
-    <Compile Include="IAgentServerHelper.cs" />
+    <Compile Include="IApplicationInstallHelper.cs" />
     <Compile Include="IConnectionHelper.cs" />
     <Compile Include="IImportApiHelper.cs" />
     <Compile Include="ImportApiHelper.cs" />
-    <Compile Include="IProcessingHelper.cs" />
-    <Compile Include="ProcessingHelper.cs" />
+    <Compile Include="ISqlHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SqlHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

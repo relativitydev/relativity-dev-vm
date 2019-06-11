@@ -36,6 +36,9 @@
     <Reference Include="BCrypt.Net, Version=0.1.5073.29922, Culture=neutral, PublicKeyToken=6bcd409ee6bc9292, processorArchitecture=MSIL">
       <HintPath>..\packages\BCrypt-Official.0.1.109\lib\BCrypt.Net.dll</HintPath>
     </Reference>
+    <Reference Include="DbContextHelper, Version=3.0.0.2, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\RelativityDev.DbContextHelper.3.0.0.2\lib\DbContextHelper.dll</HintPath>
+    </Reference>
     <Reference Include="FaspManager, Version=3.7.2.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.Transfer.Client.5.0.2\lib\net462\FaspManager.dll</HintPath>
     </Reference>
@@ -92,6 +95,9 @@
     </Reference>
     <Reference Include="Relativity, Version=10.0.318.5, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.Other.10.0.318.5\lib\net462\Relativity.dll</HintPath>
+    </Reference>
+    <Reference Include="Relativity.API, Version=10.0.318.5, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.Api.10.0.318.5\lib\net462\Relativity.API.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.DataTransfer.MessageService, Version=1.0.21.3, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.Import.Client.10.0.318.5\lib\net462\Relativity.DataTransfer.MessageService.dll</HintPath>
@@ -181,9 +187,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AddApplicationFromLibraryModule.cs" />
+    <Compile Include="AddApplicationFromRapModule.cs" />
     <Compile Include="BaseModule.cs" />
     <Compile Include="AgentModule.cs" />
     <Compile Include="CustomExceptions\DevVmPowerShellModuleException.cs" />
+    <Compile Include="RemoveErrorsModule.cs" />
     <Compile Include="DocumentModule.cs" />
     <Compile Include="AgentServerAddAgentServerToDefaultResourcePoolModule.cs" />
     <Compile Include="ProcessingFullSetupAndUpdateDefaultResourcePoolModule.cs" />

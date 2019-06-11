@@ -1,4 +1,5 @@
 ﻿using kCura.Relativity.ImportAPI;
+using Relativity.API;
 using Relativity.Services.ServiceProxy;
 
 namespace Helpers
