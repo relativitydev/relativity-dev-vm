@@ -96,6 +96,9 @@
     <Reference Include="Relativity, Version=10.0.318.5, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.Other.10.0.318.5\lib\net462\Relativity.dll</HintPath>
     </Reference>
+    <Reference Include="Relativity.API, Version=10.0.318.5, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.Api.10.0.318.5\lib\net462\Relativity.API.dll</HintPath>
+    </Reference>
     <Reference Include="Relativity.DataTransfer.MessageService, Version=1.0.21.3, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.Import.Client.10.0.318.5\lib\net462\Relativity.DataTransfer.MessageService.dll</HintPath>
     </Reference>
@@ -187,6 +190,7 @@
     <Compile Include="BaseModule.cs" />
     <Compile Include="AgentModule.cs" />
     <Compile Include="CustomExceptions\DevVmPowerShellModuleException.cs" />
+    <Compile Include="RemoveErrorsModule.cs" />
     <Compile Include="DocumentModule.cs" />
     <Compile Include="SampleModule.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
