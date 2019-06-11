@@ -1,6 +1,8 @@
 ﻿using kCura.Relativity.ImportAPI;
 using Relativity.Services.ServiceProxy;
 using System;
+using DbContextHelper;
+using Relativity.API;
 
 namespace Helpers
 {
