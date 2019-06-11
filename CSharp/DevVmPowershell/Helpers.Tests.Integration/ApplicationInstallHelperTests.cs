@@ -34,8 +34,11 @@ namespace Helpers.Tests.Integration
 		[Test]
 		public void InstallApplicationFromARapFileTest()
 		{
+			// Arrange
+			string rapLocation = System.Reflection.Assembly.GetExecutingAssembly().Location.Replace(@"bin\Debug\" + System.Reflection.Assembly.GetExecutingAssembly().GetName().Name + ".dll", TestConstants.APPLICATION_FILE_PATH);
+
 			// Act
-			bool installationResult = Sut.InstallApplicationFromRapFile(TestConstants.RELATIVITY_WORKSPACE_ID, TestConstants.APPLICATION_FILE_PATH);
+			bool installationResult = Sut.InstallApplicationFromRapFile(TestConstants.RELATIVITY_WORKSPACE_ID, rapLocation);
 
 			// Assert
 			Assert.That(installationResult, Is.True);

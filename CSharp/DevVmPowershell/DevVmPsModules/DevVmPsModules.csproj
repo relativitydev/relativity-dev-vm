@@ -181,7 +181,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AddApplicationFromApplicationLibraryModule.cs" />
+    <Compile Include="AddApplicationFromLibraryModule.cs" />
     <Compile Include="AddApplicationFromRapModule.cs" />
     <Compile Include="BaseModule.cs" />
     <Compile Include="AgentModule.cs" />
