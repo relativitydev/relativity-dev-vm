@@ -8,8 +8,8 @@ using Helpers;
 
 namespace DevVmPsModules
 {
-	[Cmdlet(VerbsCommon.Remove, "Errors")]
-	public class RemoveErrorsModule : BaseModule
+	[Cmdlet(VerbsCommon.Remove, "RelativityErrors")]
+	public class RemoveRelativityErrorsModule : BaseModule
 	{
 		[Parameter(
 			Mandatory = true,
