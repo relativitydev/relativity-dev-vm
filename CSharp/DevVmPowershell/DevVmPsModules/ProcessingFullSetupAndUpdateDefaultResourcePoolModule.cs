@@ -4,8 +4,8 @@ using System.Management.Automation;
 
 namespace DevVmPsModules
 {
-	[Cmdlet(VerbsCommon.New, "ProcessingWorkerManagerServer")]
-	public class ProcessingCreateWorkerManagerServerModule : BaseModule
+	[Cmdlet(VerbsCommon.New, "ProcessingFullSetupAndUpdateDefaultResourcePool")]
+	public class ProcessingFullSetupAndUpdateDefaultResourcePoolModule : BaseModule
 	{
 		[Parameter(
 			Mandatory = true,
@@ -40,7 +40,7 @@ namespace DevVmPsModules
 
 			IProcessingHelper processingHelper = new ProcessingHelper(connectionHelper);
 
-			processingHelper.CreateWorkerManagerServer();
+			processingHelper.FullSetupAndUpdateDefaultResourcePool();
 		}
 
 		private void ValidateInputArguments()

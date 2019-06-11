@@ -9,6 +9,7 @@ using Relativity.Services.ServiceProxy;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Choice = kCura.Relativity.Client.DTOs.Choice;
 using ChoiceRef = Relativity.Services.Choice.ChoiceRef;
@@ -21,6 +22,38 @@ namespace Helpers
 		public ProcessingHelper(IConnectionHelper connectionHelper)
 		{
 			ServiceFactory = connectionHelper.GetServiceFactory();
+		}
+
+		public async Task<bool> FullSetupAndUpdateDefaultResourcePool()
+		{
+			bool wasSetupComplete = false;
+
+			Console.WriteLine($"{nameof(FullSetupAndUpdateDefaultResourcePool)} - Starting ({nameof(CreateProcessingSourceLocationChoice)})");
+			wasSetupComplete = CreateProcessingSourceLocationChoice();
+			Console.WriteLine($"{nameof(FullSetupAndUpdateDefaultResourcePool)} - Finished ({nameof(CreateProcessingSourceLocationChoice)}) Result: {wasSetupComplete}");
+
+			Console.WriteLine($"{nameof(FullSetupAndUpdateDefaultResourcePool)} - Starting ({nameof(AddProcessingSourceLocationChoiceToDefaultResourcePool)})");
+			wasSetupComplete = await AddProcessingSourceLocationChoiceToDefaultResourcePool();
+			Console.WriteLine($"{nameof(FullSetupAndUpdateDefaultResourcePool)} - Finished ({nameof(AddProcessingSourceLocationChoiceToDefaultResourcePool)}) Result: {wasSetupComplete}");
+
+			Console.WriteLine($"{nameof(FullSetupAndUpdateDefaultResourcePool)} - Starting ({nameof(CreateWorkerManagerServer)})");
+			wasSetupComplete = await CreateWorkerManagerServer();
+			Console.WriteLine($"{nameof(FullSetupAndUpdateDefaultResourcePool)} - Finished ({nameof(CreateWorkerManagerServer)}) Result: {wasSetupComplete}");
+
+			Console.WriteLine($"{nameof(FullSetupAndUpdateDefaultResourcePool)} - Sleeping for 30 seconds auto creation of Worker Server");
+			Thread.Sleep(30000);
+			Console.WriteLine($"{nameof(FullSetupAndUpdateDefaultResourcePool)} - Finished sleeping for auto creation of Worker Server");
+
+			Console.WriteLine($"{nameof(FullSetupAndUpdateDefaultResourcePool)} - Starting ({nameof(AddWorkerManagerServerToDefaultResourcePool)})");
+			wasSetupComplete = await AddWorkerManagerServerToDefaultResourcePool();
+			Console.WriteLine($"{nameof(FullSetupAndUpdateDefaultResourcePool)} - Finished ({nameof(AddWorkerManagerServerToDefaultResourcePool)}) Result: {wasSetupComplete}");
+
+			Console.WriteLine($"{nameof(FullSetupAndUpdateDefaultResourcePool)} - Starting ({nameof(AddWorkerServerToDefaultResourcePool)})");
+			wasSetupComplete = await AddWorkerServerToDefaultResourcePool();
+			Console.WriteLine($"{nameof(FullSetupAndUpdateDefaultResourcePool)} - Finished ({nameof(AddWorkerServerToDefaultResourcePool)}) Result: {wasSetupComplete}");
+
+
+			return wasSetupComplete;
 		}
 
 		/// <summary>
@@ -443,12 +476,12 @@ namespace Helpers
 							if (resultServers.Exists(x => x.ServerType.Name.Equals(Constants.Processing.WorkerServer, StringComparison.OrdinalIgnoreCase)))
 							{
 								wasWorkerServerAddedToDefaultPool = true;
-								Console.WriteLine($"{nameof(AddWorkerManagerServerToDefaultResourcePool)} - Successfully added Worker Server to Default Resource Pool");
+								Console.WriteLine($"{nameof(AddWorkerServerToDefaultResourcePool)} - Successfully added Worker Server to Default Resource Pool");
 							}
 							else
 							{
 								wasWorkerServerAddedToDefaultPool = false;
-								Console.WriteLine($"{nameof(AddWorkerManagerServerToDefaultResourcePool)} - Failed to add Worker Server to Default Resource Pool.");
+								Console.WriteLine($"{nameof(AddWorkerServerToDefaultResourcePool)} - Failed to add Worker Server to Default Resource Pool.");
 							}
 
 						}
@@ -468,112 +501,6 @@ namespace Helpers
 
 			return wasWorkerServerAddedToDefaultPool;
 		}
-
-
-		/// <summary>
-		/// Add Agent Server to Default Resource Pool
-		/// </summary>
-		/// <returns></returns>
-		public async Task<bool> AddAgentServerToDefaultResourcePool()
-		{
-			bool wasAgentServerAddedToDefaultPool = false;
-
-			Console.WriteLine($"{nameof(AddAgentServerToDefaultResourcePool)} - Adding Agent Server ({Constants.Processing.AgentServer}) to the Default Resource Pool");
-
-			// Setup for checking Resource Pools
-			Relativity.Services.TextCondition conditionPool = new Relativity.Services.TextCondition()
-			{
-				Field = Constants.Processing.NameField,
-				Operator = Relativity.Services.TextConditionEnum.StartsWith,
-				Value = Constants.Processing.DefaultPool
-			};
-
-			Relativity.Services.Query queryPool = new Relativity.Services.Query()
-			{
-				Condition = conditionPool.ToQueryString(),
-			};
-
-			// Setup for checking if Agent Server exists
-			Relativity.Services.TextCondition conditionAgent = new Relativity.Services.TextCondition()
-			{
-				Field = Constants.Processing.NameField,
-				Operator = Relativity.Services.TextConditionEnum.EqualTo,
-				Value = Constants.Processing.ResourceServerName
-			};
-
-			Relativity.Services.Query queryAgent = new Relativity.Services.Query()
-			{
-				Condition = conditionAgent.ToQueryString()
-			};
-
-			using (IResourceServerManager resourceServerManager = ServiceFactory.CreateProxy<IResourceServerManager>())
-			using (IResourcePoolManager resourcePoolManager = ServiceFactory.CreateProxy<IResourcePoolManager>())
-			{
-				// Check for Default Resource Pool
-				ResourcePoolQueryResultSet resultPools = await resourcePoolManager.QueryAsync(queryPool);
-
-				Console.WriteLine($"{nameof(AddAgentServerToDefaultResourcePool)} - Checking if Default Resource Pool exists");
-				if (resultPools.Success && resultPools.TotalCount > 0)
-				{
-					ResourcePoolRef defaultPoolRef = new ResourcePoolRef(resultPools.Results.Find(x => x.Artifact.Name.Equals(Constants.Processing.DefaultPool, StringComparison.OrdinalIgnoreCase)).Artifact.ArtifactID);
-
-					List<ResourceServerRef> resultServers = await resourcePoolManager.RetrieveResourceServersAsync(defaultPoolRef);
-
-
-					// Check to make sure the Agent Server was not already added
-					if (!resultServers.Exists(x => x.ServerType.Name.Equals(Constants.Processing.AgentServer, StringComparison.OrdinalIgnoreCase)))
-					{
-						// Make sure the Agent Server actually exists and then add it
-						ResourceServerQueryResultSet queryResult = await resourceServerManager.QueryAsync(queryAgent);
-
-						if (queryResult.Success && queryResult.TotalCount > 0)
-						{
-							ResourceServer agentServer = queryResult.Results.Find(x => x.Artifact.ServerType.Name.Equals(Constants.Processing.AgentServer, StringComparison.OrdinalIgnoreCase)).Artifact;
-
-							ResourceServerRef agentServerRef = new ResourceServerRef()
-							{
-								ArtifactID = agentServer.ArtifactID,
-								Name = agentServer.Name,
-								ServerType = new ResourceServerTypeRef()
-								{
-									ArtifactID = agentServer.ServerType.ArtifactID,
-									Name = agentServer.ServerType.Name
-								}
-							};
-
-							await resourcePoolManager.AddServerAsync(agentServerRef, defaultPoolRef);
-
-							resultServers = await resourcePoolManager.RetrieveResourceServersAsync(defaultPoolRef);
-
-							if (resultServers.Exists(x => x.ServerType.Name.Equals(Constants.Processing.AgentServer, StringComparison.OrdinalIgnoreCase)))
-							{
-								wasAgentServerAddedToDefaultPool = true;
-								Console.WriteLine($"{nameof(AddWorkerManagerServerToDefaultResourcePool)} - Successfully added Agent Server to Default Resource Pool");
-							}
-							else
-							{
-								wasAgentServerAddedToDefaultPool = false;
-								Console.WriteLine($"{nameof(AddWorkerManagerServerToDefaultResourcePool)} - Failed to add Agent Server to Default Resource Pool.");
-							}
-						}
-						else
-						{
-							Console.WriteLine($"{nameof(AddAgentServerToDefaultResourcePool)} - Failed to add Agent Server to Default Resource Pool as the Agent Server does not exist");
-						}
-					}
-					else
-					{
-						wasAgentServerAddedToDefaultPool = true;
-						Console.WriteLine($"{nameof(AddAgentServerToDefaultResourcePool)} - Failed to add Agent Server to Default Resource Pool as it already exists within the pool");
-					}
-
-				}
-			}
-
-			return wasAgentServerAddedToDefaultPool;
-		}
-
-
 
 	} // End of class
 }

@@ -183,6 +183,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AgentHelperTests.cs" />
+    <Compile Include="AgentServerHelperTests.cs" />
     <Compile Include="ImportApiHelperTests.cs" />
     <Compile Include="ProcessingHelperTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

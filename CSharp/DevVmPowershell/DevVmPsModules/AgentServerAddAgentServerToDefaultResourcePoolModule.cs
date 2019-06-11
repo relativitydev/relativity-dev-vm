@@ -4,8 +4,8 @@ using System.Management.Automation;
 
 namespace DevVmPsModules
 {
-	[Cmdlet(VerbsCommon.Add, "ProcessingWorkerManagerServerToDefaultResourcePool")]
-	public class ProcessingAddWorkerManagerServerToDefaultResourcePoolModule : BaseModule
+	[Cmdlet(VerbsCommon.Add, "AgentServerToDefaultResourcePool")]
+	public class AgentServerAddAgentServerToDefaultResourcePoolModule : BaseModule
 	{
 		[Parameter(
 			Mandatory = true,
@@ -38,9 +38,9 @@ namespace DevVmPsModules
 
 			IConnectionHelper connectionHelper = new ConnectionHelper(RelativityInstanceName, RelativityAdminUserName, RelativityAdminPassword);
 
-			IProcessingHelper processingHelper = new ProcessingHelper(connectionHelper);
+			IAgentServerHelper agentServerHelper = new AgentServerHelper(connectionHelper);
 
-			processingHelper.AddWorkerManagerServerToDefaultResourcePool();
+			agentServerHelper.AddAgentServerToDefaultResourcePool();
 		}
 
 		private void ValidateInputArguments()

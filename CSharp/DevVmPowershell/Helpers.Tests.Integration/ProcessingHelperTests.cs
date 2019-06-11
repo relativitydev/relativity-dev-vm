@@ -90,17 +90,17 @@ namespace Helpers.Tests.Integration
 			Assert.That(wasWorkerServerAddedToPool, Is.EqualTo(expectedResult));
 		}
 
-		[Test, Order(60)]
+		[Test, Order(1000)]
 		[TestCase(true)]
-		public async Task AddAgentServerToDefaultResourcePoolTest(bool expectedResult)
+		public async Task FullSetupAndUpdateDefaultResourcePool(bool expectedResult)
 		{
 			//Arrange
 
 			//Act
-			bool wasAgentServerAddedToPool = await Sut.AddAgentServerToDefaultResourcePool();
+			bool wasSetupComplete = await Sut.FullSetupAndUpdateDefaultResourcePool();
 
 			//Assert
-			Assert.That(wasAgentServerAddedToPool, Is.EqualTo(expectedResult));
+			Assert.That(wasSetupComplete, Is.EqualTo(expectedResult));
 		}
 	}
 }

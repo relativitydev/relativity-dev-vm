@@ -9,6 +9,6 @@ namespace Helpers
 		Task<bool> CreateWorkerManagerServer();
 		Task<bool> AddWorkerManagerServerToDefaultResourcePool();
 		Task<bool> AddWorkerServerToDefaultResourcePool();
-		Task<bool> AddAgentServerToDefaultResourcePool();
+		Task<bool> FullSetupAndUpdateDefaultResourcePool();
 	}
 }

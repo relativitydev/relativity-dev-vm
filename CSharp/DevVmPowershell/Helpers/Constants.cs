@@ -61,7 +61,13 @@ namespace Helpers
 			public const string DefaultPool = "Default";
 			public const string WorkerManagerServer = "Worker Manager Server";
 			public const string WorkerServer = "Worker";
-			public const string AgentServer = "Agent";
+		}
+
+		public class AgentServer
+		{
+			public const string ResourceServerName = "RELATIVITYDEVVM";
+			public const string AgentServerName = "Agent";
+			public const string DefaultPool = "Default";
 		}
 	}
 }
