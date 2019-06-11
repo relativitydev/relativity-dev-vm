@@ -46,5 +46,28 @@ namespace Helpers
 			public const string Document = "document";
 			public const string Image = "image";
 		}
+
+		public class Processing
+		{
+			public const int WorkspaceId = -1;
+			public const string ChoiceName = @"\\RELATIVITYDEVVM\ProcessingSourceLocation";
+			public const int ChoiceTypeID = 1000017;
+			public const int ChoiceArtifactTypeId = 7;
+			public const string ResourceServerName = "RELATIVITYDEVVM";
+			public const string ResourceServerUrl = "RELATIVITYDEVVM";
+			public const string ChoiceFieldRef = "TextIdentifier";
+			public const string NameField = "Name";
+			public const string DefaultPool = "Default";
+			public const string WorkerManagerServer = "Worker Manager Server";
+			public const string WorkerServer = "Worker";
+		}
+
+		public class AgentServer
+		{
+			public const string NameField = "Name";
+			public const string ResourceServerName = "RELATIVITYDEVVM";
+			public const string AgentServerName = "Agent";
+			public const string DefaultPool = "Default";
+		}
 	}
 }

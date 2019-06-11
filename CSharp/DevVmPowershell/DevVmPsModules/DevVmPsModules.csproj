@@ -194,6 +194,8 @@
     <Compile Include="CustomExceptions\DevVmPowerShellModuleException.cs" />
     <Compile Include="RemoveErrorsModule.cs" />
     <Compile Include="DocumentModule.cs" />
+    <Compile Include="AgentServerAddAgentServerToDefaultResourcePoolModule.cs" />
+    <Compile Include="ProcessingFullSetupAndUpdateDefaultResourcePoolModule.cs" />
     <Compile Include="SampleModule.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
