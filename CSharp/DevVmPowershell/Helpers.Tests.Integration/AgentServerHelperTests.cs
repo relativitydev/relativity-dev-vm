@@ -24,17 +24,30 @@ namespace Helpers.Tests.Integration
 			Sut = null;
 		}
 
-		[Test]
+		[Test, Order(10)]
 		[TestCase(true)]
 		public async Task AddAgentServerToDefaultResourcePoolTest(bool expectedResult)
 		{
 			//Arrange
 
 			//Act
-			bool wasAgentServerAddedToPool = await Sut.AddAgentServerToDefaultResourcePool();
+			bool result = await Sut.AddAgentServerToDefaultResourcePool();
 
 			//Assert
-			Assert.That(wasAgentServerAddedToPool, Is.EqualTo(expectedResult));
+			Assert.That(result, Is.EqualTo(expectedResult));
+		}
+
+		[Test, Order(20)]
+		[TestCase(true)]
+		public async Task RemoveAgentServerFromDefaultResourcePoolTest(bool expectedResult)
+		{
+			//Arrange
+
+			//Act
+			bool result = await Sut.RemoveAgentServerFromDefaultResourcePool();
+
+			//Assert
+			Assert.That(result, Is.EqualTo(expectedResult));
 		}
 	}
 }

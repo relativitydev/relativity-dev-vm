@@ -24,6 +24,10 @@ namespace Helpers
 			ServiceFactory = connectionHelper.GetServiceFactory();
 		}
 
+		/// <summary>
+		/// Runs through every step needed to create Objects and setup to the Default Resource Pool.  Objects created and added to Default Pool are a Processing Source Location, a Worker Server Manager, and a Worker Server
+		/// </summary>
+		/// <returns></returns>
 		public async Task<bool> FullSetupAndUpdateDefaultResourcePool()
 		{
 			bool wasSetupComplete = false;
@@ -116,6 +120,64 @@ namespace Helpers
 			}
 
 			return wasChoiceCreated;
+		}
+
+		/// <summary>
+		/// Deletes a Processing Source Location Choice and makes sure it doesn't already exist.
+		/// </summary>
+		/// <returns></returns>
+		public bool DeleteProcessingSourceLocationChoice()
+		{
+			bool wasChoiceDeleted = false;
+
+			Console.WriteLine($"{nameof(DeleteProcessingSourceLocationChoice)} - Deleting Processing Source Location Choice ({Constants.Processing.ChoiceName})");
+
+			Choice choice = new Choice
+			{
+				Name = Constants.Processing.ChoiceName,
+				ChoiceTypeID = Constants.Processing.ChoiceTypeID,
+				Order = 1
+			};
+
+			kCura.Relativity.Client.TextCondition cond = new kCura.Relativity.Client.TextCondition()
+			{
+				Field = Constants.Processing.NameField,
+				Operator = kCura.Relativity.Client.TextConditionEnum.EqualTo,
+				Value = Constants.Processing.ChoiceName
+			};
+
+			using (IRSAPIClient rsapiClient = ServiceFactory.CreateProxy<IRSAPIClient>())
+			{
+				rsapiClient.APIOptions = new APIOptions(-1);
+
+				kCura.Relativity.Client.DTOs.QueryResultSet<Choice> choiceQuery = rsapiClient.Repositories.Choice.Query(new Query<Choice>() { Condition = cond });
+
+				if (choiceQuery.Success && choiceQuery.TotalCount > 0)
+				{
+					WriteResultSet<Choice> result = rsapiClient.Repositories.Choice.Delete(choiceQuery.Results.First().Artifact);
+
+					if (result.Success)
+					{
+						choiceQuery = rsapiClient.Repositories.Choice.Query(new Query<Choice>() { Condition = cond });
+						if (choiceQuery.Success && choiceQuery.TotalCount == 0)
+						{
+							wasChoiceDeleted = true;
+							Console.WriteLine($"{nameof(DeleteProcessingSourceLocationChoice)} - Successfully deleted Processing Source Location Choice ({Constants.Processing.ChoiceName})");
+						}
+						else
+						{
+							Console.WriteLine($"{nameof(DeleteProcessingSourceLocationChoice)} - Failed to create Processing Source Location Choice ({Constants.Processing.ChoiceName})");
+						}
+
+					}
+					else
+					{
+						Console.WriteLine($"{nameof(DeleteProcessingSourceLocationChoice)} - Failed to delete Processing Source Location Choice ({Constants.Processing.ChoiceName})");
+					}
+				}
+			}
+
+			return wasChoiceDeleted;
 		}
 
 		/// <summary>
@@ -221,7 +283,7 @@ namespace Helpers
 		}
 
 		/// <summary>
-		/// Create Worker Manager Server if it doesn't already exist
+		/// Create Worker Manager Server if it doesn't already exist, which also automatically creates a Worker Server
 		/// </summary>
 		/// <returns></returns>
 		public async Task<bool> CreateWorkerManagerServer()
@@ -229,6 +291,68 @@ namespace Helpers
 			bool wasWorkerManagerServerCreated = false;
 
 			Console.WriteLine($"{nameof(CreateWorkerManagerServer)} - Creating Worker Manager Server ({Constants.Processing.ResourceServerName})");
+
+			// Setup for checking if Worker Manager Server exists
+			Relativity.Services.TextCondition conditionServer = new Relativity.Services.TextCondition()
+			{
+				Field = Constants.Processing.NameField,
+				Operator = Relativity.Services.TextConditionEnum.EqualTo,
+				Value = Constants.Processing.ResourceServerName
+			};
+
+			Relativity.Services.Query queryServer = new Relativity.Services.Query()
+			{
+				Condition = conditionServer.ToQueryString()
+			};
+
+			// The Worker Manager Server to be created
+			WorkerManagerServer server = new WorkerManagerServer()
+			{
+				Name = Constants.Processing.ResourceServerName,
+				IsDefault = true,
+				InventoryPriority = 100,
+				DiscoveryPriority = 100,
+				PublishPriority = 100,
+				ImageOnTheFlyPriority = 1,
+				MassImagingPriority = 100,
+				SingleSaveAsPDFPriority = 100,
+				MassSaveAsPDFPriority = 100,
+				URL = Constants.Processing.ResourceServerUrl
+			};
+
+			using (IWorkerServerManager workerServerManager = ServiceFactory.CreateProxy<IWorkerServerManager>())
+			{
+				WorkerServerQueryResultSet queryResult = await workerServerManager.QueryAsync(queryServer);
+
+				if (queryResult.Success && queryResult.TotalCount == 0)
+				{
+					int workerServerArtifactId = await workerServerManager.CreateSingleAsync(server);
+					Console.WriteLine($"{nameof(CreateWorkerManagerServer)} - Worker Server Artifact ID: {workerServerArtifactId}");
+					wasWorkerManagerServerCreated = true;
+					Console.WriteLine($"{nameof(CreateWorkerManagerServer)} - Successfully created Worker Manager Server ({Constants.Processing.ResourceServerName})");
+				}
+				else if (queryResult.Success && queryResult.TotalCount > 0)
+				{
+					Console.WriteLine($"{nameof(CreateWorkerManagerServer)} - Failed to create Worker Manager Server ({Constants.Processing.ResourceServerName}) as it already exists");
+					wasWorkerManagerServerCreated = true;
+				}
+				else
+				{
+					Console.WriteLine($"{nameof(CreateWorkerManagerServer)} - Failed to create and check for Worker Manager Server ({Constants.Processing.ResourceServerName})");
+				}
+			}
+			return wasWorkerManagerServerCreated;
+		}
+
+		/// <summary>
+		/// Delete Worker Manager Server and automatically created Worker Server
+		/// </summary>
+		/// <returns></returns>
+		public async Task<bool> DeleteWorkerManagerServer()
+		{
+			bool wasWorkerManagerServerCreated = false;
+
+			Console.WriteLine($"{nameof(CreateWorkerManagerServer)} - Deleting Worker Manager Server ({Constants.Processing.ResourceServerName})");
 
 			// Setup for checking if Worker Manager Server exists
 			Relativity.Services.TextCondition conditionServer = new Relativity.Services.TextCondition()

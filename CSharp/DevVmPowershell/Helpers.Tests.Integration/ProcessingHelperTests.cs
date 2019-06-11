@@ -32,10 +32,10 @@ namespace Helpers.Tests.Integration
 			//Arrange
 
 			//Act
-			bool wasSourceLocationChoiceCreated = Sut.CreateProcessingSourceLocationChoice();
+			bool result = Sut.CreateProcessingSourceLocationChoice();
 
 			//Assert
-			Assert.That(wasSourceLocationChoiceCreated, Is.EqualTo(expectedResult));
+			Assert.That(result, Is.EqualTo(expectedResult));
 		}
 
 		[Test, Order(20)]
@@ -45,10 +45,10 @@ namespace Helpers.Tests.Integration
 			//Arrange
 
 			//Act
-			bool wasSourceLocationChoiceCreated = await Sut.AddProcessingSourceLocationChoiceToDefaultResourcePool();
+			bool result = await Sut.AddProcessingSourceLocationChoiceToDefaultResourcePool();
 
 			//Assert
-			Assert.That(wasSourceLocationChoiceCreated, Is.EqualTo(expectedResult));
+			Assert.That(result, Is.EqualTo(expectedResult));
 		}
 
 		[Test, Order(30)]
@@ -58,10 +58,10 @@ namespace Helpers.Tests.Integration
 			//Arrange
 
 			//Act
-			bool wasWorkerManagerServerCreated = await Sut.CreateWorkerManagerServer();
+			bool result = await Sut.CreateWorkerManagerServer();
 
 			//Assert
-			Assert.That(wasWorkerManagerServerCreated, Is.EqualTo(expectedResult));
+			Assert.That(result, Is.EqualTo(expectedResult));
 		}
 
 		[Test, Order(40)]
@@ -71,10 +71,10 @@ namespace Helpers.Tests.Integration
 			//Arrange
 
 			//Act
-			bool wasWorkerManagerServerAddedToPool = await Sut.AddWorkerManagerServerToDefaultResourcePool();
+			bool result = await Sut.AddWorkerManagerServerToDefaultResourcePool();
 
 			//Assert
-			Assert.That(wasWorkerManagerServerAddedToPool, Is.EqualTo(expectedResult));
+			Assert.That(result, Is.EqualTo(expectedResult));
 		}
 
 		[Test, Order(50)]
@@ -84,10 +84,10 @@ namespace Helpers.Tests.Integration
 			//Arrange
 
 			//Act
-			bool wasWorkerServerAddedToPool = await Sut.AddWorkerServerToDefaultResourcePool();
+			bool result = await Sut.AddWorkerServerToDefaultResourcePool();
 
 			//Assert
-			Assert.That(wasWorkerServerAddedToPool, Is.EqualTo(expectedResult));
+			Assert.That(result, Is.EqualTo(expectedResult));
 		}
 
 		[Test, Order(1000)]
@@ -97,10 +97,10 @@ namespace Helpers.Tests.Integration
 			//Arrange
 
 			//Act
-			bool wasSetupComplete = await Sut.FullSetupAndUpdateDefaultResourcePool();
+			bool result = await Sut.FullSetupAndUpdateDefaultResourcePool();
 
 			//Assert
-			Assert.That(wasSetupComplete, Is.EqualTo(expectedResult));
+			Assert.That(result, Is.EqualTo(expectedResult));
 		}
 	}
 }

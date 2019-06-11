@@ -57,7 +57,6 @@ namespace Helpers
 			public const string ResourceServerUrl = "RELATIVITYDEVVM";
 			public const string ChoiceFieldRef = "TextIdentifier";
 			public const string NameField = "Name";
-			//public const string TypeField = "Type";
 			public const string DefaultPool = "Default";
 			public const string WorkerManagerServer = "Worker Manager Server";
 			public const string WorkerServer = "Worker";
@@ -65,6 +64,7 @@ namespace Helpers
 
 		public class AgentServer
 		{
+			public const string NameField = "Name";
 			public const string ResourceServerName = "RELATIVITYDEVVM";
 			public const string AgentServerName = "Agent";
 			public const string DefaultPool = "Default";
