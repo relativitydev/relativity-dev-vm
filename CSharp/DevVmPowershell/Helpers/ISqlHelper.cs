@@ -8,6 +8,6 @@ namespace Helpers
 {
 	public interface ISqlHelper
 	{
-		void DeleteErrorsFromErrorsTab();
+		bool DeleteAllErrors();
 	}
 }

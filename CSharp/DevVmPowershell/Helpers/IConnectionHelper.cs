@@ -9,7 +9,5 @@ namespace Helpers
 		ServiceFactory GetServiceFactory(string protocol = Constants.Connection.PROTOCOL);
 
 		ImportAPI GetImportApi();
-
-		IDBContext GetDbContext(int workspaceId);
 	}
 }

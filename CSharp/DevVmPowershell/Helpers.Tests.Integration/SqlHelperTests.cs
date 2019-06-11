@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using DbContextHelper;
 using NUnit.Framework;
 
 namespace Helpers.Tests.Integration
@@ -15,12 +16,7 @@ namespace Helpers.Tests.Integration
 		[SetUp]
 		public void Setup()
 		{
-			IConnectionHelper connectionHelper = new ConnectionHelper(
-				TestConstants.RELATIVITY_INSTANCE_NAME,
-				TestConstants.RELATIVITY_ADMIN_USER_NAME,
-				TestConstants.RELATIVITY_ADMIN_PASSWORD);
-
-			Sut = new SqlHelper(connectionHelper);
+			Sut = new SqlHelper(TestConstants.RELATIVITY_INSTANCE_NAME, TestConstants.SQL_USER_NAME, TestConstants.SQL_PASSWORD);
 		}
 
 		[TearDown]
@@ -30,13 +26,13 @@ namespace Helpers.Tests.Integration
 		}
 
 		[Test]
-		public void DeleteErrorsFromErrorsTab()
+		public void DeleteAllErrorsTest()
 		{
-			// Arrange
-
 			// Act
+			bool result = Sut.DeleteAllErrors();
 
 			// Assert
+			Assert.That(result, Is.True);
 		}
 	}
 }
