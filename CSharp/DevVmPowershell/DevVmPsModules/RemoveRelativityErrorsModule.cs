@@ -25,7 +25,7 @@ namespace DevVmPsModules
 			ValueFromPipeline = true,
 			Position = 1,
 			HelpMessage = "Username of the Relativity Sql Account")]
-		public string SqlUserName { get; set; }
+		public string SqlAdminUserName { get; set; }
 
 		[Parameter(
 			Mandatory = true,
@@ -33,14 +33,14 @@ namespace DevVmPsModules
 			ValueFromPipeline = true,
 			Position = 2,
 			HelpMessage = "Password of the Relativity Sql Account")]
-		public string SqlPassword { get; set; }
+		public string SqlAdminPassword { get; set; }
 
 		protected override void ProcessRecordCode()
 		{
 			//Validate Input arguments
 			ValidateInputArguments();
 
-			ISqlHelper sqlHelper = new SqlHelper(RelativityInstanceName, SqlUserName, SqlPassword);
+			ISqlHelper sqlHelper = new SqlHelper(RelativityInstanceName, SqlAdminUserName, SqlAdminPassword);
 
 			// Delete all Errors
 			sqlHelper.DeleteAllErrors();
@@ -53,14 +53,14 @@ namespace DevVmPsModules
 				throw new ArgumentNullException(nameof(RelativityInstanceName), $"{nameof(RelativityInstanceName)} cannot be NULL or Empty.");
 			}
 
-			if (string.IsNullOrWhiteSpace(SqlUserName))
+			if (string.IsNullOrWhiteSpace(SqlAdminUserName))
 			{
-				throw new ArgumentNullException(nameof(SqlUserName), $"{nameof(SqlUserName)} cannot be NULL or Empty.");
+				throw new ArgumentNullException(nameof(SqlAdminUserName), $"{nameof(SqlAdminUserName)} cannot be NULL or Empty.");
 			}
 
-			if (string.IsNullOrWhiteSpace(SqlPassword))
+			if (string.IsNullOrWhiteSpace(SqlAdminPassword))
 			{
-				throw new ArgumentNullException(nameof(SqlPassword), $"{nameof(SqlPassword)} cannot be NULL or Empty.");
+				throw new ArgumentNullException(nameof(SqlAdminPassword), $"{nameof(SqlAdminPassword)} cannot be NULL or Empty.");
 			}
 		}
 	}
