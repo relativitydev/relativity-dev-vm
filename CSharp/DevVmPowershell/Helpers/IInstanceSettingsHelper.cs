@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace Helpers
 {
-	public class IInstanceSettingsHelper
+	public interface IInstanceSettingsHelper
 	{
+		void UpdateInstanceSettings(string section, string name, string newValue);
 	}
 }
