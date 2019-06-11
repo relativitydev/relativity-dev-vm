@@ -1,4 +1,5 @@
 ﻿using kCura.Relativity.ImportAPI;
+using Relativity.API;
 using Relativity.Services.ServiceProxy;
 
 namespace Helpers
@@ -8,5 +9,7 @@ namespace Helpers
 		ServiceFactory GetServiceFactory(string protocol = Constants.Connection.PROTOCOL);
 
 		ImportAPI GetImportApi();
+
+		IDBContext GetDbContext(int workspaceId);
 	}
 }
