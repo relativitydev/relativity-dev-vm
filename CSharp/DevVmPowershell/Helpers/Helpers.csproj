@@ -191,15 +191,19 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AgentHelper.cs" />
+    <Compile Include="AgentServerHelper.cs" />
     <Compile Include="ApplicationInstallHelper.cs" />
     <Compile Include="ConnectionHelper.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="IAgentHelper.cs" />
+    <Compile Include="IAgentServerHelper.cs" />
     <Compile Include="IApplicationInstallHelper.cs" />
     <Compile Include="IConnectionHelper.cs" />
     <Compile Include="IImportApiHelper.cs" />
     <Compile Include="ImportApiHelper.cs" />
+    <Compile Include="IProcessingHelper.cs" />
     <Compile Include="ISqlHelper.cs" />
+    <Compile Include="ProcessingHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SqlHelper.cs" />
   </ItemGroup>

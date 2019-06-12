@@ -1,4 +1,5 @@
 ﻿using NUnit.Framework;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Helpers.Tests.Integration
@@ -30,6 +31,7 @@ namespace Helpers.Tests.Integration
 		public void CreateProcessingSourceLocationChoiceTest(bool expectedResult)
 		{
 			//Arrange
+			// No API exists yet to remove Processing Source Locations.  You'll have to manually delete it from the Default Resource Pool and from the Choice List
 
 			//Act
 			bool result = Sut.CreateProcessingSourceLocationChoice();
@@ -40,12 +42,12 @@ namespace Helpers.Tests.Integration
 
 		[Test, Order(20)]
 		[TestCase(true)]
-		public async Task AddProcessingSourceLocationChoiceToDefaultResourcePoolTest(bool expectedResult)
+		public async Task AddProcessingSourceLocationChoiceToDefaultResourcePoolAsyncTest(bool expectedResult)
 		{
 			//Arrange
 
 			//Act
-			bool result = await Sut.AddProcessingSourceLocationChoiceToDefaultResourcePool();
+			bool result = await Sut.AddProcessingSourceLocationChoiceToDefaultResourcePoolAsync();
 
 			//Assert
 			Assert.That(result, Is.EqualTo(expectedResult));
@@ -53,12 +55,12 @@ namespace Helpers.Tests.Integration
 
 		[Test, Order(30)]
 		[TestCase(true)]
-		public async Task CreateWorkerManagerServerTest(bool expectedResult)
+		public async Task CreateWorkerManagerServerAsyncTest(bool expectedResult)
 		{
 			//Arrange
 
 			//Act
-			bool result = await Sut.CreateWorkerManagerServer();
+			bool result = await Sut.CreateWorkerManagerServerAsync();
 
 			//Assert
 			Assert.That(result, Is.EqualTo(expectedResult));
@@ -66,12 +68,26 @@ namespace Helpers.Tests.Integration
 
 		[Test, Order(40)]
 		[TestCase(true)]
-		public async Task AddWorkerManagerServerToDefaultResourcePoolTest(bool expectedResult)
+		public async Task AddWorkerManagerServerToDefaultResourcePoolAsyncTest(bool expectedResult)
 		{
 			//Arrange
 
 			//Act
-			bool result = await Sut.AddWorkerManagerServerToDefaultResourcePool();
+			bool result = await Sut.AddWorkerManagerServerToDefaultResourcePoolAsync();
+
+			//Assert
+			Assert.That(result, Is.EqualTo(expectedResult));
+		}
+
+		[Test, Order(45)]
+		[TestCase(true)]
+		public async Task UpdateWorkerServerForProcessingAsyncTest(bool expectedResult)
+		{
+			//Arrange
+
+			//Act
+			Thread.Sleep(30);
+			bool result = await Sut.UpdateWorkerServerForProcessingAsync();
 
 			//Assert
 			Assert.That(result, Is.EqualTo(expectedResult));
@@ -79,12 +95,51 @@ namespace Helpers.Tests.Integration
 
 		[Test, Order(50)]
 		[TestCase(true)]
-		public async Task AddWorkerServerToDefaultResourcePoolTest(bool expectedResult)
+		public async Task AddWorkerServerToDefaultResourcePoolAsyncTest(bool expectedResult)
 		{
 			//Arrange
 
 			//Act
-			bool result = await Sut.AddWorkerServerToDefaultResourcePool();
+			bool result = await Sut.AddWorkerServerToDefaultResourcePoolAsync();
+
+			//Assert
+			Assert.That(result, Is.EqualTo(expectedResult));
+		}
+
+		[Test, Order(60)]
+		[TestCase(true)]
+		public async Task RemoveWorkerServerFromDefaultResourcePoolAsyncTest(bool expectedResult)
+		{
+			//Arrange
+
+			//Act
+			bool result = await Sut.RemoveWorkerServerFromDefaultResourcePoolAsync();
+
+			//Assert
+			Assert.That(result, Is.EqualTo(expectedResult));
+		}
+
+		[Test, Order(70)]
+		[TestCase(true)]
+		public async Task RemoveWorkerManagerServerFromDefaultResourcePoolAsyncTest(bool expectedResult)
+		{
+			//Arrange
+
+			//Act
+			bool result = await Sut.RemoveWorkerManagerServerFromDefaultResourcePoolAsync();
+
+			//Assert
+			Assert.That(result, Is.EqualTo(expectedResult));
+		}
+
+		[Test, Order(100)]
+		[TestCase(true)]
+		public async Task DeleteWorkerManagerServerAsyncTest(bool expectedResult)
+		{
+			//Arrange
+
+			//Act
+			bool result = await Sut.DeleteWorkerManagerServerAsync();
 
 			//Assert
 			Assert.That(result, Is.EqualTo(expectedResult));
@@ -92,12 +147,27 @@ namespace Helpers.Tests.Integration
 
 		[Test, Order(1000)]
 		[TestCase(true)]
-		public async Task FullSetupAndUpdateDefaultResourcePool(bool expectedResult)
+		public async Task FullSetupAndUpdateDefaultResourcePoolAsyncTest(bool expectedResult)
 		{
 			//Arrange
+			// No API exists yet to remove Processing Source Locations.  You'll have to manually delete it from the Default Resource Pool and from the Choice List
 
 			//Act
-			bool result = await Sut.FullSetupAndUpdateDefaultResourcePool();
+			bool result = await Sut.FullSetupAndUpdateDefaultResourcePoolAsync();
+
+			//Assert
+			Assert.That(result, Is.EqualTo(expectedResult));
+		}
+
+		[Test, Order(1010)]
+		[TestCase(true)]
+		public async Task FullResetAsyncTest(bool expectedResult)
+		{
+			//Arrange
+			// No API exists yet to remove Processing Source Locations.  You'll have to manually delete it from the Default Resource Pool and from the Choice List
+
+			//Act
+			bool result = await Sut.FullResetAsync();
 
 			//Assert
 			Assert.That(result, Is.EqualTo(expectedResult));
