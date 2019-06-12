@@ -58,7 +58,7 @@ namespace DevVmPsModules
 			IWorkspaceHelper workspaceHelper = new WorkspaceHelper(connectionHelper);
 
 			//Create Workspace
-			workspaceHelper.CreateWorkspaceAsync(Constants.Workspace.DEFAULT_WORKSPACE_TEMPLATE_NAME, WorkspaceName).Wait();
+			workspaceHelper.CreateWorkspaceAsync(Constants.Workspace.DEFAULT_WORKSPACE_TEMPLATE_NAME, WorkspaceName, _enableDataGrid).Wait();
 		}
 
 		private void ValidateInputArguments()

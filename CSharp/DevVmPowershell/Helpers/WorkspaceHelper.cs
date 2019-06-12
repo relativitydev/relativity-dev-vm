@@ -133,8 +133,7 @@ namespace Helpers
 			Workspace newWorkspace = new Workspace
 			{
 				Name = workspaceName,
-				Accessible = true,
-				//DatabaseLocation = Constants.Workspace.DATABASE_LOCATION
+				Accessible = true
 			};
 			return newWorkspace;
 		}
