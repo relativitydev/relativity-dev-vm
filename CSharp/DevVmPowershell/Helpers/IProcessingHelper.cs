@@ -5,15 +5,15 @@ namespace Helpers
 	public interface IProcessingHelper
 	{
 		bool CreateProcessingSourceLocationChoice();
-		Task<bool> AddProcessingSourceLocationChoiceToDefaultResourcePool();
-		Task<bool> CreateWorkerManagerServer();
-		Task<bool> DeleteWorkerManagerServer();
-		Task<bool> UpdateWorkerServerForProcessing();
-		Task<bool> AddWorkerManagerServerToDefaultResourcePool();
-		Task<bool> AddWorkerServerToDefaultResourcePool();
-		Task<bool> RemoveWorkerManagerServerFromDefaultResourcePool();
-		Task<bool> RemoveWorkerServerFromDefaultResourcePool();
-		Task<bool> FullSetupAndUpdateDefaultResourcePool();
-		Task<bool> FullReset();
+		Task<bool> AddProcessingSourceLocationChoiceToDefaultResourcePoolAsync();
+		Task<bool> CreateWorkerManagerServerAsync();
+		Task<bool> DeleteWorkerManagerServerAsync();
+		Task<bool> UpdateWorkerServerForProcessingAsync();
+		Task<bool> AddWorkerManagerServerToDefaultResourcePoolAsync();
+		Task<bool> AddWorkerServerToDefaultResourcePoolAsync();
+		Task<bool> RemoveWorkerManagerServerFromDefaultResourcePoolAsync();
+		Task<bool> RemoveWorkerServerFromDefaultResourcePoolAsync();
+		Task<bool> FullSetupAndUpdateDefaultResourcePoolAsync();
+		Task<bool> FullResetAsync();
 	}
 }

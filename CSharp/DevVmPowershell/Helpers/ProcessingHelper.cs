@@ -29,37 +29,37 @@ namespace Helpers
 		/// Runs through every step needed to create Objects and setup to the Default Resource Pool.  Objects created and added to Default Pool are a Processing Source Location, a Worker Server Manager, and a Worker Server
 		/// </summary>
 		/// <returns></returns>
-		public async Task<bool> FullSetupAndUpdateDefaultResourcePool()
+		public async Task<bool> FullSetupAndUpdateDefaultResourcePoolAsync()
 		{
 			bool wasSetupComplete = false;
 
-			Console.WriteLine($"{nameof(FullSetupAndUpdateDefaultResourcePool)} - Starting ({nameof(CreateProcessingSourceLocationChoice)})");
+			Console.WriteLine($"{nameof(FullSetupAndUpdateDefaultResourcePoolAsync)} - Starting ({nameof(CreateProcessingSourceLocationChoice)})");
 			wasSetupComplete = CreateProcessingSourceLocationChoice();
-			Console.WriteLine($"{nameof(FullSetupAndUpdateDefaultResourcePool)} - Finished ({nameof(CreateProcessingSourceLocationChoice)}) Result: {wasSetupComplete}");
+			Console.WriteLine($"{nameof(FullSetupAndUpdateDefaultResourcePoolAsync)} - Finished ({nameof(CreateProcessingSourceLocationChoice)}) Result: {wasSetupComplete}");
 
-			Console.WriteLine($"{nameof(FullSetupAndUpdateDefaultResourcePool)} - Starting ({nameof(AddProcessingSourceLocationChoiceToDefaultResourcePool)})");
-			wasSetupComplete = await AddProcessingSourceLocationChoiceToDefaultResourcePool();
-			Console.WriteLine($"{nameof(FullSetupAndUpdateDefaultResourcePool)} - Finished ({nameof(AddProcessingSourceLocationChoiceToDefaultResourcePool)}) Result: {wasSetupComplete}");
+			Console.WriteLine($"{nameof(FullSetupAndUpdateDefaultResourcePoolAsync)} - Starting ({nameof(AddProcessingSourceLocationChoiceToDefaultResourcePoolAsync)})");
+			wasSetupComplete = await AddProcessingSourceLocationChoiceToDefaultResourcePoolAsync();
+			Console.WriteLine($"{nameof(FullSetupAndUpdateDefaultResourcePoolAsync)} - Finished ({nameof(AddProcessingSourceLocationChoiceToDefaultResourcePoolAsync)}) Result: {wasSetupComplete}");
 
-			Console.WriteLine($"{nameof(FullSetupAndUpdateDefaultResourcePool)} - Starting ({nameof(CreateWorkerManagerServer)})");
-			wasSetupComplete = await CreateWorkerManagerServer();
-			Console.WriteLine($"{nameof(FullSetupAndUpdateDefaultResourcePool)} - Finished ({nameof(CreateWorkerManagerServer)}) Result: {wasSetupComplete}");
+			Console.WriteLine($"{nameof(FullSetupAndUpdateDefaultResourcePoolAsync)} - Starting ({nameof(CreateWorkerManagerServerAsync)})");
+			wasSetupComplete = await CreateWorkerManagerServerAsync();
+			Console.WriteLine($"{nameof(FullSetupAndUpdateDefaultResourcePoolAsync)} - Finished ({nameof(CreateWorkerManagerServerAsync)}) Result: {wasSetupComplete}");
 
-			Console.WriteLine($"{nameof(FullSetupAndUpdateDefaultResourcePool)} - Sleeping for 30 seconds auto creation of Worker Server");
+			Console.WriteLine($"{nameof(FullSetupAndUpdateDefaultResourcePoolAsync)} - Sleeping for 30 seconds auto creation of Worker Server");
 			Thread.Sleep(30000);
-			Console.WriteLine($"{nameof(FullSetupAndUpdateDefaultResourcePool)} - Finished sleeping for auto creation of Worker Server");
+			Console.WriteLine($"{nameof(FullSetupAndUpdateDefaultResourcePoolAsync)} - Finished sleeping for auto creation of Worker Server");
 
-			Console.WriteLine($"{nameof(FullSetupAndUpdateDefaultResourcePool)} - Starting ({nameof(UpdateWorkerServerForProcessing)})");
-			wasSetupComplete = await UpdateWorkerServerForProcessing();
-			Console.WriteLine($"{nameof(FullSetupAndUpdateDefaultResourcePool)} - Finished ({nameof(UpdateWorkerServerForProcessing)}) Result: {wasSetupComplete}");
+			Console.WriteLine($"{nameof(FullSetupAndUpdateDefaultResourcePoolAsync)} - Starting ({nameof(UpdateWorkerServerForProcessingAsync)})");
+			wasSetupComplete = await UpdateWorkerServerForProcessingAsync();
+			Console.WriteLine($"{nameof(FullSetupAndUpdateDefaultResourcePoolAsync)} - Finished ({nameof(UpdateWorkerServerForProcessingAsync)}) Result: {wasSetupComplete}");
 
-			Console.WriteLine($"{nameof(FullSetupAndUpdateDefaultResourcePool)} - Starting ({nameof(AddWorkerManagerServerToDefaultResourcePool)})");
-			wasSetupComplete = await AddWorkerManagerServerToDefaultResourcePool();
-			Console.WriteLine($"{nameof(FullSetupAndUpdateDefaultResourcePool)} - Finished ({nameof(AddWorkerManagerServerToDefaultResourcePool)}) Result: {wasSetupComplete}");
+			Console.WriteLine($"{nameof(FullSetupAndUpdateDefaultResourcePoolAsync)} - Starting ({nameof(AddWorkerManagerServerToDefaultResourcePoolAsync)})");
+			wasSetupComplete = await AddWorkerManagerServerToDefaultResourcePoolAsync();
+			Console.WriteLine($"{nameof(FullSetupAndUpdateDefaultResourcePoolAsync)} - Finished ({nameof(AddWorkerManagerServerToDefaultResourcePoolAsync)}) Result: {wasSetupComplete}");
 
-			Console.WriteLine($"{nameof(FullSetupAndUpdateDefaultResourcePool)} - Starting ({nameof(AddWorkerServerToDefaultResourcePool)})");
-			wasSetupComplete = await AddWorkerServerToDefaultResourcePool();
-			Console.WriteLine($"{nameof(FullSetupAndUpdateDefaultResourcePool)} - Finished ({nameof(AddWorkerServerToDefaultResourcePool)}) Result: {wasSetupComplete}");
+			Console.WriteLine($"{nameof(FullSetupAndUpdateDefaultResourcePoolAsync)} - Starting ({nameof(AddWorkerServerToDefaultResourcePoolAsync)})");
+			wasSetupComplete = await AddWorkerServerToDefaultResourcePoolAsync();
+			Console.WriteLine($"{nameof(FullSetupAndUpdateDefaultResourcePoolAsync)} - Finished ({nameof(AddWorkerServerToDefaultResourcePoolAsync)}) Result: {wasSetupComplete}");
 
 
 			return wasSetupComplete;
@@ -69,25 +69,25 @@ namespace Helpers
 		/// 
 		/// </summary>
 		/// <returns></returns>
-		public async Task<bool> FullReset()
+		public async Task<bool> FullResetAsync()
 		{
 			bool wasReset = false;
 
-			Console.WriteLine($"{nameof(FullReset)} - Starting ({nameof(RemoveWorkerServerFromDefaultResourcePool)})");
-			wasReset = await RemoveWorkerServerFromDefaultResourcePool();
-			Console.WriteLine($"{nameof(FullReset)} - Finished ({nameof(RemoveWorkerServerFromDefaultResourcePool)}) Result: {wasReset}");
+			Console.WriteLine($"{nameof(FullResetAsync)} - Starting ({nameof(RemoveWorkerServerFromDefaultResourcePoolAsync)})");
+			wasReset = await RemoveWorkerServerFromDefaultResourcePoolAsync();
+			Console.WriteLine($"{nameof(FullResetAsync)} - Finished ({nameof(RemoveWorkerServerFromDefaultResourcePoolAsync)}) Result: {wasReset}");
 
-			Console.WriteLine($"{nameof(FullReset)} - Starting ({nameof(RemoveWorkerServerFromDefaultResourcePool)})");
-			wasReset = await RemoveWorkerServerFromDefaultResourcePool();
-			Console.WriteLine($"{nameof(FullReset)} - Finished ({nameof(RemoveWorkerServerFromDefaultResourcePool)}) Result: {wasReset}");
+			Console.WriteLine($"{nameof(FullResetAsync)} - Starting ({nameof(RemoveWorkerServerFromDefaultResourcePoolAsync)})");
+			wasReset = await RemoveWorkerServerFromDefaultResourcePoolAsync();
+			Console.WriteLine($"{nameof(FullResetAsync)} - Finished ({nameof(RemoveWorkerServerFromDefaultResourcePoolAsync)}) Result: {wasReset}");
 
-			Console.WriteLine($"{nameof(FullReset)} - Starting ({nameof(RemoveWorkerManagerServerFromDefaultResourcePool)})");
-			wasReset = await RemoveWorkerManagerServerFromDefaultResourcePool();
-			Console.WriteLine($"{nameof(FullReset)} - Finished ({nameof(RemoveWorkerManagerServerFromDefaultResourcePool)}) Result: {wasReset}");
+			Console.WriteLine($"{nameof(FullResetAsync)} - Starting ({nameof(RemoveWorkerManagerServerFromDefaultResourcePoolAsync)})");
+			wasReset = await RemoveWorkerManagerServerFromDefaultResourcePoolAsync();
+			Console.WriteLine($"{nameof(FullResetAsync)} - Finished ({nameof(RemoveWorkerManagerServerFromDefaultResourcePoolAsync)}) Result: {wasReset}");
 
-			Console.WriteLine($"{nameof(FullReset)} - Starting ({nameof(DeleteWorkerManagerServer)})");
-			wasReset = await DeleteWorkerManagerServer();
-			Console.WriteLine($"{nameof(FullReset)} - Finished ({nameof(DeleteWorkerManagerServer)}) Result: {wasReset}");
+			Console.WriteLine($"{nameof(FullResetAsync)} - Starting ({nameof(DeleteWorkerManagerServerAsync)})");
+			wasReset = await DeleteWorkerManagerServerAsync();
+			Console.WriteLine($"{nameof(FullResetAsync)} - Finished ({nameof(DeleteWorkerManagerServerAsync)}) Result: {wasReset}");
 
 
 			return wasReset;
@@ -159,11 +159,11 @@ namespace Helpers
 		/// Add Processing Source Location choice to Default Resource Pool
 		/// </summary>
 		/// <returns></returns>
-		public async Task<bool> AddProcessingSourceLocationChoiceToDefaultResourcePool()
+		public async Task<bool> AddProcessingSourceLocationChoiceToDefaultResourcePoolAsync()
 		{
 			bool wasChoiceAddedToPool = false;
 
-			Console.WriteLine($"{nameof(AddProcessingSourceLocationChoiceToDefaultResourcePool)} - Adding Processing Source Location Choice to Default Resource Pool");
+			Console.WriteLine($"{nameof(AddProcessingSourceLocationChoiceToDefaultResourcePoolAsync)} - Adding Processing Source Location Choice to Default Resource Pool");
 
 			// Setup for checking Resource Pools
 			Relativity.Services.TextCondition conditionPool = new Relativity.Services.TextCondition()
@@ -205,7 +205,7 @@ namespace Helpers
 				// Check for Default Resource Pool
 				ResourcePoolQueryResultSet resultPools = await resourcePoolManager.QueryAsync(queryPool);
 
-				Console.WriteLine($"{nameof(AddProcessingSourceLocationChoiceToDefaultResourcePool)} - Checking if Default Resource Pool exists");
+				Console.WriteLine($"{nameof(AddProcessingSourceLocationChoiceToDefaultResourcePoolAsync)} - Checking if Default Resource Pool exists");
 				if (resultPools.Success && resultPools.TotalCount > 0)
 				{
 					ResourcePoolRef defaultResourcePoolRef = new ResourcePoolRef(resultPools.Results.Find(x => x.Artifact.Name.Equals(Constants.Processing.DefaultPool, StringComparison.OrdinalIgnoreCase)).Artifact.ArtifactID);
@@ -213,7 +213,7 @@ namespace Helpers
 					// Check if Processing Server Location already added to Default Resource Pool
 					Relativity.Services.Objects.DataContracts.QueryResult resultChoice = await objectManager.QueryAsync(Constants.Processing.WorkspaceId, queryChoice, 1, 10);
 
-					Console.WriteLine($"{nameof(AddProcessingSourceLocationChoiceToDefaultResourcePool)} - Checking if Processing Source Location Choice exists");
+					Console.WriteLine($"{nameof(AddProcessingSourceLocationChoiceToDefaultResourcePoolAsync)} - Checking if Processing Source Location Choice exists");
 					if (resultChoice.TotalCount > 0)
 					{
 						ChoiceRef choice = new ChoiceRef(resultChoice.Objects.First().ArtifactID);
@@ -231,26 +231,26 @@ namespace Helpers
 							if (resultProcessingSourceLocations.Exists(x => x.ArtifactID == choice.ArtifactID))
 							{
 								wasChoiceAddedToPool = true;
-								Console.WriteLine($"{nameof(AddProcessingSourceLocationChoiceToDefaultResourcePool)} - Added Processing Source Location Choice to Default Resource Pool");
+								Console.WriteLine($"{nameof(AddProcessingSourceLocationChoiceToDefaultResourcePoolAsync)} - Added Processing Source Location Choice to Default Resource Pool");
 							}
 						}
 						else
 						{
-							Console.WriteLine($"{nameof(AddProcessingSourceLocationChoiceToDefaultResourcePool)} - Failed to add Processing Source Location Choice to Default Resource Pool as it already exists within the pool");
+							Console.WriteLine($"{nameof(AddProcessingSourceLocationChoiceToDefaultResourcePoolAsync)} - Failed to add Processing Source Location Choice to Default Resource Pool as it already exists within the pool");
 							wasChoiceAddedToPool = true;
 							return wasChoiceAddedToPool;
 						}
 					}
 					else
 					{
-						Console.WriteLine($"{nameof(AddProcessingSourceLocationChoiceToDefaultResourcePool)} - Processing Source Location Choice does not exist");
+						Console.WriteLine($"{nameof(AddProcessingSourceLocationChoiceToDefaultResourcePoolAsync)} - Processing Source Location Choice does not exist");
 						wasChoiceAddedToPool = true;
 					}
 
 				}
 				else
 				{
-					Console.WriteLine($"{nameof(AddProcessingSourceLocationChoiceToDefaultResourcePool)} - Default Resource Pool does not exist");
+					Console.WriteLine($"{nameof(AddProcessingSourceLocationChoiceToDefaultResourcePoolAsync)} - Default Resource Pool does not exist");
 				}
 			}
 
@@ -261,11 +261,11 @@ namespace Helpers
 		/// Create Worker Manager Server if it doesn't already exist, which also automatically creates a Worker Server
 		/// </summary>
 		/// <returns></returns>
-		public async Task<bool> CreateWorkerManagerServer()
+		public async Task<bool> CreateWorkerManagerServerAsync()
 		{
 			bool wasWorkerManagerServerCreated = false;
 
-			Console.WriteLine($"{nameof(CreateWorkerManagerServer)} - Creating Worker Manager Server ({Constants.Processing.ResourceServerName})");
+			Console.WriteLine($"{nameof(CreateWorkerManagerServerAsync)} - Creating Worker Manager Server ({Constants.Processing.ResourceServerName})");
 
 			// Setup for checking if Worker Manager Server exists
 			Relativity.Services.TextCondition conditionServer = new Relativity.Services.TextCondition()
@@ -302,24 +302,24 @@ namespace Helpers
 				if (queryResult.Success && queryResult.TotalCount == 0)
 				{
 					int workerServerArtifactId = await workerServerManager.CreateSingleAsync(server);
-					Console.WriteLine($"{nameof(CreateWorkerManagerServer)} - Worker Server Artifact ID: {workerServerArtifactId}");
+					Console.WriteLine($"{nameof(CreateWorkerManagerServerAsync)} - Worker Server Artifact ID: {workerServerArtifactId}");
 
 					queryResult = await workerServerManager.QueryAsync(queryServer);
 
 					if (queryResult.Success && queryResult.TotalCount > 0)
 					{
 						wasWorkerManagerServerCreated = true;
-						Console.WriteLine($"{nameof(CreateWorkerManagerServer)} - Successfully created Worker Manager Server ({Constants.Processing.ResourceServerName})");
+						Console.WriteLine($"{nameof(CreateWorkerManagerServerAsync)} - Successfully created Worker Manager Server ({Constants.Processing.ResourceServerName})");
 					}
 				}
 				else if (queryResult.Success && queryResult.TotalCount > 0)
 				{
-					Console.WriteLine($"{nameof(CreateWorkerManagerServer)} - Failed to create Worker Manager Server ({Constants.Processing.ResourceServerName}) as it already exists");
+					Console.WriteLine($"{nameof(CreateWorkerManagerServerAsync)} - Failed to create Worker Manager Server ({Constants.Processing.ResourceServerName}) as it already exists");
 					wasWorkerManagerServerCreated = true;
 				}
 				else
 				{
-					Console.WriteLine($"{nameof(CreateWorkerManagerServer)} - Failed to create and check for Worker Manager Server ({Constants.Processing.ResourceServerName})");
+					Console.WriteLine($"{nameof(CreateWorkerManagerServerAsync)} - Failed to create and check for Worker Manager Server ({Constants.Processing.ResourceServerName})");
 				}
 			}
 			return wasWorkerManagerServerCreated;
@@ -329,11 +329,11 @@ namespace Helpers
 		/// Delete Worker Manager Server from the Instance
 		/// </summary>
 		/// <returns></returns>
-		public async Task<bool> DeleteWorkerManagerServer()
+		public async Task<bool> DeleteWorkerManagerServerAsync()
 		{
 			bool wasDeleted = false;
 
-			Console.WriteLine($"{nameof(DeleteWorkerManagerServer)} - Creating Worker Manager Server ({Constants.Processing.ResourceServerName})");
+			Console.WriteLine($"{nameof(DeleteWorkerManagerServerAsync)} - Creating Worker Manager Server ({Constants.Processing.ResourceServerName})");
 
 			// Setup for checking if Worker Manager Server exists
 			Relativity.Services.TextCondition conditionServer = new Relativity.Services.TextCondition()
@@ -361,27 +361,27 @@ namespace Helpers
 					if (queryResult.Success && !queryResult.Results.Exists(x => x.Artifact.ServerType.Name.Equals(Constants.Processing.WorkerManagerServer, StringComparison.OrdinalIgnoreCase)))
 					{
 						wasDeleted = true;
-						Console.WriteLine($"{nameof(DeleteWorkerManagerServer)} - Successfully deleted Worker Manager Server ({Constants.Processing.ResourceServerName})");
+						Console.WriteLine($"{nameof(DeleteWorkerManagerServerAsync)} - Successfully deleted Worker Manager Server ({Constants.Processing.ResourceServerName})");
 					}
 				}
 				else if (queryResult.Success && queryResult.TotalCount == 0)
 				{
-					Console.WriteLine($"{nameof(DeleteWorkerManagerServer)} - Failed to delete Worker Manager Server ({Constants.Processing.ResourceServerName}) as it doesn't exist");
+					Console.WriteLine($"{nameof(DeleteWorkerManagerServerAsync)} - Failed to delete Worker Manager Server ({Constants.Processing.ResourceServerName}) as it doesn't exist");
 					wasDeleted = true;
 				}
 				else
 				{
-					Console.WriteLine($"{nameof(DeleteWorkerManagerServer)} - Failed to delete and check for Worker Manager Server ({Constants.Processing.ResourceServerName})");
+					Console.WriteLine($"{nameof(DeleteWorkerManagerServerAsync)} - Failed to delete and check for Worker Manager Server ({Constants.Processing.ResourceServerName})");
 				}
 			}
 			return wasDeleted;
 		}
 
-		public async Task<bool> UpdateWorkerServerForProcessing()
+		public async Task<bool> UpdateWorkerServerForProcessingAsync()
 		{
 			bool wasUpdated = false;
 
-			Console.WriteLine($"{nameof(UpdateWorkerServerForProcessing)} - Updating Worker Server ({Constants.Processing.WorkerServer}) for to be ready for Processing");
+			Console.WriteLine($"{nameof(UpdateWorkerServerForProcessingAsync)} - Updating Worker Server ({Constants.Processing.WorkerServer}) for to be ready for Processing");
 
 			// Setup for checking if Worker Server exists
 			Relativity.Services.TextCondition conditionWorker = new Relativity.Services.TextCondition()
@@ -417,11 +417,11 @@ namespace Helpers
 
 					await workerStatusService.UpdateCategoriesOnWorkerAsync(workerServerArtifactId, categories);
 					wasUpdated = true;
-					Console.WriteLine($"{nameof(UpdateWorkerServerForProcessing)} - Successfully updated Worker Server ({Constants.Processing.ResourceServerName})");
+					Console.WriteLine($"{nameof(UpdateWorkerServerForProcessingAsync)} - Successfully updated Worker Server ({Constants.Processing.ResourceServerName})");
 				}
 				else
 				{
-					Console.WriteLine($"{nameof(UpdateWorkerServerForProcessing)} - Failed to update Worker Server ({Constants.Processing.ResourceServerName}) as it doesn't exist");
+					Console.WriteLine($"{nameof(UpdateWorkerServerForProcessingAsync)} - Failed to update Worker Server ({Constants.Processing.ResourceServerName}) as it doesn't exist");
 				}
 			}
 
@@ -432,11 +432,11 @@ namespace Helpers
 		/// Add Worker Manager Server to Default Resource Pool
 		/// </summary>
 		/// <returns></returns>
-		public async Task<bool> AddWorkerManagerServerToDefaultResourcePool()
+		public async Task<bool> AddWorkerManagerServerToDefaultResourcePoolAsync()
 		{
 			bool wasWorkerManagerServerAddedToDefaultPool = false;
 
-			Console.WriteLine($"{nameof(AddWorkerManagerServerToDefaultResourcePool)} - Adding Worker Manager Server ({Constants.Processing.ResourceServerName}) to the Default Resource Pool");
+			Console.WriteLine($"{nameof(AddWorkerManagerServerToDefaultResourcePoolAsync)} - Adding Worker Manager Server ({Constants.Processing.ResourceServerName}) to the Default Resource Pool");
 
 			// Setup for checking Resource Pools
 			Relativity.Services.TextCondition conditionPool = new Relativity.Services.TextCondition()
@@ -470,7 +470,7 @@ namespace Helpers
 				// Check for Default Resource Pool
 				ResourcePoolQueryResultSet resultPools = await resourcePoolManager.QueryAsync(queryPool);
 
-				Console.WriteLine($"{nameof(AddWorkerManagerServerToDefaultResourcePool)} - Checking if Default Resource Pool exists");
+				Console.WriteLine($"{nameof(AddWorkerManagerServerToDefaultResourcePoolAsync)} - Checking if Default Resource Pool exists");
 				if (resultPools.Success && resultPools.TotalCount > 0)
 				{
 					ResourcePoolRef defaultPoolRef = new ResourcePoolRef(resultPools.Results.Find(x => x.Artifact.Name.Equals(Constants.Processing.DefaultPool, StringComparison.OrdinalIgnoreCase)).Artifact.ArtifactID);
@@ -506,23 +506,23 @@ namespace Helpers
 							if (resultServers.Exists(x => x.ServerType.Name.Equals(Constants.Processing.WorkerManagerServer, StringComparison.OrdinalIgnoreCase)))
 							{
 								wasWorkerManagerServerAddedToDefaultPool = true;
-								Console.WriteLine($"{nameof(AddWorkerManagerServerToDefaultResourcePool)} - Successfully added Worker Manager Server to Default Resource Pool");
+								Console.WriteLine($"{nameof(AddWorkerManagerServerToDefaultResourcePoolAsync)} - Successfully added Worker Manager Server to Default Resource Pool");
 							}
 							else
 							{
 								wasWorkerManagerServerAddedToDefaultPool = false;
-								Console.WriteLine($"{nameof(AddWorkerManagerServerToDefaultResourcePool)} - Failed to add Worker Manager Server to Default Resource Pool.");
+								Console.WriteLine($"{nameof(AddWorkerManagerServerToDefaultResourcePoolAsync)} - Failed to add Worker Manager Server to Default Resource Pool.");
 							}
 						}
 						else
 						{
-							Console.WriteLine($"{nameof(AddWorkerManagerServerToDefaultResourcePool)} - Failed to add Worker Manager Server to Default Resource Pool as the Worker Manager Server does not exist");
+							Console.WriteLine($"{nameof(AddWorkerManagerServerToDefaultResourcePoolAsync)} - Failed to add Worker Manager Server to Default Resource Pool as the Worker Manager Server does not exist");
 						}
 					}
 					else
 					{
 						wasWorkerManagerServerAddedToDefaultPool = true;
-						Console.WriteLine($"{nameof(AddWorkerManagerServerToDefaultResourcePool)} - Failed to add Worker Manager Server to Default Resource Pool as it already exists within the pool");
+						Console.WriteLine($"{nameof(AddWorkerManagerServerToDefaultResourcePoolAsync)} - Failed to add Worker Manager Server to Default Resource Pool as it already exists within the pool");
 					}
 
 				}
@@ -536,11 +536,11 @@ namespace Helpers
 		/// Add Worker Server to Default Resource Pool
 		/// </summary>
 		/// <returns></returns>
-		public async Task<bool> AddWorkerServerToDefaultResourcePool()
+		public async Task<bool> AddWorkerServerToDefaultResourcePoolAsync()
 		{
 			bool wasWorkerServerAddedToDefaultPool = false;
 
-			Console.WriteLine($"{nameof(AddWorkerServerToDefaultResourcePool)} - Adding Worker Server ({Constants.Processing.WorkerServer}) to the Default Resource Pool");
+			Console.WriteLine($"{nameof(AddWorkerServerToDefaultResourcePoolAsync)} - Adding Worker Server ({Constants.Processing.WorkerServer}) to the Default Resource Pool");
 
 			// Setup for checking Resource Pools
 			Relativity.Services.TextCondition conditionPool = new Relativity.Services.TextCondition()
@@ -587,7 +587,7 @@ namespace Helpers
 				// Check for Default Resource Pool
 				ResourcePoolQueryResultSet resultPools = await resourcePoolManager.QueryAsync(queryPool);
 
-				Console.WriteLine($"{nameof(AddWorkerServerToDefaultResourcePool)} - Checking if Default Resource Pool exists");
+				Console.WriteLine($"{nameof(AddWorkerServerToDefaultResourcePoolAsync)} - Checking if Default Resource Pool exists");
 				if (resultPools.Success && resultPools.TotalCount > 0)
 				{
 					ResourcePoolRef defaultPoolRef = new ResourcePoolRef(resultPools.Results.Find(x => x.Artifact.Name.Equals(Constants.Processing.DefaultPool, StringComparison.OrdinalIgnoreCase)).Artifact.ArtifactID);
@@ -622,24 +622,24 @@ namespace Helpers
 							if (resultServers.Exists(x => x.ServerType.Name.Equals(Constants.Processing.WorkerServer, StringComparison.OrdinalIgnoreCase)))
 							{
 								wasWorkerServerAddedToDefaultPool = true;
-								Console.WriteLine($"{nameof(AddWorkerServerToDefaultResourcePool)} - Successfully added Worker Server to Default Resource Pool");
+								Console.WriteLine($"{nameof(AddWorkerServerToDefaultResourcePoolAsync)} - Successfully added Worker Server to Default Resource Pool");
 							}
 							else
 							{
 								wasWorkerServerAddedToDefaultPool = false;
-								Console.WriteLine($"{nameof(AddWorkerServerToDefaultResourcePool)} - Failed to add Worker Server to Default Resource Pool.");
+								Console.WriteLine($"{nameof(AddWorkerServerToDefaultResourcePoolAsync)} - Failed to add Worker Server to Default Resource Pool.");
 							}
 
 						}
 						else
 						{
-							Console.WriteLine($"{nameof(AddWorkerServerToDefaultResourcePool)} - Failed to add Worker Server to Default Resource Pool as the Worker Server does not exist");
+							Console.WriteLine($"{nameof(AddWorkerServerToDefaultResourcePoolAsync)} - Failed to add Worker Server to Default Resource Pool as the Worker Server does not exist");
 						}
 					}
 					else
 					{
 						wasWorkerServerAddedToDefaultPool = true;
-						Console.WriteLine($"{nameof(AddWorkerServerToDefaultResourcePool)} - Failed to add Worker Server to Default Resource Pool as it already exists within the pool");
+						Console.WriteLine($"{nameof(AddWorkerServerToDefaultResourcePoolAsync)} - Failed to add Worker Server to Default Resource Pool as it already exists within the pool");
 					}
 
 				}
@@ -652,11 +652,11 @@ namespace Helpers
 		/// Removing Worker Manager Server from Default Resource Pool
 		/// </summary>
 		/// <returns></returns>
-		public async Task<bool> RemoveWorkerManagerServerFromDefaultResourcePool()
+		public async Task<bool> RemoveWorkerManagerServerFromDefaultResourcePoolAsync()
 		{
 			bool wasRemoved = false;
 
-			Console.WriteLine($"{nameof(RemoveWorkerManagerServerFromDefaultResourcePool)} - Removing Worker Manager Server ({Constants.Processing.ResourceServerName}) remove the Default Resource Pool");
+			Console.WriteLine($"{nameof(RemoveWorkerManagerServerFromDefaultResourcePoolAsync)} - Removing Worker Manager Server ({Constants.Processing.ResourceServerName}) remove the Default Resource Pool");
 
 			// Setup for checking Resource Pools
 			Relativity.Services.TextCondition conditionPool = new Relativity.Services.TextCondition()
@@ -690,7 +690,7 @@ namespace Helpers
 				// Check for Default Resource Pool
 				ResourcePoolQueryResultSet resultPools = await resourcePoolManager.QueryAsync(queryPool);
 
-				Console.WriteLine($"{nameof(RemoveWorkerManagerServerFromDefaultResourcePool)} - Checking if Default Resource Pool exists");
+				Console.WriteLine($"{nameof(RemoveWorkerManagerServerFromDefaultResourcePoolAsync)} - Checking if Default Resource Pool exists");
 				if (resultPools.Success && resultPools.TotalCount > 0)
 				{
 					ResourcePoolRef defaultPoolRef = new ResourcePoolRef(resultPools.Results.Find(x => x.Artifact.Name.Equals(Constants.Processing.DefaultPool, StringComparison.OrdinalIgnoreCase)).Artifact.ArtifactID);
@@ -726,24 +726,24 @@ namespace Helpers
 							if (!resultServers.Exists(x => x.ServerType.Name.Equals(Constants.Processing.WorkerManagerServer, StringComparison.OrdinalIgnoreCase)))
 							{
 								wasRemoved = true;
-								Console.WriteLine($"{nameof(RemoveWorkerManagerServerFromDefaultResourcePool)} - Successfully removed Worker Manager Server from Default Resource Pool");
+								Console.WriteLine($"{nameof(RemoveWorkerManagerServerFromDefaultResourcePoolAsync)} - Successfully removed Worker Manager Server from Default Resource Pool");
 							}
 							else
 							{
 								wasRemoved = false;
-								Console.WriteLine($"{nameof(RemoveWorkerManagerServerFromDefaultResourcePool)} - Failed to removed Worker Manager Server from Default Resource Pool.");
+								Console.WriteLine($"{nameof(RemoveWorkerManagerServerFromDefaultResourcePoolAsync)} - Failed to removed Worker Manager Server from Default Resource Pool.");
 							}
 						}
 						else
 						{
 							wasRemoved = true;
-							Console.WriteLine($"{nameof(RemoveWorkerManagerServerFromDefaultResourcePool)} - Failed to removed Worker Manager Server from Default Resource Pool as the Worker Manager Server does not exist");
+							Console.WriteLine($"{nameof(RemoveWorkerManagerServerFromDefaultResourcePoolAsync)} - Failed to removed Worker Manager Server from Default Resource Pool as the Worker Manager Server does not exist");
 						}
 					}
 					else
 					{
 						wasRemoved = true;
-						Console.WriteLine($"{nameof(RemoveWorkerManagerServerFromDefaultResourcePool)} - Failed to removed Worker Manager Server from Default Resource Pool as it is not within the pool");
+						Console.WriteLine($"{nameof(RemoveWorkerManagerServerFromDefaultResourcePoolAsync)} - Failed to removed Worker Manager Server from Default Resource Pool as it is not within the pool");
 					}
 
 				}
@@ -756,11 +756,11 @@ namespace Helpers
 		/// Removing Worker Server from Default Resource Pool
 		/// </summary>
 		/// <returns></returns>
-		public async Task<bool> RemoveWorkerServerFromDefaultResourcePool()
+		public async Task<bool> RemoveWorkerServerFromDefaultResourcePoolAsync()
 		{
 			bool wasRemoved = false;
 
-			Console.WriteLine($"{nameof(RemoveWorkerServerFromDefaultResourcePool)} - Deleting Worker Server ({Constants.Processing.ResourceServerName})");
+			Console.WriteLine($"{nameof(RemoveWorkerServerFromDefaultResourcePoolAsync)} - Deleting Worker Server ({Constants.Processing.ResourceServerName})");
 
 			// Setup for checking Resource Pools
 			Relativity.Services.TextCondition conditionPool = new Relativity.Services.TextCondition()
@@ -808,7 +808,7 @@ namespace Helpers
 				// Check for Default Resource Pool
 				ResourcePoolQueryResultSet resultPools = await resourcePoolManager.QueryAsync(queryPool);
 
-				Console.WriteLine($"{nameof(RemoveWorkerServerFromDefaultResourcePool)} - Checking if Default Resource Pool exists");
+				Console.WriteLine($"{nameof(RemoveWorkerServerFromDefaultResourcePoolAsync)} - Checking if Default Resource Pool exists");
 				if (resultPools.Success && resultPools.TotalCount > 0)
 				{
 					ResourcePoolRef defaultPoolRef = new ResourcePoolRef(resultPools.Results.Find(x => x.Artifact.Name.Equals(Constants.Processing.DefaultPool, StringComparison.OrdinalIgnoreCase)).Artifact.ArtifactID);
@@ -843,25 +843,25 @@ namespace Helpers
 							if (!resultServers.Exists(x => x.ServerType.Name.Equals(Constants.Processing.WorkerServer, StringComparison.OrdinalIgnoreCase)))
 							{
 								wasRemoved = true;
-								Console.WriteLine($"{nameof(RemoveWorkerServerFromDefaultResourcePool)} - Successfully removed Worker Server from Default Resource Pool");
+								Console.WriteLine($"{nameof(RemoveWorkerServerFromDefaultResourcePoolAsync)} - Successfully removed Worker Server from Default Resource Pool");
 							}
 							else
 							{
 								wasRemoved = false;
-								Console.WriteLine($"{nameof(RemoveWorkerServerFromDefaultResourcePool)} - Failed to remove Worker Server from Default Resource Pool");
+								Console.WriteLine($"{nameof(RemoveWorkerServerFromDefaultResourcePoolAsync)} - Failed to remove Worker Server from Default Resource Pool");
 							}
 
 						}
 						else
 						{
 							wasRemoved = true;
-							Console.WriteLine($"{nameof(RemoveWorkerServerFromDefaultResourcePool)} - Failed to remove Worker Server from Default Resource Pool as the Worker Server does not exist");
+							Console.WriteLine($"{nameof(RemoveWorkerServerFromDefaultResourcePoolAsync)} - Failed to remove Worker Server from Default Resource Pool as the Worker Server does not exist");
 						}
 					}
 					else
 					{
 						wasRemoved = true;
-						Console.WriteLine($"{nameof(RemoveWorkerServerFromDefaultResourcePool)} - Failed to remove Worker Server from Default Resource Pool as it already is not within the pool");
+						Console.WriteLine($"{nameof(RemoveWorkerServerFromDefaultResourcePoolAsync)} - Failed to remove Worker Server from Default Resource Pool as it already is not within the pool");
 					}
 
 				}
