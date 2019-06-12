@@ -4,7 +4,7 @@ namespace Helpers
 {
 	public interface IAgentServerHelper
 	{
-		Task<bool> AddAgentServerToDefaultResourcePool();
-		Task<bool> RemoveAgentServerFromDefaultResourcePool();
+		Task<bool> AddAgentServerToDefaultResourcePoolAsync();
+		Task<bool> RemoveAgentServerFromDefaultResourcePoolAsync();
 	}
 }

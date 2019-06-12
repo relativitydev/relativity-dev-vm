@@ -40,7 +40,7 @@ namespace DevVmPsModules
 
 			IProcessingHelper processingHelper = new ProcessingHelper(connectionHelper);
 
-			processingHelper.FullSetupAndUpdateDefaultResourcePool();
+			processingHelper.FullSetupAndUpdateDefaultResourcePoolAsync();
 		}
 
 		private void ValidateInputArguments()

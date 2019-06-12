@@ -26,12 +26,12 @@ namespace Helpers.Tests.Integration
 
 		[Test, Order(10)]
 		[TestCase(true)]
-		public async Task AddAgentServerToDefaultResourcePoolTest(bool expectedResult)
+		public async Task AddAgentServerToDefaultResourcePoolAsyncTest(bool expectedResult)
 		{
 			//Arrange
 
 			//Act
-			bool result = await Sut.AddAgentServerToDefaultResourcePool();
+			bool result = await Sut.AddAgentServerToDefaultResourcePoolAsync();
 
 			//Assert
 			Assert.That(result, Is.EqualTo(expectedResult));
@@ -39,12 +39,12 @@ namespace Helpers.Tests.Integration
 
 		[Test, Order(20)]
 		[TestCase(true)]
-		public async Task RemoveAgentServerFromDefaultResourcePoolTest(bool expectedResult)
+		public async Task RemoveAgentServerFromDefaultResourcePoolAsyncTest(bool expectedResult)
 		{
 			//Arrange
 
 			//Act
-			bool result = await Sut.RemoveAgentServerFromDefaultResourcePool();
+			bool result = await Sut.RemoveAgentServerFromDefaultResourcePoolAsync();
 
 			//Assert
 			Assert.That(result, Is.EqualTo(expectedResult));

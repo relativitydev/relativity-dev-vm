@@ -204,6 +204,7 @@
     <Compile Include="ImportApiHelper.cs" />
     <Compile Include="InstanceSettingsHelper.cs" />
     <Compile Include="IProcessingHelper.cs" />
+    <Compile Include="IProcessingHelper.cs" />
     <Compile Include="ISqlHelper.cs" />
     <Compile Include="ProcessingHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
