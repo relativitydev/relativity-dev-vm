@@ -18,7 +18,7 @@ namespace Helpers
 			ServiceFactory = connectionHelper.GetServiceFactory();
 		}
 
-		public async Task<int> CreateWorkspaceAsync(string workspaceTemplateName, string workspaceName)
+		public async Task<int> CreateWorkspaceAsync(string workspaceTemplateName, string workspaceName, bool enableDataGrid)
 		{
 			// Query for the RelativityOne Quick Start Template
 			List<int> workspaceArtifactIds = await WorkspaceQueryAsync(workspaceTemplateName);
@@ -34,7 +34,7 @@ namespace Helpers
 			int templateWorkspaceArtifactId = workspaceArtifactIds.First();
 
 			// Create the workspace 
-			int workspaceArtifactId = await CreateWorkspaceAsync(templateWorkspaceArtifactId, workspaceName);
+			int workspaceArtifactId = await CreateWorkspaceAsync(templateWorkspaceArtifactId, workspaceName, enableDataGrid);
 			return workspaceArtifactId;
 		}
 
@@ -71,7 +71,7 @@ namespace Helpers
 			}
 		}
 
-		private async Task<int> CreateWorkspaceAsync(int templateWorkspaceArtifactId, string workspaceName)
+		private async Task<int> CreateWorkspaceAsync(int templateWorkspaceArtifactId, string workspaceName, bool enableDataGrid)
 		{
 			Console.WriteLine("Creating new Workspace");
 
@@ -84,12 +84,9 @@ namespace Helpers
 					rsapiClient.APIOptions.WorkspaceID = Constants.EDDS_WORKSPACE_ARTIFACT_ID;
 
 					//Create the workspace object and apply any desired properties.
-					Workspace newWorkspace = new Workspace
-					{
-						Name = workspaceName,
-						Accessible = true,
-						//DatabaseLocation = Constants.Workspace.DATABASE_LOCATION
-					};
+					Workspace newWorkspace = enableDataGrid
+						? CreateDataGridWorkspaceDto(workspaceName)
+						: CreateNonDataGridWorkspaceDto(workspaceName);
 
 					ProcessOperationResult processOperationResult = await Task.Run(() => rsapiClient.Repositories.Workspace.CreateAsync(templateWorkspaceArtifactId, newWorkspace));
 
@@ -129,6 +126,30 @@ namespace Helpers
 			{
 				throw new Exception("An error occured when creating Workspace", ex);
 			}
+		}
+
+		private static Workspace CreateNonDataGridWorkspaceDto(string workspaceName)
+		{
+			Workspace newWorkspace = new Workspace
+			{
+				Name = workspaceName,
+				Accessible = true,
+				//DatabaseLocation = Constants.Workspace.DATABASE_LOCATION
+			};
+			return newWorkspace;
+		}
+
+		private static Workspace CreateDataGridWorkspaceDto(string workspaceName)
+		{
+			Workspace newWorkspace = new Workspace
+			{
+				Name = workspaceName,
+				Accessible = true,
+				EnableDataGrid = true,
+				DefaultDataGridLocation = "
+				//DatabaseLocation = Constants.Workspace.DATABASE_LOCATION
+			};
+			return newWorkspace;
 		}
 
 		private async Task<List<int>> WorkspaceQueryAsync(string workspaceName)
