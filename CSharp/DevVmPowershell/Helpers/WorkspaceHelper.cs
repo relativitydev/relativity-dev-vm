@@ -145,8 +145,7 @@ namespace Helpers
 				Name = workspaceName,
 				Accessible = true,
 				EnableDataGrid = true,
-				DefaultDataGridLocation = "
-				//DatabaseLocation = Constants.Workspace.DATABASE_LOCATION
+				DefaultDataGridLocation = 
 			};
 			return newWorkspace;
 		}
