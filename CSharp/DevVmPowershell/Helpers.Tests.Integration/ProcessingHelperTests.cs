@@ -31,6 +31,7 @@ namespace Helpers.Tests.Integration
 		public void CreateProcessingSourceLocationChoiceTest(bool expectedResult)
 		{
 			//Arrange
+			// No actual API to remove Processing Source Location yet.  You'll have to do this manually on your instance
 
 			//Act
 			bool result = Sut.CreateProcessingSourceLocationChoice();
@@ -131,33 +132,6 @@ namespace Helpers.Tests.Integration
 			Assert.That(result, Is.EqualTo(expectedResult));
 		}
 
-		[Test, Order(80)]
-		[TestCase(true)]
-		public async Task RemoveProcessingSourceLocationChoiceToDefaultResourcePoolTest(bool expectedResult)
-		{
-			//Arrange
-			// No actual API to remove Processing Source Location yet.  You'll have to do this manually on your instance
-
-			//Act
-			bool result = await Sut.RemoveProcessingSourceLocationChoiceToDefaultResourcePool();
-
-			//Assert
-			Assert.That(result, Is.EqualTo(expectedResult));
-		}
-
-		//[Test, Order(90)]
-		//[TestCase(true)]
-		//public async Task DeleteWorkerServerTest(bool expectedResult)
-		//{
-		//	//Arrange
-
-		//	//Act
-		//	bool result = await Sut.DeleteWorkerServer();
-
-		//	//Assert
-		//	Assert.That(result, Is.EqualTo(expectedResult));
-		//}
-
 		[Test, Order(100)]
 		[TestCase(true)]
 		public async Task DeleteWorkerManagerServerTest(bool expectedResult)
@@ -189,6 +163,7 @@ namespace Helpers.Tests.Integration
 		public async Task FullSetupAndUpdateDefaultResourcePoolTest(bool expectedResult)
 		{
 			//Arrange
+			// No actual API to remove Processing Source Location yet.  You'll have to do this manually on your instance
 
 			//Act
 			bool result = await Sut.FullSetupAndUpdateDefaultResourcePool();
@@ -202,6 +177,7 @@ namespace Helpers.Tests.Integration
 		public async Task FullResetTest(bool expectedResult)
 		{
 			//Arrange
+			// No actual API to remove Processing Source Location yet.  You'll have to do this manually on your instance
 
 			//Act
 			bool result = await Sut.FullReset();

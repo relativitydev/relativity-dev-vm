@@ -89,10 +89,6 @@ namespace Helpers
 			wasReset = await RemoveWorkerManagerServerFromDefaultResourcePool();
 			Console.WriteLine($"{nameof(FullReset)} - Finished ({nameof(RemoveWorkerManagerServerFromDefaultResourcePool)}) Result: {wasReset}");
 
-			//Console.WriteLine($"{nameof(FullReset)} - Starting ({nameof(DeleteWorkerServer)})");
-			//wasReset = await DeleteWorkerServer();
-			//Console.WriteLine($"{nameof(FullReset)} - Finished ({nameof(DeleteWorkerServer)}) Result: {wasReset}");
-
 			Console.WriteLine($"{nameof(FullReset)} - Starting ({nameof(DeleteWorkerManagerServer)})");
 			wasReset = await DeleteWorkerManagerServer();
 			Console.WriteLine($"{nameof(FullReset)} - Finished ({nameof(DeleteWorkerManagerServer)}) Result: {wasReset}");
@@ -324,109 +320,6 @@ namespace Helpers
 		}
 
 		/// <summary>
-		/// Delete the Processing Source Location from the Instance
-		/// </summary>
-		/// <returns></returns>
-		public async Task<bool> RemoveProcessingSourceLocationChoiceToDefaultResourcePool()
-		{
-			bool wasRemoved = false;
-
-			Console.WriteLine($"{nameof(RemoveProcessingSourceLocationChoiceToDefaultResourcePool)} - Removing Processing Source Location Choice from Default Resource Pool");
-
-			// Setup for checking Resource Pools
-			Relativity.Services.TextCondition conditionPool = new Relativity.Services.TextCondition()
-			{
-				Field = Constants.Processing.NameField,
-				Operator = Relativity.Services.TextConditionEnum.StartsWith,
-				Value = Constants.Processing.DefaultPool
-			};
-
-			Relativity.Services.Query queryPool = new Relativity.Services.Query()
-			{
-				Condition = conditionPool.ToQueryString(),
-			};
-
-			// Setup for checking choice
-			Relativity.Services.TextCondition conditionChoice = new Relativity.Services.TextCondition()
-			{
-				Field = Constants.Processing.NameField,
-				Operator = Relativity.Services.TextConditionEnum.EqualTo,
-				Value = Constants.Processing.ChoiceName
-			};
-
-			Relativity.Services.Objects.DataContracts.QueryRequest queryChoice = new Relativity.Services.Objects.DataContracts.QueryRequest()
-			{
-				Condition = conditionChoice.ToQueryString().Replace(@"\", @"\\"),
-				ObjectType = new ObjectTypeRef() { ArtifactTypeID = Constants.Processing.ChoiceArtifactTypeId },
-				Fields = new List<FieldRef>
-				{
-					new FieldRef
-					{
-						Name = Constants.Processing.ChoiceFieldRef
-					}
-				}
-			};
-
-			using (IObjectManager objectManager = ServiceFactory.CreateProxy<IObjectManager>())
-			using (IResourcePoolManager resourcePoolManager = ServiceFactory.CreateProxy<IResourcePoolManager>())
-			{
-				// Check for Default Resource Pool
-				ResourcePoolQueryResultSet resultPools = await resourcePoolManager.QueryAsync(queryPool);
-
-				Console.WriteLine($"{nameof(RemoveProcessingSourceLocationChoiceToDefaultResourcePool)} - Checking if Default Resource Pool exists");
-				if (resultPools.Success && resultPools.TotalCount > 0)
-				{
-					ResourcePoolRef defaultResourcePoolRef = new ResourcePoolRef(resultPools.Results.Find(x => x.Artifact.Name.Equals(Constants.Processing.DefaultPool, StringComparison.OrdinalIgnoreCase)).Artifact.ArtifactID);
-
-					// Check if Processing Server Location already added to Default Resource Pool
-					Relativity.Services.Objects.DataContracts.QueryResult resultChoice = await objectManager.QueryAsync(Constants.Processing.WorkspaceId, queryChoice, 1, 10);
-
-					Console.WriteLine($"{nameof(RemoveProcessingSourceLocationChoiceToDefaultResourcePool)} - Checking if Processing Source Location Choice exists");
-					if (resultChoice.TotalCount > 0)
-					{
-						ChoiceRef choice = new ChoiceRef(resultChoice.Objects.First().ArtifactID);
-
-						List<ChoiceRef> resultProcessingSourceLocations = await resourcePoolManager.GetProcessingSourceLocationsAsync(defaultResourcePoolRef);
-
-						// Remove Processing Server Location to Default Resource Pool
-						if (resultProcessingSourceLocations.Exists(x => x.ArtifactID == choice.ArtifactID))
-						{
-							// TODO: Remove function doesn't exist
-							//await resourcePoolManager.RemoveProcessingSourceLocationAsync(choice, defaultResourcePoolRef);
-
-							resultProcessingSourceLocations = await resourcePoolManager.GetProcessingSourceLocationsAsync(defaultResourcePoolRef);
-
-							// Check to see if it was removed
-							if (!resultProcessingSourceLocations.Exists(x => x.ArtifactID == choice.ArtifactID))
-							{
-								wasRemoved = true;
-								Console.WriteLine($"{nameof(RemoveProcessingSourceLocationChoiceToDefaultResourcePool)} - Removed Processing Source Location Choice from Default Resource Pool");
-							}
-						}
-						else
-						{
-							Console.WriteLine($"{nameof(RemoveProcessingSourceLocationChoiceToDefaultResourcePool)} - Failed to remove Processing Source Location Choice from Default Resource Pool as it doesn't exist");
-							wasRemoved = true;
-							return wasRemoved;
-						}
-					}
-					else
-					{
-						Console.WriteLine($"{nameof(RemoveProcessingSourceLocationChoiceToDefaultResourcePool)} - Processing Source Location Choice does not exist");
-						wasRemoved = true;
-					}
-
-				}
-				else
-				{
-					Console.WriteLine($"{nameof(RemoveProcessingSourceLocationChoiceToDefaultResourcePool)} - Default Resource Pool does not exist");
-				}
-			}
-
-			return wasRemoved;
-		}
-
-		/// <summary>
 		/// Create Worker Manager Server if it doesn't already exist, which also automatically creates a Worker Server
 		/// </summary>
 		/// <returns></returns>
@@ -545,55 +438,6 @@ namespace Helpers
 			}
 			return wasDeleted;
 		}
-
-		/// <summary>
-		/// Delete Worker Server from the Instance
-		/// Deleting the worker server and worker manager server has different effects than using the UI, so I will not delete the worker server that was automatically created, it gets disabled which I think is enough
-		/// </summary>
-		/// <returns></returns>
-		//public async Task<bool> DeleteWorkerServer()
-		//{
-		//	bool wasDeleted = false;
-
-		//	Console.WriteLine($"{nameof(DeleteWorkerServer)} - Removing Worker Server ({Constants.Processing.WorkerServer})");
-
-		//	// Setup for checking if Worker Server exists
-		//	Relativity.Services.TextCondition conditionWorker = new Relativity.Services.TextCondition()
-		//	{
-		//		Field = Constants.Processing.NameField,
-		//		Operator = Relativity.Services.TextConditionEnum.EqualTo,
-		//		Value = Constants.Processing.ResourceServerName
-		//	};
-
-		//	Relativity.Services.Query queryWorker = new Relativity.Services.Query()
-		//	{
-		//		Condition = conditionWorker.ToQueryString()
-		//	};
-
-		//	using (IResourceServerManager resourceServerManager = ServiceFactory.CreateProxy<IResourceServerManager>())
-		//	{
-		//		// Make sure the Worker Server actually exists and then add it
-		//		ResourceServerQueryResultSet queryResult = await resourceServerManager.QueryAsync(queryWorker);
-
-		//		if (queryResult.Success && queryResult.Results.Exists(x => x.Artifact.ServerType.Name.Equals(Constants.Processing.WorkerServer, StringComparison.OrdinalIgnoreCase)))
-		//		{
-		//			await resourceServerManager.DeleteSingleAsync(queryResult.Results.Find(x => x.Artifact.ServerType.Name.Equals(Constants.Processing.WorkerServer, StringComparison.OrdinalIgnoreCase)).Artifact);
-		//			wasDeleted = true;
-		//			Console.WriteLine($"{nameof(DeleteWorkerManagerServer)} - Successfully deleted Worker Server ({Constants.Processing.ResourceServerName})");
-		//		}
-		//		else if (queryResult.Success && queryResult.TotalCount == 0)
-		//		{
-		//			Console.WriteLine($"{nameof(DeleteWorkerManagerServer)} - Failed to delete Worker Server ({Constants.Processing.ResourceServerName}) as it doesn't exist");
-		//			wasDeleted = true;
-		//		}
-		//		else
-		//		{
-		//			Console.WriteLine($"{nameof(DeleteWorkerManagerServer)} - Failed to delete and check for Worker Server ({Constants.Processing.ResourceServerName})");
-		//		}
-		//	}
-
-		//	return wasDeleted;
-		//}
 
 		public async Task<bool> UpdateWorkerServerForProcessing()
 		{
