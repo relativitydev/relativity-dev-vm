@@ -192,6 +192,7 @@
     <Compile Include="AgentServerHelperTests.cs" />
     <Compile Include="ApplicationInstallHelperTests.cs" />
     <Compile Include="ImportApiHelperTests.cs" />
+    <Compile Include="InstanceSettingsHelperTests.cs" />
     <Compile Include="ProcessingHelperTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SqlHelperTests.cs" />
