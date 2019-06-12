@@ -86,7 +86,7 @@ namespace Helpers
 					//Create the workspace object and apply any desired properties.
 					Workspace newWorkspace = enableDataGrid
 						? CreateDataGridWorkspaceDto(workspaceName)
-						: CreateNonDataGridWorkspaceDto(workspaceName);
+						: CreateNonDataGridWorkspaceDto(rsapiClient, workspaceName);
 
 					ProcessOperationResult processOperationResult = await Task.Run(() => rsapiClient.Repositories.Workspace.CreateAsync(templateWorkspaceArtifactId, newWorkspace));
 
@@ -138,14 +138,16 @@ namespace Helpers
 			return newWorkspace;
 		}
 
-		private static Workspace CreateDataGridWorkspaceDto(string workspaceName)
+		private static Workspace CreateDataGridWorkspaceDto(IRSAPIClient rsapiClient, string workspaceName)
 		{
+			ChoiceHelper choiceHelper = new ChoiceHelper();
+			choiceHelper.Query_Choices(rsapiClient);
 			Workspace newWorkspace = new Workspace
 			{
 				Name = workspaceName,
 				Accessible = true,
 				EnableDataGrid = true,
-				DefaultDataGridLocation = 
+				//DefaultDataGridLocation = 
 			};
 			return newWorkspace;
 		}
