@@ -224,5 +224,71 @@ namespace Helpers
 				throw new Exception($"An error occured when deleting Agents in Relativity Application. [{nameof(applicationName)}: {applicationName}]", ex);
 			}
 		}
+
+		public async Task<bool> AddAgentToRelativityByNameAsync(string agentName)
+		{
+			bool wasAdded = false;
+
+			//Query all Agent Types in the Instance
+			List<AgentTypeResponse> agentTypesInInstance = await GetAgentTypesInInstanceAsync();
+
+			//Check if Agent already exists
+			bool doesAgentExists = await CheckIfAtLeastSingleInstanceOfAgentExistsAsync(agentName);
+
+			if (doesAgentExists)
+			{
+				Console.WriteLine($"Agent already exists. Skipped creation. [{nameof(agentName)}:{agentName}]");
+			}
+			else
+			{
+				AgentTypeResponse agentTypeResponse = agentTypesInInstance.Find(x => x.Name.Equals(agentName, StringComparison.OrdinalIgnoreCase));
+
+				int agentTypeArtifactId = agentTypeResponse.ArtifactID;
+				decimal defaultInterval = agentTypeResponse.DefaultInterval ?? Constants.Agents.AGENT_INTERVAL;
+				int defaultLoggingLevel = agentTypeResponse.DefaultLoggingLevel ?? (int)Constants.Agents.AGENT_LOGGING_LEVEL;
+
+				//Query Agent Server for Agent Type
+				List<AgentServerResponse> agentServersForAgentType = await GetAgentServersForAgentTypeAsync(agentTypeArtifactId);
+				int firstAgentServerArtifactId = agentServersForAgentType.First().ArtifactID;
+
+				//Create Single Agent
+				await CreateAgentAsync(agentTypeArtifactId, firstAgentServerArtifactId, defaultInterval, defaultLoggingLevel);
+				Console.WriteLine($"Agent Created. [{nameof(agentName)}: {agentName}]");
+
+				wasAdded = true;
+			}
+
+			return wasAdded;
+		}
+
+		public async Task<bool> RemoveAgentFromRelativityByNameAsync(string agentName)
+		{
+			bool wasAdded = false;
+
+			//Check if Agent already exists
+			bool doesAgentExists = await CheckIfAtLeastSingleInstanceOfAgentExistsAsync(agentName);
+
+			if (doesAgentExists)
+			{
+				//Query Agent Artifact Ids
+				List<int> agentArtifactIds = await GetAgentArtifactIdsAsync(agentName);
+
+				//Delete All Agents
+				foreach (int agentArtifactId in agentArtifactIds)
+				{
+					//Delete Single Agent
+					await DeleteAgentAsync(agentArtifactId);
+					Console.WriteLine($"Agent Deleted. [{nameof(agentName)}: {agentName}]");
+
+					wasAdded = true;
+				}
+			}
+			else
+			{
+				Console.WriteLine($"Agent does not exist. Skipped removal. [{nameof(agentName)}:{agentName}]");
+			}
+
+			return wasAdded;
+		}
 	}
 }
