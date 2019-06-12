@@ -85,8 +85,8 @@ namespace Helpers
 
 					//Create the workspace object and apply any desired properties.
 					Workspace newWorkspace = enableDataGrid
-						? CreateDataGridWorkspaceDto(workspaceName)
-						: CreateNonDataGridWorkspaceDto(rsapiClient, workspaceName);
+						? CreateDataGridWorkspaceDto(rsapiClient, workspaceName)
+						: CreateNonDataGridWorkspaceDto(workspaceName);
 
 					ProcessOperationResult processOperationResult = await Task.Run(() => rsapiClient.Repositories.Workspace.CreateAsync(templateWorkspaceArtifactId, newWorkspace));
 
