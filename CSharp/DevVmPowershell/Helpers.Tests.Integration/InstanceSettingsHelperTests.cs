@@ -40,9 +40,10 @@ namespace Helpers.Tests.Integration
 
 			// Act
 			int createdInstanceSettingId = Sut.CreateInstanceSetting(section, name, description, value);
-
+			
 			// Assert
 			Assert.True(createdInstanceSettingId > 1);
+			Sut.DeleteInstanceSetting(createdInstanceSettingId);
 		}
 
 		[Test]

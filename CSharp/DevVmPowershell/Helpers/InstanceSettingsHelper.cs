@@ -76,5 +76,20 @@ namespace Helpers
 				throw new Exception("Error Updating Instance Setting", ex);
 			}
 		}
+
+		public void DeleteInstanceSetting(int instanceSettingArtifactId)
+		{
+			try
+			{
+				using (IInstanceSettingManager instanceSettingManager = ServiceFactory.CreateProxy<IInstanceSettingManager>())
+				{
+					instanceSettingManager.DeleteSingleAsync(instanceSettingArtifactId).Wait();
+				}
+			}
+			catch (Exception ex)
+			{
+				throw new Exception("Failed to Delete Instance Setting");
+			}
+		}
 	}
 }
