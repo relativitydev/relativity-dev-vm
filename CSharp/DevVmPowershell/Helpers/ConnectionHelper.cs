@@ -1,5 +1,8 @@
-﻿using Relativity.Services.ServiceProxy;
+﻿using kCura.Relativity.ImportAPI;
+using Relativity.Services.ServiceProxy;
 using System;
+using DbContextHelper;
+using Relativity.API;
 
 namespace Helpers
 {
@@ -35,6 +38,13 @@ namespace Helpers
 			}
 
 			return _serviceFactory;
+		}
+
+		public ImportAPI GetImportApi()
+		{
+			string webServiceUrl = $@"{Constants.Connection.PROTOCOL}://{RelativityInstanceName}/relativitywebapi/";
+
+			return new ImportAPI(RelativityAdminUserName, RelativityAdminPassword, webServiceUrl);
 		}
 	}
 }

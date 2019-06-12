@@ -34,5 +34,54 @@ namespace Helpers
 			public const int MAX_WAIT_TIME_IN_MINUTES = 10;
 			public const int SLEEP_TIME_IN_SECONDS = 15;
 		}
+
+		public class DocumentCommonFields
+		{
+			public const string DocumentTypeRef = "Document";
+			public const string HasImages = "Has Images";
+			public const string HasNative = "Has Native";
+			public const string ControlNumber = "Control Number";
+			public const string FilePath = "file path";
+			public const string FolderName = "folder name";
+			public const string FileName = "File Name";
+			public const string ParentDocId = "Parent Document ID";
+			public const string Bates = "Bates";
+			public const string Doc = "Doc";
+			public const string File = "File";
+		}
+
+		public class CommonArtifactIds
+		{
+			public const int ControlNumber = 1003667;
+		}
+
+		public class FileType
+		{
+			public const string Document = "document";
+			public const string Image = "image";
+		}
+
+		public class Processing
+		{
+			public const int WorkspaceId = -1;
+			public const string ChoiceName = @"\\RELATIVITYDEVVM\ProcessingSourceLocation";
+			public const int ChoiceTypeID = 1000017;
+			public const int ChoiceArtifactTypeId = 7;
+			public const string ResourceServerName = "RELATIVITYDEVVM";
+			public const string ResourceServerUrl = "RELATIVITYDEVVM";
+			public const string ChoiceFieldRef = "TextIdentifier";
+			public const string NameField = "Name";
+			public const string DefaultPool = "Default";
+			public const string WorkerManagerServer = "Worker Manager Server";
+			public const string WorkerServer = "Worker";
+		}
+
+		public class AgentServer
+		{
+			public const string NameField = "Name";
+			public const string ResourceServerName = "RELATIVITYDEVVM";
+			public const string AgentServerName = "Agent";
+			public const string DefaultPool = "Default";
+		}
 	}
 }
