@@ -31,7 +31,7 @@ namespace Helpers.Tests.Integration
 		public void CreateProcessingSourceLocationChoiceTest(bool expectedResult)
 		{
 			//Arrange
-			// No actual API to remove Processing Source Location yet.  You'll have to do this manually on your instance
+			// No API exists yet to remove Processing Source Locations.  You'll have to manually delete it from the Default Resource Pool and from the Choice List
 
 			//Act
 			bool result = Sut.CreateProcessingSourceLocationChoice();
@@ -145,25 +145,12 @@ namespace Helpers.Tests.Integration
 			Assert.That(result, Is.EqualTo(expectedResult));
 		}
 
-		[Test, Order(110)]
-		[TestCase(true)]
-		public void DeleteProcessingSourceLocationChoiceTest(bool expectedResult)
-		{
-			//Arrange
-
-			//Act
-			bool result = Sut.DeleteProcessingSourceLocationChoice();
-
-			//Assert
-			Assert.That(result, Is.EqualTo(expectedResult));
-		}
-
 		[Test, Order(1000)]
 		[TestCase(true)]
 		public async Task FullSetupAndUpdateDefaultResourcePoolTest(bool expectedResult)
 		{
 			//Arrange
-			// No actual API to remove Processing Source Location yet.  You'll have to do this manually on your instance
+			// No API exists yet to remove Processing Source Locations.  You'll have to manually delete it from the Default Resource Pool and from the Choice List
 
 			//Act
 			bool result = await Sut.FullSetupAndUpdateDefaultResourcePool();
@@ -177,7 +164,7 @@ namespace Helpers.Tests.Integration
 		public async Task FullResetTest(bool expectedResult)
 		{
 			//Arrange
-			// No actual API to remove Processing Source Location yet.  You'll have to do this manually on your instance
+			// No API exists yet to remove Processing Source Locations.  You'll have to manually delete it from the Default Resource Pool and from the Choice List
 
 			//Act
 			bool result = await Sut.FullReset();

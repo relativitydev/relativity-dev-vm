@@ -5,7 +5,6 @@ namespace Helpers
 	public interface IProcessingHelper
 	{
 		bool CreateProcessingSourceLocationChoice();
-		bool DeleteProcessingSourceLocationChoice();
 		Task<bool> AddProcessingSourceLocationChoiceToDefaultResourcePool();
 		Task<bool> CreateWorkerManagerServer();
 		Task<bool> DeleteWorkerManagerServer();

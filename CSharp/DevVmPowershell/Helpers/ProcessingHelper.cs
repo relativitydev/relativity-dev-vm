@@ -77,10 +77,6 @@ namespace Helpers
 			wasReset = await RemoveWorkerServerFromDefaultResourcePool();
 			Console.WriteLine($"{nameof(FullReset)} - Finished ({nameof(RemoveWorkerServerFromDefaultResourcePool)}) Result: {wasReset}");
 
-			Console.WriteLine($"{nameof(FullReset)} - Starting ({nameof(DeleteProcessingSourceLocationChoice)})");
-			wasReset = DeleteProcessingSourceLocationChoice();
-			Console.WriteLine($"{nameof(FullReset)} - Finished ({nameof(DeleteProcessingSourceLocationChoice)}) Result: {wasReset}");
-
 			Console.WriteLine($"{nameof(FullReset)} - Starting ({nameof(RemoveWorkerServerFromDefaultResourcePool)})");
 			wasReset = await RemoveWorkerServerFromDefaultResourcePool();
 			Console.WriteLine($"{nameof(FullReset)} - Finished ({nameof(RemoveWorkerServerFromDefaultResourcePool)}) Result: {wasReset}");
@@ -157,64 +153,6 @@ namespace Helpers
 			}
 
 			return wasChoiceCreated;
-		}
-
-		/// <summary>
-		/// Deletes a Processing Source Location Choice and makes sure it doesn't already exist.
-		/// </summary>
-		/// <returns></returns>
-		public bool DeleteProcessingSourceLocationChoice()
-		{
-			bool wasChoiceDeleted = false;
-
-			Console.WriteLine($"{nameof(DeleteProcessingSourceLocationChoice)} - Deleting Processing Source Location Choice ({Constants.Processing.ChoiceName})");
-
-			Choice choice = new Choice
-			{
-				Name = Constants.Processing.ChoiceName,
-				ChoiceTypeID = Constants.Processing.ChoiceTypeID,
-				Order = 1
-			};
-
-			kCura.Relativity.Client.TextCondition cond = new kCura.Relativity.Client.TextCondition()
-			{
-				Field = Constants.Processing.NameField,
-				Operator = kCura.Relativity.Client.TextConditionEnum.EqualTo,
-				Value = Constants.Processing.ChoiceName
-			};
-
-			using (IRSAPIClient rsapiClient = ServiceFactory.CreateProxy<IRSAPIClient>())
-			{
-				rsapiClient.APIOptions = new APIOptions(-1);
-
-				kCura.Relativity.Client.DTOs.QueryResultSet<Choice> choiceQuery = rsapiClient.Repositories.Choice.Query(new Query<Choice>() { Condition = cond });
-
-				if (choiceQuery.Success && choiceQuery.TotalCount > 0)
-				{
-					WriteResultSet<Choice> result = rsapiClient.Repositories.Choice.Delete(choiceQuery.Results.First().Artifact);
-
-					if (result.Success)
-					{
-						choiceQuery = rsapiClient.Repositories.Choice.Query(new Query<Choice>() { Condition = cond });
-						if (choiceQuery.Success && choiceQuery.TotalCount == 0)
-						{
-							wasChoiceDeleted = true;
-							Console.WriteLine($"{nameof(DeleteProcessingSourceLocationChoice)} - Successfully deleted Processing Source Location Choice ({Constants.Processing.ChoiceName})");
-						}
-						else
-						{
-							Console.WriteLine($"{nameof(DeleteProcessingSourceLocationChoice)} - Failed to create Processing Source Location Choice ({Constants.Processing.ChoiceName})");
-						}
-
-					}
-					else
-					{
-						Console.WriteLine($"{nameof(DeleteProcessingSourceLocationChoice)} - Failed to delete Processing Source Location Choice ({Constants.Processing.ChoiceName})");
-					}
-				}
-			}
-
-			return wasChoiceDeleted;
 		}
 
 		/// <summary>
