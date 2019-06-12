@@ -198,7 +198,9 @@
     <Compile Include="IApplicationInstallHelper.cs" />
     <Compile Include="IConnectionHelper.cs" />
     <Compile Include="IImportApiHelper.cs" />
+    <Compile Include="IInstanceSettingsHelper.cs" />
     <Compile Include="ImportApiHelper.cs" />
+    <Compile Include="InstanceSettingsHelper.cs" />
     <Compile Include="ISqlHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SqlHelper.cs" />

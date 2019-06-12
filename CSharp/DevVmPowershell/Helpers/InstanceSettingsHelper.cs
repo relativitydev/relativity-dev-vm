@@ -20,12 +20,60 @@ namespace Helpers
 			ServiceFactory = connectionHelper.GetServiceFactory();
 		}
 
-		public void UpdateInstanceSettings(string section, string name, string newValue)
+		public int CreateInstanceSetting(string section, string name, string description, string value)
 		{
-			using (IInstanceSettingManager instanceSettingManager = ServiceFactory.CreateProxy<IInstanceSettingManager>())
+			try
 			{
-				Query query = new Query();
-				//instanceSettingManager.QueryAsync()
+				using (IInstanceSettingManager instanceSettingManager = ServiceFactory.CreateProxy<IInstanceSettingManager>())
+				{
+					InstanceSetting newInstanceSetting = new InstanceSetting
+					{
+						Section = section,
+						Name = name,
+						Description = description,
+						Value = value
+					};
+					int instanceSettingArtifactId = instanceSettingManager.CreateSingleAsync(newInstanceSetting).Result;
+					Console.WriteLine("Successfully Created Instance Setting");
+					return instanceSettingArtifactId;
+				}
+			}
+			catch (Exception ex)
+			{
+				throw new Exception("Error Creating Instance Setting", ex);
+			}
+		}
+
+		public bool UpdateInstanceSettingValue(string section, string name, string newValue)
+		{
+			try
+			{
+				using (IInstanceSettingManager instanceSettingManager = ServiceFactory.CreateProxy<IInstanceSettingManager>())
+				{
+					Query query = new Query();
+					query.Condition = $"'Section' == '{section}' AND 'Name' == '{name}'";
+					InstanceSettingQueryResultSet instanceSettingQueryResultSet = instanceSettingManager.QueryAsync(query).Result;
+					if (instanceSettingQueryResultSet.Success)
+					{
+						Relativity.Services.Result<InstanceSetting> result = instanceSettingQueryResultSet.Results.First();
+						if (result.Artifact != null)
+						{
+							Console.WriteLine("Successfully found the existing Instance Setting");
+							InstanceSetting instanceSetting = result.Artifact;
+							instanceSetting.Value = newValue;
+							instanceSettingManager.UpdateSingleAsync(instanceSetting).Wait();
+							Console.WriteLine("Successfully updated the Instance Setting");
+							return true;
+						}
+					}
+					Console.WriteLine("Failed to find the existing Instance Setting");
+				}
+
+				return false;
+			}
+			catch (Exception ex)
+			{
+				throw new Exception("Error Updating Instance Setting", ex);
 			}
 		}
 	}

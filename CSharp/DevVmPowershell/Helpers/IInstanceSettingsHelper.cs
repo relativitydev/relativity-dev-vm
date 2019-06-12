@@ -8,6 +8,7 @@ namespace Helpers
 {
 	public interface IInstanceSettingsHelper
 	{
-		void UpdateInstanceSettings(string section, string name, string newValue);
+		int CreateInstanceSetting(string name, string section, string description, string value);
+		bool UpdateInstanceSettingValue(string name, string section, string newValue);
 	}
 }
