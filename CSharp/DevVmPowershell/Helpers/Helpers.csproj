@@ -192,7 +192,6 @@
   <ItemGroup>
     <Compile Include="AgentHelper.cs" />
     <Compile Include="AgentServerHelper.cs" />
-    <Compile Include="ChoiceHelper.cs" />
     <Compile Include="ApplicationInstallHelper.cs" />
     <Compile Include="ConnectionHelper.cs" />
     <Compile Include="Constants.cs" />

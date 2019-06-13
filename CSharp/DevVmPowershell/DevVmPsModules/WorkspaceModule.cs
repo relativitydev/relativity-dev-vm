@@ -36,6 +36,22 @@ namespace DevVmPsModules
 			ValueFromPipelineByPropertyName = true,
 			ValueFromPipeline = true,
 			Position = 3,
+			HelpMessage = "Username of the Sql Admin")]
+		public string SqlAdminUserName { get; set; }
+
+		[Parameter(
+			Mandatory = true,
+			ValueFromPipelineByPropertyName = true,
+			ValueFromPipeline = true,
+			Position = 4,
+			HelpMessage = "Password of the Sql Admin")]
+		public string SqlAdminPassword { get; set; }
+
+		[Parameter(
+			Mandatory = true,
+			ValueFromPipelineByPropertyName = true,
+			ValueFromPipeline = true,
+			Position = 5,
 			HelpMessage = "Name of the workspace to create")]
 		public string WorkspaceName { get; set; }
 
@@ -43,7 +59,7 @@ namespace DevVmPsModules
 			Mandatory = true,
 			ValueFromPipelineByPropertyName = true,
 			ValueFromPipeline = true,
-			Position = 4,
+			Position = 6,
 			HelpMessage = "Indicator to enable DataGrid in the workspace")]
 		public string EnableDataGrid { get; set; }
 
@@ -55,7 +71,8 @@ namespace DevVmPsModules
 			ValidateInputArguments();
 
 			IConnectionHelper connectionHelper = new ConnectionHelper(RelativityInstanceName, RelativityAdminUserName, RelativityAdminPassword);
-			IWorkspaceHelper workspaceHelper = new WorkspaceHelper(connectionHelper);
+			ISqlHelper sqlHelper = new SqlHelper(RelativityInstanceName, SqlAdminUserName, SqlAdminPassword);
+			IWorkspaceHelper workspaceHelper = new WorkspaceHelper(connectionHelper, sqlHelper);
 
 			//Create Workspace
 			workspaceHelper.CreateWorkspaceAsync(Constants.Workspace.DEFAULT_WORKSPACE_TEMPLATE_NAME, WorkspaceName, _enableDataGrid).Wait();
@@ -76,6 +93,16 @@ namespace DevVmPsModules
 			if (string.IsNullOrWhiteSpace(RelativityAdminPassword))
 			{
 				throw new ArgumentNullException(nameof(RelativityAdminPassword), $"{nameof(RelativityAdminPassword)} cannot be NULL or Empty.");
+			}
+
+			if (string.IsNullOrWhiteSpace(SqlAdminUserName))
+			{
+				throw new ArgumentNullException(nameof(SqlAdminUserName), $"{nameof(SqlAdminUserName)} cannot be NULL or Empty.");
+			}
+
+			if (string.IsNullOrWhiteSpace(SqlAdminPassword))
+			{
+				throw new ArgumentNullException(nameof(SqlAdminPassword), $"{nameof(SqlAdminPassword)} cannot be NULL or Empty.");
 			}
 
 			if (string.IsNullOrWhiteSpace(WorkspaceName))

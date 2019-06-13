@@ -15,7 +15,8 @@ namespace Helpers.Tests.Integration
 				TestConstants.RELATIVITY_INSTANCE_NAME,
 				TestConstants.RELATIVITY_ADMIN_USER_NAME,
 				TestConstants.RELATIVITY_ADMIN_PASSWORD);
-			Sut = new WorkspaceHelper(connectionHelper);
+			ISqlHelper sqlHelper = new SqlHelper(TestConstants.RELATIVITY_INSTANCE_NAME, TestConstants.SQL_USER_NAME, TestConstants.SQL_PASSWORD);
+			Sut = new WorkspaceHelper(connectionHelper, sqlHelper);
 		}
 
 		[TearDown]
@@ -29,12 +30,29 @@ namespace Helpers.Tests.Integration
 		{
 			//Arrange
 			const string workspaceName = "ABC";
+			bool enableDataGrid = false;
 
 			//Act
-			int workspaceArtifactId = await Sut.CreateWorkspaceAsync(Constants.Workspace.DEFAULT_WORKSPACE_TEMPLATE_NAME, workspaceName); //To Test this method, make sure the Template Workspace exists
+			int workspaceArtifactId = await Sut.CreateWorkspaceAsync(Constants.Workspace.DEFAULT_WORKSPACE_TEMPLATE_NAME, workspaceName, enableDataGrid); //To Test this method, make sure the Template Workspace exists
 
 			//Assert
 			Assert.That(workspaceArtifactId, Is.GreaterThan(0));
+			await Sut.DeleteWorkspaceAsync(workspaceArtifactId);
+		}
+
+		[Test]
+		public async Task CreateDataGridWorkspaceAsyncTest()
+		{
+			//Arrange
+			const string workspaceName = "ABC";
+			bool enableDataGrid = true;
+
+			//Act
+			int workspaceArtifactId = await Sut.CreateWorkspaceAsync(Constants.Workspace.DEFAULT_WORKSPACE_TEMPLATE_NAME, workspaceName, enableDataGrid); //To Test this method, make sure the Template Workspace exists
+
+			//Assert
+			Assert.That(workspaceArtifactId, Is.GreaterThan(0));
+			await Sut.DeleteWorkspaceAsync(workspaceArtifactId);
 		}
 
 		[Test]

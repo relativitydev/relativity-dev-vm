@@ -4,6 +4,7 @@ using Relativity.Services.ServiceProxy;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -12,10 +13,12 @@ namespace Helpers
 	public class WorkspaceHelper : IWorkspaceHelper
 	{
 		private ServiceFactory ServiceFactory { get; }
+		public ISqlHelper SQLHelper { get; set; }
 
-		public WorkspaceHelper(IConnectionHelper connectionHelper)
+		public WorkspaceHelper(IConnectionHelper connectionHelper, ISqlHelper sqlHelper)
 		{
 			ServiceFactory = connectionHelper.GetServiceFactory();
+			SQLHelper = sqlHelper;
 		}
 
 		public async Task<int> CreateWorkspaceAsync(string workspaceTemplateName, string workspaceName, bool enableDataGrid)
@@ -83,10 +86,8 @@ namespace Helpers
 				{
 					rsapiClient.APIOptions.WorkspaceID = Constants.EDDS_WORKSPACE_ARTIFACT_ID;
 
-					//Create the workspace object and apply any desired properties.
-					Workspace newWorkspace = enableDataGrid
-						? CreateDataGridWorkspaceDto(rsapiClient, workspaceName)
-						: CreateNonDataGridWorkspaceDto(workspaceName);
+					//Create the workspace object and apply any desired properties.		
+					Workspace newWorkspace = CreateWorkspaceDto(workspaceName);
 
 					ProcessOperationResult processOperationResult = await Task.Run(() => rsapiClient.Repositories.Workspace.CreateAsync(templateWorkspaceArtifactId, newWorkspace));
 
@@ -119,6 +120,20 @@ namespace Helpers
 					Console.WriteLine($"Workspace ArtifactId: {workspaceArtifactId.Value}");
 					Console.WriteLine("Created new Workspace!");
 
+					if (enableDataGrid)
+					{
+						Workspace workspace = rsapiClient.Repositories.Workspace.ReadSingle(workspaceArtifactId.Value);
+						//int fileShareResourceServerArtifactId = SQLHelper.GetFileShareResourceServerArtifactId();
+						workspace.EnableDataGrid = true;
+						//workspace.DefaultDataGridLocation = new kCura.Relativity.Client.DTOs.Choice(fileShareResourceServerArtifactId);
+						rsapiClient.Repositories.Workspace.UpdateSingle(workspace);
+
+						//Enable Data Grid on Extracted Text field
+						SQLHelper.EnableDataGridOnExtractedText(workspaceName);
+
+						Console.WriteLine("Workspace updated to be DataGrid Enabled");
+					}
+
 					return workspaceArtifactId.Value;
 				}
 			}
@@ -128,26 +143,12 @@ namespace Helpers
 			}
 		}
 
-		private static Workspace CreateNonDataGridWorkspaceDto(string workspaceName)
+		private static Workspace CreateWorkspaceDto(string workspaceName)
 		{
 			Workspace newWorkspace = new Workspace
 			{
 				Name = workspaceName,
 				Accessible = true
-			};
-			return newWorkspace;
-		}
-
-		private static Workspace CreateDataGridWorkspaceDto(IRSAPIClient rsapiClient, string workspaceName)
-		{
-			ChoiceHelper choiceHelper = new ChoiceHelper();
-			choiceHelper.Query_Choices(rsapiClient);
-			Workspace newWorkspace = new Workspace
-			{
-				Name = workspaceName,
-				Accessible = true,
-				EnableDataGrid = true,
-				//DefaultDataGridLocation = 
 			};
 			return newWorkspace;
 		}
