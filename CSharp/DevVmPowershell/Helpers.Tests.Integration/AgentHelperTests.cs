@@ -47,5 +47,31 @@ namespace Helpers.Tests.Integration
 			//Assert
 			Assert.That(numberOfAgentsDeleted, Is.GreaterThan(0));
 		}
+
+		[Test]
+		[TestCase(TestConstants.AGENT_NAME)]
+		public async Task AddAgentToRelativityByNameAsyncTest(string agentName)
+		{
+			//Arrange
+
+			//Act
+			bool wasAdded = await Sut.AddAgentToRelativityByNameAsync(agentName); //To Test this method, make sure the agent in the Test Application exist
+
+			//Assert
+			Assert.That(wasAdded, Is.EqualTo(true));
+		}
+
+		[Test]
+		[TestCase(TestConstants.AGENT_NAME)]
+		public async Task RemoveAgentFromRelativityByNameAsyncTest(string agentName)
+		{
+			//Arrange
+
+			//Act
+			bool wasDeleted = await Sut.RemoveAgentFromRelativityByNameAsync(agentName); //To Test this method, make sure the agent in the Test Application exist
+
+			//Assert
+			Assert.That(wasDeleted, Is.EqualTo(true));
+		}
 	}
 }

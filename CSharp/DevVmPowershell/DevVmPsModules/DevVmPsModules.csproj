@@ -189,6 +189,7 @@
   <ItemGroup>
     <Compile Include="AddApplicationFromLibraryModule.cs" />
     <Compile Include="AddApplicationFromRapFileModule.cs" />
+    <Compile Include="AddAgentByNameModule.cs" />
     <Compile Include="AddInstanceSettingModule.cs" />
     <Compile Include="BaseModule.cs" />
     <Compile Include="AgentModule.cs" />
