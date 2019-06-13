@@ -25,8 +25,6 @@ namespace Helpers
 		public class Workspace
 		{
 			public const string DEFAULT_WORKSPACE_TEMPLATE_NAME = "New Case Template";
-			public const bool ACCESSIBLE = true;
-			public const string DATABASE_LOCATION = @"ST002EDDS.T002.ctus010000.relativity.one,24331";
 		}
 
 		public class Waiting
