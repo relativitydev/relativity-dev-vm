@@ -122,16 +122,17 @@ namespace Helpers
 
 					if (enableDataGrid)
 					{
+						Console.WriteLine("Updating workspace to be Data Grid Enabled");
+
+						//Update Workspace to be Data Grid Enabled
 						Workspace workspace = rsapiClient.Repositories.Workspace.ReadSingle(workspaceArtifactId.Value);
-						//int fileShareResourceServerArtifactId = SQLHelper.GetFileShareResourceServerArtifactId();
 						workspace.EnableDataGrid = true;
-						//workspace.DefaultDataGridLocation = new kCura.Relativity.Client.DTOs.Choice(fileShareResourceServerArtifactId);
 						rsapiClient.Repositories.Workspace.UpdateSingle(workspace);
 
 						//Enable Data Grid on Extracted Text field
 						SQLHelper.EnableDataGridOnExtractedText(workspaceName);
 
-						Console.WriteLine("Workspace updated to be DataGrid Enabled");
+						Console.WriteLine("Workspace updated to be Data Grid Enabled");
 					}
 
 					return workspaceArtifactId.Value;
