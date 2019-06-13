@@ -190,6 +190,7 @@
     <Compile Include="AddApplicationFromLibraryModule.cs" />
     <Compile Include="AddApplicationFromRapFileModule.cs" />
     <Compile Include="AddAgentByNameModule.cs" />
+    <Compile Include="AddInstanceSettingModule.cs" />
     <Compile Include="BaseModule.cs" />
     <Compile Include="AgentModule.cs" />
     <Compile Include="CustomExceptions\DevVmPowerShellModuleException.cs" />
@@ -199,6 +200,7 @@
     <Compile Include="RemoveRelativityErrorsModule.cs" />
     <Compile Include="SampleModule.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ResetInstanceSettingValueModule.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
