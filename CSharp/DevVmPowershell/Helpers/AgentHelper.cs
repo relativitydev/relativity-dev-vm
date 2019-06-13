@@ -263,7 +263,7 @@ namespace Helpers
 
 		public async Task<bool> RemoveAgentFromRelativityByNameAsync(string agentName)
 		{
-			bool wasAdded = false;
+			bool wasRemoved = false;
 
 			//Check if Agent already exists
 			bool doesAgentExists = await CheckIfAtLeastSingleInstanceOfAgentExistsAsync(agentName);
@@ -280,7 +280,7 @@ namespace Helpers
 					await DeleteAgentAsync(agentArtifactId);
 					Console.WriteLine($"Agent Deleted. [{nameof(agentName)}: {agentName}]");
 
-					wasAdded = true;
+					wasRemoved = true;
 				}
 			}
 			else
@@ -288,7 +288,7 @@ namespace Helpers
 				Console.WriteLine($"Agent does not exist. Skipped removal. [{nameof(agentName)}:{agentName}]");
 			}
 
-			return wasAdded;
+			return wasRemoved;
 		}
 	}
 }
