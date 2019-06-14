@@ -188,6 +188,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="EnvironmentVariableTests.cs" />
     <Compile Include="WorkspaceHelperTests.cs" />
     <Compile Include="AgentHelperTests.cs" />
     <Compile Include="AgentServerHelperTests.cs" />

@@ -81,5 +81,11 @@ namespace Helpers
 			public const string AgentServerName = "Agent";
 			public const string DefaultPool = "Default";
 		}
+
+		public class EnvironmentVariables
+		{
+			public const string KcuraJavaHome = "KCURA_JAVA_HOME";
+			public const string JavaHome = "JAVA_HOME";
+		}
 	}
 }
