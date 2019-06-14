@@ -6,9 +6,6 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
-using YamlDotNet.RepresentationModel;
-using YamlDotNet.Serialization;
-using YamlDotNet.Serialization.NamingConventions;
 
 namespace Helpers
 {
@@ -18,55 +15,56 @@ namespace Helpers
 		{
 			try
 			{
-				string pathToYmlFile = @"C:\RelativityDataGrid\elasticsearch-main\config\elasticsearch.yml";
-				string tempYmlFilePath = @"C:\RelativityDataGrid\elasticsearch-main\config\elasticsearch2.yml";
-				if (!File.Exists(pathToYmlFile))
+				if (!File.Exists(Constants.YmlFile.YmlFilePath))
 				{
 					throw new Exception("File does not exist");
 				}
 
-				string[] lines = File.ReadAllLines(pathToYmlFile);
+				// Create Copy of File
+				File.Copy(Constants.YmlFile.YmlFilePath, Constants.YmlFile.OriginalYmlFilePath);
+
+				string[] lines = File.ReadAllLines(Constants.YmlFile.YmlFilePath);
 				for (int i = 0; i < lines.Length; i++)
 				{
 					string line = lines[i];
-					if (line.Contains("discovery.zen.ping.unicast.hosts"))
+					if (line.Contains(Constants.YmlFile.DiscoveryZenPingUnicastHosts))
 					{
-						lines[i] = "discovery.zen.ping.unicast.hosts: [\"RELATIVITYDEVVM\"]";
+						lines[i] = Constants.YmlFile.DiscoveryZenPingUnicastHostsValue;
 					}
 
-					if (line.Contains("action.destructive_requires_name"))
+					if (line.Contains(Constants.YmlFile.ActionDestructiveRequiresName))
 					{
-						lines[i] = "action.destructive_requires_name: false";
+						lines[i] = Constants.YmlFile.ActionDestructiveRequiresNameValue;
 					}
 
-					if (line.Contains("network.host"))
+					if (line.Contains(Constants.YmlFile.NetworkHost))
 					{
-						lines[i] = "network.host: RELATIVITYDEVVM";
+						lines[i] = Constants.YmlFile.NetworkHostValue;
 					}
 
-					if (line.Contains("shield.enabled"))
+					if (line.Contains(Constants.YmlFile.ShieldEnabled))
 					{
-						lines[i] = "shield.enabled: false";
+						lines[i] = Constants.YmlFile.ShieldEnabledValue;
 					}
 
-					if (line.Contains("publicJWKsUrl") && line.Contains("http") && !line.Contains("https"))
+					if (line.Contains(Constants.YmlFile.PublicJWKsUrl) && line.Contains("http") && !line.Contains("https"))
 					{
 						lines[i] = line.Replace("http", "https");
 					}
 				}
 
 				// Move Yml File to Temporary Path
-				File.Move(pathToYmlFile, tempYmlFilePath);
+				File.Move(Constants.YmlFile.YmlFilePath, Constants.YmlFile.TempYmlFilePath);
 
 				// Create Yml File
-				FileStream stream = File.Create(pathToYmlFile);
+				FileStream stream = File.Create(Constants.YmlFile.YmlFilePath);
 				stream.Close();
 				
-				// Write update contents to Yml File
-				File.WriteAllLines(pathToYmlFile, lines);
+				// Write Updated Contents to Yml File
+				File.WriteAllLines(Constants.YmlFile.YmlFilePath, lines);
 
 				// Delete Temp Yml File
-				File.Delete(tempYmlFilePath);
+				File.Delete(Constants.YmlFile.TempYmlFilePath);
 			}
 			catch (Exception ex)
 			{
