@@ -124,6 +124,10 @@ namespace Helpers
 			}
 		}
 
+		/// <summary>
+		/// This only creates or alters the ShrinkDb procedure in the EDDS database.  Alter if it already exists, create if it does not
+		/// </summary>
+		/// <returns></returns>
 		public bool CreateOrAlterShrinkDbProc()
 		{
 			bool wasSuccessful = false;
@@ -152,6 +156,10 @@ namespace Helpers
 			return wasSuccessful;
 		}
 
+		/// <summary>
+		/// This will create and alter the ShrinkDb procedure before attempting to run.
+		/// </summary>
+		/// <returns></returns>
 		public bool RunShrinkDbProc()
 		{
 			bool wasSuccessful = false;
@@ -159,7 +167,9 @@ namespace Helpers
 
 			try
 			{
-				if (DoesSqlObjectExist(Constants.SqlScripts.SchemaName, Constants.SqlScripts.ShrinkDbProcName))
+				bool doesShrinkDbExist = CreateOrAlterShrinkDbProc();
+
+				if (doesShrinkDbExist)
 				{
 					using (SqlConnection connection = connectionHelper.GetSqlConnection(Constants.Connection.Sql.ConnectionString_ConnectTimeoutLong))
 					{
@@ -175,7 +185,7 @@ namespace Helpers
 				}
 				else
 				{
-					Console.WriteLine($"{nameof(RunShrinkDbProc)} - Failed to run {Constants.SqlScripts.ShrinkDbProcName} as it doesn't exist");
+					Console.WriteLine($"{nameof(RunShrinkDbProc)} - Failed to run {Constants.SqlScripts.ShrinkDbProcName} as it could not be created properly");
 				}
 			}
 			catch (Exception ex)
@@ -196,9 +206,9 @@ namespace Helpers
 
 			try
 			{
-				object queryResult = DbContext.ExecuteSqlStatementAsScalar(sql);
+				int queryResult = DbContext.ExecuteSqlStatementAsScalar<int>(sql);
 
-				if ((int)queryResult > 0)
+				if (queryResult > 0)
 				{
 					exists = true;
 					Console.WriteLine($"{nameof(DoesSqlObjectExist)} - {Constants.SqlScripts.ShrinkDbProcName} exists");

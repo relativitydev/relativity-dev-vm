@@ -38,7 +38,6 @@ namespace DevVmPsModules
 
 			ISqlHelper sqlHelper = new SqlHelper(RelativityInstanceName, SqlAdminUserName, SqlAdminPassword);
 
-			sqlHelper.CreateOrAlterShrinkDbProc();
 			sqlHelper.RunShrinkDbProc();
 		}
 
