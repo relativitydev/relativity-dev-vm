@@ -5,4 +5,7 @@
     <StartProgram>C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe</StartProgram>
     <StartArguments>-noexit -command "&amp;{ import-module .\DevVmPsModules.dll -verbose}"</StartArguments>
   </PropertyGroup>
+  <PropertyGroup>
+    <ProjectView>ProjectFiles</ProjectView>
+  </PropertyGroup>
 </Project>

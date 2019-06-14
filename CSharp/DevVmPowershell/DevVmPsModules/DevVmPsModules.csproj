@@ -198,6 +198,7 @@
     <Compile Include="AgentServerAddAgentServerToDefaultResourcePoolModule.cs" />
     <Compile Include="ProcessingFullSetupAndUpdateDefaultResourcePoolModule.cs" />
     <Compile Include="RemoveRelativityErrorsModule.cs" />
+    <Compile Include="ResetElasticSearchYmlFile.cs" />
     <Compile Include="SampleModule.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="WorkspaceModule.cs" />
