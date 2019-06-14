@@ -15,11 +15,6 @@ namespace Helpers.Tests.Integration
 		[SetUp]
 		public void SetUp()
 		{
-			//IConnectionHelper connectionHelper = new ConnectionHelper(
-			//	TestConstants.RELATIVITY_INSTANCE_NAME,
-			//	TestConstants.RELATIVITY_ADMIN_USER_NAME,
-			//	TestConstants.RELATIVITY_ADMIN_PASSWORD);
-			//Sut = new ApplicationInstallHelper(connectionHelper);
 			Sut = new YmlFileHelper();
 		}
 
@@ -35,9 +30,8 @@ namespace Helpers.Tests.Integration
 			// Arrange
 
 			// Act
-			Sut.UpdateElasticSearchYml();
-
 			// Assert
+			Assert.DoesNotThrow(() => Sut.UpdateElasticSearchYml()); // To test this method make sure that the yml file exists at C:\RelativityDataGrid\elasticsearch-main\config\elasticsearch.yml
 		}
 	}
 }
