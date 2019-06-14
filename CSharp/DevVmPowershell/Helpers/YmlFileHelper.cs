@@ -22,6 +22,7 @@ namespace Helpers
 
 				// Create Copy of File
 				File.Copy(Constants.YmlFile.YmlFilePath, Constants.YmlFile.OriginalYmlFilePath);
+				Console.WriteLine("Creating Copy of Yml File");
 
 				string[] lines = File.ReadAllLines(Constants.YmlFile.YmlFilePath);
 				for (int i = 0; i < lines.Length; i++)
@@ -62,6 +63,7 @@ namespace Helpers
 				
 				// Write Updated Contents to Yml File
 				File.WriteAllLines(Constants.YmlFile.YmlFilePath, lines);
+				Console.WriteLine("Updated Values for Yml File");
 
 				// Delete Temp Yml File
 				File.Delete(Constants.YmlFile.TempYmlFilePath);
