@@ -81,5 +81,28 @@ namespace Helpers
 			public const string AgentServerName = "Agent";
 			public const string DefaultPool = "Default";
 		}
+
+		public class YmlFile
+		{
+			public const string YmlFilePath = @"C:\RelativityDataGrid\elasticsearch-main\config\elasticsearch.yml";
+			public const string TempYmlFilePath = @"C:\RelativityDataGrid\elasticsearch-main\config\elasticsearch_temp.yml";
+			public const string OriginalYmlFilePath = @"C:\RelativityDataGrid\elasticsearch-main\config\elasticsearch_original.yml";
+			public const string DiscoveryZenPingUnicastHosts = "discovery.zen.ping.unicast.hosts";
+			public const string DiscoveryZenPingUnicastHostsValue = "discovery.zen.ping.unicast.hosts: [\"RELATIVITYDEVVM\"]";
+			public const string ActionDestructiveRequiresName = "action.destructive_requires_name";
+			public const string ActionDestructiveRequiresNameValue = "action.destructive_requires_name: false";
+			public const string NetworkHost = "network.host";
+			public const string NetworkHostValue = "network.host: RELATIVITYDEVVM";
+			public const string ShieldEnabled = "shield.enabled";
+			public const string ShieldEnabledValue = "shield.enabled: false";
+			public const string PublicJWKsUrl = "publicJWKsUrl";
+		}
+		
+		public class EnvironmentVariables
+		{
+			public const string JavaPath = @"C:\Program Files\Java";
+			public const string KcuraJavaHome = "KCURA_JAVA_HOME";
+			public const string JavaHome = "JAVA_HOME";
+		}
 	}
 }

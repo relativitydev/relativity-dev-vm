@@ -188,6 +188,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="EnvironmentVariableTests.cs" />
     <Compile Include="WorkspaceHelperTests.cs" />
     <Compile Include="AgentHelperTests.cs" />
     <Compile Include="AgentServerHelperTests.cs" />
@@ -198,6 +199,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SqlHelperTests.cs" />
     <Compile Include="TestConstants.cs" />
+    <Compile Include="YmlFileHelperTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Helpers\Helpers.csproj">
