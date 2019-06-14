@@ -197,6 +197,7 @@
     <Compile Include="DocumentModule.cs" />
     <Compile Include="AgentServerAddAgentServerToDefaultResourcePoolModule.cs" />
     <Compile Include="ProcessingFullSetupAndUpdateDefaultResourcePoolModule.cs" />
+    <Compile Include="ResizeDatabasesModule.cs" />
     <Compile Include="RemoveRelativityErrorsModule.cs" />
     <Compile Include="SampleModule.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

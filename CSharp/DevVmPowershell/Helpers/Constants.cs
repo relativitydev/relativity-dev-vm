@@ -9,6 +9,15 @@ namespace Helpers
 		public class Connection
 		{
 			public const string PROTOCOL = "http";
+
+			public class Sql
+			{
+				public const string ConnectionString_PersistSecurityInfo = "False";
+				public const string ConnectionString_PacketSize = "4096";
+				public const string ConnectionString_ConnectTimeoutDefault = "30";
+				public const string ConnectionString_ConnectTimeoutLong = "120";
+				public const string ConnectionString_DefaultDatabase = "EDDS";
+			}
 		}
 		public class Agents
 		{
@@ -80,6 +89,70 @@ namespace Helpers
 			public const string ResourceServerName = "RELATIVITYDEVVM";
 			public const string AgentServerName = "Agent";
 			public const string DefaultPool = "Default";
+		}
+
+		public class SqlScripts
+		{
+			public const string ShrinkDbProcName = "ShrinkDBs";
+			public const string SchemaName = "eddsdbo";
+			public const string DoesExist = "IF (OBJECT_ID('@@schema.@@objectName') IS NOT NULL) SELECT 1 as does_exist ELSE SELECT 0 as does_exist";
+			public const string ExecuteShringDbProc = "EXEC EDDS.eddsdbo.ShrinkDBs";
+			public const string CreateOrAlterShrinkDbProc = @"
+CREATE PROCEDURE eddsdbo.ShrinkDBs
+AS
+BEGIN
+	SET NOCOUNT ON;
+	
+	/*************************************************************
+		GATHER ALL DATABASES TO SHRINK
+	*************************************************************/
+	IF (OBJECT_ID('tempdb..#databases') IS NOT NULL) DROP TABLE #databases;
+	SELECT			d.name as db_name
+			INTO	#databases
+	FROM			sys.databases d
+	WHERE			d.name LIKE 'EDDS%'
+			OR		d.name LIKE 'Invariant%'
+	
+	
+	/*************************************************************
+		MAIN CURSOR
+	*************************************************************/
+	DECLARE @db_name nvarchar(100) = N''
+			,@sql nvarchar(max) = N''
+	
+	DECLARE cursor_mini CURSOR FAST_FORWARD FOR
+		SELECT			d.db_name
+		FROM			#databases d
+	OPEN cursor_mini
+	FETCH NEXT FROM cursor_mini INTO @db_name
+	WHILE @@FETCH_STATUS = 0
+	BEGIN
+		PRINT N'Running on....' + @db_name
+		
+		-- Truncate the log by changing the database recovery model to SIMPLE.
+		SET @sql = N'
+			USE @@DB_NAME
+			ALTER DATABASE @@DB_NAME
+			SET RECOVERY SIMPLE;
+		'
+		SET @sql = REPLACE(@sql, N'@@DB_NAME', @db_name)
+		EXEC (@sql)
+		
+		-- Shrink the truncated log file to 1 GB.
+		SET @sql = N'
+			USE @@DB_NAME
+			DBCC SHRINKFILE (@@DB_NAME, 1);
+		'
+		SET @sql = REPLACE(@sql, N'@@DB_NAME', @db_name)
+		EXEC (@sql)
+		
+	FETCH NEXT FROM cursor_mini
+	INTO @db_name
+	END
+	CLOSE cursor_mini
+	DEALLOCATE cursor_mini
+END
+";
 		}
 	}
 }
