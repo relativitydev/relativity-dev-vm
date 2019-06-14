@@ -84,6 +84,7 @@ namespace Helpers
 
 		public class EnvironmentVariables
 		{
+			public const string JavaPath = @"C:\Program Files\Java";
 			public const string KcuraJavaHome = "KCURA_JAVA_HOME";
 			public const string JavaHome = "JAVA_HOME";
 		}

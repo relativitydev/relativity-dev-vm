@@ -30,9 +30,8 @@ namespace Helpers.Tests.Integration
 			// Arrange
 
 			// Act
-			Sut.UpdateJavaEnvironmentVariables();
-
 			// Assert
+			Assert.DoesNotThrow(() => Sut.UpdateJavaEnvironmentVariables());
 		}
 	}
 }
