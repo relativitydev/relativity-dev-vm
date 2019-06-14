@@ -179,6 +179,8 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.IO.Compression.FileSystem" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -209,11 +211,13 @@
     <Compile Include="IProcessingHelper.cs" />
     <Compile Include="ISqlHelper.cs" />
     <Compile Include="IYmlFileHelper.cs" />
+    <Compile Include="IZipHelper.cs" />
     <Compile Include="ProcessingHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SqlHelper.cs" />
     <Compile Include="YmlFileHelper.cs" />
     <Compile Include="WorkspaceHelper.cs" />
+    <Compile Include="ZipHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

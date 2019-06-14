@@ -14,15 +14,12 @@ namespace Helpers
 		{
 			try
 			{
-				DirectoryInfo sourceDirectoryInfo = new DirectoryInfo(sourceFolderPath);
-				FileInfo zipFileInfo = new FileInfo(destinationZipFilePath);
-
-				if (sourceDirectoryInfo.Exists)
+				if (Directory.Exists(sourceFolderPath))
 				{
-					if (zipFileInfo.Exists)
+					if (File.Exists(destinationZipFilePath))
 					{
 						Console.WriteLine($"Previous zip file exists. [{nameof(destinationZipFilePath)}: {destinationZipFilePath}]");
-						zipFileInfo.Delete();
+						File.Delete(destinationZipFilePath);
 						Console.WriteLine($"Deleted Previous zip file. [{nameof(destinationZipFilePath)}: {destinationZipFilePath}]");
 					}
 

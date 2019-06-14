@@ -28,8 +28,8 @@ namespace Helpers.Tests.Integration
 		public void ZipFolderTest()
 		{
 			// Arrange
-			string sourceFolderPath = @"C:\Users\aaron.gilbert\Documents\TempFolder";
-			string destinationFolderPath = @"C:\Users\aaron.gilbert\Documents\TempFolder\test.zip";
+			string sourceFolderPath = @"C:\Users\aaron.gilbert\Documents\TempFolder"; // Enter a path to a valid source folder
+			string destinationFolderPath = @"C:\Users\aaron.gilbert\Documents\test.zip"; // Enter a desired path to create your zip file not in the same folder as the sourceFolderPath
 
 			// Act
 			// Assert
