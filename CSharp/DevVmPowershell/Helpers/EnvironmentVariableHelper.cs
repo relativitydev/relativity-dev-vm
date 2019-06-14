@@ -25,6 +25,7 @@ namespace Helpers
 				// Update Java Environment Variables
 				Environment.SetEnvironmentVariable(Constants.EnvironmentVariables.KcuraJavaHome, fullJavaPath, EnvironmentVariableTarget.Machine);
 				Environment.SetEnvironmentVariable(Constants.EnvironmentVariables.JavaHome, fullJavaPath, EnvironmentVariableTarget.Machine);
+				Console.WriteLine("Successfully Updated the Java Environment Variables");
 			}
 			catch (Exception)
 			{
