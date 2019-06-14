@@ -97,5 +97,12 @@ namespace Helpers
 			public const string ShieldEnabledValue = "shield.enabled: false";
 			public const string PublicJWKsUrl = "publicJWKsUrl";
 		}
+		
+		public class EnvironmentVariables
+		{
+			public const string JavaPath = @"C:\Program Files\Java";
+			public const string KcuraJavaHome = "KCURA_JAVA_HOME";
+			public const string JavaHome = "JAVA_HOME";
+		}
 	}
 }
