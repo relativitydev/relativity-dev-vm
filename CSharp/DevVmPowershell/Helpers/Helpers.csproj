@@ -195,10 +195,12 @@
     <Compile Include="ApplicationInstallHelper.cs" />
     <Compile Include="ConnectionHelper.cs" />
     <Compile Include="Constants.cs" />
+    <Compile Include="EnvironmentVariableHelper.cs" />
     <Compile Include="IAgentHelper.cs" />
     <Compile Include="IAgentServerHelper.cs" />
     <Compile Include="IApplicationInstallHelper.cs" />
     <Compile Include="IConnectionHelper.cs" />
+    <Compile Include="IEnvironmentVariableHelper.cs" />
     <Compile Include="IImportApiHelper.cs" />
     <Compile Include="IWorkspaceHelper.cs" />
     <Compile Include="IInstanceSettingsHelper.cs" />
@@ -206,9 +208,11 @@
     <Compile Include="InstanceSettingsHelper.cs" />
     <Compile Include="IProcessingHelper.cs" />
     <Compile Include="ISqlHelper.cs" />
+    <Compile Include="IYmlFileHelper.cs" />
     <Compile Include="ProcessingHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SqlHelper.cs" />
+    <Compile Include="YmlFileHelper.cs" />
     <Compile Include="WorkspaceHelper.cs" />
   </ItemGroup>
   <ItemGroup>
