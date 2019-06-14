@@ -19,7 +19,7 @@ namespace DevVmPsModules
 			Mandatory = true,
 			ValueFromPipelineByPropertyName = true,
 			ValueFromPipeline = true,
-			Position = 0,
+			Position = 1,
 			HelpMessage = "Username of the Relativity Admin")]
 		public string RelativityAdminUserName { get; set; }
 
@@ -27,7 +27,7 @@ namespace DevVmPsModules
 			Mandatory = true,
 			ValueFromPipelineByPropertyName = true,
 			ValueFromPipeline = true,
-			Position = 0,
+			Position = 2,
 			HelpMessage = "Password of the Relativity Admin")]
 		public string RelativityAdminPassword { get; set; }
 
@@ -35,7 +35,7 @@ namespace DevVmPsModules
 			Mandatory = true,
 			ValueFromPipelineByPropertyName = true,
 			ValueFromPipeline = true,
-			Position = 0,
+			Position = 3,
 			HelpMessage = "Comma separated list of Relativity Application Names to create agents")]
 		public string[] ApplicationNames { get; set; }
 

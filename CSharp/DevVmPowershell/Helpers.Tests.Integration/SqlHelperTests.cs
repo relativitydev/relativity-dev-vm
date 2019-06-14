@@ -34,5 +34,26 @@ namespace Helpers.Tests.Integration
 			// Assert
 			Assert.That(result, Is.True);
 		}
+
+		[Test]
+		public void GetFileShareResourceServerArtifactIdTest()
+		{
+			// Act
+			int fileShareResourceServerArtifactId = Sut.GetFileShareResourceServerArtifactId();
+
+			// Assert
+			Assert.That(fileShareResourceServerArtifactId, Is.GreaterThan(0));
+		}
+
+		[Test]
+		public void EnableDataGridOnExtractedTextTest()
+		{
+			// Arrange
+			string workspaceName = ""; // To Test set workspace name of DataGrid Enabled workspace
+
+			// Act
+			// Assert
+			Assert.DoesNotThrow(() => Sut.EnableDataGridOnExtractedText(workspaceName));
+		}
 	}
 }
