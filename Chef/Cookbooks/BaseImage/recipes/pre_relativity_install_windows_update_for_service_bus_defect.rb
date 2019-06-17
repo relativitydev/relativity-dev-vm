@@ -2,6 +2,13 @@ custom_log 'custom_log' do msg 'Starting Windows Update install for Service Bus 
 start_time = DateTime.now
 custom_log 'custom_log' do msg "recipe_start_time(#{recipe_name}): #{start_time}" end
 
+# Copy Service Bus Defect Windows Update Install File
+copy_file_to_vm_from_host 'copy_service_bus_defect_windows_update_install_file' do
+  file_source "#{node['service_bus']['defect_windows_update']['install']['source_folder']}\\#{node['service_bus']['defect_windows_update']['install']['file_name']}"
+  file_destination "#{node['service_bus']['defect_windows_update']['install']['destination_folder']}\\#{node['service_bus']['defect_windows_update']['install']['file_name']}"
+  file_destination_folder node['service_bus']['defect_windows_update']['install']['destination_folder']
+end
+
 service_bus_defect_windows_udpate_installer_location = "#{node['service_bus']['defect_windows_update']['install']['destination_folder']}/#{node['service_bus']['defect_windows_update']['install']['file_name']}"
 
 # Copy the service bus windows update file to install directory

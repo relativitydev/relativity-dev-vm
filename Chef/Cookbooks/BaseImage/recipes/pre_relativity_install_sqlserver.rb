@@ -2,6 +2,13 @@ custom_log 'custom_log' do msg 'Starting Sql Server install' end
 start_time = DateTime.now
 custom_log 'custom_log' do msg "recipe_start_time(#{recipe_name}): #{start_time}" end
 
+# Copy SQL Install File
+copy_file_to_vm_from_host 'copy_sql_install_file' do
+  file_source "#{node['sql']['install']['source_folder']}\\#{node['sql']['install']['file_name']}"
+  file_destination "#{node['sql']['install']['destination_folder']}\\#{node['sql']['install']['file_name']}"
+  file_destination_folder node['sql']['install']['destination_folder']
+end
+
 # Extract Contents of iso file
 seven_zip_archive "extract sql iso" do
   source    "#{node['sql']['install']['destination_folder']}\\#{node['sql']['install']['file_name']}"
