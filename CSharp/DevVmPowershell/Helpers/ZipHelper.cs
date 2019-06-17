@@ -26,6 +26,15 @@ namespace Helpers
 					Console.WriteLine($"Compressing File... [{nameof(destinationZipFilePath)}: {destinationZipFilePath}]");
 					ZipFile.CreateFromDirectory(sourceFolderPath, destinationZipFilePath);
 					Console.WriteLine($"Compressed File! [{nameof(destinationZipFilePath)}: {destinationZipFilePath}]");
+
+					if (File.Exists(destinationZipFilePath))
+					{
+						Console.WriteLine("Successfully Zipped Folder");
+					}
+					else
+					{
+						throw new Exception("An error occurred zipping the folder.");
+					}
 				}
 				else
 				{
