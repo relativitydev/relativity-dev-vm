@@ -1,27 +1,28 @@
-﻿using System;
+﻿using DbContextHelper;
+using Relativity.API;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using DbContextHelper;
-using Relativity.API;
 
 namespace Helpers
 {
 	public class SqlHelper : ISqlHelper
 	{
 		private IDBContext DbContext { get; set; }
+		private ConnectionHelper connectionHelper { get; set; }
+
 
 		public SqlHelper(string relativityInstanceName, string sqlUserName, string sqlPassword)
 		{
-			DbContext = new DbContext(relativityInstanceName, "EDDS", sqlUserName, sqlPassword);
+			connectionHelper = new ConnectionHelper(relativityInstanceName, sqlUserName, sqlPassword, Constants.Connection.Sql.ConnectionString_DefaultDatabase);
+
+			DbContext = new DbContext(relativityInstanceName, Constants.Connection.Sql.ConnectionString_DefaultDatabase, sqlUserName, sqlPassword);
 		}
 
 		public bool DeleteAllErrors()
 		{
-		  string sqlSelectTopError = "SELECT TOP (1) [ArtifactID] FROM [EDDS].[eddsdbo].[Error]";
+			string sqlSelectTopError = "SELECT TOP (1) [ArtifactID] FROM [EDDS].[eddsdbo].[Error]";
 			string sqlDeleteFromArtifactGuidTable = "DELETE FROM [EDDS].[eddsdbo].[ArtifactGuid] WHERE [ArtifactID] = @artifactId";
 			string sqlDeleteFromErrorTable = "DELETE FROM [EDDS].[eddsdbo].[Error] WHERE [ArtifactID] = @artifactID";
 			string sqlDeleteFromArtifactAncestryTable = "DELETE FROM [EDDS].[eddsdbo].[ArtifactAncestry] WHERE [ArtifactID] = @artifactId";
@@ -121,6 +122,105 @@ namespace Helpers
 			{
 				throw new Exception("Error Enabling Data Grid for the Extracted Text Field", ex);
 			}
+		}
+
+		/// <summary>
+		/// This only creates or alters the ShrinkDb procedure in the EDDS database.  Alter if it already exists, create if it does not
+		/// </summary>
+		/// <returns></returns>
+		public bool CreateOrAlterShrinkDbProc()
+		{
+			bool wasSuccessful = false;
+			Console.WriteLine($"{nameof(CreateOrAlterShrinkDbProc)} - Creating or Altering {Constants.SqlScripts.ShrinkDbProcName}");
+
+			string sql = Constants.SqlScripts.CreateOrAlterShrinkDbProc;
+
+			if (DoesSqlObjectExist(Constants.SqlScripts.SchemaName, Constants.SqlScripts.ShrinkDbProcName))
+			{
+				Console.WriteLine($"{nameof(CreateOrAlterShrinkDbProc)} - {Constants.SqlScripts.ShrinkDbProcName} exists so changing statement to ALTER");
+				sql = sql.Replace("CREATE PROCEDURE", "ALTER PROCEDURE");
+			}
+
+			try
+			{
+				DbContext.ExecuteNonQuerySQLStatement(sql);
+				wasSuccessful = true;
+				Console.WriteLine($"{nameof(CreateOrAlterShrinkDbProc)} - Successfully updated {Constants.SqlScripts.ShrinkDbProcName}");
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine($"{nameof(CreateOrAlterShrinkDbProc)} - Failed to create or alter {Constants.SqlScripts.ShrinkDbProcName}");
+				Console.WriteLine(ex);
+			}
+
+			return wasSuccessful;
+		}
+
+		/// <summary>
+		/// This will create and alter the ShrinkDb procedure before attempting to run.
+		/// </summary>
+		/// <returns></returns>
+		public bool RunShrinkDbProc()
+		{
+			bool wasSuccessful = false;
+			Console.WriteLine($"{nameof(RunShrinkDbProc)} - About to Run {Constants.SqlScripts.ShrinkDbProcName}");
+
+			try
+			{
+				bool doesShrinkDbExist = CreateOrAlterShrinkDbProc();
+
+				if (doesShrinkDbExist)
+				{
+					using (SqlConnection connection = connectionHelper.GetSqlConnection(Constants.Connection.Sql.ConnectionString_ConnectTimeoutLong))
+					{
+						Console.WriteLine($"{nameof(RunShrinkDbProc)} - Running {Constants.SqlScripts.ShrinkDbProcName}...");
+						SqlCommand command = new SqlCommand(Constants.SqlScripts.ExecuteShringDbProc, connection);
+						command.CommandTimeout = connection.ConnectionTimeout;
+						command.Connection.Open();
+						command.ExecuteNonQuery();
+					}
+
+					wasSuccessful = true;
+					Console.WriteLine($"{nameof(RunShrinkDbProc)} - Successfully ran {Constants.SqlScripts.ShrinkDbProcName}");
+				}
+				else
+				{
+					Console.WriteLine($"{nameof(RunShrinkDbProc)} - Failed to run {Constants.SqlScripts.ShrinkDbProcName} as it could not be created properly");
+				}
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine($"{nameof(RunShrinkDbProc)} - Failed to run {Constants.SqlScripts.ShrinkDbProcName}");
+				Console.WriteLine(ex);
+			}
+
+			return wasSuccessful;
+		}
+
+		private bool DoesSqlObjectExist(string schema, string objectName)
+		{
+			bool exists = false;
+			string sql = Constants.SqlScripts.DoesExist.Replace("@@schema", schema).Replace("@@objectName", objectName);
+
+			Console.WriteLine($"{nameof(DoesSqlObjectExist)} - Checking if object exists {Constants.SqlScripts.ShrinkDbProcName}");
+
+			try
+			{
+				int queryResult = DbContext.ExecuteSqlStatementAsScalar<int>(sql);
+
+				if (queryResult > 0)
+				{
+					exists = true;
+					Console.WriteLine($"{nameof(DoesSqlObjectExist)} - {Constants.SqlScripts.ShrinkDbProcName} exists");
+				}
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine($"{nameof(DoesSqlObjectExist)} - {Constants.SqlScripts.ShrinkDbProcName} does not exists");
+				Console.WriteLine(ex);
+			}
+
+			return exists;
 		}
 	}
 }

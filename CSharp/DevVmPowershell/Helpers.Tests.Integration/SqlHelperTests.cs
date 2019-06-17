@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using DbContextHelper;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 
 namespace Helpers.Tests.Integration
 {
@@ -55,5 +49,28 @@ namespace Helpers.Tests.Integration
 			// Assert
 			Assert.DoesNotThrow(() => Sut.EnableDataGridOnExtractedText(workspaceName));
 		}
+
+		[Test]
+		public void CreateOrAlterShrinkDbProcTest()
+		{
+			// Arrange
+
+			// Act
+
+			// Assert
+			Assert.That(Sut.CreateOrAlterShrinkDbProc(), Is.True);
+		}
+
+		[Test]
+		public void RunShrinkDbProcTest()
+		{
+			// Arrange
+
+			// Act
+
+			// Assert
+			Assert.That(Sut.RunShrinkDbProc(), Is.True);
+		}
+
 	}
 }
