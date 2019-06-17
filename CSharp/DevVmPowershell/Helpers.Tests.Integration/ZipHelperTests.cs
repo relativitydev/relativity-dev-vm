@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using NUnit.Framework;
+using Relativity.Services.Document;
+using File = System.IO.File;
 
 namespace Helpers.Tests.Integration
 {
@@ -34,6 +36,7 @@ namespace Helpers.Tests.Integration
 			// Act
 			// Assert
 			Assert.DoesNotThrow(() => Sut.ZipFolder(sourceFolderPath, destinationFolderPath));
+			File.Delete(destinationFolderPath);
 		}
 	}
 }

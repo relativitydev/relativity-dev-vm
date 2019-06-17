@@ -6,6 +6,7 @@ using System.Management.Automation;
 using System.Text;
 using System.Threading.Tasks;
 using Helpers;
+using kCura.Vendor.Castle.Core.Internal;
 
 namespace DevVmPsModules
 {
@@ -51,13 +52,28 @@ namespace DevVmPsModules
 				throw new ArgumentNullException(nameof(DestinationZipFilePath), $"{nameof(DestinationZipFilePath)} cannot be NULL or Empty.");
 			}
 
-			FileInfo fileInfo = new FileInfo(DestinationZipFilePath);
-			if (fileInfo.Directory != null)
+			FileInfo destinationZipFileInfo = new FileInfo(DestinationZipFilePath);
+			if (destinationZipFileInfo.Directory != null)
 			{ 
-				if (SourceFolderPath == fileInfo.Directory.FullName)
+				if (SourceFolderPath == destinationZipFileInfo.Directory.FullName)
 				{
-					throw new ArgumentException(nameof(DestinationZipFilePath), $"{nameof(DestinationZipFilePath)} cannot be in the same folder as {nameof(SourceFolderPath)}");
+					throw new ArgumentException(nameof(DestinationZipFilePath), $"{nameof(DestinationZipFilePath)} cannot be in the same folder as {nameof(SourceFolderPath)}.");
 				}
+
+				if (destinationZipFileInfo.Exists)
+				{
+					throw new ArgumentException(nameof(DestinationZipFilePath), $"{nameof(DestinationZipFilePath)} already exists.");
+				}
+			}
+			else
+			{
+				throw new ArgumentException(nameof(DestinationZipFilePath), $"{nameof(DestinationZipFilePath)} must be a valid path.");
+			}
+
+			DirectoryInfo sourceFolderPathInfo = new DirectoryInfo(SourceFolderPath);
+			if (!sourceFolderPathInfo.Exists)
+			{
+				throw new ArgumentException(nameof(SourceFolderPath), $"{nameof(SourceFolderPath)} must be a valid folder path");
 			}
 		}
 	}
