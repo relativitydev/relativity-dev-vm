@@ -13,19 +13,12 @@ namespace Helpers
 		public string RelativityAdminPassword;
 		public string RelativityDatabase;
 
-		public ConnectionHelper(string relativityInstanceName, string relativityAdminUserName, string relativityAdminPassword)
+		public ConnectionHelper(string relativityInstanceName, string relativityAdminUserName, string relativityAdminPassword, string relativityDatabase = Constants.Connection.Sql.ConnectionString_DefaultDatabase)
 		{
-			this.RelativityInstanceName = relativityInstanceName;
-			this.RelativityAdminUserName = relativityAdminUserName;
-			this.RelativityAdminPassword = relativityAdminPassword;
-		}
-
-		public ConnectionHelper(string relativityInstanceName, string relativityAdminUserName, string relativityAdminPassword, string relativityDatabase)
-		{
-			this.RelativityInstanceName = relativityInstanceName;
-			this.RelativityAdminUserName = relativityAdminUserName;
-			this.RelativityAdminPassword = relativityAdminPassword;
-			this.RelativityDatabase = relativityDatabase;
+			this.RelativityInstanceName = (string.IsNullOrEmpty(relativityInstanceName)) ? throw new ArgumentNullException(nameof(relativityInstanceName)) : relativityInstanceName;
+			this.RelativityAdminUserName = (string.IsNullOrEmpty(relativityAdminUserName)) ? throw new ArgumentNullException(nameof(relativityAdminUserName)) : relativityAdminUserName;
+			this.RelativityAdminPassword = (string.IsNullOrEmpty(relativityAdminPassword)) ? throw new ArgumentNullException(nameof(relativityAdminPassword)) : relativityAdminPassword;
+			this.RelativityDatabase = (string.IsNullOrEmpty(relativityDatabase)) ? throw new ArgumentNullException(nameof(relativityDatabase)) : relativityDatabase;
 		}
 
 		public ServiceFactory GetServiceFactory(string protocol = Constants.Connection.PROTOCOL)
