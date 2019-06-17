@@ -200,6 +200,7 @@
     <Compile Include="SqlHelperTests.cs" />
     <Compile Include="TestConstants.cs" />
     <Compile Include="YmlFileHelperTests.cs" />
+    <Compile Include="ZipHelperTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Helpers\Helpers.csproj">
