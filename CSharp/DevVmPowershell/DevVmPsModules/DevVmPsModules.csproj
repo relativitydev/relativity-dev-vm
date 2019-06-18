@@ -194,6 +194,7 @@
     <Compile Include="AddZipFolderModule.cs" />
     <Compile Include="BaseModule.cs" />
     <Compile Include="AgentModule.cs" />
+    <Compile Include="ClearRecycleBinModule.cs" />
     <Compile Include="CustomExceptions\DevVmPowerShellModuleException.cs" />
     <Compile Include="DocumentModule.cs" />
     <Compile Include="AgentServerAddAgentServerToDefaultResourcePoolModule.cs" />
