@@ -10,7 +10,7 @@ using kCura.Vendor.Castle.Core.Internal;
 
 namespace DevVmPsModules
 {
-	[Cmdlet(VerbsCommon.Add, "AgentByName")]
+	[Cmdlet(VerbsCommon.Add, "ZipFolder")]
 	public class AddZipFolderModule : BaseModule
 	{
 		[Parameter(
