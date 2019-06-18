@@ -1,6 +1,6 @@
 ﻿using kCura.Relativity.ImportAPI;
-using Relativity.API;
 using Relativity.Services.ServiceProxy;
+using System.Data.SqlClient;
 
 namespace Helpers
 {
@@ -9,5 +9,7 @@ namespace Helpers
 		ServiceFactory GetServiceFactory(string protocol = Constants.Connection.PROTOCOL);
 
 		ImportAPI GetImportApi();
+
+		SqlConnection GetSqlConnection(string connectionTimeOut);
 	}
 }
