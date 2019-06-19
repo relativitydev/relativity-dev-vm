@@ -3,21 +3,21 @@ start_time = DateTime.now
 custom_log 'custom_log' do msg "recipe_start_time(#{recipe_name}): #{start_time}" end
 
 # Install JungUm
-include_recipe 'Relativity::windows_install_jungum'
+include_recipe 'BaseImage::windows_install_jungum'
 custom_log 'custom_log' do msg 'Finished installing JungUm' end
 
 # Install Lotus Notes
-include_recipe 'Relativity::windows_install_lotus_notes'
+include_recipe 'BaseImage::windows_install_lotus_notes'
 
 custom_log 'custom_log' do msg 'Finished installing Lotus Notes' end
 
 # Install Microsoft Office
-include_recipe 'Relativity::windows_install_msoffice'
+include_recipe 'BaseImage::windows_install_msoffice'
 
 custom_log 'custom_log' do msg 'Finished installing Microsoft Office' end
 
 # Install Microsoft Works Converter
-include_recipe 'Relativity::windows_install_msworksconverter'
+include_recipe 'BaseImage::windows_install_msworksconverter'
 
 custom_log 'custom_log' do msg 'Finished installing Microsoft Works Converter' end
 
