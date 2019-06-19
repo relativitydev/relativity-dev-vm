@@ -41,8 +41,8 @@ Vagrant.configure('2') do |config|
   # Hyperv configuration
   config.vm.provider :hyperv do |h|
     h.vmname = 'RelativityDevVm'
-    h.cpus = 8
-    h.memory = 16000
+    h.cpus = 3
+    h.memory = 12000
   end
 
   config.vm.synced_folder '.', '/vagrant',
@@ -58,7 +58,7 @@ Vagrant.configure('2') do |config|
     chef.nodes_path = 'Nodes'
     chef.roles_path = 'Roles'
     chef.channel = 'stable'
-    chef.version = '13.8.5'
+    chef.version = '15.0.300'
     chef.json = {
       'smb_domain' => network_share_smb_domain,
       'smb_username' => network_share_smb_username,
@@ -78,7 +78,7 @@ Vagrant.configure('2') do |config|
     chef.nodes_path = 'Nodes'
     chef.roles_path = 'Roles'
     chef.channel = 'stable'
-    chef.version = '13.8.5'
+    chef.version = '15.0.300'
     chef.json = {
       'smb_domain' => network_share_smb_domain,
       'smb_username' => network_share_smb_username,
@@ -113,7 +113,7 @@ Vagrant.configure('2') do |config|
     chef.nodes_path = 'Nodes'
     chef.roles_path = 'Roles'
     chef.channel = 'stable'
-    chef.version = '13.8.5'
+    chef.version = '15.0.300'
     chef.json = {
       'smb_domain' => network_share_smb_domain,
       'smb_username' => network_share_smb_username,
@@ -136,7 +136,7 @@ Vagrant.configure('2') do |config|
     chef.nodes_path = 'Nodes'
     chef.roles_path = 'Roles'
     chef.channel = 'stable'
-    chef.version = '13.8.5'
+    chef.version = '15.0.300'
     chef.json = {
       'smb_domain' => network_share_smb_domain,
       'smb_username' => network_share_smb_username,
@@ -157,7 +157,7 @@ Vagrant.configure('2') do |config|
     chef.nodes_path = 'Nodes'
     chef.roles_path = 'Roles'
     chef.channel = 'stable'
-    chef.version = '13.8.5'
+    chef.version = '15.0.300'
     chef.json = {
       'smb_domain' => network_share_smb_domain,
       'smb_username' => network_share_smb_username,
@@ -180,7 +180,7 @@ Vagrant.configure('2') do |config|
     chef.nodes_path = 'Nodes'
     chef.roles_path = 'Roles'
     chef.channel = 'stable'
-    chef.version = '13.8.5'
+    chef.version = '15.0.300'
     chef.json = {
       'smb_domain' => network_share_smb_domain,
       'smb_username' => network_share_smb_username,
@@ -201,7 +201,7 @@ Vagrant.configure('2') do |config|
     chef.nodes_path = 'Nodes'
     chef.roles_path = 'Roles'
     chef.channel = 'stable'
-    chef.version = '13.8.5'
+    chef.version = '15.0.300'
     chef.json = {
       'smb_domain' => network_share_smb_domain,
       'smb_username' => network_share_smb_username,
@@ -224,7 +224,7 @@ Vagrant.configure('2') do |config|
     chef.nodes_path = 'Nodes'
     chef.roles_path = 'Roles'
     chef.channel = 'stable'
-    chef.version = '13.8.5'
+    chef.version = '15.0.300'
     chef.json = {
       'smb_domain' => network_share_smb_domain,
       'smb_username' => network_share_smb_username,
@@ -244,7 +244,7 @@ Vagrant.configure('2') do |config|
     chef.nodes_path = 'Nodes'
     chef.roles_path = 'Roles'
     chef.channel = 'stable'
-    chef.version = '13.8.5'
+    chef.version = '15.0.300'
     chef.json = {
       'smb_domain' => network_share_smb_domain,
       'smb_username' => network_share_smb_username,
@@ -266,7 +266,7 @@ Vagrant.configure('2') do |config|
     chef.nodes_path = 'Nodes'
     chef.roles_path = 'Roles'
     chef.channel = 'stable'
-    chef.version = '13.8.5'
+    chef.version = '15.0.300'
     chef.json = {
       'smb_domain' => network_share_smb_domain,
       'smb_username' => network_share_smb_username,
@@ -289,7 +289,7 @@ Vagrant.configure('2') do |config|
     chef.nodes_path = 'Nodes'
     chef.roles_path = 'Roles'
     chef.channel = 'stable'
-    chef.version = '13.8.5'
+    chef.version = '15.0.300'
     chef.json = {
       'smb_domain' => network_share_smb_domain,
       'smb_username' => network_share_smb_username,
@@ -309,7 +309,7 @@ Vagrant.configure('2') do |config|
     chef.nodes_path = 'Nodes'
     chef.roles_path = 'Roles'
     chef.channel = 'stable'
-    chef.version = '13.8.5'
+    chef.version = '15.0.300'
     chef.json = {
       'smb_domain' => network_share_smb_domain,
       'smb_username' => network_share_smb_username,
@@ -334,7 +334,7 @@ Vagrant.configure('2') do |config|
     chef.nodes_path = 'Nodes'
     chef.roles_path = 'Roles'
     chef.channel = 'stable'
-    chef.version = '13.8.5'
+    chef.version = '15.0.300'
     chef.json = {
       'smb_domain' => network_share_smb_domain,
       'smb_username' => network_share_smb_username,
@@ -354,7 +354,7 @@ Vagrant.configure('2') do |config|
     chef.nodes_path = 'Nodes'
     chef.roles_path = 'Roles'
     chef.channel = 'stable'
-    chef.version = '13.8.5'
+    chef.version = '15.0.300'
     chef.json = {
       'smb_domain' => network_share_smb_domain,
       'smb_username' => network_share_smb_username,
@@ -375,7 +375,7 @@ Vagrant.configure('2') do |config|
     chef.nodes_path = 'Nodes'
     chef.roles_path = 'Roles'
     chef.channel = 'stable'
-    chef.version = '13.8.5'
+    chef.version = '15.0.300'
     chef.json = {
       'smb_domain' => network_share_smb_domain,
       'smb_username' => network_share_smb_username,
@@ -395,7 +395,7 @@ Vagrant.configure('2') do |config|
     chef.nodes_path = 'Nodes'
     chef.roles_path = 'Roles'
     chef.channel = 'stable'
-    chef.version = '13.8.5'
+    chef.version = '15.0.300'
     chef.json = {
       'smb_domain' => network_share_smb_domain,
       'smb_username' => network_share_smb_username,
@@ -416,7 +416,7 @@ Vagrant.configure('2') do |config|
     chef.nodes_path = 'Nodes'
     chef.roles_path = 'Roles'
     chef.channel = 'stable'
-    chef.version = '13.8.5'
+    chef.version = '15.0.300'
     chef.json = {
       'smb_domain' => network_share_smb_domain,
       'smb_username' => network_share_smb_username,
@@ -436,7 +436,7 @@ Vagrant.configure('2') do |config|
     chef.nodes_path = 'Nodes'
     chef.roles_path = 'Roles'
     chef.channel = 'stable'
-    chef.version = '13.8.5'
+    chef.version = '15.0.300'
     chef.json = {
       'smb_domain' => network_share_smb_domain,
       'smb_username' => network_share_smb_username,
@@ -462,7 +462,7 @@ Vagrant.configure('2') do |config|
     chef.nodes_path = 'Nodes'
     chef.roles_path = 'Roles'
     chef.channel = 'stable'
-    chef.version = '13.8.5'
+    chef.version = '15.0.300'
     chef.json = {
       'smb_domain' => network_share_smb_domain,
       'smb_username' => network_share_smb_username,
@@ -482,7 +482,7 @@ Vagrant.configure('2') do |config|
     chef.nodes_path = 'Nodes'
     chef.roles_path = 'Roles'
     chef.channel = 'stable'
-    chef.version = '13.8.5'
+    chef.version = '15.0.300'
     chef.json = {
       'smb_domain' => network_share_smb_domain,
       'smb_username' => network_share_smb_username,
@@ -509,7 +509,7 @@ Vagrant.configure('2') do |config|
     chef.nodes_path = 'Nodes'
     chef.roles_path = 'Roles'
     chef.channel = 'stable'
-    chef.version = '13.8.5'
+    chef.version = '15.0.300'
     chef.json = {
       'smb_domain' => network_share_smb_domain,
       'smb_username' => network_share_smb_username,
@@ -531,7 +531,7 @@ Vagrant.configure('2') do |config|
     chef.nodes_path = 'Nodes'
     chef.roles_path = 'Roles'
     chef.channel = 'stable'
-    chef.version = '13.8.5'
+    chef.version = '15.0.300'
     chef.json = {
       'smb_domain' => '',
       'smb_username' => '',
