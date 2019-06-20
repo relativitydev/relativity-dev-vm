@@ -483,3 +483,5 @@ default['services'] =
         location: "C:\\InvariantNetworkShare\\InvariantWorker.exe"
     }
 ]
+
+default['powershell_module']['relativity_api_dlls_location'] = 'C:\\Program Files\\kCura Corporation\\Relativity\\ServiceHost'
