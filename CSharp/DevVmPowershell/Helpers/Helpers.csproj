@@ -205,6 +205,7 @@
     <Compile Include="ConnectionHelper.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="EnvironmentVariableHelper.cs" />
+    <Compile Include="ErrorMessageHelper.cs" />
     <Compile Include="IAgentHelper.cs" />
     <Compile Include="IAgentServerHelper.cs" />
     <Compile Include="IApplicationInstallHelper.cs" />
