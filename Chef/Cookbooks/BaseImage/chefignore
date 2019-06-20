@@ -35,8 +35,8 @@ tmtags
 ##############
 *.class
 *.com
-*.dll
-*.exe
+# *.dll
+# *.exe
 *.o
 *.pyc
 *.so
