@@ -79,8 +79,8 @@ default['relativity']['install']['destination_folder'] = "#{default['file']['ins
 default['relativity']['install']['file_name'] = 'Relativity.exe'
 default['relativity']['install']['response_file_destination_location'] = "#{default['relativity']['install']['destination_folder']}\\RelativityResponse.txt"
 default['relativity']['services_url'] = "http://" + node['fqdn'] +"/Relativity.Services"
-default['relativity']['admin']['login'] = 'relativity.admin@relativity.com'
-default['relativity']['admin']['password'] = 'Test1234!'
+default['relativity']['admin']['login'] = ''
+default['relativity']['admin']['password'] = ''
 default['relativity']['service_account']['login'] = ''
 default['relativity']['service_account']['password'] = ''
 default['relativity']['processing']['source']['location'] = "\\\\#{default['windows']['hostname']}\\ProcessingSourceLocation"
@@ -189,7 +189,7 @@ default['relativity']['response_file']['replacement_values'] =
     {
         # The name of the Relativity instance.
         name: "ADMIN_EMAIL", 
-        value: ""
+        value: "#{default['relativity']['admin']['login']}"
     },
     {
         # The name of the Relativity instance.
@@ -199,7 +199,7 @@ default['relativity']['response_file']['replacement_values'] =
     {
         # The name of the Relativity instance.
         name: "ADMIN_PASSWORD", 
-        value: ""
+        value: "#{default['relativity']['admin']['password']}"
     },
     {
         # The name of the Relativity instance.
@@ -483,5 +483,3 @@ default['services'] =
         location: "C:\\InvariantNetworkShare\\InvariantWorker.exe"
     }
 ]
-
-default['powershell_module']['relativity_api_dlls_location'] = 'C:\\Program Files\\kCura Corporation\\Relativity\\ServiceHost'
