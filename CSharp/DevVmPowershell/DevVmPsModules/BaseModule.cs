@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Helpers;
+using System;
+using System.IO;
 using System.Management.Automation;
 
 namespace DevVmPsModules
@@ -31,7 +33,8 @@ namespace DevVmPsModules
 			}
 			catch (Exception ex)
 			{
-				Exception exception = new Exception($"An error occured in {nameof(BeginProcessing)} method when writing Salutation", ex);
+				string formattedExceptionMessage = ErrorMessageHelper.FormatErrorMessage(ex);
+				Exception exception = new Exception($"An error occured in {nameof(BeginProcessing)} method. ErrorMessage: {formattedExceptionMessage}. StackTrace: {ex}", ex);
 				string errorId = $"{nameof(BeginProcessing)}";
 				const ErrorCategory errorCategory = ErrorCategory.DeviceError;
 				ErrorRecord errorRecord = new ErrorRecord(exception, errorId, errorCategory, null);
@@ -54,7 +57,9 @@ namespace DevVmPsModules
 			}
 			catch (Exception ex)
 			{
-				Exception exception = new Exception($"An error occured in {nameof(ProcessRecord)} method when writing Salutation", ex);
+				CreateErrorLogFile(ex);
+				string formattedExceptionMessage = ErrorMessageHelper.FormatErrorMessage(ex);
+				Exception exception = new Exception($"An error occured in {nameof(ProcessRecord)} method. ErrorMessage: {formattedExceptionMessage}. StackTrace: {ex}", ex);
 				string errorId = $"{nameof(ProcessRecord)}";
 				const ErrorCategory errorCategory = ErrorCategory.DeviceError;
 				ErrorRecord errorRecord = new ErrorRecord(exception, errorId, errorCategory, null);
@@ -77,7 +82,8 @@ namespace DevVmPsModules
 			}
 			catch (Exception ex)
 			{
-				Exception exception = new Exception($"An error occured in {nameof(EndProcessing)} method when writing Salutation", ex);
+				string formattedExceptionMessage = ErrorMessageHelper.FormatErrorMessage(ex);
+				Exception exception = new Exception($"An error occured in {nameof(EndProcessing)} method. ErrorMessage: {formattedExceptionMessage}. StackTrace: {ex}", ex);
 				string errorId = $"{nameof(EndProcessing)}";
 				const ErrorCategory errorCategory = ErrorCategory.DeviceError;
 				ErrorRecord errorRecord = new ErrorRecord(exception, errorId, errorCategory, null);
@@ -86,6 +92,33 @@ namespace DevVmPsModules
 			finally
 			{
 				WriteVerbose($"End - {nameof(EndProcessing)} method");
+			}
+		}
+
+		private static void CreateErrorLogFile(Exception exception)
+		{
+			string currentDirectory = Directory.GetCurrentDirectory();
+			string currentDateTime = DateTime.Now.ToString("yyyyMMddHHmmssfff");
+			string errorLogFileName = $"DevVmPowerShellModule_ErrorLog_{currentDateTime}.txt";
+			string errorLogFileFullPath = Path.Combine(currentDirectory, errorLogFileName);
+
+			//Delete File if it already exists
+			if (File.Exists(errorLogFileFullPath))
+			{
+				File.Delete(errorLogFileFullPath);
+			}
+
+			//Create File
+			using (StreamWriter streamWriter = File.CreateText(errorLogFileFullPath))
+			{
+				string errorMessage = exception.Message;
+				string completeErrorMessage = ErrorMessageHelper.FormatErrorMessage(exception);
+				string stackTrace = exception.StackTrace;
+				streamWriter.WriteLine($"ERROR MESSAGE:\n{errorMessage}");
+				streamWriter.WriteLine();
+				streamWriter.WriteLine($"COMPLETE ERROR MESSAGE:\n{completeErrorMessage}");
+				streamWriter.WriteLine();
+				streamWriter.WriteLine($"STACK TRACE:\n{stackTrace}");
 			}
 		}
 	}
