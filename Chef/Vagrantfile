@@ -368,7 +368,7 @@ Vagrant.configure('2') do |config|
     chef.add_recipe('Relativity::post_relativity_sqlserver_distributed_relativity_install')
   end
 
-   # Make sure services are running
+   # Run PowerShell modules
    config.vm.provision 'chef_zero' do |chef|
     chef.cookbooks_path = 'Cookbooks'
     chef.data_bags_path = 'DataBags'
