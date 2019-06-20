@@ -9,18 +9,19 @@ copy_file_to_vm_from_host 'copy_service_bus_defect_windows_update_install_file' 
   file_destination_folder node['service_bus']['defect_windows_update']['install']['destination_folder']
 end
 
-service_bus_defect_windows_udpate_installer_location = "#{node['service_bus']['defect_windows_update']['install']['destination_folder']}/#{node['service_bus']['defect_windows_update']['install']['file_name']}"
+service_bus_defect_windows_udpate_installer_source_location = "#{node['service_bus']['defect_windows_update']['install']['source_folder']}\\#{node['service_bus']['defect_windows_update']['install']['file_name']}"
+service_bus_defect_windows_udpate_installer_destination_location = "#{node['service_bus']['defect_windows_update']['install']['destination_folder']}/#{node['service_bus']['defect_windows_update']['install']['file_name']}"
 
 # Copy the service bus windows update file to install directory
-cookbook_file service_bus_defect_windows_udpate_installer_location do
-  source node['service_bus']['defect_windows_update']['install']['file_name']
+cookbook_file service_bus_defect_windows_udpate_installer_destination_location do
+  source service_bus_defect_windows_udpate_installer_source_location
 end
 
 # Install windows update
 windows_package 'Install Windows Update for Service Bus defect' do
   action :install
   installer_type :installshield
-  source service_bus_defect_windows_udpate_installer_location
+  source service_bus_defect_windows_udpate_installer_destination_location
   options '/quiet /q /norestart'
 end
 

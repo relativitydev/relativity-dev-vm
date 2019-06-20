@@ -41,8 +41,8 @@ Vagrant.configure('2') do |config|
   # Hyperv configuration
   config.vm.provider :hyperv do |h|
     h.vmname = 'RelativityDevVm'
-    h.cpus = 3
-    h.memory = 12000
+    h.cpus = 4
+    h.memory = 16000
   end
 
   config.vm.synced_folder '.', '/vagrant',
