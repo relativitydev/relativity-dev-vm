@@ -1,0 +1,2056 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>FaspManager</name>
+    </assembly>
+    <members>
+        <member name="T:Aspera.Transfer.Environment">
+            <summary>
+            This class contains configuration options for the fasp Manager.
+            </summary>
+        </member>
+        <member name="M:Aspera.Transfer.Environment.getFaspScpPath">
+            <summary>
+            Gets the path to the scp binary for fasp
+            </summary>
+            <returns>String representing the path</returns>
+        </member>
+        <member name="M:Aspera.Transfer.Environment.getFaspVersion">
+            <summary>
+            Gets the fasp version.
+            </summary>
+            <returns>The version of FASP used</returns>
+            <exception cref="T:Aspera.Transfer.FaspManagerException">ascp.exe not found</exception>
+        </member>
+        <member name="M:Aspera.Transfer.Environment.getPortFilePath">
+            <summary>
+            Gets the path to the file where the fasp listening port is listed.
+            </summary>
+            <returns>String representing the path</returns>
+        </member>
+        <member name="M:Aspera.Transfer.Environment.setFaspScpPath(System.String)">
+            <summary>
+            Sets the path to the scp binary. Default: ascp.exe
+            </summary>
+            <param name="faspScpPath">Path to the binary</param>
+        </member>
+        <member name="M:Aspera.Transfer.Environment.setManagementPort(System.Int32)">
+            <summary>
+            Set the port number at which fasp manager listens. It is best to
+            not set this port. Fasp Manager will automatically pick an available port.
+            </summary>
+            <param name="mgmtPort">The MGMT port.</param>
+        </member>
+        <member name="M:Aspera.Transfer.Environment.getManagementPort">
+            <summary>
+            Get the Fasp Manager port 
+            </summary>
+            <returns>the port at which Fasp Manager is listening</returns>
+        </member>
+        <member name="T:Aspera.Transfer.FaspManager">
+            <summary>
+            This class is responsible for monitoring all fasp jobs and sessions running 
+            as clients (initiated locally) or servers (initiated remotely). The Manager 
+            reads all messages sent from ascp processes, and can provide information about 
+            the status and progress of jobs and sessions by notifying the fasp manager 
+            registered TransferListeners. A fasp manager listener may be added using the 
+            addListener(TransferListener) method.
+            </summary>
+        </member>
+        <member name="M:Aspera.Transfer.FaspManager.getInstance">
+            <summary>
+            Get a reference to FaspManager singleton object.
+            Throws FaspManagerException if ascp.exe is not found.
+            </summary>
+            <returns>Pointer to singleton Fasp Manager object</returns>
+        </member>
+        <member name="M:Aspera.Transfer.FaspManager.isRunning">
+            <summary>
+            Check if manager is currently running.
+            </summary>
+            <returns>True if fasp manager is running</returns>
+        </member>
+        <member name="M:Aspera.Transfer.FaspManager.start">
+            <summary>
+            Start the fasp manager. This method creates a socket that listens for
+            connections from ascp.
+            </summary>
+            <exception cref="T:Aspera.Transfer.FaspManagerException">thrown if ascp is not found
+            or if unable to intialize fasp manager</exception>
+        </member>
+        <member name="M:Aspera.Transfer.FaspManager.getSessionIDList">
+            <summary>
+            Get the list of IDs of all sessions in fasp manager.
+            </summary>
+            <returns>An ICollection of all session ids</returns>
+        </member>
+        <member name="M:Aspera.Transfer.FaspManager.getSessionStats(System.String)">
+            <summary>
+            Get the statistics of a session by the jobId
+            </summary>
+            <param name="jobId">jobId of the session</param>
+            <returns>The statistics of the session</returns>
+            <exception cref="T:Aspera.Transfer.FaspManagerException">Thrown if no session found with the specified ID </exception>
+        </member>
+        <member name="M:Aspera.Transfer.FaspManager.addJobListener(System.String,Aspera.Transfer.FileTransferListener)">
+            <summary>
+            Add a listener only for a particular job
+            </summary>
+            <param name="jobId">job id</param>
+            <param name="listener">the listener object</param>
+            <exception cref="T:Aspera.Transfer.FaspManagerException">Thrown if no session found with the specified ID </exception>
+        </member>
+        <member name="M:Aspera.Transfer.FaspManager.removeJobListener(System.String,Aspera.Transfer.FileTransferListener)">
+            <summary>
+            Remove a job listener
+            </summary>
+            <param name="jobId">job id</param>
+            <param name="listener">the listener object</param>
+            <exception cref="T:Aspera.Transfer.FaspManagerException">Thrown if no session found with the specified ID </exception>
+        </member>
+        <member name="M:Aspera.Transfer.FaspManager.getSessionStatsByCookie(System.String)">
+            <summary>
+            Get the statistics of a session identified by its cookie
+            </summary>
+            <param name="cookie">the cookie</param>
+            <returns>Statistics of the session</returns>
+            <exception cref="T:Aspera.Transfer.FaspManagerException">Thrown if no session found with the specified cookie</exception>
+        </member>
+        <member name="M:Aspera.Transfer.FaspManager.listenForServerSessions(System.Boolean)">
+            <summary>
+            If set, fasp manager can manage transfers initiated outside fasp 
+            manager and any global listener will be notified of events on such
+            transfers as well. Default: Off
+            </summary>
+            <param name="On">'true' to listen for server sessions, false to 
+            not listen</param>
+        </member>
+        <member name="M:Aspera.Transfer.FaspManager.isListeningForServerSessions">
+            <summary>
+            Check if the manager port is published (and thus management of external transfers is enabled)
+            </summary>
+            <returns>true if management of external transfers is enabled. Else false.</returns>
+        </member>
+        <member name="M:Aspera.Transfer.FaspManager.enableFaspDebug(System.Boolean)">
+            <summary>
+            Turn on verbose mode for FASP logs. (aspera-scp-transfer.log)
+            </summary>
+            <param name="enabled">True to turn on, False to turn off</param>
+        </member>
+        <member name="M:Aspera.Transfer.FaspManager.getTraceSource">
+            <summary>
+            Get the TraceSource object used by FaspManger for Tracing. Use
+            this object to add TraceListeners to it and to control its Switch.
+            Alternatively use App.Config to control tracing.
+            </summary>
+            <returns>the TraceSource object</returns>
+        </member>
+        <member name="M:Aspera.Transfer.FaspManager.getReleaseVersion">
+            <summary>
+            Get the release version of the fasp Manager.
+            </summary>
+            <returns>the release version</returns>
+        </member>
+        <member name="M:Aspera.Transfer.FaspManager.destroy">
+            <summary>
+            Destroy fasp manager. This method cancels any transfers in progress
+            </summary>
+        </member>
+        <member name="M:Aspera.Transfer.FaspManager.removeTransferReference(System.String)">
+            <summary>
+            Remove reference to a completed transfer session.
+            Call this method to remove references to completed sessions after they are no longer needed
+            </summary>
+            <param name="sessionId">Id of the session to be removed</param>
+            <returns>Whether the session existed or not</returns>
+        </member>
+        <member name="M:Aspera.Transfer.FaspManager.cleanUpSessions">
+            <summary>
+            Removes all jobs from hash tables. This will cancel any unfinished jobs.
+            fasp Manger calls this method before it quits.
+            </summary>
+        </member>
+        <member name="M:Aspera.Transfer.FaspManager.addListener(Aspera.Transfer.TransferListener)">
+            <summary>
+            Add a new listener to the FaspManager singleton. 
+            This listener will be called for all events on all active session
+            </summary>
+            <param name="listener">Object of the TrasnferListener class</param>
+        </member>
+        <member name="M:Aspera.Transfer.FaspManager.removeListener(Aspera.Transfer.TransferListener)">
+            <summary>
+            Remove a FaspManager listener
+            </summary>
+            <param name="listener">Object of the TrasnferListener class to be removed</param>
+        </member>
+        <member name="M:Aspera.Transfer.FaspManager.startTransfer(Aspera.Transfer.JobOrder,Aspera.Transfer.FileTransferListener)">
+            <summary>
+            Start a transfer and add a listener to that transfer job
+            </summary>
+            <param name="order">The JobOrder for this transfer</param>
+            <param name="listener">Listener to be invoked on this transfer's events</param>
+            <returns>The job/session Id</returns>
+        </member>
+        <member name="M:Aspera.Transfer.FaspManager.startTransfer(Aspera.Transfer.JobOrder,System.Guid,System.Int32,Aspera.Transfer.FileTransferListener)">
+            <summary>
+            Start a transfer and add a listener to that transfer job
+            </summary>
+            <param name="order">The JobOrder for this transfer</param>
+            <param name="xferId">The xfer identifier.</param>
+            <param name="xferRetry">The xfer retry.</param>
+            <param name="listener">Listener to be invoked on this transfer's events</param>
+            <returns>
+            The job/session Id
+            </returns>
+        </member>
+        <member name="M:Aspera.Transfer.FaspManager.startTransfer(Aspera.Transfer.JobOrder,System.Int32,Aspera.Transfer.FileTransferListener)">
+            <summary>
+            Start a transfer and add a listener to that transfer job
+            </summary>
+            <param name="order">The JobOrder for this transfer</param>
+            <param name="nbProcesses">The number of processes to launch for this transfer</param>
+            <param name="listener">Listener to be invoked on this transfer's events</param>
+            <returns>
+            The list of Job/Session Ids
+            </returns>
+        </member>
+        <member name="M:Aspera.Transfer.FaspManager.startTransfer(Aspera.Transfer.JobOrder,System.Guid,System.Int32,System.Int32,Aspera.Transfer.FileTransferListener)">
+            <summary>
+            Start a transfer and add a listener to that transfer job
+            </summary>
+            <param name="order">The JobOrder for this transfer</param>
+            <param name="xferId">The xfer identifier.</param>
+            <param name="xferRetry">The xfer retry.</param>
+            <param name="nbProcesses">The number of processes to launch for this transfer</param>
+            <param name="listener">Listener to be invoked on this transfer's events</param>
+            <returns>
+            The list of Job/Session Ids
+            </returns>
+            <exception cref="T:Aspera.Transfer.FaspManagerException">Cannot do multi process transfer with persistent session</exception>
+        </member>
+        <member name="M:Aspera.Transfer.FaspManager.setRate(System.String,System.Int32,System.Int32,Aspera.Transfer.Policy)">
+            <summary>
+            Change the rates and policy of a transfer already in progress
+            </summary>
+            <param name="jobId">The JobOrder for this transfer</param>
+            <param name="targetRateKbps">New target rate</param>
+            <param name="minRateKbps">New minimum rate</param>
+            <param name="policy">New Transfer Policy</param>
+            <exception cref="T:Aspera.Transfer.FaspManagerException">thrown if jobId not found or if the transfer is in a state where rates cannot be changed</exception>
+        </member>
+        <member name="M:Aspera.Transfer.FaspManager.cancelTransfer(System.String)">
+            <summary>
+            Cancel an active transfer session.
+            For non-persistent sessions, this operation will result in a SESSION_ERROR event.
+            </summary>
+            <param name="jobId">job id of the transfer</param>
+            <exception cref="T:Aspera.Transfer.FaspManagerException">thrown if job id not found</exception>
+        </member>
+        <member name="M:Aspera.Transfer.FaspManager.stopTransfer(System.String)">
+            <summary>
+            Stop an active persistent transfer session. All files being transferred are stopped immediately and no error is reported. 
+            Use cancelTransfer to terminate non-persistent sessions.
+            </summary>
+            <param name="jobId">job id of the transfer</param>
+            <exception cref="T:Aspera.Transfer.FaspManagerException">thrown if job id not found</exception>
+        </member>
+        <member name="M:Aspera.Transfer.FaspManager.terminateTransfer(System.String)">
+            <summary>
+            Terminate an active transfer session (persistent or regular). 
+            For regular sessions (non-persistent), this operation will result in a SESSION_ERROR event triggered to listeners.
+            For persistent session, all files being transferred are stopped immediately and no error is reported.
+            </summary>
+            <param name="jobId">job id of the transfer</param>
+            <exception cref="T:Aspera.Transfer.FaspManagerException">thrown if job id not found</exception>
+        </member>
+        <member name="M:Aspera.Transfer.FaspManager.lockPersistentSession(System.String)">
+            <summary>
+            Once locked file paths can no more be added to a persistent session.
+            A locked persistent session will terminate automatically when all
+            currently added file paths are transferred.
+            </summary>
+            <param name="jobId">job id of the transfer</param>
+            <exception cref="T:Aspera.Transfer.FaspManagerException">thrown if job id not found</exception>
+        </member>
+        <member name="M:Aspera.Transfer.FaspManager.addSource(System.String,System.String,System.String,System.Int64,System.Int64)">
+            <summary>
+            Provide a source file path, corresponding destination path and the byte range to a persistent transfer session.
+            To transfer a range of bytes it is required that source path be a file and not a directory.
+            </summary>
+            <param name="jobId">id of the persistent session</param>
+            <param name="sourcePath">thge source path</param>
+            <param name="destPath">the destination path</param>
+            <param name="startByte">the start of the byte range to be transferred. 0 is beginning of the file</param>
+            <param name="endByte">the end of the byte range to be transferred. 0 indicates end of file</param>
+            <exception cref="T:Aspera.Transfer.FaspManagerException">thrown if job id not found or if the session is not persistent or if a path cannot be added in current session state</exception>
+        </member>
+        <member name="M:Aspera.Transfer.FaspManager.addSource(System.String,System.String,System.String)">
+            <summary>
+            Provide a source path and corresponding destination path to a persistent transfer session
+            </summary>
+            <param name="id">The identifier.</param>
+            <param name="sourcePath">The source path.</param>
+            <param name="destPath">The dest path.</param>
+            <exception cref="T:Aspera.Transfer.FaspManagerException">thrown if job id not found or if the session is not persistent or if a path cannot be added in current session state</exception>
+        </member>
+        <member name="P:Aspera.Transfer.FaspManager.AutoRemoveCompletedTransferReferences">
+            <summary>
+            Setting this property to false will not remove transfers automatically 
+            from FaspManagers knowledge when they complete.
+            For backwards compatability this is set to true by default
+            </summary>
+        </member>
+        <member name="T:Aspera.Transfer.FileTransferListener">
+            <summary>
+            The interface for implementing a fasp manager listener that get 
+            notified on file transfer events. A listener can either be subsrcibed 
+            as a global listener that gets notified on events of all transfer sessions 
+            or as a listener for a single transfer session using the methods 
+            addListener and addJobListener respectively.
+            </summary>
+        </member>
+        <member name="T:Aspera.Transfer.TransferListener">
+            <summary>
+            The parent classs for all TransferListeners
+            </summary>
+        </member>
+        <member name="M:Aspera.Transfer.FileTransferListener.fileSessionEvent(Aspera.Transfer.TransferEvent,Aspera.Transfer.SessionStats,Aspera.Transfer.FileStats)">
+            <summary>
+            This is the method called when an event occurs. All event handling must be 
+            implemented in this method.
+            
+            Note: It is required that the implementation of this method return quickly. 
+            Any time consuming tasks should be run on a different thread.
+            </summary>
+            <param name="evnt">The event generated by the session</param>
+            <param name="sessionStats">Session Level statistics of this transfer session</param>
+            <param name="fileStats">Statistics of the last transferred file in this transfer session</param>
+        </member>
+        <member name="T:Aspera.Transfer.FaspManagerException">
+            <summary>
+            A generic exception class for all Fasp Manager Exceptions. 
+            For further details look for the 'Message' and 'InnerException' 
+            fields on the actual instance of this class.
+            </summary>
+        </member>
+        <member name="T:Aspera.Transfer.FileStats">
+            <summary>
+            A FileStats object contains information about one file in a transfer session.
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.FileStats.contiguousBytes">
+            <summary>
+            The number of contiguous bytes of a file on the disk. Any other 
+            application that needs to consume the file being transferred need 
+            not wait for the transfer to complete. Instead it can consume the 
+            no. of bytes indicted by this field, from the beginning of the file.
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.FileStats.errCode">
+            <summary>
+            Error code (if state is FAILED).
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.FileStats.errDescription">
+            <summary>
+            Error description (if state is FAILED).
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.FileStats.name">
+            <summary>
+            The file name
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.FileStats.sizeBytes">
+            <summary>
+            The file size
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.FileStats.state">
+            <summary>
+            Transfer status
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.FileStats.writtenBytes">
+            <summary>
+            Portion of the file at the destination (including resumed). Not necessarily contiguous.
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.FileStats.startByte">
+            <summary>
+            Starting offset in the file (either when a broken transfer is resumed or if only a range of bytes is requested)
+            Non zero only if the transfer is a resume or if a range of bytes is requested.
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.FileStats.endByte">
+            <summary>
+            Offset in the file where the transfer is to end
+            Non zero only if a range of bytes is requested.
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.FileStats.fileChecksumType">
+            <summary>
+            The file checksum type
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.FileStats.fileChecksum">
+            <summary>
+            The file checksum
+            </summary>
+        </member>
+        <member name="T:Aspera.Transfer.FileState">
+            <summary>
+            These are the different states a file could be in.
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.FileState.FAILED">
+            <summary>
+            An error occurred while transferring this file.
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.FileState.FINISHED">
+            <summary>
+            The file transferred successfully.
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.FileState.TRANSFERRING">
+            <summary>
+            The file is currently transferring.
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.FileState.SKIPPED">
+            <summary>
+            The file is skipped during the transfer.
+            </summary>
+        </member>
+        <member name="T:Aspera.Transfer.FileLocation">
+            <summary>
+            Abstract parent for all location classes
+            </summary>
+        </member>
+        <member name="M:Aspera.Transfer.FileLocation.getPaths">
+            <summary>
+            Returns the paths at this source or destination location
+            </summary>
+            <returns>the list of paths</returns>
+        </member>
+        <member name="M:Aspera.Transfer.FileLocation.addPath(System.String)">
+            <summary>
+            Add a file path to this source or destination. Destinations can take only one path.
+            
+            If this method is called, then source/dest pairs will be disabled. Only sources will be used.
+            To avoid this, always use add addPath(PathPair inPair) or addPath(String inSrc, String inDest)
+            </summary>
+            <param name="filePath">the path of the file or directory to add</param>
+        </member>
+        <member name="M:Aspera.Transfer.FileLocation.addPath(System.String,System.String)">
+            <summary>
+            Adds a file or directory source/destination pair
+            </summary>
+            <param name="inSrc">Source path</param>
+            <param name="inDest">Destination path</param>
+                   
+        </member>
+        <member name="M:Aspera.Transfer.FileLocation.clear">
+            <summary>
+            Clears all paths added (for testing only)
+            </summary>
+        </member>
+        <member name="M:Aspera.Transfer.FileLocation.buildCommand">
+            <summary>
+            Create the temp file used for passing params to the command-line
+            </summary>
+        </member>
+        <member name="M:Aspera.Transfer.FileLocation.createTempPairFile">
+            <summary>
+            Create the temp file used for passing src/dest pairs to the command-line
+            </summary>
+        </member>
+        <member name="M:Aspera.Transfer.FileLocation.getFirstPath">
+            <summary>
+            Get the first path added
+            </summary>
+            <returns>The first path string</returns>
+        </member>
+        <member name="P:Aspera.Transfer.FileLocation.IsValidPairs">
+            <summary>
+            Gets a value indicating whether this instance is valid pairs.
+            </summary>
+            <value>
+            <c>true</c> if this instance is valid pairs; otherwise, <c>false</c>.
+            </value>
+        </member>
+        <member name="P:Aspera.Transfer.FileLocation.TempFileName">
+            <summary>
+            Gets the name of the temporary file.
+            </summary>
+            <value>
+            The name of the temporary file.
+            </value>
+        </member>
+        <member name="T:Aspera.Transfer.FileTransferSession">
+            <summary>
+            A FileTransferSession manages connection and file transfer between
+            a source and a destination. The FileTransferSession is created
+            when a FileTransferJob is created, and starts when the job starts.
+            </summary>
+        </member>
+        <member name="T:Aspera.Transfer.Session">
+            <summary>
+            An object of the Session class exists for every transfer that is in progress.
+            </summary>
+        </member>
+        <member name="M:Aspera.Transfer.Session.handleAscpCrash">
+            <summary>
+            Handles the ascp crash.
+            </summary>
+        </member>
+        <member name="M:Aspera.Transfer.Session.setRate(System.Int32,System.Int32,Aspera.Transfer.Policy)">
+            <summary>
+            
+            Set the rate parameters for the transfer being handled by this session
+            </summary>
+            <param name="targetRate">Desired rate of transfer</param>
+            <param name="minimumRate">Minimum rate of transfer</param>
+            <param name="policy">Adaptive, Fixed or Trickle. To be specified using members of the enumeration 'Policy'</param>
+            <returns></returns>
+        </member>
+        <member name="M:Aspera.Transfer.Session.addListener(Aspera.Transfer.TransferListener)">
+            <summary>
+            Add a listener to the session
+            </summary>
+            <param name="listener">An object of the class(or its sub class) TransferListener</param>
+        </member>
+        <member name="M:Aspera.Transfer.Session.removeListener(Aspera.Transfer.TransferListener)">
+            <summary>
+            Removes a listener for the session
+            </summary>
+            <param name="listener">An object of the class(or its sub class) TransferListener</param>
+        </member>
+        <member name="M:Aspera.Transfer.Session.close">
+            <summary>
+            Closes this session.
+            </summary>
+        </member>
+        <member name="M:Aspera.Transfer.Session.cancel">
+            <summary>
+            Cancels this session.
+            </summary>
+            <exception cref="T:Aspera.Transfer.FaspManagerException">The channel has not been connected. It is too early to cancel the job.</exception>
+        </member>
+        <member name="M:Aspera.Transfer.Session.stop">
+            <summary>
+            Stops this session.
+            </summary>
+            <exception cref="T:Aspera.Transfer.FaspManagerException">
+            Transfer already completed. Cannot stop it anymore.
+            or
+            The channel has not been connected. It is too early to stop the job.
+            </exception>
+        </member>
+        <member name="M:Aspera.Transfer.Session.terminate">
+            <summary>
+            Terminates this session.
+            </summary>
+            <exception cref="T:Aspera.Transfer.FaspManagerException">
+            Transfer already completed. Cannot terminate it anymore.
+            or
+            The channel has not been connected. It is too early to terminate the job.
+            </exception>
+        </member>
+        <member name="M:Aspera.Transfer.Session.stopWhenIdle">
+            <summary>
+            Stops the session when idle.
+            </summary>
+            <exception cref="T:Aspera.Transfer.FaspManagerException">
+            Transfer already completed. Cannot stop it anymore.
+            or
+            The channel has not been connected. It is too early to stop the job.
+            </exception>
+        </member>
+        <member name="M:Aspera.Transfer.Session.isFinished">
+            <summary>
+            Tests if a job has failed or finished.
+            </summary>
+            <returns>True if Job has FAILED or FINISHED.</returns>
+        </member>
+        <member name="M:Aspera.Transfer.Session.getId">
+            <summary>
+            Gets the identifier of the Job that created the session. 
+            Returns null if this transfer is initated by the remote)
+            </summary>
+            <returns>Job identifier</returns>
+        </member>
+        <member name="M:Aspera.Transfer.Session.getXferId">
+            <summary>
+            Gets the xfer Id for this transfer.
+            </summary>
+            <returns>The xfer Id</returns>
+        </member>
+        <member name="M:Aspera.Transfer.Session.getXferRetry">
+            <summary>
+            Gets the xfer retry count for this transfer.
+            </summary>
+            <returns>The xfer retry count</returns>
+        </member>
+        <member name="M:Aspera.Transfer.Session.getProcessIndex">
+            <summary>
+            Gets the index of the process for this session.
+            </summary>
+            <returns>The index of the process for this session</returns>
+        </member>
+        <member name="M:Aspera.Transfer.Session.getNbProcesses">
+            <summary>
+            Gets the nb of processes for this transfer.
+            </summary>
+            <returns>The nb of processes for this transfer</returns>
+        </member>
+        <member name="M:Aspera.Transfer.Session.getTotalTransferredBytes">
+            <summary>
+            Gets the total bytes that has been transferred
+            </summary>
+            <returns>Total transferred bytes</returns>
+        </member>
+        <member name="M:Aspera.Transfer.Session.getSessionId">
+            <summary>
+            Gets the session identifier.
+            </summary>
+            <returns>session identifier</returns>
+        </member>
+        <member name="M:Aspera.Transfer.Session.getCookie">
+            <summary>
+            Gets the value of an arbitrary field used for application-specific
+            requirements.
+            </summary>
+            <returns>cookie string</returns>
+        </member>
+        <member name="M:Aspera.Transfer.Session.getBandwidthCapKbps">
+            <summary>
+            Gets the maximum bandwidth allowed
+            </summary>
+            <returns>Maximum allowed bandwidth</returns>
+        </member>
+        <member name="M:Aspera.Transfer.Session.getErrDescription">
+            <summary>
+            Gets the error description (if the state is FAILED)
+            </summary>
+            <returns>Erro description</returns>
+        </member>
+        <member name="M:Aspera.Transfer.Session.getErrCode">
+            <summary>
+            Gets the error code (if the state is FAILED)
+            </summary>
+            <returns>error code</returns>
+        </member>
+        <member name="M:Aspera.Transfer.Session.getHost">
+            <summary>
+            Gets the address of the remote end point
+            </summary>
+            <returns>Remote address</returns>
+        </member>
+        <member name="M:Aspera.Transfer.Session.getMinumumRateKbps">
+            <summary>
+            Gets the current minumum rate
+            </summary>
+            <returns>minimum rate</returns>
+        </member>
+        <member name="M:Aspera.Transfer.Session.getPolicy">
+            <summary>
+            Returns the transfer policy used by the current session
+            </summary>
+            <returns>Policy enumeration</returns>
+        </member>
+        <member name="M:Aspera.Transfer.Session.getRttMs">
+            <summary>
+            Gets the round trip time
+            </summary>
+            <returns>round trip time</returns>
+        </member>
+        <member name="M:Aspera.Transfer.Session.getStartTime">
+            <summary>
+            Gets the start time of the session
+            </summary>
+            <returns>start time</returns>
+        </member>
+        <member name="M:Aspera.Transfer.Session.getState">
+            <summary>
+            Gets the session state
+            </summary>
+            <returns>session state</returns>
+        </member>
+        <member name="M:Aspera.Transfer.Session.getTargetRateKbps">
+            <summary>
+            Gets the target rate in kbps
+            </summary>
+            <returns>The target rate in kbps</returns>
+        </member>
+        <member name="M:Aspera.Transfer.Session.getToken">
+            <summary>
+            Gets the token used for external authorization
+            </summary>
+            <returns>The token</returns>
+        </member>
+        <member name="M:Aspera.Transfer.Session.getTotalElapsedMs">
+            <summary>
+            Gets the time that elapsed since the session started
+            </summary>
+            <returns>Total Elapsed Time in Milli Seconds</returns>
+        </member>
+        <member name="M:Aspera.Transfer.Session.getTotalLostBytes">
+            <summary>
+            Gets the number of bytes lost in transfer.
+            </summary>
+            <returns>Total number of lost bytes</returns>
+        </member>
+        <member name="M:Aspera.Transfer.Session.getTotalWrittenBytes">
+            <summary>
+            Gets the total bytes transferred to the destination (including resumed)
+            </summary>
+            <returns>Total transferred bytes</returns>
+        </member>
+        <member name="M:Aspera.Transfer.Session.getUser">
+            <summary>
+            Gets the user name used in authentication.
+            </summary>
+            <returns>user name</returns>
+        </member>
+        <member name="M:Aspera.Transfer.Session.getUdpPort">
+            <summary>
+            Gets the UDP port used by Fasp for transferring the data
+            </summary>
+            <returns>Fasp UDP port</returns>
+        </member>
+        <member name="M:Aspera.Transfer.Session.isRemote">
+            <summary>
+            Is this session on the remote side (other side initiated transfer)
+            </summary>
+            <returns>True if the local end point is remote</returns>
+        </member>
+        <member name="M:Aspera.Transfer.Session.isUpload">
+            <summary>
+            The direction of the transfer.
+            </summary>
+            <returns>True is it is upload</returns>
+        </member>
+        <member name="M:Aspera.Transfer.Session.setCookie(System.String)">
+            <summary>
+            Sets the cookie for the session
+            </summary>
+            <param name="userCookie">The cookie string</param>
+        </member>
+        <member name="M:Aspera.Transfer.Session.setUserStr(System.String)">
+            <summary>
+            Sets the user string.
+            </summary>
+            <param name="userStr">The user string.</param>
+        </member>
+        <member name="M:Aspera.Transfer.Session.addSource(System.String,System.String,System.Int64,System.Int64)">
+            <summary>
+            Adds the source.
+            </summary>
+            <param name="sourcePath">The source path.</param>
+            <param name="destPath">The dest path.</param>
+            <param name="startByte">The start byte.</param>
+            <param name="endByte">The end byte.</param>
+            <exception cref="T:Aspera.Transfer.FaspManagerException">
+            Cannot add source path to a non persistent session
+            or
+            Transfer already completed. Cannot add path.
+            or
+            The channel has not been connected. It is too early to add source path to the job.
+            </exception>
+        </member>
+        <member name="M:Aspera.Transfer.Session.setPersistent(System.Boolean)">
+            <summary>
+            Makes the session persistent or not.
+            </summary>
+            <param name="persistent">if set to <c>true</c> persistent.</param>
+        </member>
+        <member name="M:Aspera.Transfer.Session.getPersistentSessionLocked">
+            <summary>
+            Gets whether the persistent session is locked.
+            </summary>
+            <returns>Whether the persistent session is locked</returns>
+        </member>
+        <member name="F:Aspera.Transfer.FileTransferSession._fileStatsList">
+            <summary>
+            All files in progress.
+            </summary>
+        </member>
+        <member name="M:Aspera.Transfer.FileTransferSession.#ctor(System.Boolean)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Aspera.Transfer.FileTransferSession"/> class.
+            </summary>
+            <param name="debugEnabled">if set to <c>true</c> [debug enabled].</param>
+        </member>
+        <member name="M:Aspera.Transfer.FileTransferSession.#ctor(Aspera.Transfer.JobOrder,Aspera.Transfer.FileTransferListener,System.String,System.Boolean)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Aspera.Transfer.FileTransferSession"/> class.
+            </summary>
+            <param name="order">The order.</param>
+            <param name="listener">The listener.</param>
+            <param name="jobId">The job identifier.</param>
+            <param name="debugEnabled">if set to <c>true</c> [debug enabled].</param>
+        </member>
+        <member name="M:Aspera.Transfer.FileTransferSession.EscapeArguments(System.String[])">
+             <summary>
+             Shamelessly lifted from:  http://csharptest.net/529/how-to-correctly-escape-command-line-arguments-in-c/
+            
+             Quotes all arguments that contain whitespace, or begin with a quote and returns a single
+             argument string for use with Process.Start().
+             </summary>
+             <param name="args">A list of strings for arguments, may not contain null, '\0', '\r', or '\n'</param>
+             <returns>The combined list of escaped/quoted strings</returns>
+             <exception cref="T:System.ArgumentNullException">Raised when one of the arguments is null</exception>
+             <exception cref="T:System.ArgumentOutOfRangeException">Raised if an argument contains '\0', '\r', or '\n'</exception>
+        </member>
+        <member name="M:Aspera.Transfer.FileTransferSession.getCurrentFile">
+            <summary>
+            Gets the name of the current file. If the session transfers multiple
+            files, this field will contain the name of the file in the latest STAT
+            message.
+            </summary>
+            <returns>The current filename</returns>
+        </member>
+        <member name="M:Aspera.Transfer.FileTransferSession.handleAscpCrash">
+            <summary>
+            Handles the ascp crash.
+            </summary>
+        </member>
+        <member name="M:Aspera.Transfer.FileTransferSession.getCurrentFileStats">
+            <summary>
+            Gets information about the current file being transferred. If the session
+            transfers multiple files, this field will contain information about the
+            file in the latest STAT message.
+            </summary>
+            <returns>Statistics of the last transferred file.
+            null if file statistics not available</returns>
+        </member>
+        <member name="M:Aspera.Transfer.FileTransferSession.getSourcePath">
+            <summary>
+            Returns the source path
+            </summary>
+            <returns>String representing the source path</returns>
+        </member>
+        <member name="M:Aspera.Transfer.FileTransferSession.getDestinationPath">
+            <summary>
+            Returns the destination path
+            </summary>
+            <returns>String representing the destination path</returns>
+        </member>
+        <member name="M:Aspera.Transfer.FileTransferSession.getSessionStats">
+            <summary>
+            Gets the session stats.
+            </summary>
+            <returns>The session stats</returns>
+        </member>
+        <member name="T:Aspera.Transfer.JobOrder">
+            <summary>
+            A JobOrder contains all the parameters required to initated an Aspera transfer i.e. the source, 
+            the destination, and the transfer parameters.
+            </summary>
+        </member>
+        <member name="M:Aspera.Transfer.JobOrder.#ctor(Aspera.Transfer.FileLocation,Aspera.Transfer.FileLocation,Aspera.Transfer.XferParams)">
+            <summary>
+            Creates a JobOrder given the source, destination, and transfer parameters.
+            </summary>
+            <param name="source">The source location (local for uploads; remote for downloads)</param>
+            <param name="destination">The destination location (local for downloads; remote for uploads)</param>
+            <param name="xferParams">The transfer parameters</param>
+            <exception cref="T:Aspera.Transfer.FaspManagerException">thrown if the job order parameters fail validation</exception>
+        </member>
+        <member name="M:Aspera.Transfer.JobOrder.getSource">
+            <summary>
+            Gets the source.
+            </summary>
+            <returns>The source file location</returns>
+        </member>
+        <member name="M:Aspera.Transfer.JobOrder.getDestination">
+            <summary>
+            Gets the destination.
+            </summary>
+            <returns>The destination file location</returns>
+        </member>
+        <member name="M:Aspera.Transfer.JobOrder.getXferParams">
+            <summary>
+            Gets the xfer parameters.
+            </summary>
+            <returns>The xfer parameters</returns>
+        </member>
+        <member name="M:Aspera.Transfer.JobOrder.isUpload">
+            <summary>
+            Determines whether this instance is upload.
+            </summary>
+            <returns>True if upload</returns>
+        </member>
+        <member name="M:Aspera.Transfer.JobOrder.validate">
+            <summary>
+            Checks the order for invalid parameters. If validation fails, use the getValidationError() method to retrieve the error message.
+            </summary>
+            <returns>False if a problem is found, true otherwise.</returns>
+        </member>
+        <member name="T:Aspera.Transfer.LocalFileLocation">
+            <summary>
+            This object represents the paths to files in the host computer, where 
+            the fasp Manager is running. For uploading, use the FilePaths.add 
+            method to add each source file or directory. For downloading, use the 
+            same method to set the path of the destination directory.
+            </summary>
+        </member>
+        <member name="T:Aspera.Transfer.RemoteFileLocation">
+            <summary>
+            This object represents the location of files or directories on the remote computer. For uploading, set the destination directory using the
+            FilePaths.add method. For downloading, use the same method to add each source file or directory.
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.RemoteFileLocation.host">
+            <summary>
+            The remote address. Null if this is a local location.
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.RemoteFileLocation.identity">
+            <summary>
+            The path to the identity file (private key) for use in public key authentication.
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.RemoteFileLocation.password">
+            <summary>
+            The login password or the passphrase associated with the identiy file (private key).
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.RemoteFileLocation.user">
+            <summary>
+            The login user name.
+            </summary>
+        </member>
+        <member name="M:Aspera.Transfer.RemoteFileLocation.#ctor(System.String,System.String,System.String)">
+            <summary>
+            Create a remote file location that uses password authentication
+            </summary>
+            <param name="host">The remote address</param>
+            <param name="user">The login user name</param>
+            <param name="password">The login password.</param>
+            <exception cref="T:System.ArgumentNullException">Raised when one of the arguments is null or empty</exception>
+        </member>
+        <member name="M:Aspera.Transfer.RemoteFileLocation.#ctor(System.String,System.String,System.String,System.String)">
+            <summary>
+            Create a remote file location that uses SSH public key authentication.
+            </summary>
+            <param name="host">The remote address.</param>
+            <param name="user">The login user name</param>
+            <param name="identity">The path to local file containing the SSH identify (private key)</param>
+            <param name="passphrase">The passphrase used to secure the private key (if needed)</param>
+            <exception cref="T:System.ArgumentNullException">Raised when one of the arguments is null or empty</exception>
+        </member>
+        <member name="M:Aspera.Transfer.RemoteFileLocation.IsHostIPv6">
+            <summary>
+            Determines whether host is IPv6.
+            </summary>
+            <returns>Whether host is IPv6</returns>
+        </member>
+        <member name="M:Aspera.Transfer.RemoteFileLocation.getHost">
+            <summary>
+            Gets the host.
+            </summary>
+            <returns>The host name</returns>
+        </member>
+        <member name="M:Aspera.Transfer.RemoteFileLocation.getUser">
+            <summary>
+            Gets the user.
+            </summary>
+            <returns>The user name</returns>
+        </member>
+        <member name="M:Aspera.Transfer.RemoteFileLocation.getIdentity">
+            <summary>
+            Gets the identity.
+            </summary>
+            <returns>The identity string</returns>
+        </member>
+        <member name="M:Aspera.Transfer.RemoteFileLocation.getPassword">
+            <summary>
+            Gets the password.
+            </summary>
+            <returns>The password</returns>
+        </member>
+        <member name="M:Aspera.Transfer.RemoteFileLocation.setByteRange(System.Int64,System.Int64)">
+            <summary>
+            Sets the byte range.
+            </summary>
+            <param name="start">The start.</param>
+            <param name="end">The end.</param>
+        </member>
+        <member name="M:Aspera.Transfer.RemoteFileLocation.IsPartialFileTransfer">
+            <summary>
+            Determines whether [is partial file transfer].
+            </summary>
+            <returns>Whether tihs is a partial file transfer</returns>
+        </member>
+        <member name="T:Aspera.Transfer.SessionStats">
+            <summary>
+            Statistics of file transfer session
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.SessionStats.Id">
+            <summary>
+            The identifier for this session. To be used in setRate and getJobStats
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.SessionStats.SessionId">
+            <summary>
+            The identifier for this session.
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.SessionStats.XferId">
+            <summary>
+            The identfier for this transfer.
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.SessionStats.XferRetry">
+            <summary>
+             The retry count associated with this transfer.
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.SessionStats.State">
+            <summary>
+            State of this transfer session
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.SessionStats.SourcePaths">
+            <summary>
+            The source paths used in this transfer
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.SessionStats.DestPath">
+            <summary>
+            The destination paths used in this transfer
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.SessionStats.UdpPort">
+            <summary>
+            UDP port used for this transfer
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.SessionStats.TargetRateKbps">
+            <summary>
+            The current target rate for this transfer
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.SessionStats.MinRateKbps">
+            <summary>
+            The current minimum rate for this transfer
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.SessionStats.Encryption">
+            <summary>
+            Encryption on the wire (using AES-128)
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.SessionStats.Policy">
+            <summary>
+            Transfer policy
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.SessionStats.TotalWrittenBytes">
+            <summary>
+            Total number of bytes written at the destination 
+            If this is a resumed transfer, this field 
+            includes bytes transferred during previous sessions.
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.SessionStats.FilesComplete">
+            <summary>
+            Number of files transferred during this session
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.SessionStats.FilesSkipped">
+            <summary>
+            Number of files skipped during this session
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.SessionStats.FilesFailed">
+            <summary>
+            Number of files which failed during this transfer session
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.SessionStats.ErrorCode">
+            <summary>
+            Error code if the session failed
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.SessionStats.ErrorDescription">
+            <summary>
+            Error description if the session failed
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.SessionStats.BandwidthCapKbps">
+            <summary>
+            The bandwidth cap enforced on this transfer
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.SessionStats.Cookie">
+            <summary>
+            Cookie 
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.SessionStats.Host">
+            <summary>
+            The remote host 
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.SessionStats.StartTime">
+            <summary>
+            Time this transfer started
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.SessionStats.TotalLostBytes">
+            <summary>
+            Number of bytes lost during this transfer
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.SessionStats.TotalTransferredBytes">
+            <summary>
+            Total number of bytes written at the destination 
+            If this is a resumed transfer, this field does NOT 
+            include bytes transferred during previous sessions.
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.SessionStats.Token">
+            <summary>
+            Token
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.SessionStats.User">
+            <summary>
+            User name used to connect to remote host
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.SessionStats.MeasuredLinkRateKbps">
+            <summary>
+            Measured bandwidth, if automatic bandwidth detection is turned on
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.SessionStats.PreCalcTotalBytes">
+            <summary>
+            Size of all files in the session; calculated before starting the transfer
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.SessionStats.PreCalcTotalFiles">
+            <summary>
+            Size of all files in the session; calculated before starting the transfer
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.SessionStats.Direction">
+            <summary>
+            The direction of transfer (upload or download)
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.SessionStats.Remote">
+            <summary>
+            True if this transfer session is initiated by a remote host
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.SessionStats.OtherInitiated">
+            <summary>
+            True if this transfer session is not initiated by this instance of fasp manager
+            (Could be initiated either by a remote host or by another local component)
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.SessionStats.DelayMs">
+            <summary>
+            Network delay
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.SessionStats.ElapsedUSec">
+            <summary>
+            Elapsed micro seconds since the beginning of this transfer
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.SessionStats.ManifestFilePath">
+            <summary>
+            Path to the manifest file, if generated.
+            Available only at the end of Session (either failure or completion)
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.SessionStats.TransfersAttempted">
+            <summary>
+            The count of file transfers initiated.
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.SessionStats.TransfersFailed">
+            <summary>
+            The count of file transfers with errors.
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.SessionStats.TransfersPassed">
+            <summary>
+            The count of file transfers successfully completed.
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.SessionStats.TransfersSkipped">
+            <summary>
+            The count of file transfers skipped (i.e. file already at the destination, overwrite policy violation, ...).
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.SessionStats.SourcePathsScanAttempted">
+            <summary>
+            PathScansAttempted: Source paths attempted. 
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.SessionStats.SourcePathsScanFailed">
+            <summary>
+            PathScansFailed: Source paths failed.
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.SessionStats.SourcePathsScanIrregular">
+            <summary>
+            PathScansIrregular: Source paths pointing to irregular files (i.e. char/block devices). 
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.SessionStats.SourcePathsScanExcluded">
+            <summary>
+            PathScansExcluded: Source paths excluded due to matching exclude arguments. 
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.SessionStats.Tags">
+            <summary>
+            Metatags in json format specified by --tags
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.SessionStats.Pmtu">
+            <summary>
+            The Path MTU.
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.SessionStats.TcpPort">
+            <summary>
+            The FASP TCP port for authentication.
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.SessionStats.ServerNodeId">
+            <summary>
+            The Server Node ID.
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.SessionStats.ClientNodeId">
+            <summary>
+            The Client Node ID.
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.SessionStats.ServerClusterId">
+            <summary>
+            The Server Cluster ID.
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.SessionStats.ClientClusterId">
+            <summary>
+            The Client Cluster ID.
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.SessionStats.RetryTimeout">
+            <summary>
+            The informative retry timeout.
+            </summary>
+        </member>
+        <member name="M:Aspera.Transfer.SessionStats.Clone">
+            <summary>
+            Clones this instance.
+            </summary>
+            <returns>The cloned instance</returns>
+        </member>
+        <member name="T:Aspera.Transfer.SessionState">
+            <summary>
+            This enumeration contains various states a Session could be in.
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.SessionState.SUBMITTED">
+            <summary>
+            Transfer has been submitted to fasp manager
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.SessionState.AUTHENTICATING">
+            <summary>
+            Attempting to authenticate with the remote endpoint.
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.SessionState.CONNECTING">
+            <summary>
+            Attempting to establish a connection with the remote endpoint.
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.SessionState.FAILED">
+            <summary>
+            An error occurred that prevented the Session from completing.
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.SessionState.FINISHED">
+            <summary>
+            The Session completed successfully.
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.SessionState.STARTED">
+            <summary>
+            A connection was established and the session has started.
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.SessionState.TRANSFERRING">
+            <summary>
+            The Session is currently in progress.
+            </summary>
+        </member>
+        <member name="T:Aspera.Transfer.TransferEvent">
+            <summary>
+            These are the different events that a transfer session may trigger.
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.TransferEvent.FILE_ERROR">
+            <summary>
+            Error in transferring the file.
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.TransferEvent.FILE_START">
+            <summary>
+            File transfer started.
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.TransferEvent.FILE_STOP">
+            <summary>
+            File transfer stopped.
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.TransferEvent.FILE_SKIP">
+            <summary>
+            File skipped event.
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.TransferEvent.RATE_MODIFICATION">
+            <summary>
+            Session transfer rate was modified.
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.TransferEvent.SESSION_ERROR">
+            <summary>
+            Error in the session.
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.TransferEvent.SESSION_START">
+            <summary>
+            Session starts.
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.TransferEvent.SESSION_STOP">
+            <summary>
+            Session ends.
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.TransferEvent.PROGRESS">
+            <summary>
+            Transfer is in progress
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.TransferEvent.CONNECTING">
+            <summary>
+            The session is trying to establish a connection.
+            </summary>
+        </member>
+        <member name="T:Aspera.Transfer.XferParams">
+            <summary>
+            A structure of transfer parameters (for example encryption, transfer rates,
+            etc) needed to start a fasp Job.
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.XferParams.autoDetectCapacity">
+            <summary>
+            Automatically detect bandwidth capacity. Default: false
+            This feature is known to be unreliable for connections faster than 10Mbps.
+            You are discouraged from using this feature.
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.XferParams.cookie">
+            <summary>
+            An arbitrary field used for application-specific requirements. Default: null
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.XferParams.createDirs">
+            <summary>
+            Create target directory if it doesn't already exist. Default: false
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.XferParams.datagramSize">
+            <summary>
+            Specify the datagram size (MTU) for fasp to use.
+            Otherwise fasp will automatically use the detected path MTU. Default: 0 (use detected)
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.XferParams.encryption">
+            <summary>
+            Specify the encryption cipher to use. Encryption is turned off by default.
+            Set this to true to encrypt the transfer using AES-128 cipher.
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.XferParams.cipher">
+            <summary>
+            Specify the encryption cipher to use.
+            If both this option and the 'encryption' options are set, the 'cipher' option will prevail.
+            If 'cipher' is null, 'encryption' option will be used to ensure backwards compatibility.
+            Default: null
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.XferParams.localLogDir">
+            <summary>
+            Specify a directory to write the log file in for the local host, instead
+            of using the default directory. Default: null
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.XferParams.minimumRateKbps">
+            <summary>
+            The minimum transfer rate in kbps. This value is interpreted as a
+            percentage of detected bandwidth when autoDetectCapacity is true.
+            Default: 0
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.XferParams.policy">
+            <summary>
+            Transfer rate policy. Default: FAIR
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.XferParams.preserveDates">
+            <summary>
+            Preserve file date attributes. Default: false
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.XferParams.remoteLogDir">
+            <summary>
+            Specify a directory to write the log file in for the local host, instead of using the default directory. Default: null
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.XferParams.retryTimeoutS">
+            <summary>
+            Informs any monitoring applications how long you intend to retry. Note that
+            the fasp manager itself does not implement retry; you must do this.
+            Default: 0 (no retry)
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.XferParams.symLinkPolicy">
+            <summary>
+            How symbolic links are handled.
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.XferParams.resumeCheck">
+            <summary>
+            Resume policy for partially transferred files.
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.XferParams.sourceBase">
+             <summary>
+             Specify the prefix to be stripped off from each source object.
+             The remaining portion of the source path is kept intact at the destination.
+            
+             If the target directory does not exist, this option must be used
+             along with 'XferParams.createDirs'.
+             </summary>
+        </member>
+        <member name="F:Aspera.Transfer.XferParams.targetRateKbps">
+            <summary>
+            The target transfer rate in kbps. This value is interpreted as a
+            percentage of detected bandwidth when autoDetectCapacity is true.
+            Default: 10000 (100 when autoDetectCapacity is turned on)
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.XferParams.tcpPort">
+            <summary>
+            The TCP port used for transfer initialization. Default: 22
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.XferParams.token">
+            <summary>
+            Security token. Default: null
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.XferParams.udpPort">
+            <summary>
+            The UDP port used for transferring data. Default: 33001
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.XferParams.contentProtectionPassphrase">
+             <summary>
+             Content protection passphrase. Specifying a passphrase turns on
+             content protection i.e. uploaded files are left encrypted on the
+             destination and downloads are decrypted as they as downloaded.
+            
+             Default: null, contentProtection not used
+            
+             </summary>
+        </member>
+        <member name="F:Aspera.Transfer.XferParams.preCalculateJobSize">
+            <summary>
+            Before starting the transfer, calculate and report the aggregate size of all files
+            in the session. For large file sets, this option can introduce a significant delay. Use caution !
+            Default: false
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.XferParams.fileManifestFormat">
+            <summary>
+            Set this to a value other than 'NONE' to enable file manifests
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.XferParams.fileManifestPath">
+            <summary>
+            Path to a directory on the client machine where the manifest file is to be written.
+            If the path is invalid the manifest file will not be generated.
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.XferParams.deleteSource">
+            <summary>
+            Delete source files after successful transfer
+            Default: OFF
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.XferParams.removeFileAfterTransfer">
+            <summary>
+            Remove source files after transferring. Default: false
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.XferParams.removeEmptyDirectories">
+            <summary>
+            Remove source empty directories after transferring. Default: false
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.XferParams.skipSpecialFiles">
+            <summary>
+            Skip special files. Default: {false}
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.XferParams.preserveFileOwnerUID">
+            <summary>
+            Preserve file owner UID. Default: false
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.XferParams.preserveFileOwnerGID">
+            <summary>
+            Preserve file owner GID. Default: false
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.XferParams.persist">
+            <summary>
+            When set to true the transfer is launched in persistent mode.
+            In persistent mode source and destination paths cannot be specified
+            on Location objects. Instead source and destination paths are added
+            once the transfer session is established. Default: false
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.XferParams.overwritePolicy">
+            <summary>
+            Overwrite behavior when a file being transferred already exists
+            at the destination.
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.XferParams.readSize">
+             <summary>
+             Read block size in bytes.
+            
+             Must be a positive number, negative numbers will be ignored.
+            
+             0 to use ascp default
+             </summary>
+        </member>
+        <member name="F:Aspera.Transfer.XferParams.writeSize">
+             <summary>
+             Write block size in bytes.
+            
+             Must be a positive number, negative numbers will be ignored.
+            
+             0 to use ascp default
+             </summary>
+        </member>
+        <member name="F:Aspera.Transfer.XferParams.tags">
+            <summary>
+            The tags MUST be well-formed JSON.
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.XferParams.prePostCommand">
+            <summary>
+            Pre and Post command file path.
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.XferParams.alternateConfigFile">
+            <summary>
+            Alternate Configuration file name
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.XferParams.partialFileSuffix">
+            <summary>
+            Default SUFFIX is ".partial"
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.XferParams.excludeNewerThan">
+            <summary>
+            Exclude files newer than "mtime".
+            Exclude files from the transfer based on when the file was last changed.
+            Positive MTIME values are compared directly to the "mtime" timestamp
+            in the source file system, usually seconds since 1970-01-01 00:00:00.
+            Negative MTIME values are taken as specifying a file "mtime" value
+            equal to the present + MTIME.  Some file servers use a different mtime
+            reference point, and then only positive MTIME argument values relative
+            to that reference will work sensibly.
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.XferParams.excludeOlderThan">
+            <summary>
+            Exclude files older than "mtime".
+            Exclude files from the transfer based on when the file was last changed.
+            Positive MTIME values are compared directly to the "mtime" timestamp
+            in the source file system, usually seconds since 1970-01-01 00:00:00.
+            Negative MTIME values are taken as specifying a file "mtime" value
+            equal to the present + MTIME.  Some file servers use a different mtime
+            reference point, and then only positive MTIME argument values relative
+            to that reference will work sensibly.
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.XferParams.saveBeforeOverwriteEnabled">
+            <summary>
+            If a transfer would result in an existing file &lt;filename&gt;.&lt;ext&gt; being
+            overwritten, move that file to &lt;filename&gt;.yyyy.mm.dd.hh.mm.ss.index.&lt;ext&gt;
+            (where index is set to 1 at the beginning of each new second and
+            incremented for each file saved in this manner during the same second)
+            in the same directory before writing the new file.
+            File attributes are maintained in the renamed file.
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.XferParams.sourceRoot">
+             <summary>
+             Specify the root path of the transfers. This path will be prepended to each
+             source path in the transfer.
+            
+             If this option is used, implementers must make sure that all specified source paths are
+             relative to this defined source root path.
+             Available since ascp version 3.5.5
+             </summary>
+        </member>
+        <member name="F:Aspera.Transfer.XferParams.checkSshFingerprint">
+            <summary>
+            Check it against server SSH host key fingerprint (e.g.,
+            f74e5de9ed0d62feaf0616ed1e851133c42a0082).
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.XferParams.ignoreSshFingerprint">
+            <summary>
+            Ignore server SSH host key fingerprint when initiating the transfer session.
+            Default: false
+            Available since ascp version 3.5
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.XferParams.applyLocalDocroot">
+            <summary>
+            Apply a local docroot for the local paths.
+            Default: false
+            Available since ascp version 3.5.5
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.XferParams.multiSessionThreshold">
+            <summary>
+            This value, if set to a value greater than 0, is used to skip multi-session if file size is less than this threshold
+            Available since ascp version 3.6.0
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.XferParams.removeEmptySourceDirectory">
+            <summary>
+            Remove the source directory itself if empty. Note that this option is better used
+            with removeEmptyDirectories enabled.
+            Default: false
+            Available since ascp version 3.6.0
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.XferParams.deleteBeforeTransfer">
+            <summary>
+            Delete all extraneous files from the destination folder before any file is transferred.
+            Default: false
+            Available since ascp version 3.6.0
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.XferParams.retransmissionRequestMaxSize">
+            <summary>
+            Adjust the maximum size in bytes of a retransmission request (max 1440).
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.XferParams.excludePatterns">
+            <summary>
+            List of patterns (maximum 16) used to exclude files from transferring.
+            Two special symbols are accepted as part of a pattern: * to match any
+            character zero or more times, and ? to match any character exactly once.
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.XferParams.httpFallback">
+            <summary>
+            The HTTP fallback.
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.XferParams.moveAfterTransferPath">
+            <summary>
+            Move transferred files to this location after transfer success
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.XferParams.destinationRoot">
+             <summary>
+             Specify the destination root directory of the transfers.
+            
+             Note: This will override any paths added to the destination location object.
+             </summary>
+        </member>
+        <member name="F:Aspera.Transfer.XferParams.preserveAccessTime">
+            <summary>
+            Preserve access time.
+            Default: false
+            Available since ascp version 3.5.5
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.XferParams.preserveModificationTime">
+            <summary>
+            Preserve modification time.
+            Default: false
+            Available since ascp version 3.5.5
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.XferParams.preserveSourceAccessTime">
+            <summary>
+            Preserve source access time.
+            Default: false
+            Available since ascp version 3.5.5
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.XferParams.preserveCreationTime">
+            <summary>
+            Preserve creation time.
+            Default: false
+            Available since ascp version 3.5.5
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.XferParams.skipDuplicateCheck">
+            <summary>
+            Do not check for duplicate files in the directory scan.
+            Default: false
+            Available since ascp version 3.6.0
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.XferParams.aclOption">
+            <summary>
+            Specify ACLs preservation modes (local).
+            Default: false
+            Available since ascp version 3.6.0
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.XferParams.remoteAclOption">
+            <summary>
+            Specify ACLs preservation modes (remote).
+            Default: false
+            Available since ascp version 3.6.0
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.XferParams.extendedAttributesOption">
+            <summary>
+            Specify Extended Attributes preservation modes (local).
+            Default: false
+            Available since ascp version 3.6.0
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.XferParams.remoteExtendedAttributesOption">
+            <summary>
+            Specify Extended Attributes preservation modes (remote).
+            Default: false
+            Available since ascp version 3.6.0
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.XferParams.reportSkippedFiles">
+             <summary>
+             Include skipped files in the transfer information report.
+             By default, ascp does not report notification when a file is skipped.
+             Set to {true} to get report about skipped files.
+            
+             Default: {false}
+             Available since ascp version 3.6.1
+             </summary>
+        </member>
+        <member name="F:Aspera.Transfer.XferParams.fileChecksum">
+             <summary>
+             Controls whether or not checksum of each file is reported
+             and what type of checksum is reported.
+            
+             Default: {none}
+             Available since ascp version 3.5.2
+             </summary>
+        </member>
+        <member name="M:Aspera.Transfer.XferParams.appendToAsperaTags">
+             <summary>
+             Function to be overloaded by other Aspera products in order to extend the "aspera" tags with Aspera-specific values.
+            
+             Appends to aspera tags.
+             </summary>
+             <returns>a Json Object containing the json key/value pairs to be appended to the "aspera" object</returns>
+        </member>
+        <member name="M:Aspera.Transfer.XferParams.getExtendedOptions">
+             <summary>
+             Function to be overloaded by implementors to extend the built-in Aspera command options with options and their values
+             supported by the underlying ascp command.
+            
+             Appends to ascp command options list.
+             </summary>
+             <returns>a List&lt;String&gt;</returns>
+        </member>
+        <member name="T:Aspera.Transfer.Resume">
+            <summary>
+            These are the resume options for transferred files,
+            if a file is found with the same name at the destination.
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.Resume.FILE_ATTRIBUTES">
+            <summary>
+            If the size of the source and destination match, resume the transfer.
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.Resume.FULL_CHECKSUM">
+            <summary>
+            If the full checksum of the source and destination match, resume the transfer.
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.Resume.OFF">
+            <summary>
+            Always re-transfer.
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.Resume.SPARSE_CHECKSUM">
+            <summary>
+            If the sparse checksum of the source and destination match, resume the transfer.
+            </summary>
+        </member>
+        <member name="T:Aspera.Transfer.SymLinkPolicy">
+            <summary>
+            The Symbolic Link Policy
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.SymLinkPolicy.COPY">
+            <summary>
+            Copy the symbolic link itself to the destination.
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.SymLinkPolicy.FOLLOW">
+            <summary>
+             Follow the symbolic link and copy the file.
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.SymLinkPolicy.COPY_FORCE">
+            <summary>
+            Forcibly copy the symbolic link itself.
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.SymLinkPolicy.SKIP">
+            <summary>
+            Skip the symbolic link.
+            </summary>
+        </member>
+        <member name="T:Aspera.Transfer.Policy">
+            <summary>
+            These are the rate policy options for a fasp transfer.
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.Policy.FAIR">
+            <summary>
+            Transfer at the target rate while slowing down to allow other traffic.
+            Default value.
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.Policy.FIXED">
+            <summary>
+            Transfer at the target rate regardless of other network traffic.
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.Policy.HIGH">
+            <summary>
+            Transfer at the target rate while slowing down to allow other traffic.
+            Take higher priority over FAIR.
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.Policy.LOW">
+            <summary>
+            Use only unused network bandwidth.
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.FileChecksum.SHA1">
+            <summary>
+            Report the checksum as sha1.
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.FileChecksum.MD5">
+            <summary>
+            Report the checksum as md5.
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.FileChecksum.NONE">
+            <summary>
+            Don't report the checksum.
+            </summary>
+        </member>
+        <member name="T:Aspera.Transfer.FileManifestFormat">
+            <summary>
+            The File Manifest Format
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.FileManifestFormat.NONE">
+            <summary>
+            Disable generation of manifest file
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.FileManifestFormat.TEXT">
+            <summary>
+            Generate a plain text manifest file
+            </summary>
+        </member>
+        <member name="T:Aspera.Transfer.DeleteSource">
+            <summary>
+            DeleteSource enum.
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.DeleteSource.NONE">
+            <summary>
+            Disable source deletion
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.DeleteSource.FILES_ONLY">
+            <summary>
+            Delete source files after successful transfer but not directories
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.DeleteSource.FILES_AND_DIRECTORIES">
+            <summary>
+            Delete source files as well as directories after sucessful transfer
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.DeleteSource.EMPTY_DIRECTORIES">
+            <summary>
+            Delete empty directorie after sucessful transfer
+            </summary>
+        </member>
+        <member name="T:Aspera.Transfer.OverwritePolicy">
+            <summary>
+            The Overwrite Policy.
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.OverwritePolicy.DIFFERENT">
+            <summary>
+            Overwrite only if the existing file is different,
+            Default value.
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.OverwritePolicy.ALWAYS">
+            <summary>
+            Always overwrite the existing file
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.OverwritePolicy.DIFFERENT_AND_OLDER">
+            <summary>
+            Overwrite only if the existing file is different and also older
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.OverwritePolicy.NEVER">
+            <summary>
+            Never overwrite an existing file
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.OverwritePolicy.OLDER">
+            <summary>
+            Overwrite only if the existing file is older
+            </summary>
+        </member>
+        <member name="T:Aspera.Transfer.AclOption">
+            <summary>
+            Acl (acls) options preservation
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.AclOption.NONE">
+            <summary>
+            Do not preserve acl.
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.AclOption.NATIVE">
+            <summary>
+            acls are preserved using native capabilities of the file system.
+            But this storage mode is not supported on all file systems.
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.AclOption.METAFILE">
+            <summary>
+            acls for a file (say, "readme.txt") are preserved in a second file, whose name is composed of the name
+            of the (primary) file with ".aspera-meta" appended (i.e., "readme.txt.aspera-meta"). The aspera-meta files are platform-independent
+            and can be copied between hosts without loss of information. This storage mode is supported on all file systems.
+            </summary>
+        </member>
+        <member name="T:Aspera.Transfer.ExtendedAttributesOption">
+            <summary>
+            Extended attribute (xattrs) options preservation
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.ExtendedAttributesOption.NONE">
+            <summary>
+            Do not preserve extended attributes.
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.ExtendedAttributesOption.NATIVE">
+            <summary>
+            extended attributes are preserved using native capabilities of the file system.
+            But this storage mode is not supported on all file systems.
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.ExtendedAttributesOption.METAFILE">
+            <summary>
+            extended attributes for a file (say, "readme.txt") are preserved in a second file, whose name is composed of the name
+            of the (primary) file with ".aspera-meta" appended (i.e., "readme.txt.aspera-meta"). The aspera-meta files are platform-independent
+            and can be copied between hosts without loss of information. This storage mode is supported on all file systems.
+            </summary>
+        </member>
+        <member name="T:Aspera.Transfer.Cipher">
+            <summary>
+            Transfer cipher methods.
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.Cipher.NONE">
+            <summary>
+            Do not encrypt.
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.Cipher.AES_128">
+            <summary>
+            Use AES-128.
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.Cipher.AES_192">
+            <summary>
+            Use AES-192
+            </summary>
+        </member>
+        <member name="F:Aspera.Transfer.Cipher.AES_256">
+            <summary>
+            Use AES-256
+            </summary>
+        </member>
+        <member name="T:Aspera.Transfer.HTTPFallback">
+            <summary>
+            HTTP fallback.
+            </summary>
+        </member>
+        <member name="M:Aspera.Transfer.HTTPFallback.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Aspera.Transfer.HTTPFallback"/> class.
+            Default constructor.
+            </summary>
+        </member>
+        <member name="M:Aspera.Transfer.HTTPFallback.#ctor(System.Int32,System.Boolean,System.String,System.String,System.Net.EndPoint)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Aspera.Transfer.HTTPFallback"/> class.
+            </summary>
+            <param name="httpPort">Http port.</param>
+            <param name="encodeAllAsJPEG">If set to <c>true</c> encode all as JPE.</param>
+            <param name="httpsKeyFileName">Https key file name.</param>
+            <param name="httpsCertFileName">Https cert file name.</param>
+            <param name="httpProxyAddress">Http proxy address.</param>
+            <exception cref="T:Aspera.Transfer.FaspManagerException">Thrown when key file or certificate file does not exist.</exception>
+        </member>
+    </members>
+</doc>
