@@ -42,13 +42,13 @@ powershell_module_related_files_to_copy.each do |source_file_name|
   destination_file_full_path = win_friendly_path(File.join(Chef::Config[:file_cache_path], source_file_name))
 
   cookbook_file destination_file_full_path do
-    source file
+    source source_file_name
   end
 
   custom_log 'custom_log' do msg "Copied PowerShell Module related file from Cookbook Location to Chef Cache Location - #{source_file_name}" end
 end
 
 end_time = DateTime.now
-custom_log 'custom_log' do msg "recipe_end_Time(#{recipe_name}): #{en_time}" end
-custom_log 'custom_log' do msg "recipe_duration(#{recipe_name}): #{endtime.to_time - start_time.to_time} seconds" end
+custom_log 'custom_log' do msg "recipe_end_Time(#{recipe_name}): #{end_time}" end
+custom_log 'custom_log' do msg "recipe_duration(#{recipe_name}): #{end_time.to_time - start_time.to_time} seconds" end
 custom_log 'custom_log' do msg "Finished PowerShell Module setup\n\n\n" end
