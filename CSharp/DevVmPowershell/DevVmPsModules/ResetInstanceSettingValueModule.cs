@@ -97,11 +97,6 @@ namespace DevVmPsModules
 			{
 				throw new ArgumentNullException(nameof(Section), $"{nameof(Section)} cannot be NULL or Empty.");
 			}
-
-			if (string.IsNullOrWhiteSpace(NewValue))
-			{
-				throw new ArgumentNullException(nameof(NewValue), $"{nameof(NewValue)} cannot be NULL or Empty.");
-			}
 		}
 	}
 }

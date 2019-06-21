@@ -52,10 +52,25 @@ namespace Helpers.Tests.Integration
 			// Arrange
 			string section = "Relativity.DataGrid";
 			string name = "DataGridEndPoint";
-			string value = "test";
+			string value = " ";
 
 			// Act
-			bool success = Sut.UpdateInstanceSettingValue(section, name, value);
+			bool success = Sut.UpdateInstanceSettingValue(name, section, value);
+
+			// Assert
+			Assert.That(success, Is.True);
+		}
+
+		[Test]
+		public void UpdateInstanceSettingTest2()
+		{
+			// Arrange
+			string section = "kCura.Audit";
+			string name = "ESIndexCreationSettings";
+			string value = "";
+
+			// Act
+			bool success = Sut.UpdateInstanceSettingValue(name, section, value);
 
 			// Assert
 			Assert.That(success, Is.True);

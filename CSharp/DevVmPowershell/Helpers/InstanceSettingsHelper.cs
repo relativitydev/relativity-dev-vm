@@ -44,10 +44,14 @@ namespace Helpers
 			}
 		}
 
-		public bool UpdateInstanceSettingValue(string section, string name, string newValue)
+		public bool UpdateInstanceSettingValue(string name, string section, string newValue)
 		{
 			try
 			{
+				if (newValue == null)
+				{
+					newValue = string.Empty;
+				}
 				using (IInstanceSettingManager instanceSettingManager = ServiceFactory.CreateProxy<IInstanceSettingManager>())
 				{
 					Query query = new Query();
@@ -60,6 +64,12 @@ namespace Helpers
 						{
 							Console.WriteLine("Successfully found the existing Instance Setting");
 							InstanceSetting instanceSetting = result.Artifact;
+							if (instanceSetting.Name == "ESIndexCreationSettings")
+							{
+								string previousValue = instanceSetting.Value;
+								newValue = previousValue.Replace("\"number_of_shards\": 12", "\"number_of_shards\": 2");
+								newValue = newValue.Replace("\"number_of_replicas\": 2", "\"number_of_replicas\": 0");
+							}
 							instanceSetting.Value = newValue;
 							instanceSettingManager.UpdateSingleAsync(instanceSetting).Wait();
 							Console.WriteLine("Successfully updated the Instance Setting");
