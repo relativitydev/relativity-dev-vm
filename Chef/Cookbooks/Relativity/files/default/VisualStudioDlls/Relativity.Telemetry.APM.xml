@@ -1,0 +1,1799 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Relativity.Telemetry.APM</name>
+    </assembly>
+    <members>
+        <member name="T:Relativity.Telemetry.APM.HealthMeasureWithArg`1">
+            <summary>
+            Generic health measure
+            </summary>
+            <typeparam name="T">Type of the parameter that is passed in to healthFunction and Write method</typeparam>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.HealthMeasureWithArg`1.#ctor(Relativity.Telemetry.APM.Metadata,System.Collections.Generic.IEnumerable{Relativity.Telemetry.APM.ISink},System.Func{`0,Relativity.Telemetry.APM.HealthCheckOperationResult},Relativity.Telemetry.APM.Interfaces.INonExecutingTaskScheduler,System.Func{System.Boolean})">
+            <summary>
+            Initializes a new instance of the <see cref="T:Relativity.Telemetry.APM.HealthMeasureWithArg`1"/>
+            </summary>
+            <param name="metaData">The metadata.</param>
+            <param name="sinks">The sink.</param>
+            <param name="healthFunction">Health function with parameter</param>
+            <param name="taskScheduler">Provide a task scheduler for scheduled fire and forget tasks.</param>
+            <param name="killSwitch">Disables the Measures writing to the sinks.</param>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.HealthMeasureWithArg`1.Write(`0)">
+            <summary>
+            Write the measurement data to the log system with parameter.
+            </summary>
+            <param name="param">The parameter that can be passed into healthFunction</param>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.HealthMeasureWithArg`1.Write">
+            <summary>
+            This method is not supported. Call <see cref="M:Relativity.Telemetry.APM.HealthMeasureWithArg`1.Write(`0)"/> instead.
+            </summary>
+        </member>
+        <member name="T:Relativity.Telemetry.APM.IHealthMeasureWithArg`1">
+            <summary>
+            Executes a heath check with parameter type T and reports the effect of it.
+            </summary>
+            <typeparam name="T">Type of the parameter that is passed in to healthFunction and Write method</typeparam>
+        </member>
+        <member name="T:Relativity.Telemetry.APM.APM">
+            <summary>
+            A client to log APM metrics.
+            </summary>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.APM.#ctor">
+            <summary>
+            Instantiate an instance of an APM client using default Metadata and default sinks.
+            </summary>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.APM.#ctor(Relativity.Telemetry.APM.IAPMConfiguration)">
+            <summary>
+            Instantiate an instance of an APM client using supplied configuration values.
+            </summary>
+            <param name="config">An instance of an IAPMConfiguration object.</param>
+        </member>
+        <member name="P:Relativity.Telemetry.APM.APM.Sinks">
+            <summary>
+            Gets the sinks for this APM instance.
+            </summary>
+            <value>
+            The sinks.
+            </value>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.APM.GetDefaultSinks">
+            <summary>
+            Gets the default sinks.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="P:Relativity.Telemetry.APM.CounterResult.Value">
+            <summary>
+            Gets or sets the value.
+            </summary>
+            <value>
+            The value.
+            </value>
+        </member>
+        <member name="P:Relativity.Telemetry.APM.CounterResult.Resolution">
+            <summary>
+            Gets or sets the resolution.
+            </summary>
+            <value>
+            The resolution.
+            </value>
+        </member>
+        <member name="P:Relativity.Telemetry.APM.CounterResult.UnitOfMeasure">
+            <summary>
+            Gets or sets the unit of measure.
+            </summary>
+            <value>
+            The unit of measure.
+            </value>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.CounterResult.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Relativity.Telemetry.APM.CounterResult"/> class.
+            </summary>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.CounterResult.#ctor(Relativity.Telemetry.APM.Metadata)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Relativity.Telemetry.APM.CounterResult"/> class.
+            </summary>
+            <param name="metadata">The metadata.</param>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.CounterResult.#ctor(Relativity.Telemetry.APM.Metadata,System.Int64,System.String,System.Int32)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Relativity.Telemetry.APM.CounterResult"/> class.
+            </summary>
+            <param name="metadata">The metadata.</param>
+            <param name="value">The value.</param>
+            <param name="unitOfMeasure">The unit of measure for the value.</param>
+            <param name="resolution">Number of calls to Increment or Decrement before writing an event to the sink.</param>
+        </member>
+        <member name="T:Relativity.Telemetry.APM.GaugeResult`1">
+            <summary>
+            Result of a Gauge measure
+            </summary>
+        </member>
+        <member name="P:Relativity.Telemetry.APM.GaugeResult`1.Value">
+            <summary>
+            Gets or sets the value.
+            </summary>
+            <value>
+            The value.
+            </value>
+        </member>
+        <member name="P:Relativity.Telemetry.APM.GaugeResult`1.UnitOfMeasure">
+            <summary>
+            Gets or sets the unit of measure.
+            </summary>
+            <value>
+            The unit of measure.
+            </value>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.GaugeResult`1.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Relativity.Telemetry.APM.GaugeResult`1"/> class.
+            </summary>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.GaugeResult`1.#ctor(Relativity.Telemetry.APM.Metadata)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Relativity.Telemetry.APM.GaugeResult`1"/> class.
+            </summary>
+            <param name="metaData">The metaData.</param>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.GaugeResult`1.#ctor(Relativity.Telemetry.APM.Metadata,`0,System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Relativity.Telemetry.APM.GaugeResult`1"/> class.
+            </summary>
+            <param name="metaData">The metaData.</param>
+            <param name="value">The value.</param>
+            <param name="unitOfMeasure">The unit of measure.</param>
+        </member>
+        <member name="T:Relativity.Telemetry.APM.HealthCheckException">
+            <summary>
+            Shortens the Health Check Exception that is sent to service bus. 
+            Stack traces should be logged seperately and tagged with the <see cref="P:Relativity.Telemetry.APM.HealthCheckException.LoggingCorrelationGuid"/>
+            </summary>
+        </member>
+        <member name="P:Relativity.Telemetry.APM.HealthCheckException.LoggingCorrelationGuid">
+            <summary>
+            Ties the metric exception to a logged error.
+            </summary>
+        </member>
+        <member name="P:Relativity.Telemetry.APM.HealthCheckException.Message">
+            <summary>
+            The exception message.
+            </summary>
+        </member>
+        <member name="P:Relativity.Telemetry.APM.HealthCheckException.InnerExceptionMessage">
+            <summary>
+            The innerexception message.
+            </summary>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.HealthCheckOperationResult.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Relativity.Telemetry.APM.HealthCheckOperationResult"/> class.
+            </summary>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.HealthCheckOperationResult.#ctor(System.Boolean,System.String,System.Exception,System.Collections.Generic.Dictionary{System.String,System.Object})">
+            <summary>
+            Initializes a new instance of the <see cref="T:Relativity.Telemetry.APM.HealthCheckOperationResult"/> class.
+            </summary>
+            <param name="isHealthy">If set to <c>true</c> is healthy.</param>
+            <param name="message">A message to report with the Health Check.</param>
+            <param name="exception">An Exception.</param>
+            <param name="customData">Custom Data items to add or update in metadata.</param>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.HealthCheckOperationResult.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Relativity.Telemetry.APM.HealthCheckOperationResult"/> class.
+            </summary>
+            <param name="message">A message to report with the Health Check. Defaults to false isHealthy.</param>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.HealthCheckOperationResult.#ctor(System.String,System.Exception)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Relativity.Telemetry.APM.HealthCheckOperationResult"/> class.
+            </summary>
+            <param name="message">A message to report with the Health Check. Defaults to false isHealthy.</param>
+            <param name="exception">An Exception.</param>
+        </member>
+        <member name="P:Relativity.Telemetry.APM.HealthCheckOperationResult.Message">
+            <summary>
+            Message of the result.
+            </summary>
+        </member>
+        <member name="P:Relativity.Telemetry.APM.HealthCheckOperationResult.Exception">
+            <summary>
+            A possible exception.
+            </summary>
+        </member>
+        <member name="P:Relativity.Telemetry.APM.HealthCheckOperationResult.IsHealthy">
+            <summary>
+            Indicates if the result of the check is indeed healthy or not.
+            </summary>
+            <value><c>true</c> if this instance is healthy; otherwise, <c>false</c>.</value>
+        </member>
+        <member name="P:Relativity.Telemetry.APM.HealthCheckOperationResult.CustomData">
+            <summary>
+            Custom Data items to add or update in metadata.
+            </summary>
+        </member>
+        <member name="T:Relativity.Telemetry.APM.HealthCheckResult">
+            <summary>
+            The result data of a health check.</summary>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.HealthCheckResult.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Relativity.Telemetry.APM.HealthCheckResult"/> class.
+            </summary>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.HealthCheckResult.#ctor(Relativity.Telemetry.APM.Metadata)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Relativity.Telemetry.APM.HealthCheckResult"/> class.
+            </summary>
+            <param name="metaData">The metadata.</param>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.HealthCheckResult.#ctor(Relativity.Telemetry.APM.Metadata,System.Boolean,System.String,Relativity.Telemetry.APM.HealthCheckException)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Relativity.Telemetry.APM.HealthCheckResult"/> class.
+            </summary>
+            <param name="metaData">The metadata.</param>
+            <param name="isHealthy">If set to <c>true</c> is healthy.</param>
+            <param name="message">A message to report with the Health Check.</param>
+            <param name="exception">A shortened exception from HealthCheckOperationResult. Auto logs an Error with the LoggingCorrelationGuid property of <see cref="T:Relativity.Telemetry.APM.HealthCheckException"/>.</param>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.HealthCheckResult.#ctor(Relativity.Telemetry.APM.Metadata,System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Relativity.Telemetry.APM.HealthCheckResult"/> class.
+            </summary>
+            <param name="metaData">The metadata.</param>
+            <param name="message">A message to report with the Health Check.</param>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.HealthCheckResult.#ctor(Relativity.Telemetry.APM.Metadata,System.String,Relativity.Telemetry.APM.HealthCheckException)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Relativity.Telemetry.APM.HealthCheckResult"/> class.
+            </summary>
+            <param name="metaData">The metadata.</param>
+            <param name="message">A message to report with the Health Check.</param>
+            <param name="exception">A shortened exception from HealthCheckOperationResult. Auto logs an Error with the LoggingCorrelationGuid property of <see cref="T:Relativity.Telemetry.APM.HealthCheckException"/></param>
+        </member>
+        <member name="P:Relativity.Telemetry.APM.HealthCheckResult.Message">
+            <summary>
+            Message of the result.
+            </summary>
+        </member>
+        <member name="P:Relativity.Telemetry.APM.HealthCheckResult.Exception">
+            <summary>
+            A shortened exception.
+            </summary>
+        </member>
+        <member name="P:Relativity.Telemetry.APM.HealthCheckResult.IsHealthy">
+            <summary>
+            Indicates if the result of the check is indeed healthy or not.
+            </summary>
+            <value><c>true</c> if this instance is healthy; otherwise, <c>false</c>.</value>
+        </member>
+        <member name="T:Relativity.Telemetry.APM.Metadata">
+            <summary>
+            The Metadata object.
+            </summary>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.Metadata.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Relativity.Telemetry.APM.Metadata"/> class.
+            </summary>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.Metadata.#ctor(System.String,System.String,System.String,System.Guid,System.String,System.Collections.Generic.Dictionary{System.String,System.Object})">
+            <summary>
+            Initializes a new instance of the <see cref="T:Relativity.Telemetry.APM.Metadata"/> class. The HostName, Timestamp
+            </summary>
+            <param name="system">The system.</param>
+            <param name="subSystem">The sub system.</param>
+            <param name="application">The application.</param>
+            <param name="sourceID">The source identifier.  The Instance Guid for Relativity Instances.</param>
+            <param name="sourceName">Name of the source.  For example, the Instance Name for Relativity Instances or an Identifying name for Shared Services such as Conversion Service.</param>
+            <param name="customData">A customizable string of data the user can set to anything they want that isn't included as a Property of Metadata.</param>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.Metadata.#ctor(Relativity.Telemetry.APM.Metadata)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Relativity.Telemetry.APM.Metadata"/> class.
+            </summary>
+            <param name="metadata">The metadata.</param>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.Metadata.SetCurrent">
+            <summary>
+            Sets the current defaults
+            </summary>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.Metadata.GetFQDN">
+            <summary>
+            Gets the FQDN.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.Metadata.ConstructFQDN(System.String,System.String)">
+            <summary>
+            Joins the domainname to the hostname seperated by a period if the domain name is not null or empty.
+            </summary>
+            <param name="hostName"></param>
+            <param name="domainName"></param>
+            <returns></returns>
+        </member>
+        <member name="P:Relativity.Telemetry.APM.Metadata.MeasureType">
+            <summary>
+            Gets or sets the type of the measure.
+            </summary>
+            <value>
+            The type of the measure.
+            </value>
+        </member>
+        <member name="P:Relativity.Telemetry.APM.Metadata.TimeStamp">
+            <summary>
+            Gets the time stamp.  Set internally when a metric is recorded.
+            </summary>
+            <value>
+            The time stamp.
+            </value>
+        </member>
+        <member name="P:Relativity.Telemetry.APM.Metadata.System">
+            <summary>
+            Gets or sets the system.
+            </summary>
+            <value>
+            The system.
+            </value>
+        </member>
+        <member name="P:Relativity.Telemetry.APM.Metadata.SubSystem">
+            <summary>
+            Gets or sets the sub system.
+            </summary>
+            <value>
+            The sub system.
+            </value>
+        </member>
+        <member name="P:Relativity.Telemetry.APM.Metadata.Application">
+            <summary>
+            Gets or sets the application.
+            </summary>
+            <value>
+            The application.
+            </value>
+        </member>
+        <member name="P:Relativity.Telemetry.APM.Metadata.SourceId">
+            <summary>
+            Gets or sets the source identifier.
+            </summary>
+            <value>
+            The source identifier.  The Instance Guid for Relativity Instances.
+            </value>
+        </member>
+        <member name="P:Relativity.Telemetry.APM.Metadata.SourceName">
+            <summary>
+            Gets or sets the name of the source.
+            </summary>
+            <value>
+            Name of the source.  For example, the Instance Name for Relativity Instances or an Identifying name for Shared Services such as Conversion Service.
+            </value>
+        </member>
+        <member name="P:Relativity.Telemetry.APM.Metadata.HostName">
+            <summary>
+            Gets or sets the name of the host.
+            </summary>
+            <value>
+            The name of the host.
+            </value>
+        </member>
+        <member name="P:Relativity.Telemetry.APM.Metadata.Name">
+            <summary>
+            Gets or sets the name of the measure.
+            </summary>
+            <value>
+            The name.
+            </value>
+        </member>
+        <member name="P:Relativity.Telemetry.APM.Metadata.WorkspaceGuid">
+            <summary>
+            Gets or sets the workspace guid.
+            </summary>
+            <value>
+            The workspace guid.
+            </value>
+        </member>
+        <member name="P:Relativity.Telemetry.APM.Metadata.CorrelationId">
+            <summary>
+            Gets or sets the correlation identifier.
+            </summary>
+            <value>
+            The correlation identifier.  Can be used to associate multiple metrics.
+            </value>
+        </member>
+        <member name="P:Relativity.Telemetry.APM.Metadata.CustomData">
+            <summary>
+            A customizable Dictionary of data the user can set to anything they want that isn't included as a Property of Metadata.
+            </summary>
+        </member>
+        <member name="T:Relativity.Telemetry.APM.MeterResult">
+            <summary>
+            Result of a Meter measure
+            </summary>
+        </member>
+        <member name="P:Relativity.Telemetry.APM.MeterResult.Count">
+            <summary>
+            Gets or sets the count.
+            </summary>
+            <value>
+            The count.
+            </value>
+        </member>
+        <member name="P:Relativity.Telemetry.APM.MeterResult.MeanRate">
+            <summary>
+            Gets or sets the mean rate.
+            </summary>
+            <value>
+            The mean rate.
+            </value>
+        </member>
+        <member name="P:Relativity.Telemetry.APM.MeterResult.OneMinuteRate">
+            <summary>
+            Gets or sets the one minute rate.
+            </summary>
+            <value>
+            The one minute rate.
+            </value>
+        </member>
+        <member name="P:Relativity.Telemetry.APM.MeterResult.FiveMinuteRate">
+            <summary>
+            Gets or sets the five minute rate.
+            </summary>
+            <value>
+            The five minute rate.
+            </value>
+        </member>
+        <member name="P:Relativity.Telemetry.APM.MeterResult.FifteenMinuteRate">
+            <summary>
+            Gets or sets the fifteen minute rate.
+            </summary>
+            <value>
+            The fifteen minute rate.
+            </value>
+        </member>
+        <member name="P:Relativity.Telemetry.APM.MeterResult.Measuring">
+            <summary>
+            Gets or sets the measuring units (e.g. - operations, hits, etc).
+            </summary>
+            <value>
+            The measuring.
+            </value>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.MeterResult.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Relativity.Telemetry.APM.MeterResult"/> class.
+            </summary>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.MeterResult.#ctor(Relativity.Telemetry.APM.Metadata)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Relativity.Telemetry.APM.MeterResult"/> class.
+            </summary>
+            <param name="metaData">The metaData.</param>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.MeterResult.#ctor(Relativity.Telemetry.APM.Metadata,System.Int64,Relativity.Telemetry.APM.Rate,Relativity.Telemetry.APM.Rate,Relativity.Telemetry.APM.Rate,Relativity.Telemetry.APM.Rate,System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Relativity.Telemetry.APM.MeterResult"/> class.
+            </summary>
+            <param name="metaData">The metaData.</param>
+            <param name="count">The count.</param>
+            <param name="meanRate">The mean rate.</param>
+            <param name="oneMinRate">The one minimum rate.</param>
+            <param name="fiveMinRate">The five minimum rate.</param>
+            <param name="fifteenMinRate">The fifteen minimum rate.</param>
+            <param name="measure">Description of what is being measured.</param>
+        </member>
+        <member name="T:Relativity.Telemetry.APM.Rate">
+            <summary>
+              Describes the rate.
+            </summary>
+        </member>
+        <member name="P:Relativity.Telemetry.APM.Rate.Value">
+            <summary>
+            The actual value
+            </summary>
+        </member>
+        <member name="P:Relativity.Telemetry.APM.Rate.MeterType">
+            <summary>
+            What are we measuring
+            </summary>
+        </member>
+        <member name="P:Relativity.Telemetry.APM.Rate.TimeUnit">
+            <summary>
+            Unit of time
+            </summary>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.Rate.ToString">
+            <summary>
+            Returns a formatted representation.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:Relativity.Telemetry.APM.TimerResult">
+            <summary>
+            Result of a Timer measure.
+            </summary>
+            <seealso cref="T:Relativity.Telemetry.APM.Metadata" />
+        </member>
+        <member name="P:Relativity.Telemetry.APM.TimerResult.Identifier">
+            <summary>
+            Gets or sets the identifier.
+            </summary>
+            <value>
+            The identifier.
+            </value>
+        </member>
+        <member name="P:Relativity.Telemetry.APM.TimerResult.Elapsed">
+            <summary>
+            Gets or sets the elapsed time in milliseconds.
+            </summary>
+            <value>
+            The elapsed time in milliseconds.
+            </value>
+        </member>
+        <member name="P:Relativity.Telemetry.APM.TimerResult.State">
+            <summary>
+            Gets or sets the state.
+            </summary>
+            <value>
+            The state.
+            </value>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.TimerResult.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Relativity.Telemetry.APM.TimerResult"/> class.
+            </summary>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.TimerResult.#ctor(Relativity.Telemetry.APM.Metadata)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Relativity.Telemetry.APM.TimerResult"/> class.
+            </summary>
+            <param name="metadata">The metadata of the measure.</param>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.TimerResult.#ctor(Relativity.Telemetry.APM.Metadata,System.Object,System.TimeSpan,Relativity.Telemetry.APM.Types.TimerState)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Relativity.Telemetry.APM.TimerResult"/> class.
+            </summary>
+            <param name="metadata">The metadata of the measure.</param>
+            <param name="identifier">The identifier.</param>
+            <param name="elapsed">The elapsed time.</param>
+            <param name="state">The state.</param>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.CounterMeasure.#ctor(Relativity.Telemetry.APM.Metadata,System.Collections.Generic.IEnumerable{Relativity.Telemetry.APM.ISink},System.String,Relativity.Telemetry.APM.Interfaces.INonExecutingTaskScheduler,System.Boolean,System.Int32,System.Func{System.Boolean})">
+            <summary>
+            Initializes a new instance of the <see cref="T:Relativity.Telemetry.APM.CounterMeasure"/> class.
+            </summary>
+            <param name="metadata">The metadata.</param>
+            <param name="sinks">The sink.</param>
+            <param name="unitOfMeasure">The unit of measure of the count.</param>
+            <param name="taskScheduler">Provide a task scheduler for scheduled fire and forget tasks.</param>
+            <param name="directWrite">if set to <c>true</c> then directly write to the sink.</param>
+            <param name="resolution">Number of calls to Increment or Decrement before writing an event to the sink.</param>
+            <param name="killSwitch">Disables the Measures writing to the sinks.</param>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.CounterMeasure.Increment">
+            <summary>
+            Increments the counter.
+            </summary>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.CounterMeasure.Increment(System.Int64)">
+            <summary>
+            Increments the counter by the provided value.
+            </summary>
+            <param name="incrementBy"></param>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.CounterMeasure.Decrement">
+            <summary>
+            Decrements the counter.
+            </summary>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.CounterMeasure.Decrement(System.Int64)">
+            <summary>
+            Decrements the counter by the provided value.
+            </summary>
+            <param name="decrementBy"></param>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.CounterMeasure.Reset">
+            <summary>
+            Resets the counter back to zero.
+            </summary>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.CounterMeasure.Write">
+            <summary>
+            Sends the counter value to all sinks.
+            </summary>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.CounterMeasure.Value">
+            <summary>
+            Retrieves the current value.
+            </summary>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.CounterMeasure.Iteration">
+            <summary>
+            Retrieves the current iteration
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:Relativity.Telemetry.APM.GaugeMeasure`1">
+            <summary>
+            Gauge measure.
+            </summary>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.GaugeMeasure`1.#ctor(Relativity.Telemetry.APM.Metadata,System.Collections.Generic.IEnumerable{Relativity.Telemetry.APM.ISink},System.String,System.Func{`0},Relativity.Telemetry.APM.Interfaces.INonExecutingTaskScheduler,System.Func{System.Boolean})">
+            <summary>
+            Initializes a new instance of the <see cref="T:Relativity.Telemetry.APM.GaugeMeasure`1" /> class.
+            </summary>
+            <param name="metaData">The Metadata.</param>
+            <param name="sinks">The sink.</param>
+            <param name="unitOfMeasure">The unit of measure.</param>
+            <param name="operation">The operation.</param>
+            <param name="taskScheduler">Provide a task scheduler for scheduled fire and forget tasks.</param>
+            <param name="killSwitch">Disables the Measures writing to the sinks.</param>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.GaugeMeasure`1.Write">
+            <summary>
+            Write the measurement data to the log system.
+            </summary>
+        </member>
+        <member name="T:Relativity.Telemetry.APM.HealthMeasure">
+            <summary>
+            Health measure.
+            </summary>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.HealthMeasure.#ctor(Relativity.Telemetry.APM.Metadata,System.Collections.Generic.IEnumerable{Relativity.Telemetry.APM.ISink},System.Func{Relativity.Telemetry.APM.HealthCheckOperationResult},Relativity.Telemetry.APM.Interfaces.INonExecutingTaskScheduler,System.Func{System.Boolean})">
+            <summary>
+            Initializes a new instance of the <see cref="T:Relativity.Telemetry.APM.HealthMeasure"/> class.
+            </summary>
+            <param name="metaData">The metadata.</param>
+            <param name="sinks">The sink.</param>
+            <param name="healthFunction">Health function.</param>
+            <param name="taskScheduler">Provide a task scheduler for scheduled fire and forget tasks.</param>
+            <param name="killSwitch">Disables the Measures writing to the sinks.</param>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.HealthMeasure.Write">
+            <summary>
+            Write the measurement data to the log system.
+            </summary>
+        </member>
+        <member name="T:Relativity.Telemetry.APM.MeterMeasure">
+            <summary>
+            Meter measure.
+            </summary>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.MeterMeasure.#ctor(Relativity.Telemetry.APM.Metadata,System.Collections.Generic.IEnumerable{Relativity.Telemetry.APM.ISink},System.String,Relativity.Telemetry.APM.Types.TimeUnit,Relativity.Telemetry.APM.Interfaces.INonExecutingTaskScheduler,System.Func{System.Boolean})">
+            <summary>
+            Initializes a new instance of the <see cref="T:Relativity.Telemetry.APM.MeterMeasure" /> class.
+            </summary>
+            <param name="metaData">The metadata.</param>
+            <param name="sinks">The sink.</param>
+            <param name="measuring">Description of what is being measured.</param>
+            <param name="rateUnit">Rate unit.</param>
+            <param name="taskScheduler">Provide a task scheduler for scheduled fire and forget tasks.</param>
+            <param name="killSwitch">Disables the Measures writing to the sinks.</param>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.MeterMeasure.Mark(System.Int64)">
+            <summary>
+            Marks the occurrence of an operation.
+            </summary>
+            <param name="n">N.</param>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.MeterMeasure.Tick">
+            <summary>
+            MArks the passage of time for internal decay rates.
+            </summary>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.MeterMeasure.Dispose">
+            <summary>
+            Releases all resource used by the <see cref="T:Relativity.Telemetry.APM.MeterMeasure"/> object.
+            </summary>
+            <remarks>Call <see cref="M:Relativity.Telemetry.APM.MeterMeasure.Dispose"/> when you are finished using the <see cref="T:Relativity.Telemetry.APM.MeterMeasure"/>. The
+            <see cref="M:Relativity.Telemetry.APM.MeterMeasure.Dispose"/> method leaves the <see cref="T:Relativity.Telemetry.APM.MeterMeasure"/> in an unusable state.
+            After calling <see cref="M:Relativity.Telemetry.APM.MeterMeasure.Dispose"/>, you must release all references to the
+            <see cref="T:Relativity.Telemetry.APM.MeterMeasure"/> so the garbage collector can reclaim the memory that the
+            <see cref="T:Relativity.Telemetry.APM.MeterMeasure"/> was occupying.</remarks>
+        </member>
+        <member name="P:Relativity.Telemetry.APM.MeterMeasure.Count">
+            <summary>
+             Returns the total number of events which have been marked.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.MeterMeasure.Write">
+            <summary>
+            Write the measurement data to the sink.
+            </summary>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.MeterMeasure.Abbreviate(Relativity.Telemetry.APM.Types.TimeUnit)">
+            <summary>
+            Abbreviates the specified unit.
+            </summary>
+            <param name="unit">The unit.</param>
+            <returns></returns>
+            <exception cref="T:System.ArgumentOutOfRangeException">unit</exception>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.TimedGaugeMeasure`1.#ctor(Relativity.Telemetry.APM.Metadata,System.Collections.Generic.IEnumerable{Relativity.Telemetry.APM.ISink},System.String,System.Func{`0},System.TimeSpan,Relativity.Telemetry.APM.Interfaces.INonExecutingTaskScheduler,System.Boolean,System.Func{System.Boolean})">
+            <summary>
+            Initializes a new instance of <see cref="T:Relativity.Telemetry.APM.TimedGaugeMeasure`1" />
+            </summary>
+            <param name="metaData">The base result.</param>
+            <param name="sinks">The sink.</param>
+            <param name="unitOfMeasure">The unit of measure.</param>
+            <param name="operation">The operation.</param>
+            <param name="flushInterval">The flush interval. How often the gauge is triggered.</param>
+            <param name="taskScheduler">Provide a task scheduler for scheduled fire and forget tasks.</param>
+            <param name="runNow">The flag that allows user to run the task as soon as the class is instantiated</param>
+            <param name="killSwitch">Disables the Measures writing to the sinks.</param>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.TimedGaugeMeasure`1.RunGaugeTask">
+            <summary>
+            Runs the GaugeTask. Users can't run the task while the task is still running.
+            </summary>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.TimedGaugeMeasure`1.Write">
+            <summary>
+            Write the measurement data to the log system.
+            </summary>
+        </member>
+        <member name="T:Relativity.Telemetry.APM.TimerMeasure">
+            <summary>
+            Times an operation.
+            </summary>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.TimerMeasure.#ctor(Relativity.Telemetry.APM.Metadata,System.Collections.Generic.IEnumerable{Relativity.Telemetry.APM.ISink},System.Nullable{System.TimeSpan},System.Object,Relativity.Telemetry.APM.Interfaces.INonExecutingTaskScheduler,System.Boolean,System.Func{System.Boolean})">
+            <summary>
+            Initializes a new instance of the <see cref="T:Relativity.Telemetry.APM.TimerMeasure" /> class.
+            </summary>
+            <param name="metadata">The metadata of the measure.</param>
+            <param name="sinks">The sinks the measure will be sent to.</param>
+            <param name="warnIfExceeds">Specifies a limit. If the measure is longer than this limit, an aditional measure will be sent notifying the limit has been exceded. By default the limit is not set.</param>
+            <param name="identifier">The identifier used for the timing.</param>
+            <param name="taskScheduler">Provide a task scheduler for scheduled fire and forget tasks.</param>
+            <param name="markStart">If set to <c>true</c> create a start entry for the timer operation.</param>
+            <param name="killSwitch">Disables the Measures writing to the sinks.</param>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.TimerMeasure.#ctor(Relativity.Telemetry.APM.Metadata,System.Collections.Generic.HashSet{Relativity.Telemetry.APM.ISink},Relativity.Telemetry.APM.Interfaces.INonExecutingTaskScheduler,System.Func{System.Boolean})">
+            <summary>
+            Initializes a new instance of the <see cref="T:Relativity.Telemetry.APM.TimerMeasure" /> class for use with creating a precalculated timed operation.
+            </summary>
+            <param name="metadata">The metadata of the measure.</param>
+            <param name="sinks">The sinks the measure will be sent to.</param>
+            <param name="taskScheduler">Provide a task scheduler for scheduled fire and forget tasks.</param>
+            <param name="killSwitch">Disables the Measures writing to the sinks.</param>
+        </member>
+        <member name="P:Relativity.Telemetry.APM.IAPM.APMMetadata">
+            <summary>
+            Metadata of the APM client.
+            </summary>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.IAPM.CountOperation(System.String,System.Guid,System.String,System.String,System.Boolean,System.Nullable{System.Int32},System.Collections.Generic.Dictionary{System.String,System.Object},System.Collections.Generic.IEnumerable{Relativity.Telemetry.APM.ISink})">
+            <summary>
+            Creates a new counter which can be used to increment or decrement a long value.
+            </summary>
+            <param name="name">The name of the counter, for example 'Page visits'.</param>
+            <param name="workspaceGuid">Identifier for the workspace, assuming this metric comes from one. Can be set to empty guid if no workspace is valid.</param>
+            <param name="correlationID">The correlation identifier.  Can be used to associate multiple metrics.</param>
+            <param name="unitOfMeasure">The unit of measure, for example 'hits'.</param>
+            <param name="directWrite">Indicates if a change in the counter needs to be written to the sink directly. By default enabled. When disabled, you need to explicitly call the Write() method to output the current value.</param>
+            <param name="resolution">Number of calls to Increment or Decrement before writing an event to the log</param>
+            <param name="customData">Custom Data to provide with the metric.</param>
+            <param name="sinks">Any additional sinks to which this metric should be written to in addition to the defaults provided by the APM class.</param>
+            <returns></returns>
+            <exception cref="T:System.ArgumentNullException">name</exception>
+            <example>
+            Create a new counter and increment the value.
+            <code>
+            var counter = logger.CountOperation(null, "counter");
+            counter.Increment();
+            </code></example>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.IAPM.TimedOperation(System.String,System.Guid,System.String,System.Object,System.Boolean,System.Nullable{System.TimeSpan},System.Collections.Generic.Dictionary{System.String,System.Object},System.Collections.Generic.IEnumerable{Relativity.Telemetry.APM.ISink})">
+            <summary>
+            Begins an operation by placing the code to be timed inside a using block.
+            When the block is being exited, the time it took is sent to the sink.
+            In addition you can specify a warning limit. If it takes more time to execute the code than the specified limit, another message will be sent to the sink.
+            </summary>
+            <param name="name">The name of the timer, for example 'TimeInQueue'.</param>
+            <param name="workspaceGuid">Identifier for the workspace, assuming this metric comes from one. Can be set to empty guid if no workspace is valid.</param>
+            <param name="correlationID">The correlation identifier. Can be used to associate multiple metrics.</param>
+            <param name="identifier">The identifier used for the timing. If non specified, a random guid will be used. The object used must be serializable.</param>
+            <param name="markStart">If set to <c>true</c> create a start entry for the timer operation.</param>
+            <param name="warnIfExceeds">Specifies a limit. If the measure is longer than this limit, an aditional measure will be sent notifying the limit has been exceded. By default the limit is not set.</param>
+            <param name="customData">Custom Data to provide with the metric.</param>
+            <param name="sinks">Any additional sinks to which this metric should be written to in addition to the defaults provided by the APM class.</param>
+            <returns>
+            A disposable object. Wrap this inside a using block so the dispose can be called to stop the timing.
+            </returns>
+            <example>
+            See the example how to wrap
+            <code>
+            using (APM.TimedOperation("Custom.Timer"))
+            {
+                Thread.Sleep(2000);
+            }
+            </code></example>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.IAPM.TimedOperation(System.String,System.Double,System.Guid,System.String,System.Collections.Generic.Dictionary{System.String,System.Object},System.Collections.Generic.IEnumerable{Relativity.Telemetry.APM.ISink})">
+            <summary>
+            Logs a single TimeSpan that has already been obtained outside this framework.
+            </summary>
+            <param name="name">The name of the timer, for example 'TimeInQueue'.</param>
+            <param name="precalculatedMilliseconds">The elapsed time in milliseconds.</param>
+            <param name="workspaceGuid">Identifier for the workspace, assuming this metric comes from one. Can be set to empty guid if no workspace is valid.</param>
+            <param name="correlationID">The correlation identifier. Can be used to associate multiple metrics.</param>
+            <param name="customData">Custom Data to provide with the metric.</param>
+            <param name="sinks">Any additional sinks to which this metric should be written to in addition to the defaults provided by the APM class.</param>
+            <returns>
+            A disposable object. Wrap this inside a using block so the dispose can be called to stop the timing.
+            </returns>
+            <example>
+            See the example how to wrap
+            <code>
+            TimeSpan precalcTime = DateTime.UTCNow - previouslyRunDateTime
+            APM.TimedOperation("Custom.Timer", precalcTime)
+            </code></example>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.IAPM.StartTimedOperation(System.String,System.Guid,System.String,System.Object,System.Boolean,System.Nullable{System.TimeSpan},System.Collections.Generic.Dictionary{System.String,System.Object},System.Collections.Generic.IEnumerable{Relativity.Telemetry.APM.ISink})">
+            <summary>
+            Starts a timed operation and holds onto it in memory.
+            This allows the operation to be started in one method and stoped in another method.
+            Uses the <paramref name="correlationID"/> to create a more unique measure identifier.
+            In addition you can specify a warning limit. If it takes more time to execute the code than the specified limit, another message will be sent to the sink.
+            </summary>
+            <param name="name">The name of the timer, for example 'TimeInQueue'.</param>
+            <param name="workspaceGuid">Identifier for the workspace, assuming this metric comes from one. Can be set to empty guid if no workspace is valid.</param>
+            <param name="correlationID">The correlation identifier. Can be used to associate multiple metrics.</param>
+            <param name="identifier">The identifier used for the timing. If non specified, a random guid will be used. The object used must be serializable.</param>
+            <param name="markStart">If set to <c>true</c> create a start entry for the timer operation.</param>
+            <param name="warnIfExceeds">Specifies a limit. If the measure is longer than this limit, an aditional measure will be sent notifying the limit has been exceded. By default the limit is not set.</param>
+            <param name="customData">Custom Data to provide with the metric.</param>
+            <param name="sinks">Any additional sinks to which this metric should be written to in addition to the defaults provided by the APM class.</param>
+            <returns>
+            An identifier for this TimedOperation.
+            </returns>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.IAPM.EndTimedOperation(System.String)">
+            <summary>
+            Stops tracking a timed operation.
+            This will send the time the measure has been running for to the sinks.
+            </summary>
+            <param name="measureID">The identifier for the timed operation.</param>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.IAPM.CancelTimedOperation(System.String)">
+            <summary>
+            Stops tracking a timed operation.
+            This will not send the measure to the sinks.
+            </summary>
+            <param name="measureID">The identifier for the timed operation.</param>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.IAPM.CreateTimedIdentifier(System.String,System.String)">
+            <summary>
+            Creates a semi-unique identifier from the given parameters.
+            </summary>
+            <param name="name">The measure name, e.g. "Relativity.Conversion.CacheHitDuration"</param>
+            <param name="correlationID">The (optional) correlation ID; usually ArtifactID converted to string.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.IAPM.GaugeOperation``1(System.String,System.Func{``0},System.Guid,System.String,System.String,System.Collections.Generic.Dictionary{System.String,System.Object},System.Collections.Generic.IEnumerable{Relativity.Telemetry.APM.ISink})">
+            <summary>
+            Retrieves a value as defined by the operation. For example the number of items inside a queue.
+            Call the Write() method to actually read the value and write to log.
+            </summary>
+            <param name="name">The name of the counter, for example 'Queue size'.</param>
+            <param name="operation">The actual function to retrieve the value from.</param>
+            <param name="workspaceGuid">The workspace Guid.</param>
+            <param name="correlationID">The correlation ID.</param>
+            <param name="unitOfMeasure">The unit of measure, for example 'item(s)'.</param>
+            <param name="customData">Custom Data to provide with the metric.</param>
+            <param name="sinks">Any additional sinks to which this metric should be written to in addition to the defaults provided by the APM class.</param>
+            <typeparam name="T">Numeric type of Int32, Int64, or Double</typeparam>
+            <returns>Returns a IGaugeMeasure on which you can call the Write() function to output to the sink.</returns>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.IAPM.TimedGaugeOperation``1(System.String,System.Func{``0},System.TimeSpan,System.Guid,System.String,System.String,System.Collections.Generic.Dictionary{System.String,System.Object},System.Collections.Generic.IEnumerable{Relativity.Telemetry.APM.ISink},System.Boolean)">
+            <summary>
+            Retrieves a value as defined by the operation. For example the number of items inside a queue.  The operation is triggered automatically on a defined interval.
+            </summary>
+            <param name="name">The name of the counter, for example 'Queue size'.</param>
+            <param name="operation">The actual function to retrieve the value from.</param>
+            <param name="interval">How often the operation is triggered automatically.</param>
+            <param name="workspaceGuid">The workspace Guid.</param>
+            <param name="correlationID">The correlation ID.</param>
+            <param name="unitOfMeasure">The unit of measure, for example 'item(s)'.</param>
+            <param name="customData">Custom Data to provide with the metric.</param>
+            <param name="sinks">Any additional sinks to which this metric should be written to in addition to the defaults provided by the APM class.</param>
+            <param name="runNow">The flag that allows user to run the task as soon as the method is called</param>
+            <typeparam name="T">Numeric type of Int32, Int64, or Double</typeparam>
+            <returns>Returns a ITimedGaugeMeasure on which you can call the Write() function to output to the sink.</returns>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.IAPM.HealthCheckOperation(System.String,System.Func{Relativity.Telemetry.APM.HealthCheckOperationResult},System.Guid,System.String,System.Collections.Generic.Dictionary{System.String,System.Object},System.Collections.Generic.IEnumerable{Relativity.Telemetry.APM.ISink})">
+            <summary>
+            Creates a new health check. When the Write method is executed, the health function is run and the response is written to the sink.
+            </summary>
+            <param name="name">Name of the health check.</param>
+            <param name="healthFunction">Health function to execute.</param>
+            <param name="workspaceGuid">The workspace Guid.</param>
+            <param name="correlationID">The correlation ID.</param>
+            <param name="customData">Custom Data to provide with the metric.</param>
+            <param name="sinks">Any additional sinks to which this metric should be written to in addition to the defaults provided by the APM class.</param>
+            <returns>
+            Returns an IHealthMeasure on which you can call the Write() function to output to the sink. The check.
+            </returns>
+            <example>
+            See the example how to wrap
+            <code>
+            var health = apm.HealthCheckOperation(null, "Queue Depth", "checking call", () => Check(b));
+            health.Write();
+            </code></example>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.IAPM.HealthCheckOperation``1(System.String,System.Func{``0,Relativity.Telemetry.APM.HealthCheckOperationResult},System.Guid,System.String,System.Collections.Generic.Dictionary{System.String,System.Object},System.Collections.Generic.IEnumerable{Relativity.Telemetry.APM.ISink})">
+            <summary>
+            Creates a new health check that takes in a parameter. When the Write method is executed, the health function is run with the parameter passed into the Write method and the response is written to the sink.
+            </summary>
+            <typeparam name="T">Parameter type for healthFunction</typeparam>
+            <param name="name">Name of the health check.</param>
+            <param name="healthFunction">Health function to execute.</param>
+            <param name="workspaceGuid">The workspace Guid.</param>
+            <param name="correlationID">The correlation ID.</param>
+            <param name="customData">Custom Data to provide with the metric.</param>
+            <param name="sinks">Any additional sinks to which this metric should be written to in addition to the defaults provided by the APM class.</param>
+            <returns>
+            Returns an <see cref="T:Relativity.Telemetry.APM.IHealthMeasureWithArg`1"/> on which you can call Write(T) function with parameter to output to the sink.
+            </returns>
+            <example>
+            <code>
+            var health = apm.HealthCheckOperation&lt;int&gt;(null, "Queue Depth", "checking call", () => Check(b));
+            health.Write(10);
+            </code>
+            </example>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.IAPM.MeterOperation(System.String,System.String,Relativity.Telemetry.APM.Types.TimeUnit,System.Guid,System.String,System.Collections.Generic.Dictionary{System.String,System.Object},System.Collections.Generic.IEnumerable{Relativity.Telemetry.APM.ISink})">
+            <summary>
+            Creates a new meter operations that measures the rate at which the operation occurs.
+            </summary>
+            <param name="name">Name of the meter.</param>
+            <param name="measuring">Specifies what it is measuring, like the number of requests</param>
+            <param name="rateUnit">The rate unit</param>
+            <param name="workspaceGuid">The workspace Guid.</param>
+            <param name="correlationID">The correlation ID.</param>
+            <param name="customData">Custom Data to provide with the metric.</param>
+            <param name="sinks">Any additional sinks to which this metric should be written to in addition to the defaults provided by the APM class.</param>
+            <returns></returns>
+            /// <example>
+            See the example how to use
+            <code>
+            var meter = apm.MeterOperation(null, "MeterTest"," a simple meter test", "mark(s)");
+            DateTime now = DateTime.Now.AddSeconds(30);
+            while (DateTime.Now &lt; now)
+            {
+                Thread.Sleep(1000);
+                meter.Mark();
+            }
+            meter.Write();
+            </code></example>
+            <exception cref="T:System.ArgumentNullException">name</exception>
+            <exception cref="T:System.ArgumentNullException"></exception>
+        </member>
+        <member name="P:Relativity.Telemetry.APM.IAPMConfiguration.Sinks">
+            <summary>
+            A collection of Sinks the APM Client should use by default.
+            </summary>
+        </member>
+        <member name="P:Relativity.Telemetry.APM.IAPMConfiguration.Metadata">
+            <summary>
+            Metadata for the APM Client to add to metric records.
+            </summary>
+        </member>
+        <member name="P:Relativity.Telemetry.APM.IAPMConfiguration.KillSwitch">
+            <summary>
+            Disables the Measures writing to the sinks.
+            </summary>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.ICounterMeasure.Increment">
+            <summary>
+            Increments this counter by 1.
+            </summary>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.ICounterMeasure.Increment(System.Int64)">
+            <summary>
+            Increments this counter by the incrementBy value.
+            </summary>
+            <param name="incrementBy">Positive numeric value. Ignored if negative.</param>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.ICounterMeasure.Decrement">
+            <summary>
+            Decrements this counter by 1.
+            </summary>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.ICounterMeasure.Decrement(System.Int64)">
+            <summary>
+            Decrements this counter by the decrementBy value..
+            </summary>
+            <param name="decrementBy">Positive numeric value. Ignored if negative.</param>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.ICounterMeasure.Reset">
+            <summary>
+            Resets this counter.
+            </summary>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.ICounterMeasure.Value">
+            <summary>
+            Retrieves the current value.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:Relativity.Telemetry.APM.IHealthMeasure">
+            <summary>
+            Executes a heath check and reports the effect of it. 
+            </summary>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.IMeasure.Write">
+            <summary>
+            Writes the measurement data to the sink.
+            </summary>
+        </member>
+        <member name="T:Relativity.Telemetry.APM.IMeterMeasure">
+            <summary>
+            Measures a metered operation.
+            </summary>
+            <seealso cref="T:Relativity.Telemetry.APM.IMeasure" />
+        </member>
+        <member name="M:Relativity.Telemetry.APM.IMeterMeasure.Mark(System.Int64)">
+            <summary>
+            Marks the occurance of an operation.
+            </summary>
+            <param name="numberOfMarks">The number of Marks to count.</param>
+        </member>
+        <member name="P:Relativity.Telemetry.APM.IMeterMeasure.Count">
+            <summary>
+             Returns the total number of events which have been marked.
+            </summary>
+            <value>The total number.</value>
+        </member>
+        <member name="P:Relativity.Telemetry.APM.ISink.MessageCount">
+            <summary>
+            Gets the total metrics count since creation.
+            </summary>
+            <value>
+            The message count.
+            </value>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.ISink.Send(Relativity.Telemetry.APM.CounterResult)">
+            <summary>
+            Sends the specified counter result.
+            </summary>
+            <param name="counter">The counter.</param>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.ISink.Send``1(Relativity.Telemetry.APM.GaugeResult{``0})">
+            <summary>
+            Sends the specified gauge result.
+            </summary>
+            <param name="gauge">The gauge.</param>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.ISink.Send(Relativity.Telemetry.APM.HealthCheckResult)">
+            <summary>
+            Sends the specified health result.
+            </summary>
+            <param name="health">The health check.</param>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.ISink.Send(Relativity.Telemetry.APM.MeterResult)">
+            <summary>
+            Sends the specified meter result.
+            </summary>
+            <param name="meter">The meter.</param>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.ISink.Send(Relativity.Telemetry.APM.TimerResult)">
+            <summary>
+            Sends the specified timer result.
+            </summary>
+            <param name="timer">The timer.</param>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.ISink.GetHashCode">
+            <summary>
+            Returns a hash code for this instance.
+            </summary>
+            <returns>
+            A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
+            </returns>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.ISink.Equals(System.Object)">
+            <summary>
+            Determines whether the specified <see cref="T:System.Object" />, is equal to this instance.
+            </summary>
+            <param name="o">The <see cref="T:System.Object" /> to compare with this instance.</param>
+            <returns>
+              <c>true</c> if the specified <see cref="T:System.Object" /> is equal to this instance; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="T:Relativity.Telemetry.APM.ITimerMeasure">
+            <summary>
+            Times an operation.
+            </summary>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.ITimerMeasure.Cancel">
+            <summary>
+            Cancel the collection of this TimerMeasure.
+            </summary>
+        </member>
+        <member name="T:Relativity.Telemetry.APM.Sinks.Core.BatchedConnectionStatus">
+            <summary>
+            Manages reconnection period and transient fault response for <see cref="T:Relativity.Telemetry.APM.Sinks.PeriodicBatchingSink"/>.
+            During normal operation an object of this type will simply echo the configured batch transmission
+            period. When availabilty fluctuates, the class tracks the number of failed attempts, each time
+            increasing the interval before reconnection is attempted (up to a set maximum) and at predefined
+            points indicating that either the current batch, or entire waiting queue, should be dropped. This
+            Serves two purposes - first, a loaded receiver may need a temporary reduction in traffic while coming
+            back online. Second, the sender needs to account for both bad batches (the first fault response) and
+            also overproduction (the second, queue-dropping response). In combination these should provide a
+            reasonable delivery effort but ultimately protect the sender from memory exhaustion.
+            </summary>
+            <remarks>
+            Currently used only by <see cref="T:Relativity.Telemetry.APM.Sinks.PeriodicBatchingSink"/>, but may
+            provide the basis for a "smart" exponential backoff timer. There are other factors to consider
+            including the desire to send batches "when full" rather than continuing to buffer, and so-on.
+            </remarks>
+        </member>
+        <member name="T:Relativity.Telemetry.APM.Sinks.BaseSinks.Core.SettingsSnapshot">
+            <summary>
+            Holds a snapshot of Service Bus instance settings that are 
+            used to decide whether or not to refresh a ServiceBus connection.
+            </summary>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.Sinks.BaseSinks.Core.SettingsSnapshot.#ctor(Relativity.ServiceBus.Configurations.IConfiguration)">
+            <summary>
+            Initializes a new instance of SettingsTrigger using the provided ServiceBus configuration.
+            </summary>
+            <param name="serviceBusConfig">The configuration to snapshot.</param>
+        </member>
+        <member name="T:Relativity.Telemetry.APM.Sinks.PeriodicBatchingSink">
+            <summary>
+            Base class for sinks that send events in batches. Batching is
+            triggered asynchronously on a timer.
+            </summary>
+            <remarks>
+            To avoid unbounded memory growth, events are discarded after attempting
+            to send a batch, regardless of whether the batch succeeded or not. Implementers
+            that want to change this behavior need to either implement from scratch, or
+            embed retry logic in the batch emitting functions.
+            </remarks>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.Sinks.PeriodicBatchingSink.#ctor(System.Int32,System.TimeSpan)">
+            <summary>
+            Construct a sink posting to the specified destination.
+            </summary>
+            <param name="batchSizeLimit">The maximum number of events to include in a single batch.</param>
+            <param name="period">The time to wait between checking for event batches.</param>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.Sinks.PeriodicBatchingSink.#ctor(System.Int32,System.TimeSpan,System.Int32)">
+            <summary>
+            Construct a sink posting to the specified database.
+            </summary>
+            <param name="batchSizeLimit">The maximum number of events to include in a single batch.</param>
+            <param name="period">The time to wait between checking for event batches.</param>
+            <param name="queueLimit">Maximum number of events in the queue.</param>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.Sinks.PeriodicBatchingSink.Dispose">
+            <summary>
+            Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+            </summary>
+            <filterpriority>2</filterpriority>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.Sinks.PeriodicBatchingSink.Dispose(System.Boolean)">
+            <summary>
+            Free resources held by the sink.
+            </summary>
+            <param name="disposing">If true, called because the object is being disposed; if false,
+            the object is being disposed from the finalizer.</param>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.Sinks.PeriodicBatchingSink.SendBatch(System.Collections.Generic.IEnumerable{Relativity.Telemetry.APM.Interfaces.IMeasureResult})">
+            <summary>
+            Emit a batch of events, running to completion synchronously.
+            </summary>
+            <param name="events">The events to emit.</param>
+            <remarks>Override either <see cref="M:Relativity.Telemetry.APM.Sinks.PeriodicBatchingSink.SendBatch(System.Collections.Generic.IEnumerable{Relativity.Telemetry.APM.Interfaces.IMeasureResult})"/> or <see cref="M:Relativity.Telemetry.APM.Sinks.PeriodicBatchingSink.SendBatchAsync(System.Collections.Generic.IEnumerable{Relativity.Telemetry.APM.Interfaces.IMeasureResult})"/>,
+            not both.</remarks>
+            <returns>Returns whether all the metrics were processed successfully</returns>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.Sinks.PeriodicBatchingSink.SendBatchAsync(System.Collections.Generic.IEnumerable{Relativity.Telemetry.APM.Interfaces.IMeasureResult})">
+            <summary>
+            Emit a batch of events, running asynchronously.
+            </summary>
+            <param name="events">The events to emit.</param>
+            <remarks>Override either <see cref="M:Relativity.Telemetry.APM.Sinks.PeriodicBatchingSink.SendBatch(System.Collections.Generic.IEnumerable{Relativity.Telemetry.APM.Interfaces.IMeasureResult})"/> or <see cref="M:Relativity.Telemetry.APM.Sinks.PeriodicBatchingSink.SendBatchAsync(System.Collections.Generic.IEnumerable{Relativity.Telemetry.APM.Interfaces.IMeasureResult})"/>,
+            not both. </remarks>
+            <returns>Returns whether all the metrics were processed successfully</returns>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.Sinks.PeriodicBatchingSink.Send(Relativity.Telemetry.APM.MeterResult)">
+            <summary>
+            Sends the specified meter result.
+            </summary>
+            <param name="meter">The meter.</param>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.Sinks.PeriodicBatchingSink.Send(Relativity.Telemetry.APM.TimerResult)">
+            <summary>
+            Sends the specified timer result.
+            </summary>
+            <param name="timer">The timer.</param>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.Sinks.PeriodicBatchingSink.Send(Relativity.Telemetry.APM.HealthCheckResult)">
+            <summary>
+            Sends the specified health result.
+            </summary>
+            <param name="health">The health check.</param>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.Sinks.PeriodicBatchingSink.Send``1(Relativity.Telemetry.APM.GaugeResult{``0})">
+            <summary>
+            Sends the specified gauge result.
+            </summary>
+            <param name="gauge">The gauge.</param>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.Sinks.PeriodicBatchingSink.Send(Relativity.Telemetry.APM.CounterResult)">
+            <summary>
+            Sends the specified counter result.
+            </summary>
+            <param name="counter">The counter.</param>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.Sinks.PeriodicBatchingSink.SendGeneric(Relativity.Telemetry.APM.Interfaces.IMeasureResult)">
+            <summary>
+            Emit the provided event to the sink. If the sink is being disposed or
+            the app domain unloaded, then the event is ignored.
+            </summary>
+            <param name="metric">metric to emit.</param>
+            <exception cref="T:System.ArgumentNullException">The event is null.</exception>
+            <remarks>
+            The sink implements the contract that any events whose Emit() method has
+            completed at the time of sink disposal will be flushed (or attempted to,
+            depending on app domain state).
+            </remarks>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.Sinks.PeriodicBatchingSink.ToJson(Relativity.Telemetry.APM.Interfaces.IMeasureResult)">
+            <summary>
+            Converts metrics to JSON format.
+            </summary>
+            <param name="measureResult">The measure result.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.Sinks.PeriodicBatchingSink.GetHashCode">
+            <summary>
+            Returns a hash code for this instance.
+            </summary>
+            <returns>
+            A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
+            </returns>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.Sinks.PeriodicBatchingSink.Equals(System.Object)">
+            <summary>
+            Determines whether the specified <see cref="T:System.Object" />, is equal to this instance.
+            </summary>
+            <param name="obj">The <see cref="T:System.Object" /> to compare with this instance.</param>
+            <returns>
+              <c>true</c> if the specified <see cref="T:System.Object" /> is equal to this instance; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.Sinks.PeriodicBatchingSink.CanInclude(System.Object)">
+            <summary>
+            Determine whether a queued event should be included in the batch. If
+            an override returns false, the event will be dropped.
+            </summary>
+            <param name="evt"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.Sinks.PeriodicBatchingSink.OnEmptyBatch">
+            <summary>
+            Allows derived sinks to perform periodic work without requiring additional threads
+            or timers (thus avoiding additional flush/shut-down complexity).
+            </summary>
+            <remarks>Override either <see cref="M:Relativity.Telemetry.APM.Sinks.PeriodicBatchingSink.OnEmptyBatch"/> or <see cref="M:Relativity.Telemetry.APM.Sinks.PeriodicBatchingSink.OnEmptyBatchAsync"/>,
+            not both. </remarks>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.Sinks.PeriodicBatchingSink.OnEmptyBatchAsync">
+            <summary>
+            Allows derived sinks to perform periodic work without requiring additional threads
+            or timers (thus avoiding additional flush/shut-down complexity).
+            </summary>
+            <remarks>Override either <see cref="M:Relativity.Telemetry.APM.Sinks.PeriodicBatchingSink.OnEmptyBatchAsync"/> or <see cref="M:Relativity.Telemetry.APM.Sinks.PeriodicBatchingSink.OnEmptyBatch"/>,
+            not both. </remarks>
+        </member>
+        <member name="T:Relativity.Telemetry.APM.Sinks.ConsoleSink">
+            <summary>
+            A sink to record metrics to Console.
+            </summary>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.Sinks.ConsoleSink.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Relativity.Telemetry.APM.Sinks.ConsoleSink"/> class.
+            </summary>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.Sinks.ConsoleSink.#ctor(System.Int32,System.TimeSpan)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Relativity.Telemetry.APM.Sinks.ConsoleSink"/> class.
+            </summary>
+            <param name="batchSizeLimit">The maximum number of events to include in a single batch.</param>
+            <param name="period">The time to wait between checking for event batches.</param>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.Sinks.ConsoleSink.#ctor(System.Int32,System.TimeSpan,System.Int32)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Relativity.Telemetry.APM.Sinks.ConsoleSink"/> class.
+            </summary>
+            <param name="batchSizeLimit">The maximum number of events to include in a single batch.</param>
+            <param name="period">The time to wait between checking for event batches.</param>
+            <param name="queueLimit">Maximum number of events in the queue.</param>
+        </member>
+        <member name="T:Relativity.Telemetry.APM.Sinks.DebugSink">
+            <summary>
+            A Sink to record metrics to Debug output.
+            </summary>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.Sinks.DebugSink.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Relativity.Telemetry.APM.Sinks.DebugSink"/> class.
+            </summary>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.Sinks.DebugSink.#ctor(System.Int32,System.TimeSpan)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Relativity.Telemetry.APM.Sinks.DebugSink"/> class.
+            </summary>
+            <param name="batchSizeLimit">The maximum number of events to include in a single batch.</param>
+            <param name="period">The time to wait between checking for event batches.</param>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.Sinks.DebugSink.#ctor(System.Int32,System.TimeSpan,System.Int32)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Relativity.Telemetry.APM.Sinks.DebugSink"/> class.
+            </summary>
+            <param name="batchSizeLimit">The maximum number of events to include in a single batch.</param>
+            <param name="period">The time to wait between checking for event batches.</param>
+            <param name="queueLimit">Maximum number of events in the queue.</param>
+        </member>
+        <member name="T:Relativity.Telemetry.APM.Sinks.NullSink">
+            <summary>
+            Null sink - no operations occur
+            </summary>
+            <seealso cref="T:Relativity.Telemetry.APM.ISink" />
+        </member>
+        <member name="P:Relativity.Telemetry.APM.Sinks.NullSink.MessageCount">
+            <summary>
+            Gets the message count.
+            </summary>
+            <value>
+            The message count.
+            </value>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.Sinks.NullSink.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Relativity.Telemetry.APM.Sinks.NullSink"/> class.
+            </summary>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.Sinks.NullSink.Send(Relativity.Telemetry.APM.MeterResult)">
+            <summary>
+            Sends the specified meter result.
+            </summary>
+            <param name="meter">The meter.</param>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.Sinks.NullSink.Send(Relativity.Telemetry.APM.TimerResult)">
+            <summary>
+            Sends the specified timer result.
+            </summary>
+            <param name="timer">The timer.</param>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.Sinks.NullSink.Send(Relativity.Telemetry.APM.HealthCheckResult)">
+            <summary>
+            Sends the specified health result.
+            </summary>
+            <param name="health">The health check.</param>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.Sinks.NullSink.Send``1(Relativity.Telemetry.APM.GaugeResult{``0})">
+            <summary>
+            Sends the specified gauge result.
+            </summary>
+            <param name="gauge">The gauge.</param>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.Sinks.NullSink.Send(Relativity.Telemetry.APM.CounterResult)">
+            <summary>
+            Sends the specified counter result.
+            </summary>
+            <param name="counter">The counter.</param>
+        </member>
+        <member name="T:Relativity.Telemetry.APM.Sinks.SelfHealingSink">
+            <summary>
+            Represents a self-healing APM sink that relies on a delegate to retrieve a concrete sink. 
+            
+            <para>If the delegate fails, a NullSink will be used; once the delegate succeeds, the concrete sink will be used.</para>
+            </summary>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.Sinks.SelfHealingSink.#ctor(System.Func{Relativity.Telemetry.APM.ISink})">
+            <summary>
+            Initializes a new instance of SelfHealingSink, using the 
+            provided delegate to retrieve a concrete sink implementation.
+            </summary>
+            <param name="sinkDelegate">The delegate to use to retrieve a full sink implementation.</param>
+        </member>
+        <member name="P:Relativity.Telemetry.APM.Sinks.SelfHealingSink.MessageCount">
+            <summary>
+            Retrieves the message count from the backing sink.
+            </summary>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.Sinks.SelfHealingSink.Send(Relativity.Telemetry.APM.TimerResult)">
+            <summary>
+            Sends a timer result to the backing sink.
+            </summary>
+            <param name="timer"></param>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.Sinks.SelfHealingSink.Send(Relativity.Telemetry.APM.MeterResult)">
+            <summary>
+            Sends a meter result to the backing sink.
+            </summary>
+            <param name="meter"></param>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.Sinks.SelfHealingSink.Send(Relativity.Telemetry.APM.HealthCheckResult)">
+            <summary>
+            Sends a health-check result to the backing sink.
+            </summary>
+            <param name="health"></param>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.Sinks.SelfHealingSink.Send(Relativity.Telemetry.APM.CounterResult)">
+            <summary>
+            Sends a counter result to the backing sink.
+            </summary>
+            <param name="counter"></param>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.Sinks.SelfHealingSink.Send``1(Relativity.Telemetry.APM.GaugeResult{``0})">
+            <summary>
+            Sends a gauge result to the backing sink.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="gauge"></param>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.Sinks.SelfHealingSink.Dispose">
+            <summary>
+            Disposes the backing sink.
+            </summary>
+            <remarks>If no backing sink is set up, there is nothing to dispose.</remarks>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.Sinks.ServiceBusSink.#ctor(Relativity.ServiceBus.Interfaces.IBus)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Relativity.Telemetry.APM.Sinks.ServiceBusSink"/> class.
+            </summary>
+            <param name="bus">The Service Bus.</param>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.Sinks.ServiceBusSink.#ctor(Relativity.ServiceBus.Interfaces.IBus,System.Int32,System.TimeSpan)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Relativity.Telemetry.APM.Sinks.ServiceBusSink"/> class.
+            </summary>
+            <param name="bus">The Service Bus.</param>
+            <param name="batchSizeLimit">The maximum number of events to include in a single batch.</param>
+            <param name="period">The time to wait between checking for event batches.</param>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.Sinks.ServiceBusSink.#ctor(Relativity.ServiceBus.Interfaces.IBus,System.Int32,System.TimeSpan,System.Int32)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Relativity.Telemetry.APM.Sinks.ServiceBusSink"/> class.
+            </summary>
+            <param name="bus">The Service Bus.</param>
+            <param name="batchSizeLimit">The maximum number of events to include in a single batch.</param>
+            <param name="period">The time to wait between checking for event batches.</param>
+            <param name="queueLimit">Maximum number of events in the queue.</param>
+        </member>
+        <member name="T:Relativity.Telemetry.APM.Types.AtomicLong">
+            <summary>
+            Provides lock-free atomic read/write utility for a <c>long</c> value. The atomic classes found in this package
+            are meant to replicate the <c>java.util.concurrent.atomic</c> package in Java by Doug Lea. The two main differences
+            are implicit casting back to the <c>long</c> data type, and the use of a non-volatile inner variable.
+            
+            <para>The internals of these classes contain wrapped usage of the <c>System.Threading.Interlocked</c> class, which is how
+            we are able to provide atomic operation without the use of locks. </para>
+            </summary>
+            <remarks>
+            It's also important to note that <c>++</c> and <c>--</c> are never atomic, and one of the main reasons this class is 
+            needed. I don't believe its possible to overload these operators in a way that is autonomous.
+            </remarks>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.Types.AtomicLong.#ctor">
+            <summary>
+            Creates a new <c>AtomicLong</c> instance with an initial value of <c>0</c>.
+            </summary>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.Types.AtomicLong.#ctor(System.Int64)">
+            <summary>
+            Creates a new <c>AtomicLong</c> instance with the initial value provided.
+            </summary>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.Types.AtomicLong.Get">
+            <summary>
+            This method returns the current value.
+            </summary>
+            <returns>
+            The <c>long</c> value accessed atomically.
+            </returns>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.Types.AtomicLong.Set(System.Int64)">
+            <summary>
+            This method sets the current value atomically.
+            </summary>
+            <param name="value">
+            The new value to set.
+            </param>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.Types.AtomicLong.GetAndSet(System.Int64)">
+            <summary>
+            This method atomically sets the value and returns the original value.
+            </summary>
+            <param name="value">
+            The new value.
+            </param>
+            <returns>
+            The value before setting to the new value.
+            </returns>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.Types.AtomicLong.CompareAndSet(System.Int64,System.Int64)">
+            <summary>
+            Atomically sets the value to the given updated value if the current value <c>==</c> the expected value.
+            </summary>
+            <param name="expected">
+            The value to compare against.
+            </param>
+            <param name="result">
+            The value to set if the value is equal to the <c>expected</c> value.
+            </param>
+            <returns>
+            <c>true</c> if the comparison and set was successful. A <c>false</c> indicates the comparison failed.
+            </returns>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.Types.AtomicLong.AddAndGet(System.Int64)">
+            <summary>
+            Atomically adds the given value to the current value.
+            </summary>
+            <param name="delta">
+            The value to add.
+            </param>
+            <returns>
+            The updated value.
+            </returns>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.Types.AtomicLong.GetAndAdd(System.Int64)">
+            <summary>
+            This method atomically adds a <c>delta</c> the value and returns the original value.
+            </summary>
+            <param name="delta">
+            The value to add to the existing value.
+            </param>
+            <returns>
+            The value before adding the delta.
+            </returns>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.Types.AtomicLong.Increment">
+            <summary>
+            This method increments the value by 1 and returns the previous value. This is the atomic 
+            version of post-increment.
+            </summary>
+            <returns>
+            The value before incrementing.
+            </returns>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.Types.AtomicLong.Increment(System.Int64)">
+            <summary>
+            This method increments the value by the provided value and returns the previous value. This is the atomic
+            version of post-increment.
+            </summary>
+            <param name="incrementBy">Positive numeric value.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.Types.AtomicLong.Decrement">
+            <summary>
+            This method decrements the value by 1 and returns the previous value. This is the atomic 
+            version of post-decrement.
+            </summary>
+            <returns>
+            The value before decrementing.
+            </returns>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.Types.AtomicLong.Decrement(System.Int64)">
+            <summary>
+            This method decrements the value by the provided value and returns the previous value. This is the atomic 
+            version of post-decrement.
+            </summary>
+            <param name="decrementBy">Positive numeric value.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.Types.AtomicLong.PreIncrement">
+            <summary>
+            This method increments the value by 1 and returns the new value. This is the atomic version 
+            of pre-increment.
+            </summary>
+            <returns>
+            The value after incrementing.
+            </returns>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.Types.AtomicLong.PreDecrement">
+            <summary>
+            This method decrements the value by 1 and returns the new value. This is the atomic version 
+            of pre-decrement.
+            </summary>
+            <returns>
+            The value after decrementing.
+            </returns>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.Types.AtomicLong.op_Implicit(Relativity.Telemetry.APM.Types.AtomicLong)~System.Int64">
+            <summary>
+            This operator allows an implicit cast from <c>AtomicLong</c> to <c>long</c>.
+            </summary>
+        </member>
+        <member name="T:Relativity.Telemetry.APM.Types.EWMA">
+            <summary>
+             An exponentially-weighted moving average
+            </summary>
+            <see href="http://www.teamquest.com/pdfs/whitepaper/ldavg1.pdf"/>
+            <see href="http://www.teamquest.com/pdfs/whitepaper/ldavg2.pdf" />
+        </member>
+        <member name="M:Relativity.Telemetry.APM.Types.EWMA.OneMinuteEWMA">
+            <summary>
+            Creates a new EWMA which is equivalent to the UNIX one minute load average and which expects to be ticked every 5 seconds.
+            </summary>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.Types.EWMA.FiveMinuteEWMA">
+            <summary>
+            Creates a new EWMA which is equivalent to the UNIX five minute load average and which expects to be ticked every 5 seconds.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.Types.EWMA.FifteenMinuteEWMA">
+            <summary>
+             Creates a new EWMA which is equivalent to the UNIX fifteen minute load average and which expects to be ticked every 5 seconds.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.Types.EWMA.#ctor(System.Double,System.Int64,Relativity.Telemetry.APM.Types.TimeUnit)">
+            <summary>
+            Create a new EWMA with a specific smoothing constant.
+            </summary>
+            <param name="alpha">The smoothing constant</param>
+            <param name="interval">The expected tick interval</param>
+            <param name="intervalUnit">The time unit of the tick interval</param>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.Types.EWMA.Update(System.Int64)">
+            <summary>
+             Update the moving average with a new value.
+            </summary>
+            <param name="n"></param>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.Types.EWMA.Tick">
+            <summary>
+            Mark the passage of time and decay the current rate accordingly.
+            </summary>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.Types.EWMA.Rate(Relativity.Telemetry.APM.Types.TimeUnit)">
+            <summary>
+            Returns the rate in the given units of time.
+            </summary>
+        </member>
+        <member name="T:Relativity.Telemetry.APM.Types.MeasureType">
+            <summary>
+            Types of Measures that can be recorded.
+            </summary>
+        </member>
+        <member name="T:Relativity.Telemetry.APM.Types.TimerState">
+            <summary>
+            States a Timer can be in.
+            </summary>
+        </member>
+        <member name="T:Relativity.Telemetry.APM.Types.TimeUnit">
+            <summary>
+            Provides support for timing values
+            <see href="http://download.oracle.com/javase/6/docs/api/java/util/concurrent/TimeUnit.html"/>
+            </summary>
+        </member>
+        <member name="F:Relativity.Telemetry.APM.Types.TimeUnit.Nanoseconds">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:Relativity.Telemetry.APM.Types.TimeUnit.Microseconds">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:Relativity.Telemetry.APM.Types.TimeUnit.Milliseconds">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:Relativity.Telemetry.APM.Types.TimeUnit.Seconds">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:Relativity.Telemetry.APM.Types.TimeUnit.Minutes">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:Relativity.Telemetry.APM.Types.TimeUnit.Hours">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:Relativity.Telemetry.APM.Types.TimeUnit.Days">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:Relativity.Telemetry.APM.Types.TimeUnitExtensions">
+            <summary>
+            Provides enum methods for timing values
+            </summary>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.Types.TimeUnitExtensions.Convert(Relativity.Telemetry.APM.Types.TimeUnit,System.Int64,Relativity.Telemetry.APM.Types.TimeUnit)">
+            <summary>
+            
+            </summary>
+            <param name="source"></param>
+            <param name="duration"></param>
+            <param name="target"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.Types.TimeUnitExtensions.ToNanos(Relativity.Telemetry.APM.Types.TimeUnit,System.Int64)">
+            <summary>
+            
+            </summary>
+            <param name="source"></param>
+            <param name="interval"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.Types.TimeUnitExtensions.ToMicros(Relativity.Telemetry.APM.Types.TimeUnit,System.Int64)">
+            <summary>
+            
+            </summary>
+            <param name="source"></param>
+            <param name="interval"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.Types.TimeUnitExtensions.ToMillis(Relativity.Telemetry.APM.Types.TimeUnit,System.Int64)">
+            <summary>
+            
+            </summary>
+            <param name="source"></param>
+            <param name="interval"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.Types.TimeUnitExtensions.ToSeconds(Relativity.Telemetry.APM.Types.TimeUnit,System.Int64)">
+            <summary>
+            
+            </summary>
+            <param name="source"></param>
+            <param name="interval"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.Types.TimeUnitExtensions.ToMinutes(Relativity.Telemetry.APM.Types.TimeUnit,System.Int64)">
+            <summary>
+            
+            </summary>
+            <param name="source"></param>
+            <param name="interval"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.Types.TimeUnitExtensions.ToHours(Relativity.Telemetry.APM.Types.TimeUnit,System.Int64)">
+            <summary>
+            
+            </summary>
+            <param name="source"></param>
+            <param name="interval"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Relativity.Telemetry.APM.Types.TimeUnitExtensions.ToDays(Relativity.Telemetry.APM.Types.TimeUnit,System.Int64)">
+            <summary>
+            
+            </summary>
+            <param name="source"></param>
+            <param name="interval"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Relativity.Telemetry.APM.Types.VolatileDouble">
+            <summary>
+            Provides support for volatile operations around a <see cref="T:System.Double" /> value
+            </summary>
+        </member>
+    </members>
+</doc>
