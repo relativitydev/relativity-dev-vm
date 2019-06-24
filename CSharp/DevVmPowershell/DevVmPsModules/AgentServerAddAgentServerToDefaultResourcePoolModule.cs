@@ -40,7 +40,7 @@ namespace DevVmPsModules
 
 			IAgentServerHelper agentServerHelper = new AgentServerHelper(connectionHelper);
 
-			agentServerHelper.AddAgentServerToDefaultResourcePoolAsync();
+			agentServerHelper.AddAgentServerToDefaultResourcePoolAsync().Wait();
 		}
 
 		private void ValidateInputArguments()
