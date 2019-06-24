@@ -368,27 +368,27 @@ Vagrant.configure('2') do |config|
   #   chef.add_recipe('Relativity::post_relativity_sqlserver_distributed_relativity_install')
   # end
 
-   # Run PowerShell modules
-   config.vm.provision 'chef_zero' do |chef|
-    chef.cookbooks_path = 'Cookbooks'
-    chef.data_bags_path = 'DataBags'
-    chef.nodes_path = 'Nodes'
-    chef.roles_path = 'Roles'
-    chef.channel = 'stable'
-    chef.version = '13.8.5'
-    chef.json = {
-      'smb_domain' => network_share_smb_domain,
-      'smb_username' => network_share_smb_username,
-      'smb_password' => network_share_smb_password,
-      'smtp_server' => relativity_smtp_server,
-      'smtp_port' => relativity_smtp_port,
-      'email_from' => relativity_email_from,
-      'email_to' => relativity_email_to,
-    }
-    chef.add_recipe('Relativity::post_relativity_powershell_module_setup')
-    # chef.add_recipe('Relativity::post_relativity_powershell_module_sample')
-    # chef.add_recipe('Relativity::post_relativity_delete_errors_from_errors_tab')
-  end
+  #  # Run PowerShell modules
+  #  config.vm.provision 'chef_zero' do |chef|
+  #   chef.cookbooks_path = 'Cookbooks'
+  #   chef.data_bags_path = 'DataBags'
+  #   chef.nodes_path = 'Nodes'
+  #   chef.roles_path = 'Roles'
+  #   chef.channel = 'stable'
+  #   chef.version = '13.8.5'
+  #   chef.json = {
+  #     'smb_domain' => network_share_smb_domain,
+  #     'smb_username' => network_share_smb_username,
+  #     'smb_password' => network_share_smb_password,
+  #     'smtp_server' => relativity_smtp_server,
+  #     'smtp_port' => relativity_smtp_port,
+  #     'email_from' => relativity_email_from,
+  #     'email_to' => relativity_email_to,
+  #   }
+  #   chef.add_recipe('Relativity::post_relativity_powershell_module_setup')
+  #   # chef.add_recipe('Relativity::post_relativity_powershell_module_sample')
+  #   chef.add_recipe('Relativity::post_relativity_delete_errors_from_errors_tab')
+  # end
 
   # # DataGrid Pre-setup
   # config.vm.provision 'chef_zero' do |chef|
@@ -411,27 +411,27 @@ Vagrant.configure('2') do |config|
   #   chef.add_recipe('Relativity::post_relativity_update_java_environment_variables')
   # end
 
-  # Install DataGrid
-  config.vm.provision 'chef_zero' do |chef|
-    chef.cookbooks_path = 'Cookbooks'
-    chef.data_bags_path = 'DataBags'
-    chef.nodes_path = 'Nodes'
-    chef.roles_path = 'Roles'
-    chef.channel = 'stable'
-    chef.version = '13.8.5'
-    chef.json = {
-      'smb_domain' => network_share_smb_domain,
-      'smb_username' => network_share_smb_username,
-      'smb_password' => network_share_smb_password,
-      'smtp_server' => relativity_smtp_server,
-      'smtp_port' => relativity_smtp_port,
-      'email_from' => relativity_email_from,
-      'email_to' => relativity_email_to,
-    }
-    # chef.add_recipe('Relativity::post_relativity_Install_datagrid')
-    # chef.add_recipe('Relativity::post_relativity_instance_setting_update_datagridendpoint') # (Old)
-    chef.add_recipe('Relativity::post_relativity_update_datagrid_instance_settings')
-  end
+  # # Install DataGrid
+  # config.vm.provision 'chef_zero' do |chef|
+  #   chef.cookbooks_path = 'Cookbooks'
+  #   chef.data_bags_path = 'DataBags'
+  #   chef.nodes_path = 'Nodes'
+  #   chef.roles_path = 'Roles'
+  #   chef.channel = 'stable'
+  #   chef.version = '13.8.5'
+  #   chef.json = {
+  #     'smb_domain' => network_share_smb_domain,
+  #     'smb_username' => network_share_smb_username,
+  #     'smb_password' => network_share_smb_password,
+  #     'smtp_server' => relativity_smtp_server,
+  #     'smtp_port' => relativity_smtp_port,
+  #     'email_from' => relativity_email_from,
+  #     'email_to' => relativity_email_to,
+  #   }
+  #   chef.add_recipe('Relativity::post_relativity_Install_datagrid')
+  #   # chef.add_recipe('Relativity::post_relativity_instance_setting_update_datagridendpoint') # (Old)
+  #   chef.add_recipe('Relativity::post_relativity_update_datagrid_instance_settings')
+  # end
 
   # # Add processing choice which is used in the following Invariant Configuration scripts below
   # config.vm.provision 'chef_zero' do |chef|
