@@ -7,6 +7,7 @@ relativity_api_files_to_copy = [
   "kCura.dll",
   "kCura.Relativity.Client.dll",
   "Newtonsoft.Json.dll",
+  "Relativity.dll",
   "Relativity.API.dll",
   "Relativity.Kepler.dll",
   "Relativity.OAuth2Client.Interfaces.dll",
@@ -35,6 +36,10 @@ powershell_module_related_files_to_copy = [
   'DevVmPsModules.dll',
   'Helpers.dll',
   'DbContextHelper.dll',
+  "kCura.Relativity.DataReaderClient.dll",
+  "kCura.Relativity.ImportAPI.dll",
+  "kCura.WinEDDS.dll",
+  "Resources"
 ]
 
 powershell_module_related_files_to_copy.each do |source_file_name|

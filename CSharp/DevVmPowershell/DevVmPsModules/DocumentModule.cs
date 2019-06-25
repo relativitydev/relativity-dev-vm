@@ -36,8 +36,8 @@ namespace DevVmPsModules
 			ValueFromPipelineByPropertyName = true,
 			ValueFromPipeline = true,
 			Position = 3,
-			HelpMessage = "Relativity Workspace ID to receive the files")]
-		public int WorkspaceId { get; set; }
+			HelpMessage = "Relativity Workspace Name to receive the files")]
+		public string WorkspaceName { get; set; }
 
 		[Parameter(
 			Mandatory = true,
@@ -55,6 +55,14 @@ namespace DevVmPsModules
 			HelpMessage = "How many files you want to upload")]
 		public int FileCount { get; set; }
 
+		[Parameter(
+			Mandatory = true,
+			ValueFromPipelineByPropertyName = true,
+			ValueFromPipeline = true,
+			Position = 6,
+			HelpMessage = "Path to the Resource Folder (do not include /Resources in this)")]
+		public string ResourceFilePath { get; set; }
+
 		protected override void ProcessRecordCode()
 		{
 			//Validate Input arguments
@@ -64,8 +72,11 @@ namespace DevVmPsModules
 
 			IImportApiHelper importApi = new ImportApiHelper(connectionHelper);
 
+			// Get workspaceId
+			int workspaceId = importApi.GetFirstWorkspaceIdQueryAsync(WorkspaceName).Result;
+
 			// Add documents for each Workspace ID specified
-			importApi.AddDocumentsToWorkspace(WorkspaceId, FileType, FileCount).Wait();
+			importApi.AddDocumentsToWorkspace(workspaceId, FileType, FileCount, ResourceFilePath).Wait();
 		}
 
 		private void ValidateInputArguments()
@@ -85,9 +96,9 @@ namespace DevVmPsModules
 				throw new ArgumentNullException(nameof(RelativityAdminPassword), $"{nameof(RelativityAdminPassword)} cannot be NULL or Empty.");
 			}
 
-			if (WorkspaceId <= 0)
+			if (string.IsNullOrWhiteSpace(WorkspaceName))
 			{
-				throw new ArgumentException(nameof(WorkspaceId), $"{nameof(WorkspaceId)} cannot be less than or equal to 0.");
+				throw new ArgumentNullException(nameof(WorkspaceName), $"{nameof(WorkspaceName)} cannot be NULL or Empty.");
 			}
 
 			if (string.IsNullOrWhiteSpace(FileType))
@@ -103,6 +114,11 @@ namespace DevVmPsModules
 			if (FileCount < 0)
 			{
 				throw new ArgumentNullException(nameof(FileCount), $"{nameof(FileCount)} cannot be less than 0.");
+			}
+
+			if (string.IsNullOrWhiteSpace(ResourceFilePath))
+			{
+				throw new ArgumentNullException(nameof(ResourceFilePath), $"{nameof(ResourceFilePath)} cannot be NULL or Empty.");
 			}
 		}
 	}

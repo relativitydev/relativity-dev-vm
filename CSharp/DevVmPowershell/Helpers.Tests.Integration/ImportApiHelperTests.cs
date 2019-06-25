@@ -32,7 +32,7 @@ namespace Helpers.Tests.Integration
 			//Arrange
 
 			//Act
-			int numberOfFilesImported = Sut.AddDocumentsToWorkspace(workspaceId, fileType, numberOfFiles).Result;
+			int numberOfFilesImported = Sut.AddDocumentsToWorkspace(workspaceId, fileType, numberOfFiles, "").Result;
 
 			//Assert
 			Assert.That(numberOfFilesImported, Is.EqualTo(numberOfFiles));
