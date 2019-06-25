@@ -481,6 +481,12 @@ default['services'] =
         type: "Process",
         serviceBus: "$False",
         location: "C:\\InvariantNetworkShare\\InvariantWorker.exe"
+    },
+    {
+        name: "QueueManager", 
+        type: "Service",
+        serviceBus: "$False",
+        location: "C:\\Program Files\\kCura Corporation\\Invariant\\QueueManager\\QueueManager.exe"
     }
 ]
 
