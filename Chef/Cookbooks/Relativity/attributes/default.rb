@@ -410,6 +410,9 @@ default['relativity_apps_to_install'] = [
     "Single File Upload 1.2.0.16 (for Relativity 9.4 - 9.5 - RelOne).rap"
     ]
 
+default["smoke_test_agent"]["analysis"] = "Smoke Test Analysis Agent"
+default["smoke_test_agent"]["runner"] = "Smoke Test Runner Agent"
+
 # Add RAP application GUIDs to this Array to create the packaged agents. Make sure the RAP application is installed in the environment
 default['relativity_apps_agents_to_install'] = {
     'Imaging' => "C9E4322E-6BD8-4A37-AE9E-C3C9BE31776B",

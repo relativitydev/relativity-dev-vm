@@ -40,8 +40,8 @@ namespace DevVmPsModules
 			ValueFromPipelineByPropertyName = true,
 			ValueFromPipeline = true,
 			Position = 3,
-			HelpMessage = "Workspace Artifact Id that you want to install the application in")]
-		public int WorkspaceId { get; set; }
+			HelpMessage = "Workspace Name that you want to install the application in")]
+		public string WorkspaceName { get; set; }
 
 		[Parameter(
 			Mandatory = true,
@@ -60,7 +60,7 @@ namespace DevVmPsModules
 			IApplicationInstallHelper applicationInstallHelper = new ApplicationInstallHelper(connectionHelper);
 
 			// Install Application
-			applicationInstallHelper.InstallApplicationFromRapFile(WorkspaceId, FilePath);
+			applicationInstallHelper.InstallApplicationFromRapFile(WorkspaceName, FilePath);
 		}
 
 		private void ValidateInputArguments()
@@ -80,9 +80,9 @@ namespace DevVmPsModules
 				throw new ArgumentNullException(nameof(RelativityAdminPassword), $"{nameof(RelativityAdminPassword)} cannot be NULL or Empty.");
 			}
 
-			if (WorkspaceId <= 0)
+			if (string.IsNullOrWhiteSpace(WorkspaceName))
 			{
-				throw new ArgumentException(nameof(WorkspaceId), $"{nameof(WorkspaceId)} must be a valid Workspace Id.");
+				throw new ArgumentNullException(nameof(WorkspaceName), $"{nameof(WorkspaceName)} cannot be NULL or Empty.");
 			}
 
 			if (string.IsNullOrWhiteSpace(FilePath))

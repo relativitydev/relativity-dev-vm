@@ -71,6 +71,5 @@ namespace Helpers.Tests.Integration
 			// Assert
 			Assert.That(Sut.RunShrinkDbProc(), Is.True);
 		}
-
 	}
 }

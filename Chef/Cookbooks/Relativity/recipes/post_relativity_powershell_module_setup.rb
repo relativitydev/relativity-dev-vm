@@ -14,6 +14,7 @@ relativity_api_files_to_copy = [
   "Relativity.Services.Interfaces.dll",
   "Relativity.Services.ServiceProxy.dll",
   "Relativity.Services.Interfaces.Private.dll",
+  "Relativity.dll"
 ]
 
 relativity_api_files_to_copy.each do |source_file_name|

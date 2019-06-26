@@ -13,7 +13,8 @@ function Write-Host-Custom-Green ([string] $writeMessage) {
 }
 
 # Retrieve values from DevVm_Automation_Config.json file
-[string] $devVmAutomationConfigFilePath = "D:\DevVm_Automation_Config.json"
+#[string] $devVmAutomationConfigFilePath = "D:\DevVm_Automation_Config.json"
+[string] $devVmAutomationConfigFilePath = "C:\DevVm_Automation_Config.json"
 [string] $json = Get-Content -Path $devVmAutomationConfigFilePath
 $jsonContents = $json | ConvertFrom-Json
 
@@ -58,7 +59,7 @@ $global:devVmVersionsToCreate = New-Object System.Collections.ArrayList
 [Boolean] $global:devVmCreationWasSuccess = $false
 [string] $global:compressedFileExtension = "zip"
 [string] $global:relativityInvariantVersionNumberFileName = "relativity_invariant_version.txt"
-[string] $global:testSingleRelativityVersion = "10.1.139.8" # Leave it blank when in Production mode
+[string] $global:testSingleRelativityVersion = "10.2.165.4" # Leave it blank when in Production mode
 
 function Reset-Logs-Environment-Variable() {
   Write-Host-Custom-Green "Resetting Logs Environment variable."
@@ -426,9 +427,12 @@ function Run-DevVm-Creation-Script([string] $relativityVersionToCreate) {
 
 function Copy-DevVm-Zip-To-Network-Storage([string] $relativityVersionToCopy) {
   Write-Heading-Message-To-Screen "Copying DevVm created [$($relativityVersionToCopy)] to Network storage."
+   
+  [System.Version] $relativityVersion = [System.Version]::Parse($relativityVersionToCopy)
+  [string] $majorRelativityVersion = "$($relativityVersion.Major).$($relativityVersion.Minor)"
 
   [string] $sourceZipFilePath = "$($global:vmExportPath)\$($global:vmName).$($global:compressedFileExtension)"
-  [string] $destinationFilePath = "$($global:devVmNetworkStorageLocation)\$($global:vmName)-$($relativityVersionToCopy).$($global:compressedFileExtension)"
+  [string] $destinationFilePath = "$($global:devVmNetworkStorageLocation)\$($majorRelativityVersion)\$($global:vmName)-$($relativityVersionToCopy).$($global:compressedFileExtension)"
   
   if (Test-Path $sourceZipFilePath) {
     Copy-File-Overwrite-If-It-Exists $sourceZipFilePath $destinationFilePath  
@@ -481,7 +485,7 @@ function Create-DevVm([string] $relativityVersionToCreate) {
       # Find-Invariant-Version $relativityVersionToCreate
 
       $global:foundCompatibleInvariantVersion = $true
-      $global:invariantVersion = "5.1.138.5"
+      $global:invariantVersion = "5.2.164.1"
 
       if ($global:foundCompatibleInvariantVersion) {
         Copy-Relativity-Installer-And-Response-Files $relativityVersionToCreate
@@ -491,7 +495,7 @@ function Create-DevVm([string] $relativityVersionToCreate) {
         Write-Message-To-Screen "Created DevVm. [$($relativityVersionToCreate)]"
 
         Check-DevVm-Result-Text-File-For-Success
-
+       
         if ($global:devVmCreationWasSuccess -eq $true) {
           # Copy Zip file to network drive with the version number in name
           Copy-DevVm-Zip-To-Network-Storage $relativityVersionToCreate

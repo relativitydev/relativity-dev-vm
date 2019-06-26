@@ -36,9 +36,10 @@ namespace Helpers.Tests.Integration
 		{
 			// Arrange
 			string rapLocation = System.Reflection.Assembly.GetExecutingAssembly().Location.Replace(@"bin\Debug\" + System.Reflection.Assembly.GetExecutingAssembly().GetName().Name + ".dll", TestConstants.APPLICATION_FILE_PATH);
+			string workspaceName = "Sample Data Grid Workspace";
 
 			// Act
-			bool installationResult = Sut.InstallApplicationFromRapFile(TestConstants.RELATIVITY_WORKSPACE_ID, rapLocation);
+			bool installationResult = Sut.InstallApplicationFromRapFile(workspaceName, rapLocation);
 
 			// Assert
 			Assert.That(installationResult, Is.True);
