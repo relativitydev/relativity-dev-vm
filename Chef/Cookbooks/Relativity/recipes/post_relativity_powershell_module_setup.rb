@@ -70,12 +70,12 @@ relativity_api_library_files_to_copy.each do |source_file_name|
 end
 
 # Copy oi folder since that is needed for TAPI
-source_folder_full_path = "#{node['powershell_module']['relativity_api_dlls_library_location']}\\oi"
-destination_folder_full_path = win_friendly_path(File.join(Chef::Config[:file_cache_path], "oi"))
+source_folder_full_path = "#{node['powershell_module']['relativity_api_dlls_library_location']}\\oi\\"
+destination_folder_full_path = win_friendly_path(Chef::Config[:file_cache_path])
 
 powershell_script 'copying_relativity_oi_folder' do
   code <<-EOH
-    Copy-Item "#{source_folder_full_path}" -Destination "#{destination_folder_full_path}"
+    Copy-Item "#{source_folder_full_path}" -Destination "#{destination_folder_full_path}"  -Force -Recurse
     EOH
 end
 
