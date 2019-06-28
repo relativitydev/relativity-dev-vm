@@ -56,24 +56,10 @@ namespace Helpers.Tests.Integration
 
 			// Act
 			bool success = Sut.UpdateInstanceSettingValue(name, section, value);
+			string instanceSettingValue = Sut.GetInstanceSettingValue(name, section);
 
 			// Assert
-			Assert.That(success, Is.True);
-		}
-
-		[Test]
-		public void UpdateInstanceSettingTest2()
-		{
-			// Arrange
-			string section = "kCura.Audit";
-			string name = "ESIndexCreationSettings";
-			string value = "";
-
-			// Act
-			bool success = Sut.UpdateInstanceSettingValue(name, section, value);
-
-			// Assert
-			Assert.That(success, Is.True);
+			Assert.AreEqual(value, instanceSettingValue);
 		}
 	}
 }

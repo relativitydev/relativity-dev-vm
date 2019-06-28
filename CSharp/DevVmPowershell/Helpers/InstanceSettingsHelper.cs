@@ -98,7 +98,35 @@ namespace Helpers
 			}
 			catch (Exception ex)
 			{
-				throw new Exception("Failed to Delete Instance Setting");
+				throw new Exception("Failed to Delete Instance Setting", ex);
+			}
+		}
+
+		public string GetInstanceSettingValue(string name, string section)
+		{
+			try
+			{
+				string retVal = null;
+				using (IInstanceSettingManager instanceSettingManager = ServiceFactory.CreateProxy<IInstanceSettingManager>())
+				{
+					Query query = new Query();
+					query.Condition = $"'Section' == '{section}' AND 'Name' == '{name}'";
+					InstanceSettingQueryResultSet instanceSettingQueryResultSet = instanceSettingManager.QueryAsync(query).Result;
+					if (instanceSettingQueryResultSet.Success)
+					{
+						Relativity.Services.Result<InstanceSetting> result = instanceSettingQueryResultSet.Results.First();
+						if (result.Artifact != null)
+						{
+							retVal = result.Artifact.Value;
+						}
+					}
+				}
+
+				return retVal;
+			}
+			catch (Exception ex)
+			{
+				throw new Exception("Failed to Get Instance Setting Value", ex);
 			}
 		}
 	}

@@ -10,7 +10,6 @@ custom_log 'custom_log' do msg 'Starting Installing Smoke Test Rap' end
     powershell_script 'install_smoke_test_rap_and_create_agents' do
       code <<-EOH
         #{node['powershell_module']['import_module']}
-        Add-ApplicationFromLibrary -RelativityInstanceName #{node['windows']['new_computer_name']} -RelativityAdminUserName #{node['relativity']['admin']['login']} -RelativityAdminPassword #{node['relativity']['admin']['password']} -WorkspaceName "#{node['sample_data_grid_workspace_name']}" -ApplicationGuid "#{node['relativity_apps_agents_to_install']['Processing']}"
         Add-ApplicationFromRapFile -RelativityInstanceName #{node['windows']['new_computer_name']} -RelativityAdminUserName #{node['relativity']['admin']['login']} -RelativityAdminPassword #{node['relativity']['admin']['password']} -WorkspaceName "#{node['sample_data_grid_workspace_name']}" -FilePath #{rap_file_path}
         Add-AgentByName -RelativityInstanceName #{node['windows']['new_computer_name']} -RelativityAdminUserName #{node['relativity']['admin']['login']} -RelativityAdminPassword #{node['relativity']['admin']['password']} -AgentNames "#{node["smoke_test_agent"]["analysis"]}"
         Add-AgentByName -RelativityInstanceName #{node['windows']['new_computer_name']} -RelativityAdminUserName #{node['relativity']['admin']['login']} -RelativityAdminPassword #{node['relativity']['admin']['password']} -AgentNames "#{node["smoke_test_agent"]["runner"]}"
