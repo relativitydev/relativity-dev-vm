@@ -495,3 +495,7 @@ default['services'] =
 
 default['powershell_module']['relativity_api_dlls_location'] = 'C:\\Program Files\\kCura Corporation\\Relativity\\ServiceHost'
 default['powershell_module']['relativity_api_dlls_library_location'] = 'C:\\Program Files\\kCura Corporation\\Relativity\\Library'
+
+# Generate Import Powershell module code
+default['powershell_module']['dll_file_full_path'] = Chef::Config[:file_cache_path] + '\DevVmPsModules.dll'
+default['powershell_module']['import_module'] = "Import-Module \"#{default['powershell_module']['dll_file_full_path']}\" -ErrorAction Stop".freeze

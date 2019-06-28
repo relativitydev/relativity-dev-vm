@@ -2,16 +2,12 @@ custom_log 'custom_log' do msg 'Starting PowerShell Module Full Processing Setup
 start_time = DateTime.now
 custom_log 'custom_log' do msg "recipe_start_time(#{recipe_name}): #{start_time}" end
 
-# Generate Import Powershell module code
-powershell_module_dll_file_full_path = win_friendly_path(File.join(Chef::Config[:file_cache_path], 'DevVmPsModules.dll'))
-IMPORT_MODULE = "Import-Module \"#{powershell_module_dll_file_full_path}\" -ErrorAction Stop".freeze
-
 # Set up Processing
 custom_log 'custom_log' do msg 'Setting up Processing' end
 
 powershell_script 'full_processing_setup' do
   code <<-EOH
-    #{IMPORT_MODULE}
+    #{node['powershell_module']['import_module']}
     New-ProcessingFullSetupAndUpdateDefaultResourcePool -RelativityInstanceName #{node['windows']['new_computer_name']} -RelativityAdminUserName #{node['relativity']['admin']['login']} -RelativityAdminPassword #{node['relativity']['admin']['password']}
     EOH
 end
