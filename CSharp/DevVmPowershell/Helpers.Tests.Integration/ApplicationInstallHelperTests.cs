@@ -52,7 +52,7 @@ namespace Helpers.Tests.Integration
 			string applicationGuid = "0125C8D4-8354-4D8F-B031-01E73C866C7C"; // Guid of the Smoke Test Application
 
 			// Act
-			bool installationResult = Sut.InstallApplicationFromApplicationLibrary(TestConstants.RELATIVITY_WORKSPACE_ID, applicationGuid);
+			bool installationResult = Sut.InstallApplicationFromApplicationLibrary(TestConstants.RELATIVITY_WORKSPACE_NAME, applicationGuid);
 			
 			// Assert
 			Assert.That(installationResult, Is.True);

@@ -9,6 +9,6 @@ namespace Helpers
 	public interface IApplicationInstallHelper
 	{
 		bool InstallApplicationFromRapFile(string workspaceName, string filePath);
-		bool InstallApplicationFromApplicationLibrary(int workspaceId, string applicationGuid);
+		bool InstallApplicationFromApplicationLibrary(string workspaceName, string applicationGuid);
 	}
 }
