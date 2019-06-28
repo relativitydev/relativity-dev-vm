@@ -395,11 +395,14 @@ default['invariant']['response_file']['replacement_values'] =
 default['sample_workspace_name'] = 'Sample Workspace'
 default['sample_data_grid_workspace_name'] = 'Sample Data Grid Workspace'
 
+default['sample_data_population']['resource_path'] = Chef::Config[:file_cache_path] + '\cookbooks\Relativity\files\default'
 default['sample_data_population']['config_file_name'] = 'DataPopulateConfiguration.Json'
 default['sample_data_population']['config_file_path'] = Chef::Config[:file_cache_path] #Dir.tmpdir
 default['sample_data_population']['relativity_admin_account']['login'] = default['relativity']['admin']['login']
 default['sample_data_population']['relativity_admin_account']['password'] = default['relativity']['admin']['password']
-default['sample_data_population']['number_of_documents'] = '11'
+default['sample_data_population']['number_of_documents'] = '15'
+default['sample_data_population']['document_type'] = 'document'
+default['sample_data_population']['image_type'] = 'image'
 default['sample_data_population']['import_images_with_Documents'] = '$TRUE'
 default['sample_data_population']['import_production_images_with_documents'] = '$TRUE'
 
@@ -484,7 +487,18 @@ default['services'] =
         type: "Process",
         serviceBus: "$False",
         location: "C:\\InvariantNetworkShare\\InvariantWorker.exe"
+    },
+    {
+        name: "QueueManager", 
+        type: "Service",
+        serviceBus: "$False",
+        location: "C:\\Program Files\\kCura Corporation\\Invariant\\QueueManager\\QueueManager.exe"
     }
 ]
 
 default['powershell_module']['relativity_api_dlls_location'] = 'C:\\Program Files\\kCura Corporation\\Relativity\\ServiceHost'
+default['powershell_module']['relativity_api_dlls_library_location'] = 'C:\\Program Files\\kCura Corporation\\Relativity\\Library'
+
+# Generate Import Powershell module code
+default['powershell_module']['dll_file_full_path'] = Chef::Config[:file_cache_path] + '\DevVmPsModules.dll'
+default['powershell_module']['import_module'] = "Import-Module \"#{default['powershell_module']['dll_file_full_path']}\" -ErrorAction Stop".freeze
