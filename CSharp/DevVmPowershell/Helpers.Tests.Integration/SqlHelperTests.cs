@@ -24,9 +24,10 @@ namespace Helpers.Tests.Integration
 		{
 			// Act
 			bool result = Sut.DeleteAllErrors();
+			int errorsCount = Sut.GetErrorsCount();
 
 			// Assert
-			Assert.That(result, Is.True);
+			Assert.True(errorsCount == 0);
 		}
 
 		[Test]
