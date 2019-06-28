@@ -5,12 +5,16 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using kCura.Relativity.Client;
+using kCura.Relativity.Client.DTOs;
 using Relativity.Services.ResourcePool;
 using Relativity.Services.ServiceProxy;
 using Relativity.Services;
 using Relativity.Services.ApplicationInstallManager;
 using Relativity.Services.ApplicationInstallManager.Models;
 using Relativity.Services.LibraryApplicationsManager;
+using ArtifactFieldNames = kCura.Relativity.Client.DTOs.ArtifactFieldNames;
+using ArtifactQueryFieldNames = kCura.Relativity.Client.DTOs.ArtifactQueryFieldNames;
+using TextConditionEnum = Relativity.Services.TextConditionEnum;
 
 namespace Helpers
 {
@@ -22,10 +26,33 @@ namespace Helpers
 			ServiceFactory = connectionHelper.GetServiceFactory();
 		}
 
-		public bool InstallApplicationFromRapFile(int workspaceId, string filePath)
+		public bool InstallApplicationFromRapFile(string workspaceName, string filePath)
 		{
 			using (IRSAPIClient proxy = ServiceFactory.CreateProxy<IRSAPIClient>())
 			{
+				proxy.APIOptions.WorkspaceID = -1;
+				Query<Workspace> query = new Query<Workspace>();
+				query.Condition = new kCura.Relativity.Client.TextCondition(WorkspaceFieldNames.Name, kCura.Relativity.Client.TextConditionEnum.EqualTo, workspaceName);
+				query.Fields = FieldValue.AllFields;
+				int workspaceId;
+				try
+				{
+					kCura.Relativity.Client.DTOs.QueryResultSet<Workspace> resultSet =
+						proxy.Repositories.Workspace.Query(query, 0);
+					if (resultSet.Success && resultSet.Results.Count > 0)
+					{
+						workspaceId = resultSet.Results.First().Artifact.ArtifactID;
+					}
+					else
+					{
+						throw new Exception($"Unable to find workspace with the name: {workspaceName}");
+					}
+				}
+				catch (Exception ex)
+				{
+					throw new Exception($"Error finding workspace with name: {workspaceName}", ex);
+				}
+
 				proxy.APIOptions.WorkspaceID = workspaceId;
 				AppInstallRequest appInstallRequest = new AppInstallRequest();
 				appInstallRequest.FullFilePath = filePath;
@@ -74,8 +101,35 @@ namespace Helpers
 			}
 		}
 
-		public bool InstallApplicationFromApplicationLibrary(int workspaceId, string applicationGuid)
+		public bool InstallApplicationFromApplicationLibrary(string workspaceName, string applicationGuid)
 		{
+			int workspaceId;
+			using (IRSAPIClient proxy = ServiceFactory.CreateProxy<IRSAPIClient>())
+			{
+				proxy.APIOptions.WorkspaceID = -1;
+				Query<Workspace> query = new Query<Workspace>();
+				query.Condition = new kCura.Relativity.Client.TextCondition(WorkspaceFieldNames.Name,
+					kCura.Relativity.Client.TextConditionEnum.EqualTo, workspaceName);
+				query.Fields = FieldValue.AllFields;
+				try
+				{
+					kCura.Relativity.Client.DTOs.QueryResultSet<Workspace> resultSet =
+						proxy.Repositories.Workspace.Query(query, 0);
+					if (resultSet.Success && resultSet.Results.Count > 0)
+					{
+						workspaceId = resultSet.Results.First().Artifact.ArtifactID;
+					}
+					else
+					{
+						throw new Exception($"Unable to find workspace with the name: {workspaceName}");
+					}
+				}
+				catch (Exception ex)
+				{
+					throw new Exception($"Error finding workspace with name: {workspaceName}", ex);
+				}
+			}
+
 			Guid appGuid = new Guid(applicationGuid);
 			// ILibraryApplicationsManager is a private kepler service
 			using (ILibraryApplicationsManager libraryApplicationsManager = ServiceFactory.CreateProxy<ILibraryApplicationsManager>())

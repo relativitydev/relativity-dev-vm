@@ -65,6 +65,20 @@ namespace Helpers
 			}
 		}
 
+		public int GetErrorsCount()
+		{
+			string sqlErrorCount = "SELECT COUNT(*) [ArtifactID] FROM [EDDS].[eddsdbo].[Error]";
+			try
+			{
+				int errorCount = DbContext.ExecuteSqlStatementAsScalar<int>(sqlErrorCount);
+				return errorCount;
+			}
+			catch (Exception ex)
+			{
+				throw new Exception("Error Getting Error Count", ex);
+			}
+		}
+
 		public int GetFileShareResourceServerArtifactId()
 		{
 			try

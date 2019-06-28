@@ -25,14 +25,14 @@ namespace Helpers.Tests.Integration
 		}
 
 		[Test]
-		[TestCase(TestConstants.RELATIVITY_WORKSPACE_ID, Constants.FileType.Document, 15)]
-		[TestCase(TestConstants.RELATIVITY_WORKSPACE_ID, Constants.FileType.Image, 15)]
+		[TestCase(TestConstants.RELATIVITY_WORKSPACE_NAME, Constants.FileType.Document, 15)]
+		[TestCase(TestConstants.RELATIVITY_WORKSPACE_NAME, Constants.FileType.Image, 15)]
 		public void/*async Task*/ AddDocumentsToWorkspaceTest(int workspaceId, string fileType, int numberOfFiles)
 		{
 			//Arrange
 
 			//Act
-			int numberOfFilesImported = Sut.AddDocumentsToWorkspace(workspaceId, fileType, numberOfFiles).Result;
+			int numberOfFilesImported = Sut.AddDocumentsToWorkspace(workspaceId, fileType, numberOfFiles, "").Result;
 
 			//Assert
 			Assert.That(numberOfFilesImported, Is.EqualTo(numberOfFiles));

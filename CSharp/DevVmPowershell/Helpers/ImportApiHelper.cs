@@ -1,4 +1,6 @@
-﻿using kCura.Relativity.DataReaderClient;
+﻿using kCura.Relativity.Client;
+using kCura.Relativity.Client.DTOs;
+using kCura.Relativity.DataReaderClient;
 using kCura.Relativity.ImportAPI;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
@@ -7,8 +9,10 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using QueryResult = Relativity.Services.Objects.DataContracts.QueryResult;
 
 namespace Helpers
 {
@@ -16,6 +20,7 @@ namespace Helpers
 	{
 		private ImportAPI importApi;
 		private ServiceFactory ServiceFactory { get; }
+		private string resourceFolderPath;
 
 		public ImportApiHelper(IConnectionHelper connectionHelper)
 		{
@@ -24,18 +29,18 @@ namespace Helpers
 			importApi = connectionHelper.GetImportApi();
 		}
 
-		public async Task<int> AddDocumentsToWorkspace(int workspaceId, string fileType, int fileCount)
+		public async Task<int> AddDocumentsToWorkspace(int workspaceId, string fileType, int fileCount, string resourceFolderPath)
 		{
 			int numDocsBefore = await GetNumberOfDocumentsAsync(ServiceFactory, workspaceId, fileType);
 
-			CreateAndExecuteJob(workspaceId, fileType, fileCount, numDocsBefore);
+			CreateAndExecuteJob(workspaceId, fileType, fileCount, numDocsBefore, resourceFolderPath);
 
 			int numDocsAfter = await GetNumberOfDocumentsAsync(ServiceFactory, workspaceId, fileType);
 
 			return numDocsAfter - numDocsBefore;
 		}
 
-		protected static DataTable GenerateDocumentDataTable(string fileType, int fileCount, int currentFileCount)
+		protected static DataTable GenerateDocumentDataTable(string fileType, int fileCount, int currentFileCount, string resourceFolderPath)
 		{
 			DataTable dataSource = new DataTable();
 
@@ -54,15 +59,15 @@ namespace Helpers
 					break;
 			}
 
-			AddFilesToDataTable(dataSource, fileType, fileCount, currentFileCount);
+			AddFilesToDataTable(dataSource, fileType, fileCount, currentFileCount, resourceFolderPath);
 
 			return dataSource;
 		}
 
-		public static void AddFilesToDataTable(DataTable dataSource, string fileType, int fileCount, int currentFileCount)
+		public static void AddFilesToDataTable(DataTable dataSource, string fileType, int fileCount, int currentFileCount, string resourceFolderPath)
 		{
 			string executableLocation = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-			string resourcePath = Path.Combine(executableLocation, $@"Resources\{fileType}s");
+			string resourcePath = Path.Combine((string.IsNullOrEmpty(resourceFolderPath)) ? executableLocation : resourceFolderPath, $@"Resources\{fileType}s");
 			string[] files = Directory.GetFiles(resourcePath);
 
 			for (int i = 0; i < fileCount;)
@@ -143,7 +148,7 @@ namespace Helpers
 			}
 		}
 
-		public void CreateAndExecuteJob(int workspaceId, string fileType, int fileCount, int currentFileCount)
+		public void CreateAndExecuteJob(int workspaceId, string fileType, int fileCount, int currentFileCount, string resourceFolderPath)
 		{
 			switch (fileType.ToLower())
 			{
@@ -173,7 +178,7 @@ namespace Helpers
 					documentJob.Settings.IdentityFieldId = Constants.CommonArtifactIds.ControlNumber;
 
 					// Add the files to the data source.
-					documentJob.SourceData.SourceData = GenerateDocumentDataTable(fileType, fileCount, currentFileCount).CreateDataReader();
+					documentJob.SourceData.SourceData = GenerateDocumentDataTable(fileType, fileCount, currentFileCount, resourceFolderPath).CreateDataReader();
 					documentJob.Execute();
 
 					break;
@@ -204,12 +209,49 @@ namespace Helpers
 					imageJob.Settings.OverwriteMode = OverwriteModeEnum.AppendOverlay;
 
 					// Add the files to the data source.
-					imageJob.SourceData.SourceData = GenerateDocumentDataTable(fileType, fileCount, currentFileCount);
+					imageJob.SourceData.SourceData = GenerateDocumentDataTable(fileType, fileCount, currentFileCount, resourceFolderPath);
 					imageJob.Execute();
 
 					break;
 				default:
 					throw new Exception($"Job must be either for {Constants.FileType.Document} or {Constants.FileType.Image}");
+			}
+		}
+
+		public async Task<int> GetFirstWorkspaceIdQueryAsync(string workspaceName)
+		{
+			Console.WriteLine($"Querying for Workspaces [Name: {workspaceName}]");
+
+			try
+			{
+				using (IRSAPIClient rsapiClient = ServiceFactory.CreateProxy<IRSAPIClient>())
+				{
+					rsapiClient.APIOptions.WorkspaceID = Constants.EDDS_WORKSPACE_ARTIFACT_ID;
+
+					TextCondition textCondition = new TextCondition(WorkspaceFieldNames.Name, TextConditionEnum.EqualTo, workspaceName);
+					Query<Workspace> workspaceQuery = new Query<Workspace>
+					{
+						Fields = FieldValue.AllFields,
+						Condition = textCondition
+					};
+
+					QueryResultSet<Workspace> workspaceQueryResultSet = await Task.Run(() => rsapiClient.Repositories.Workspace.Query(workspaceQuery));
+
+					if (!workspaceQueryResultSet.Success || workspaceQueryResultSet.Results == null)
+					{
+						throw new Exception("Failed to query Workspaces");
+					}
+
+					List<int> workspaceArtifactIds = workspaceQueryResultSet.Results.Select(x => x.Artifact.ArtifactID).ToList();
+
+					Console.WriteLine($"Queried for Workspaces! [Count: {workspaceArtifactIds.Count}]");
+
+					return workspaceArtifactIds.First();
+				}
+			}
+			catch (Exception ex)
+			{
+				throw new Exception("An error occured when querying Workspaces", ex);
 			}
 		}
 	}

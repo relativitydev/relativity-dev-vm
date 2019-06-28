@@ -1,4 +1,4 @@
-[Boolean] $global:exportVm = $false
+[Boolean] $global:exportVm = $true
 [string] $global:vmName = "RelativityDevVm"
 [string] $global:vmExportPath = "C:\DevVmExport"
 [string] $global:vmDocumentationTextFilePath = "$($global:vmExportPath)\$($global:vmName)\DevVm_Documentation.txt"
@@ -7,6 +7,14 @@
 [string] $global:devVmCreationResultFileName = "result_file.txt"
 [Boolean] $global:devVmCreationWasSuccess = $false
 [string] $global:compressedFileExtension = "zip"
+
+[string] $devVmAutomationConfigFilePath = "C:\DevVm_Automation_Config.json"
+[string] $json = Get-Content -Path $devVmAutomationConfigFilePath
+$jsonContents = $json | ConvertFrom-Json
+[string] $global:devVmInstallFolder = $jsonContents.devVmInstallFolder
+[string] $global:relativityInvariantVersionNumberFileName = "relativity_invariant_version.txt"
+$global:vmProcessorsOnExport = 2
+$global:vmMemoryOnExport = 8000MB
 
 function Write-Empty-Line-To-Screen () {
   Write-Host ""
@@ -128,6 +136,28 @@ function Create-DevVm-Checkpoint() {
   }
 }
 
+function Rename-DevVm() {
+  try{
+    Write-Heading-Message-To-Screen  "Renaming VM"
+    $relativityAndInvariantVersions = Get-Content -Path "$($global:devVmInstallFolder)\Relativity\$($global:relativityInvariantVersionNumberFileName)"
+    $indexOfComma = $relativityAndInvariantVersions.IndexOf(',')
+    $indexOfColon = $relativityAndInvariantVersions.IndexOf(':')
+    $relativityVersion = $relativityAndInvariantVersions.Substring(($indexOfColon + 2), ($indexOfComma - ($indexOfColon +2)))
+    $relativityVersion = $relativityVersion.Replace(" ", "")
+    [string] $newName = "$($global:vmName)-$($relativityVersion)"
+    Rename-Vm -Name $global:vmName -NewName $newName
+    $global:vmName = $newName
+    Write-Message-To-Screen  "Renamed VM"
+  }
+  Catch [Exception] {
+    $env:DevVmCreationErrorStatus = "true"
+    Write-Error-Message-To-Screen "An error occured when renaming the VM."
+    Write-Error-Message-To-Screen "-----> Exception: $($_.Exception.GetType().FullName)"
+    Write-Error-Message-To-Screen "-----> Exception Message: $($_.Exception.Message)"
+    throw
+  }
+}
+
 function Create-DevVm-Documentation-Text-File() {
   try {
     Write-Heading-Message-To-Screen  "Creating DevVM Documentation text file"
@@ -146,6 +176,20 @@ function Create-DevVm-Documentation-Text-File() {
   Catch [Exception] {
     $env:DevVmCreationErrorStatus = "true"
     Write-Error-Message-To-Screen "An error occured when creating DevVM Documentation text file"
+    Write-Error-Message-To-Screen "-----> Exception: $($_.Exception.GetType().FullName)"
+    Write-Error-Message-To-Screen "-----> Exception Message: $($_.Exception.Message)"
+    throw
+  }
+}
+
+function Downgrade-DevVm-Resources() {
+  try{
+    Set-VMProcessor $global:vmName -Count $global:vmProcessorsOnExport
+    Set-VMMemory $global:vmName -StartupBytes $global:vmMemoryOnExport
+  }
+  Catch [Exception] {
+    $env:DevVmCreationErrorStatus = "true"
+    Write-Error-Message-To-Screen "An error occured when dowgrading the VM resources."
     Write-Error-Message-To-Screen "-----> Exception: $($_.Exception.GetType().FullName)"
     Write-Error-Message-To-Screen "-----> Exception Message: $($_.Exception.Message)"
     throw
@@ -188,7 +232,8 @@ function Compress-DevVm() {
     Delete-File-If-It-Exists $zipFilePath
 
     # Create new zip file
-    .\ZipFolderConsole.exe $folderToCompressPath $zipFilePath
+    Import-Module .\Cookbooks\Relativity\files\default\DevVmPsModules.dll
+    Add-ZipFolder -SourceFolderPath $folderToCompressPath -DestinationZipFilePath $zipFilePath
 
     Write-Message-To-Screen  "Converted Exported VM to a Zip file"
   }
@@ -351,7 +396,9 @@ function New-DevVm() {
     if ($global:devVmCreationWasSuccess -eq $true) {    
       if ($global:exportVm) {
         Stop-DevVm
+        Downgrade-DevVm-Resources
         Create-DevVm-Checkpoint
+        Rename-DevVm
         Export-DevVm
         Create-DevVm-Documentation-Text-File
         Compress-DevVm

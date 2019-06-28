@@ -404,6 +404,8 @@ namespace Helpers
 
 				if (queryResult.Success && queryResult.Results.Exists(x => x.Artifact.ServerType.Name.Equals(Constants.Processing.WorkerServer, StringComparison.OrdinalIgnoreCase)))
 				{
+
+
 					WorkerCategory[] categories = new WorkerCategory[]
 					{
 						WorkerCategory.NativeImaging,
@@ -415,7 +417,10 @@ namespace Helpers
 						.Find(x => x.Artifact.ServerType.Name.Equals(Constants.Processing.WorkerServer,
 							StringComparison.OrdinalIgnoreCase)).Artifact.ArtifactID;
 
+					await workerStatusService.EnableProcessingOnWorkerAsync(workerServerArtifactId);
+					Thread.Sleep(10000);
 					await workerStatusService.UpdateCategoriesOnWorkerAsync(workerServerArtifactId, categories);
+
 					wasUpdated = true;
 					Console.WriteLine($"{nameof(UpdateWorkerServerForProcessingAsync)} - Successfully updated Worker Server ({Constants.Processing.ResourceServerName})");
 				}

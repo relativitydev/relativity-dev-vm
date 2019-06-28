@@ -52,13 +52,14 @@ namespace Helpers.Tests.Integration
 			// Arrange
 			string section = "Relativity.DataGrid";
 			string name = "DataGridEndPoint";
-			string value = "test";
+			string value = " ";
 
 			// Act
-			bool success = Sut.UpdateInstanceSettingValue(section, name, value);
+			bool success = Sut.UpdateInstanceSettingValue(name, section, value);
+			string instanceSettingValue = Sut.GetInstanceSettingValue(name, section);
 
 			// Assert
-			Assert.That(success, Is.True);
+			Assert.AreEqual(value, instanceSettingValue);
 		}
 	}
 }

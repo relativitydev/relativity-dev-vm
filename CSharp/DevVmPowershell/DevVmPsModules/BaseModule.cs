@@ -98,6 +98,7 @@ namespace DevVmPsModules
 		private static void CreateErrorLogFile(Exception exception)
 		{
 			string currentDirectory = Directory.GetCurrentDirectory();
+			Console.WriteLine($"{nameof(currentDirectory)}: {currentDirectory}");
 			string currentDateTime = DateTime.Now.ToString("yyyyMMddHHmmssfff");
 			string errorLogFileName = $"DevVmPowerShellModule_ErrorLog_{currentDateTime}.txt";
 			string errorLogFileFullPath = Path.Combine(currentDirectory, errorLogFileName);

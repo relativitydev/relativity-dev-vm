@@ -24,9 +24,10 @@ namespace Helpers.Tests.Integration
 		{
 			// Act
 			bool result = Sut.DeleteAllErrors();
+			int errorsCount = Sut.GetErrorsCount();
 
 			// Assert
-			Assert.That(result, Is.True);
+			Assert.True(errorsCount == 0);
 		}
 
 		[Test]
@@ -71,6 +72,5 @@ namespace Helpers.Tests.Integration
 			// Assert
 			Assert.That(Sut.RunShrinkDbProc(), Is.True);
 		}
-
 	}
 }
