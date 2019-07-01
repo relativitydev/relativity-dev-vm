@@ -1,7 +1,9 @@
 ﻿using Helpers;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Management.Automation;
+using System.Threading;
 
 namespace DevVmPsModules
 {
@@ -53,7 +55,7 @@ namespace DevVmPsModules
 				WriteVerbose($"Start - {nameof(ProcessRecord)} method");
 
 				base.ProcessRecord();
-				ProcessRecordCode();
+				RetryProcessRecordCode(ProcessRecordCode, TimeSpan.FromSeconds(5), 5);
 			}
 			catch (Exception ex)
 			{
@@ -121,6 +123,44 @@ namespace DevVmPsModules
 				streamWriter.WriteLine();
 				streamWriter.WriteLine($"STACK TRACE:\n{stackTrace}");
 			}
+		}
+
+		/// <summary>
+		/// Retry logic directed at ProcessRecordCode
+		/// https://stackoverflow.com/questions/1563191/cleanest-way-to-write-retry-logic
+		/// </summary>
+		/// <param name="action"></param>
+		/// <param name="timeBetweenRetry"></param>
+		/// <param name="maxAttemptCount"></param>
+		protected void RetryProcessRecordCode(Action action, TimeSpan timeBetweenRetry, int maxAttemptCount)
+		{
+			List<Exception> exceptions = new List<Exception>();
+
+			for (int attempted = 0; attempted < maxAttemptCount; attempted++)
+			{
+				try
+				{
+					if (attempted > 0)
+					{
+						WriteVerbose($"Waiting before next attempt - {nameof(action)} method.  Attempt: {attempted + 1}/{maxAttemptCount}");
+						Thread.Sleep(timeBetweenRetry);
+					}
+
+					Console.WriteLine($"Start - {action.Method.Name} method.  Attempt: {attempted + 1}/{maxAttemptCount}");
+
+					base.ProcessRecord();
+					action();
+
+					Console.WriteLine($"Finished - {action.Method.Name} method on attempt: {attempted + 1}/{maxAttemptCount}");
+
+					return;
+				}
+				catch (Exception ex)
+				{
+					exceptions.Add(ex);
+				}
+			}
+			throw new AggregateException(exceptions);
 		}
 	}
 }
