@@ -57,8 +57,8 @@
     <Reference Include="kCura.OI.FileID, Version=10.1.232.1, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.Import.Client.10.1.232.1\lib\net462\kCura.OI.FileID.dll</HintPath>
     </Reference>
-    <Reference Include="kCura.Relativity.Client, Version=10.2.137.8, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.Rsapi.10.2.137.8\lib\net462\kCura.Relativity.Client.dll</HintPath>
+    <Reference Include="kCura.Relativity.Client, Version=10.1.232.1, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.Rsapi.10.1.232.1\lib\net462\kCura.Relativity.Client.dll</HintPath>
     </Reference>
     <Reference Include="kCura.Relativity.DataReaderClient, Version=10.1.232.1, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.Import.Client.10.1.232.1\lib\net462\kCura.Relativity.DataReaderClient.dll</HintPath>
