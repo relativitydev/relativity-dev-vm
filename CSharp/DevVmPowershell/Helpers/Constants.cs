@@ -55,6 +55,7 @@ namespace Helpers
 			public const string Bates = "Bates";
 			public const string Doc = "Doc";
 			public const string File = "File";
+			public const string ExtractedText = "Extracted Text";
 		}
 
 		public class CommonArtifactIds
@@ -153,8 +154,8 @@ BEGIN
 	DEALLOCATE cursor_mini
 END
 ";
-    }
-    
+		}
+
 		public class YmlFile
 		{
 			public const string YmlFilePath = @"C:\RelativityDataGrid\elasticsearch-main\config\elasticsearch.yml";
@@ -170,7 +171,7 @@ END
 			public const string ShieldEnabledValue = "shield.enabled: false";
 			public const string PublicJWKsUrl = "publicJWKsUrl";
 		}
-		
+
 		public class EnvironmentVariables
 		{
 			public const string JavaPath = @"C:\Program Files\Java";

@@ -1,0 +1,18 @@
+Use a unique identifier when importing child records
+Set the ParentObjectIdSourceFieldName property when importing records that are the children in a parent/child relationship. ParentObjectIdSourceFieldName property indicates the name of the field that contains a unique identifier for the record of the parent object associated with the current record.
+
+Set appropriate fields when importing extracted text
+Set the ExtractedTextEncoding and ExtractedTextFieldContainsFilePath fields when you import extracted text.
+
+Follow guidelines when importing extracted text with images or productions
+Make sure that the extracted text files meet these requirements:
+
+They have .txt extensions.
+They are stored in the same directory as TIFF files.
+They are named in the same way as the TIFF files.
+If you are importing extracted text along with images, you need to set the ExtractedTextFieldContainsFilePath property when you return a ImageImportBulkArtifactJob from the NewProductionImportJob() or NewImageImportJob() method. In addition, the extracted text files must reside in the same directory as the images and use an identical naming scheme as the images, but they must have a.txt as their extension. For example, an image file resides in this directory and using this name:
+
+  C:\\VOL01\SHAP0001.tif
+The associated extracted text file must be located in same directory and follow a similar naming convention except for the .txt extension:
+
+  C:\\VOL01\SHAP0001.txt

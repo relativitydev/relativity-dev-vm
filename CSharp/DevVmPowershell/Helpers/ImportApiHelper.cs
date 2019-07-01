@@ -11,6 +11,7 @@ using System.Data;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using System.Threading.Tasks;
 using QueryResult = Relativity.Services.Objects.DataContracts.QueryResult;
 
@@ -59,6 +60,8 @@ namespace Helpers
 					break;
 			}
 
+			dataSource.Columns.Add(Constants.DocumentCommonFields.ExtractedText, typeof(string));
+
 			AddFilesToDataTable(dataSource, fileType, fileCount, currentFileCount, resourceFolderPath);
 
 			return dataSource;
@@ -70,18 +73,22 @@ namespace Helpers
 			string resourcePath = Path.Combine((string.IsNullOrEmpty(resourceFolderPath)) ? executableLocation : resourceFolderPath, $@"Resources\{fileType}s");
 			string[] files = Directory.GetFiles(resourcePath);
 
+			List<string> nonExtractedTextFiles = files.ToList();
+			nonExtractedTextFiles.RemoveAll(x => x.ToUpper().Contains("DOCTXT_")
+																					 || (fileType.ToLower().Equals(Constants.FileType.Image) && x.ToLower().Contains(".txt")));
+
 			for (int i = 0; i < fileCount;)
 			{
 				int startingIndex = i;
-				foreach (string filePath in files)
+				foreach (string filePath in nonExtractedTextFiles)
 				{
 					switch (fileType.ToLower())
 					{
 						case Constants.FileType.Document:
-							dataSource.Rows.Add($"DOC_{currentFileCount + i}", filePath, "", Path.GetFileName(filePath));
+							dataSource.Rows.Add($"DOC_{currentFileCount + i}", filePath, "", Path.GetFileName(filePath), $@"{Path.GetDirectoryName(filePath)}\{Path.GetFileNameWithoutExtension(filePath)}.txt");
 							break;
 						case Constants.FileType.Image:
-							dataSource.Rows.Add($"IMG_{currentFileCount + i}", $"IMG_{currentFileCount + i}", filePath);
+							dataSource.Rows.Add($"IMG_{currentFileCount + i}", $"IMG_{currentFileCount + i}", filePath, filePath.Replace(".tiff", ".txt"));
 							break;
 					}
 					i++;
@@ -160,7 +167,9 @@ namespace Helpers
 					documentJob.OnFatalException += ImportJobOnFatalException;
 
 					documentJob.Settings.CaseArtifactId = workspaceId;
-					documentJob.Settings.ExtractedTextFieldContainsFilePath = false;
+					documentJob.Settings.ExtractedTextFieldContainsFilePath = true;
+					documentJob.Settings.ExtractedTextEncoding = Encoding.UTF8;
+
 
 					// Indicates file path for the native file.
 					documentJob.Settings.NativeFilePathSourceFieldName = Constants.DocumentCommonFields.FilePath;//"Native File";
@@ -190,6 +199,8 @@ namespace Helpers
 					imageJob.OnFatalException += ImportJobOnFatalException;
 
 					imageJob.Settings.AutoNumberImages = false;
+					imageJob.Settings.ExtractedTextFieldContainsFilePath = true;
+					imageJob.Settings.ExtractedTextEncoding = Encoding.UTF8;
 
 					// You can use the Bates number as an identifier for an image.
 					imageJob.Settings.BatesNumberField = Constants.DocumentCommonFields.Bates;

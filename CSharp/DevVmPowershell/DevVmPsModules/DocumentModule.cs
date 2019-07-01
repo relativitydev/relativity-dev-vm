@@ -56,7 +56,7 @@ namespace DevVmPsModules
 		public int FileCount { get; set; }
 
 		[Parameter(
-			Mandatory = true,
+			Mandatory = false,
 			ValueFromPipelineByPropertyName = true,
 			ValueFromPipeline = true,
 			Position = 6,
@@ -116,10 +116,10 @@ namespace DevVmPsModules
 				throw new ArgumentNullException(nameof(FileCount), $"{nameof(FileCount)} cannot be less than 0.");
 			}
 
-			if (string.IsNullOrWhiteSpace(ResourceFilePath))
-			{
-				throw new ArgumentNullException(nameof(ResourceFilePath), $"{nameof(ResourceFilePath)} cannot be NULL or Empty.");
-			}
+			//if (string.IsNullOrWhiteSpace(ResourceFilePath))
+			//{
+			//	throw new ArgumentNullException(nameof(ResourceFilePath), $"{nameof(ResourceFilePath)} cannot be NULL or Empty.");
+			//}
 		}
 	}
 }
