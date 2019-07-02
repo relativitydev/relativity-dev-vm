@@ -453,28 +453,29 @@ Vagrant.configure('2') do |config|
     chef.add_recipe('Relativity::post_relativity_powershell_module_resize_databases') # (Tom)
     chef.add_recipe('Relativity::post_relativity_powershell_module_add_workspaces') # (Tom)
     chef.add_recipe('Relativity::post_relativity_powershell_module_add_data_to_workspaces') # (Tom)
+    chef.add_recipe('Relativity::post_relativity_image_all_documents') # (Aaron)
   end
 
 
-  # # Add processing choice which is used in the following Invariant Configuration scripts below
-  # config.vm.provision 'chef_zero' do |chef|
-  #   chef.cookbooks_path = 'Cookbooks'
-  #   chef.data_bags_path = 'DataBags'
-  #   chef.nodes_path = 'Nodes'
-  #   chef.roles_path = 'Roles'
-  #   chef.channel = 'stable'
-  #   chef.version = '13.8.5'
-  #   chef.json = {
-  #     'smb_domain' => network_share_smb_domain,
-  #     'smb_username' => network_share_smb_username,
-  #     'smb_password' => network_share_smb_password,
-  #     'smtp_server' => relativity_smtp_server,
-  #     'smtp_port' => relativity_smtp_port,
-  #     'email_from' => relativity_email_from,
-  #     'email_to' => relativity_email_to,
-  #   }
-  #   # chef.add_recipe('Relativity::post_relativity_configure_invariant_create_processing_choice') # (OLD)
-  # end
+  # Add processing choice which is used in the following Invariant Configuration scripts below
+  config.vm.provision 'chef_zero' do |chef|
+    chef.cookbooks_path = 'Cookbooks'
+    chef.data_bags_path = 'DataBags'
+    chef.nodes_path = 'Nodes'
+    chef.roles_path = 'Roles'
+    chef.channel = 'stable'
+    chef.version = '13.8.5'
+    chef.json = {
+      'smb_domain' => network_share_smb_domain,
+      'smb_username' => network_share_smb_username,
+      'smb_password' => network_share_smb_password,
+      'smtp_server' => relativity_smtp_server,
+      'smtp_port' => relativity_smtp_port,
+      'email_from' => relativity_email_from,
+      'email_to' => relativity_email_to,
+    }
+    # chef.add_recipe('Relativity::post_relativity_configure_invariant_create_processing_choice') # (OLD)
+  end
 
   # Full Processing Setup, Add Agent Server to Default Resource Pool, Create All Agents
   config.vm.provision 'chef_zero' do |chef|
@@ -493,10 +494,10 @@ Vagrant.configure('2') do |config|
       'email_from' => relativity_email_from,
       'email_to' => relativity_email_to,
     }
-    # chef.add_recipe('Relativity::post_relativity_configure_invariant_create_worker_manager_server')
-    # chef.add_recipe('Relativity::post_relativity_configure_invariant_add_processing_to_default_resource_pool')
-    # chef.add_recipe('Relativity::post_relativity_configure_invariant_add_agent_and_worker_servers_to_default_resource_pool')
-    # chef.add_recipe('Relativity::post_relativity_configure_invariant_update_worker_server_for_processing')
+    # chef.add_recipe('Relativity::post_relativity_configure_invariant_create_worker_manager_server') # (OLD)
+    # chef.add_recipe('Relativity::post_relativity_configure_invariant_add_processing_to_default_resource_pool') # (OLD)
+    # chef.add_recipe('Relativity::post_relativity_configure_invariant_add_agent_and_worker_servers_to_default_resource_pool') # (OLD)
+    # chef.add_recipe('Relativity::post_relativity_configure_invariant_update_worker_server_for_processing') # (OLD)
     chef.add_recipe('Relativity::post_relativity_powershell_module_full_processing_setup') # (Tom)
     chef.add_recipe('Relativity::post_relativity_powershell_module_add_agent_server') # (Tom)
     chef.add_recipe('Relativity::post_relativity_powershell_module_add_agents_by_name') # (Tom)
@@ -595,5 +596,6 @@ Vagrant.configure('2') do |config|
       'email_from' => '',
       'email_to' => '',
     }
+    chef.add_recipe('Relativity::post_relativity_clear_chef_data')
   end
 end
