@@ -228,5 +228,11 @@ END
 				public const string NOTES = "Search for Imaging Set";
 			}
 		}
+		public class Module
+		{
+			public const int MaxAttemptCount = 5;
+			public const int TimeInSecondsBetweenRetry = 5;
+		}
+			
 	}
 }
