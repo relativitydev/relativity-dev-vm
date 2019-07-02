@@ -29,20 +29,20 @@ end
 ruby_block 'parse_unseal' do
   block do
     init_result = File.readlines("#{node['secret_store']['init_result'].gsub("\\\"", "")}").select { |line| line =~ /#{node['secret_store']['unseal_key_identifier']}/ }
-    File.open("#{node['secret_store']['unseal_key']}", 'w') { |file| file.write("#{init_result[0].split(" = ",2)[1]}") }
+    File.open("#{node['secret_store']['unseal_key']['original_unseal_key']}", 'w') { |file| file.write("#{init_result[0].split(" = ",2)[1]}") }
   end
-  only_if { !File.exist?("#{node['secret_store']['unseal_key']}") }
+  only_if { !File.exist?("#{node['secret_store']['unseal_key']['original_unseal_key']}") }
 end
 custom_log 'custom_log' do msg 'Initialized Secret Store' end
 
 # Unseal Secret Store
 custom_log 'custom_log' do msg 'Unsealing Secret Store' end
 execute 'initial_unseal' do
-  command lazy {"#{node['secret_store']['install']['client']['location']} unseal #{File.readlines(node['secret_store']['unseal_key'])[0]}"}
+  command lazy {"#{node['secret_store']['install']['client']['location']} unseal #{File.readlines(node['secret_store']['unseal_key']['original_unseal_key'])[0]}"}
 end
 
 windows_task 'unseal' do
-  command lazy {"'#{node['secret_store']['install']['client']['location'].gsub("\\\"", "")}' unseal #{File.readlines(node['secret_store']['unseal_key'])[0]}"}
+  command lazy {"'#{node['secret_store']['install']['client']['location'].gsub("\\\"", "")}' unseal #{File.readlines(node['secret_store']['unseal_key']['original_unseal_key'])[0]}"}
   frequency :minute
   frequency_modifier 1
 end
