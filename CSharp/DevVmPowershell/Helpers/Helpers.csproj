@@ -105,6 +105,9 @@
     <Reference Include="Relativity.DataTransfer.MessageService, Version=1.0.21.3, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.Import.Client.10.1.232.1\lib\net462\Relativity.DataTransfer.MessageService.dll</HintPath>
     </Reference>
+    <Reference Include="Relativity.Imaging.Services.Interfaces">
+      <HintPath>..\packages\DLL\Relativity.Imaging.Services.Interfaces.dll</HintPath>
+    </Reference>
     <Reference Include="Relativity.Kepler, Version=1.0.1.557, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.ObjectManager.10.1.232.1\lib\net462\Relativity.Kepler.dll</HintPath>
     </Reference>
@@ -214,7 +217,9 @@
     <Compile Include="IApplicationInstallHelper.cs" />
     <Compile Include="IConnectionHelper.cs" />
     <Compile Include="IEnvironmentVariableHelper.cs" />
+    <Compile Include="IImagingHelper.cs" />
     <Compile Include="IImportApiHelper.cs" />
+    <Compile Include="ImagingHelper.cs" />
     <Compile Include="IRecycleBinHelper.cs" />
     <Compile Include="IWorkspaceHelper.cs" />
     <Compile Include="IInstanceSettingsHelper.cs" />

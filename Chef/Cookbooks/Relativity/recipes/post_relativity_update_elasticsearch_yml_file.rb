@@ -2,7 +2,7 @@ custom_log 'custom_log' do msg 'Starting Updating Elasticsearch Yml File' end
     start_time = DateTime.now
     custom_log 'custom_log' do msg "recipe_start_time(#{recipe_name}): #{start_time}" end
 
-    # Delete Errors from Errors Tab
+    # Update Elasticsearch Yaml File
     custom_log 'custom_log' do msg 'Updating Elasticsearch Yml File' end
     
     powershell_script 'update_data_grid_yml_file' do

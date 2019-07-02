@@ -7,5 +7,6 @@ namespace Helpers
 		Task<int> CreateWorkspaceAsync(string workspaceTemplateName, string workspaceName, bool enableDataGrid);
 		Task DeleteAllWorkspacesAsync(string workspaceName);
 		Task DeleteWorkspaceAsync(int workspaceArtifactId);
+		int GetWorkspaceId(string workspaceName);
 	}
 }

@@ -57,6 +57,9 @@
     <Reference Include="kCura.OI.FileID, Version=10.1.232.1, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.Import.Client.10.1.232.1\lib\net462\kCura.OI.FileID.dll</HintPath>
     </Reference>
+    <Reference Include="kCura.Relativity.Client, Version=10.1.232.1, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.Rsapi.10.1.232.1\lib\net462\kCura.Relativity.Client.dll</HintPath>
+    </Reference>
     <Reference Include="kCura.Relativity.DataReaderClient, Version=10.1.232.1, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.Import.Client.10.1.232.1\lib\net462\kCura.Relativity.DataReaderClient.dll</HintPath>
     </Reference>
@@ -101,6 +104,9 @@
     </Reference>
     <Reference Include="Relativity.DataTransfer.MessageService, Version=1.0.21.3, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.Import.Client.10.1.232.1\lib\net462\Relativity.DataTransfer.MessageService.dll</HintPath>
+    </Reference>
+    <Reference Include="Relativity.Imaging.Services.Interfaces">
+      <HintPath>..\packages\DLL\Relativity.Imaging.Services.Interfaces.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.Kepler, Version=1.0.1.557, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.ObjectManager.10.1.232.1\lib\net462\Relativity.Kepler.dll</HintPath>
@@ -187,6 +193,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AddImagesForAllDocumentsModule.cs" />
     <Compile Include="AddApplicationFromLibraryModule.cs" />
     <Compile Include="AddApplicationFromRapFileModule.cs" />
     <Compile Include="AddAgentByNameModule.cs" />
