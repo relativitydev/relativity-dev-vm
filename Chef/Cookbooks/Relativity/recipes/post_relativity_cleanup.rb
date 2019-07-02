@@ -23,10 +23,6 @@ powershell_script 'Delete vagrant properties' do
     $dna_json_file_content.smb_domain = "abcde"
     $dna_json_file_content.smb_username = "abcde"
     $dna_json_file_content.smb_password = "abcde"
-    $dna_json_file_content.smtp_server = "abcde"
-    $dna_json_file_content.smtp_port = "abcde"
-    $dna_json_file_content.email_from = "abcde"
-    $dna_json_file_content.email_to = "abcde"
     $dna_json_file_content | ConvertTo-Json  | Set-Content $dna_json_file
 
     exit 0

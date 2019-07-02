@@ -8,9 +8,3 @@ credentials:
     smb_domain: 'relativity'
     smb_username: 'my_user_name'
     smb_password: 'example_network_password'
-
-email:
-    smtp_server: 'smtp.relativity.com'
-    smtp_port: '25'
-    email_from: 'noreply@relativity.com'
-    email_to: 'test.user1@relativity.com;test.user2@relativity.com'
