@@ -24,15 +24,8 @@ namespace Helpers.Tests.Integration
 				TestConstants.RELATIVITY_INSTANCE_NAME,
 				TestConstants.RELATIVITY_ADMIN_USER_NAME,
 				TestConstants.RELATIVITY_ADMIN_PASSWORD);
-			ServiceFactory serviceFactory = connectionHelper.GetServiceFactory();
-
-			IImagingProfileManager imagingProfileManager = serviceFactory.CreateProxy<IImagingProfileManager>();
-			IImagingSetManager imagingSetManager = serviceFactory.CreateProxy<IImagingSetManager>();
-			IImagingJobManager imagingJobManager = serviceFactory.CreateProxy<IImagingJobManager>();
-			IRSAPIClient rsapiClient = serviceFactory.CreateProxy<IRSAPIClient>();
-			IKeywordSearchManager keywordSearchManager = serviceFactory.CreateProxy<IKeywordSearchManager>();
-
-			Sut = new ImagingHelper(imagingProfileManager, imagingSetManager, imagingJobManager, rsapiClient, keywordSearchManager);
+			
+			Sut = new ImagingHelper(connectionHelper);
 		}
 
 		[TearDown]
@@ -48,15 +41,8 @@ namespace Helpers.Tests.Integration
 			int workspaceArtifactId = 1017386;
 
 			// Act
-			int savedSearchArtifactId = Sut.CreateKeywordSearchAsync(workspaceArtifactId).Result;
-			int imagingProfileArtifactId = Sut.CreateImagingProfileAsync(workspaceArtifactId).Result;
-			int imagingSetArtifactId = Sut.CreateImagingSetAsync(workspaceArtifactId, savedSearchArtifactId, imagingProfileArtifactId).Result;
-			Sut.RunImagingJobAsync(workspaceArtifactId, imagingSetArtifactId).Wait();
-
 			// Assert
-			Assert.That(imagingProfileArtifactId > 0);
-			Assert.That(imagingSetArtifactId > 0);
-			Assert.DoesNotThrow(() => Sut.WaitForImagingJobToCompleteAsync(workspaceArtifactId, imagingSetArtifactId).Wait());
+			Assert.DoesNotThrow(() => Sut.ImageAllDocumentsInWorkspaceAsync(workspaceArtifactId).Wait());
 		}
 	}
 }
