@@ -190,35 +190,6 @@ namespace Helpers
 			}
 		}
 
-		//public async Task<int> GetFirstWorkspaceIdQueryAsync(string workspaceName)
-		//{
-		//	using (IRSAPIClient proxy = ServiceFactory.CreateProxy<IRSAPIClient>())
-		//	{
-		//		proxy.APIOptions.WorkspaceID = -1;
-		//		Query<Workspace> query = new Query<Workspace>();
-		//		query.Condition = new kCura.Relativity.Client.TextCondition(WorkspaceFieldNames.Name, kCura.Relativity.Client.TextConditionEnum.EqualTo, workspaceName);
-		//		query.Fields = FieldValue.AllFields;
-		//		int workspaceId;
-		//		try
-		//		{
-		//			kCura.Relativity.Client.DTOs.QueryResultSet<Workspace> resultSet = proxy.Repositories.Workspace.Query(query, 0);
-		//			if (resultSet.Success && resultSet.Results.Count > 0)
-		//			{
-		//				workspaceId = resultSet.Results.First().Artifact.ArtifactID;
-		//				return workspaceId;
-		//			}
-		//			else
-		//			{
-		//				throw new Exception($"Unable to find workspace with the name: {workspaceName}");
-		//			}
-		//		}
-		//		catch (Exception ex)
-		//		{
-		//			throw new Exception($"Error finding workspace with name: {workspaceName}", ex);
-		//		}
-		//	}
-		//}
-
 		public async Task<int> GetFirstWorkspaceIdQueryAsync(string workspaceName)
 		{
 			Console.WriteLine($"Querying for Workspace Name: {workspaceName}");
