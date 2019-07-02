@@ -1,0 +1,18 @@
+
+Gas Trading System Wish List
+
+
+
+Complete position
+report-	combine all financial, physical, and transport positions together on one position manager.  Group by risk type not deal type. 
+
+Manager rights-	Ability for manager to see the combined positions/p&l’s of any or all books under his control.
+
+Best of TDS-	Curve shift reports, new deal positions and p&l,  changed deal report, ability to group pub codes into subtotals, and curve averages.
+
+Improve physical
+reporting-	Separate financial exposure from physical balances.  
+
+	
+
+Customizable	Ability to download into excel in order to create custom pages.  

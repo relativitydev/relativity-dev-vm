@@ -4,7 +4,6 @@ using Relativity.Services.ServiceProxy;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -191,33 +190,40 @@ namespace Helpers
 			}
 		}
 
-		public int GetWorkspaceId(string workspaceName)
+		public async Task<int> GetFirstWorkspaceIdQueryAsync(string workspaceName)
 		{
-			using (IRSAPIClient proxy = ServiceFactory.CreateProxy<IRSAPIClient>())
+			Console.WriteLine($"Querying for Workspace Name: {workspaceName}");
+
+			try
 			{
-				proxy.APIOptions.WorkspaceID = -1;
-				Query<Workspace> query = new Query<Workspace>();
-				query.Condition = new kCura.Relativity.Client.TextCondition(WorkspaceFieldNames.Name, kCura.Relativity.Client.TextConditionEnum.EqualTo, workspaceName);
-				query.Fields = FieldValue.AllFields;
-				int workspaceId;
-				try
+				using (IRSAPIClient rsapiClient = ServiceFactory.CreateProxy<IRSAPIClient>())
 				{
-					kCura.Relativity.Client.DTOs.QueryResultSet<Workspace> resultSet =
-						proxy.Repositories.Workspace.Query(query, 0);
-					if (resultSet.Success && resultSet.Results.Count > 0)
+					rsapiClient.APIOptions.WorkspaceID = Constants.EDDS_WORKSPACE_ARTIFACT_ID;
+
+					TextCondition textCondition = new TextCondition(WorkspaceFieldNames.Name, TextConditionEnum.EqualTo, workspaceName);
+					Query<Workspace> workspaceQuery = new Query<Workspace>
 					{
-						workspaceId = resultSet.Results.First().Artifact.ArtifactID;
-						return workspaceId;
-					}
-					else
+						Fields = FieldValue.AllFields,
+						Condition = textCondition
+					};
+
+					QueryResultSet<Workspace> workspaceQueryResultSet = await Task.Run(() => rsapiClient.Repositories.Workspace.Query(workspaceQuery));
+
+					if (!workspaceQueryResultSet.Success || workspaceQueryResultSet.Results == null)
 					{
-						throw new Exception($"Unable to find workspace with the name: {workspaceName}");
+						throw new Exception("Failed to query Workspaces");
 					}
+
+					List<int> workspaceArtifactIds = workspaceQueryResultSet.Results.Select(x => x.Artifact.ArtifactID).ToList();
+
+					Console.WriteLine($"Queried for Workspaces! [Count: {workspaceArtifactIds.Count}]");
+
+					return workspaceArtifactIds.First();
 				}
-				catch (Exception ex)
-				{
-					throw new Exception($"Error finding workspace with name: {workspaceName}", ex);
-				}
+			}
+			catch (Exception ex)
+			{
+				throw new Exception("An error occured when querying Workspaces", ex);
 			}
 		}
 	}

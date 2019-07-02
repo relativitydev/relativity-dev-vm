@@ -57,6 +57,7 @@ namespace Helpers
 			public const string Bates = "Bates";
 			public const string Doc = "Doc";
 			public const string File = "File";
+			public const string ExtractedText = "Extracted Text";
 		}
 
 		public class CommonArtifactIds

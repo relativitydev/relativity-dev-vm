@@ -84,7 +84,7 @@ namespace Helpers.Tests.Integration
 			string workspaceName = TestConstants.RELATIVITY_WORKSPACE_NAME;
 
 			//Act
-			int workspaceId = Sut.GetWorkspaceId(workspaceName);
+			int workspaceId = Sut.GetFirstWorkspaceIdQueryAsync(workspaceName).Result;
 
 			//Assert
 			Assert.That(workspaceId > 0);

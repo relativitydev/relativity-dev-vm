@@ -56,7 +56,7 @@ namespace DevVmPsModules
 		public int FileCount { get; set; }
 
 		[Parameter(
-			Mandatory = true,
+			Mandatory = false,
 			ValueFromPipelineByPropertyName = true,
 			ValueFromPipeline = true,
 			Position = 6,
@@ -72,8 +72,10 @@ namespace DevVmPsModules
 
 			IImportApiHelper importApi = new ImportApiHelper(connectionHelper);
 
+			IWorkspaceHelper workspaceHelper = new WorkspaceHelper(connectionHelper, null);
+
 			// Get workspaceId
-			int workspaceId = importApi.GetFirstWorkspaceIdQueryAsync(WorkspaceName).Result;
+			int workspaceId = workspaceHelper.GetFirstWorkspaceIdQueryAsync(WorkspaceName).Result;
 
 			// Add documents for each Workspace ID specified
 			importApi.AddDocumentsToWorkspace(workspaceId, FileType, FileCount, ResourceFilePath).Wait();
@@ -116,10 +118,6 @@ namespace DevVmPsModules
 				throw new ArgumentNullException(nameof(FileCount), $"{nameof(FileCount)} cannot be less than 0.");
 			}
 
-			if (string.IsNullOrWhiteSpace(ResourceFilePath))
-			{
-				throw new ArgumentNullException(nameof(ResourceFilePath), $"{nameof(ResourceFilePath)} cannot be NULL or Empty.");
-			}
 		}
 	}
 }

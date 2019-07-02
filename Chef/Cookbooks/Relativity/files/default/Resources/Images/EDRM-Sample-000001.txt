@@ -1,0 +1,7 @@
+Use the ADS
+You can use ADS to develop applications by creating new components through the Relativity UI and by uploading custom code. You can create these components to provide a unique look and feel for your applications:
+
+Custom pages – add your own cascading style sheets (CSS), JavaScript, HTML, and images to these pages. See Customize the UI.
+Views – control how item lists are displayed.See Views on the RelativityOne Documentation site.
+Layouts – provide web-based forms for viewing and editing fields. See Layouts on the RelativityOne Documentation site.
+Tabs – provide links to custom pages and Relativity object pages. See Tabs on the RelativityOne Documentation site.

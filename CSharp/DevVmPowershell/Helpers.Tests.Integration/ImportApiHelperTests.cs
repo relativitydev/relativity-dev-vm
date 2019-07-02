@@ -6,6 +6,7 @@ namespace Helpers.Tests.Integration
 	public class ImportApiHelperTests
 	{
 		private IImportApiHelper Sut { get; set; }
+		private IWorkspaceHelper WorkspaceHelper { get; set; }
 
 		[SetUp]
 		public void Setup()
@@ -16,23 +17,26 @@ namespace Helpers.Tests.Integration
 				TestConstants.RELATIVITY_ADMIN_PASSWORD);
 
 			Sut = new ImportApiHelper(connectionHelper);
+			WorkspaceHelper = new WorkspaceHelper(connectionHelper, null);
+
 		}
 
 		[TearDown]
 		public void TearDown()
 		{
 			Sut = null;
+			WorkspaceHelper = null;
 		}
 
 		[Test]
 		[TestCase(TestConstants.RELATIVITY_WORKSPACE_NAME, Constants.FileType.Document, 15)]
 		[TestCase(TestConstants.RELATIVITY_WORKSPACE_NAME, Constants.FileType.Image, 15)]
-		public void/*async Task*/ AddDocumentsToWorkspaceTest(int workspaceId, string fileType, int numberOfFiles)
+		public void/*async Task*/ AddDocumentsToWorkspaceTest(string workspaceName, string fileType, int numberOfFiles)
 		{
 			//Arrange
 
 			//Act
-			int numberOfFilesImported = Sut.AddDocumentsToWorkspace(workspaceId, fileType, numberOfFiles, "").Result;
+			int numberOfFilesImported = Sut.AddDocumentsToWorkspace(WorkspaceHelper.GetFirstWorkspaceIdQueryAsync(workspaceName).Result, fileType, numberOfFiles, "").Result;
 
 			//Assert
 			Assert.That(numberOfFilesImported, Is.EqualTo(numberOfFiles));
