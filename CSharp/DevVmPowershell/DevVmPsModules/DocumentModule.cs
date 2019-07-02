@@ -116,10 +116,6 @@ namespace DevVmPsModules
 				throw new ArgumentNullException(nameof(FileCount), $"{nameof(FileCount)} cannot be less than 0.");
 			}
 
-			//if (string.IsNullOrWhiteSpace(ResourceFilePath))
-			//{
-			//	throw new ArgumentNullException(nameof(ResourceFilePath), $"{nameof(ResourceFilePath)} cannot be NULL or Empty.");
-			//}
 		}
 	}
 }
