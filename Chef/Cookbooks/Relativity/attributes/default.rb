@@ -502,3 +502,9 @@ default['powershell_module']['relativity_api_dlls_library_location'] = 'C:\\Prog
 # Generate Import Powershell module code
 default['powershell_module']['dll_file_full_path'] = Chef::Config[:file_cache_path] + '\DevVmPsModules.dll'
 default['powershell_module']['import_module'] = "Import-Module \"#{default['powershell_module']['dll_file_full_path']}\" -ErrorAction Stop".freeze
+
+# Smoke Test Instance Setting
+default['smoke_test']['instance_setting']['name'] = "SmokeTestShouldRunProcessingTest"
+default['smoke_test']['instance_setting']['section'] = "Relativity.SmokeTest"
+default['smoke_test']['instance_setting']['description'] = "Determines if Processing Smoke Test should be ran"
+default['smoke_test']['instance_setting']['value'] = "false"

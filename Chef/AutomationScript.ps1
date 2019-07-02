@@ -474,7 +474,6 @@ function Create-DevVm([string] $relativityVersionToCreate) {
   Write-Heading-Message-To-Screen "Creating DevVm. [$($relativityVersionToCreate)]"
 
   $global:devVmCreationWasSuccess = $false
-  $env:DevVmCreationErrorStatus = "false"
   Write-Message-To-Screen "Total attempts: $($global:maxRetry)"
 
   Do {
@@ -577,7 +576,6 @@ function Delete-DevVm-Creation-Result-File() {
     Write-Empty-Line-To-Screen
   }
   Catch [Exception] {
-    $env:DevVmCreationErrorStatus = "true"
     Write-Error-Message-To-Screen "An error occured when deleting DevVM Result file."
     Write-Error-Message-To-Screen "-----> Exception: $($_.Exception.GetType().FullName)"
     Write-Error-Message-To-Screen "-----> Exception Message: $($_.Exception.Message)"

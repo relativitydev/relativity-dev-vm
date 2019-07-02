@@ -76,5 +76,18 @@ namespace Helpers.Tests.Integration
 			//Assert
 			Assert.DoesNotThrow(async () => await Sut.DeleteWorkspaceAsync(workspaceArtifactId)); //To Test this method, make sure the workspace you are trying to delete exists
 		}
+
+		[Test]
+		public void GetWorkspaceIdTest()
+		{
+			//Arrange
+			string workspaceName = TestConstants.RELATIVITY_WORKSPACE_NAME;
+
+			//Act
+			int workspaceId = Sut.GetWorkspaceId(workspaceName);
+
+			//Assert
+			Assert.That(workspaceId > 0);
+		}
 	}
 }

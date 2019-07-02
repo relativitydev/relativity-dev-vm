@@ -85,6 +85,7 @@ powershell_module_related_files_to_copy = [
   'DevVmPsModules.dll',
   'Helpers.dll',
   'DbContextHelper.dll',
+  'Relativity.Imaging.Services.Interfaces.dll'
 ]
 
 powershell_module_related_files_to_copy.each do |source_file_name|

@@ -31,7 +31,7 @@ namespace Helpers
 						Section = section,
 						Name = name,
 						Description = description,
-						Value = value
+						Value = value,
 					};
 					int instanceSettingArtifactId = instanceSettingManager.CreateSingleAsync(newInstanceSetting).Result;
 					Console.WriteLine("Successfully Created Instance Setting");
