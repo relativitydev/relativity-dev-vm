@@ -2,7 +2,7 @@ custom_log 'custom_log' do msg 'Saving Secret Store unseal key file' end
 start_time = DateTime.now
 custom_log 'custom_log' do msg "recipe_start_time(#{recipe_name}): #{start_time}" end
 
-file_source = node['secret_store']['unseal_key']
+file_source = node['secret_store']['unseal_key']['original_unseal_key']
 file_destination = node['secret_store']['unseal_key']['save_to_local_file_destination_path']
 file_destination_folder = node['secret_store']['unseal_key']['save_to_local_file_destination_folder']
 
