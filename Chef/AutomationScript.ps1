@@ -59,7 +59,7 @@ $global:devVmVersionsToCreate = New-Object System.Collections.ArrayList
 [Boolean] $global:devVmCreationWasSuccess = $false
 [string] $global:compressedFileExtension = "zip"
 [string] $global:relativityInvariantVersionNumberFileName = "relativity_invariant_version.txt"
-[string] $global:testSingleRelativityVersion = "10.2.165.4" # Leave it blank when in Production mode
+[string] $global:testSingleRelativityVersion = "10.2.170.2" # Leave it blank when in Production mode
 
 function Reset-Logs-Environment-Variable() {
   Write-Host-Custom-Green "Resetting Logs Environment variable."
@@ -501,6 +501,7 @@ function Create-DevVm([string] $relativityVersionToCreate) {
           Copy-DevVm-Zip-To-Network-Storage $relativityVersionToCreate
         }
         else {
+          $global:count++
           Write-Message-To-Screen "DevVm creation failed. Skipped copying zip file to network storage."
         }
       }
@@ -518,11 +519,10 @@ function Create-DevVm([string] $relativityVersionToCreate) {
     }
     
     Write-Heading-Message-To-Screen "Retry variables:"
-    Write-Message-To-Screen "env:DevVmCreationErrorStatus: $($env:DevVmCreationErrorStatus)"
     Write-Message-To-Screen "global:devVmCreationWasSuccess: $($global:devVmCreationWasSuccess)"
     Write-Message-To-Screen "global:count: $($global:count)"
     Write-Message-To-Screen "global:maxRetry: $($global:maxRetry)"
-  }  while (($env:DevVmCreationErrorStatus -eq "true") -And ($global:devVmCreationWasSuccess -eq $false) -And ($global:count -le $global:maxRetry))
+  }  while (($global:devVmCreationWasSuccess -eq $false) -And ($global:count -le $global:maxRetry))
 
   if ($global:devVmCreationWasSuccess -eq $false) {
     Write-Error-Message-To-Screen "DevVM creation failed. Attempted $($global:count - 1) times."

@@ -419,7 +419,7 @@ function New-DevVm() {
     throw
   }
   finally {
-    if ($global:exportVm) {
+    if ($global:exportVm -And $global:devVmCreationWasSuccess) {
       Start-DevVm
       Delete-DevVm
     }
