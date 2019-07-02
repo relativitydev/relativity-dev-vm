@@ -1,4 +1,6 @@
-﻿using Relativity.Services.Agent;
+﻿using System;
+using Relativity.Imaging.Services.Interfaces;
+using Relativity.Services.Agent;
 
 namespace Helpers
 {
@@ -178,10 +180,58 @@ END
 			public const string JavaHome = "JAVA_HOME";
 		}
 
+		public class Imaging
+		{
+			public class Profile
+			{
+				public const string NAME = "Sample Imaging Profile";
+				public const int IMAGE_OUTPUT_DPI = 100;
+				public const ImageFormat BASIC_IMAGE_FORMAT = ImageFormat.Jpeg;
+				public const ImageSize IMAGE_SIZE = ImageSize.A4;
+				public const ImagingMethod IMAGING_METHOD = ImagingMethod.Basic;
+			}
+
+			public class Set
+			{
+				public const string NAME = "Sample Imaging Set";
+				public const string EMAIL_NOTIFICATION_RECIPIENTS = "";
+			}
+
+			public class Job
+			{
+				public const bool QC_ENABLED = false;
+			}
+		}
+
+		public class Guids
+		{
+			public class Fields
+			{
+				public class ImagingSet
+				{
+					public static Guid Status = new Guid("030747E3-E154-4DF1-BD10-CF6C9734D10A");
+				}
+			}
+		}
+
+		public class Search
+		{
+			public class KeywordSearch
+			{
+				public const string OWNER = "Public";
+				public const string NAME = "All Documents";
+				public const string FIELD_EDIT = "Edit";
+				public const string FIELD_FILE_ICON = "File Icon";
+				public const string FIELD_CONTROL_NUMBER = "Control Number";
+				public const string CONDITION_FIELD_EXTRACTED_TEXT = "Control Number";
+				public const string NOTES = "Search for Imaging Set";
+			}
+		}
 		public class Module
 		{
 			public const int MaxAttemptCount = 5;
 			public const int TimeInSecondsBetweenRetry = 5;
 		}
+			
 	}
 }
