@@ -164,7 +164,7 @@ Vagrant.configure('2') do |config|
     }
     chef.add_recipe('Relativity::default_start_services')
     chef.add_recipe('Relativity::pre_relativity_secret_store_install')
-    # chef.add_recipe('Relativity::pre_relativity_secret_store_install_save_secret_store_unseal_key_to_local_file') #has defect. so failing. need to be fixed.
+    chef.add_recipe('Relativity::pre_relativity_secret_store_install_save_secret_store_unseal_key_to_local_file')
     chef.add_recipe('Relativity::pre_relativity_secret_store_add_response_file_properties')
     chef.add_recipe('Relativity::default_relativity')
   end
