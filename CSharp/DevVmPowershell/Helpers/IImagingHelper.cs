@@ -9,6 +9,7 @@ namespace Helpers
 {
 	public interface IImagingHelper
 	{
+		Task ImageAllDocumentsInWorkspaceAsync(int workspaceArtifactId);
 		Task<int> CreateImagingProfileAsync(int workspaceArtifactId);
 		Task<int> CreateImagingSetAsync(int workspaceArtifactId, int savedSearchArtifactId, int imagingProfileArtifactId);
 		Task RunImagingJobAsync(int workspaceArtifactId, int imagingSetArtifactId);

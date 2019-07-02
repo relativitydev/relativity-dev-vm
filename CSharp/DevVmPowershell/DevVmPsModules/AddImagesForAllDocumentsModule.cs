@@ -53,23 +53,12 @@ namespace DevVmPsModules
 			ValidateInputArguments();
 
 			IConnectionHelper connectionHelper = new ConnectionHelper(RelativityInstanceName, RelativityAdminUserName, RelativityAdminPassword);
-			ServiceFactory serviceFactory = connectionHelper.GetServiceFactory();
-			IImagingProfileManager imagingProfileManager = serviceFactory.CreateProxy<IImagingProfileManager>();
-			IImagingSetManager imagingSetManager = serviceFactory.CreateProxy<IImagingSetManager>();
-			IImagingJobManager imagingJobManager = serviceFactory.CreateProxy<IImagingJobManager>();
-			IRSAPIClient rsapiClient = serviceFactory.CreateProxy<IRSAPIClient>();
-			IKeywordSearchManager keywordSearchManager = serviceFactory.CreateProxy<IKeywordSearchManager>();
-
-			IImagingHelper imagingHelper = new ImagingHelper(imagingProfileManager, imagingSetManager, imagingJobManager, rsapiClient, keywordSearchManager);
+			IImagingHelper imagingHelper = new ImagingHelper(connectionHelper);
 			IWorkspaceHelper workspaceHelper = new WorkspaceHelper(connectionHelper, null);
 
 			// Run Imaging Job
 			int workspaceArtifactId = workspaceHelper.GetWorkspaceId(WorkspaceName);
-			int savedSearchArtifactId = imagingHelper.CreateKeywordSearchAsync(workspaceArtifactId).Result;
-			int imagingProfileArtifactId = imagingHelper.CreateImagingProfileAsync(workspaceArtifactId).Result;
-			int imagingSetArtifactId = imagingHelper.CreateImagingSetAsync(workspaceArtifactId, savedSearchArtifactId, imagingProfileArtifactId).Result;
-			imagingHelper.RunImagingJobAsync(workspaceArtifactId, imagingSetArtifactId).Wait();
-			imagingHelper.WaitForImagingJobToCompleteAsync(workspaceArtifactId, imagingSetArtifactId).Wait();
+			imagingHelper.ImageAllDocumentsInWorkspaceAsync(workspaceArtifactId).Wait();
 		}
 
 		private void ValidateInputArguments()

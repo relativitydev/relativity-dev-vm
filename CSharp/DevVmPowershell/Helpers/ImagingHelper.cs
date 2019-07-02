@@ -16,6 +16,7 @@ using Relativity.Imaging.Services.Interfaces;
 using Relativity.Services.Exceptions;
 using Relativity.Services.Field;
 using Relativity.Services.Search;
+using Relativity.Services.ServiceProxy;
 using Relativity.Services.User;
 
 namespace Helpers
@@ -27,15 +28,34 @@ namespace Helpers
 		private IImagingJobManager ImagingJobManager { get; }
 		private IRSAPIClient RsapiClient { get; }
 		private IKeywordSearchManager KeywordSearchManager { get; }
+		private ServiceFactory serviceFactory { get; }
 
-		public ImagingHelper(IImagingProfileManager imagingProfileManager, IImagingSetManager imagingSetManager, IImagingJobManager imagingJobManager, IRSAPIClient rsapiClient, IKeywordSearchManager keywordSearchManager)
+		public ImagingHelper(IConnectionHelper connectionHelper)
 		{
-			ImagingProfileManager = imagingProfileManager;
-			ImagingSetManager = imagingSetManager;
-			ImagingJobManager = imagingJobManager;
-			RsapiClient = rsapiClient;
-			KeywordSearchManager = keywordSearchManager;
+			serviceFactory = connectionHelper.GetServiceFactory();
+			ImagingProfileManager = serviceFactory.CreateProxy<IImagingProfileManager>();
+			ImagingSetManager = serviceFactory.CreateProxy<IImagingSetManager>();
+			ImagingJobManager = serviceFactory.CreateProxy<IImagingJobManager>();
+			RsapiClient = serviceFactory.CreateProxy<IRSAPIClient>();
+			KeywordSearchManager = serviceFactory.CreateProxy<IKeywordSearchManager>();
 		}
+
+		public async Task ImageAllDocumentsInWorkspaceAsync(int workspaceArtifactId)
+		{
+			try
+			{
+				int savedSearchArtifactId = await CreateKeywordSearchAsync(workspaceArtifactId);
+				int imagingProfileArtifactId = await CreateImagingProfileAsync(workspaceArtifactId);
+				int imagingSetArtifactId = await CreateImagingSetAsync(workspaceArtifactId, savedSearchArtifactId, imagingProfileArtifactId);
+				await RunImagingJobAsync(workspaceArtifactId, imagingSetArtifactId);
+				await WaitForImagingJobToCompleteAsync(workspaceArtifactId, imagingSetArtifactId);
+			}
+			catch (Exception ex)
+			{
+				throw new Exception("Error Imaging All Documents in the Workspace", ex);
+			}
+		}
+
 		public async Task<int> CreateImagingProfileAsync(int workspaceArtifactId)
 		{
 			Console.WriteLine($"Creating Imaging Profile [Name: {Constants.Imaging.Profile.NAME}]");
