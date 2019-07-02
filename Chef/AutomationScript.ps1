@@ -13,7 +13,6 @@ function Write-Host-Custom-Green ([string] $writeMessage) {
 }
 
 # Retrieve values from DevVm_Automation_Config.json file
-#[string] $devVmAutomationConfigFilePath = "D:\DevVm_Automation_Config.json"
 [string] $devVmAutomationConfigFilePath = "C:\DevVm_Automation_Config.json"
 [string] $json = Get-Content -Path $devVmAutomationConfigFilePath
 $jsonContents = $json | ConvertFrom-Json
@@ -52,14 +51,14 @@ $global:devVmVersionsCreated = New-Object System.Collections.ArrayList
 $global:devVmVersionsToCreate = New-Object System.Collections.ArrayList
 [string] $global:vmName = "RelativityDevVm"
 [string] $global:vmExportPath = "D:\DevVmExport"
-[Boolean] $global:foundCompatibleInvariantVersion = $false
-[string] $global:invariantVersion = ""
 [Int32] $global:invariantVersionSqlRecordCount = 0
 [string] $global:devVmCreationResultFileName = "result_file.txt"
 [Boolean] $global:devVmCreationWasSuccess = $false
 [string] $global:compressedFileExtension = "zip"
 [string] $global:relativityInvariantVersionNumberFileName = "relativity_invariant_version.txt"
-[string] $global:testSingleRelativityVersion = "10.2.170.2" # Leave it blank when in Production mode
+[string] $global:testSingleRelativityVersion = "10.2.170.2" # Leave it blank when in Automated Production mode
+[string] $global:invariantVersion = "5.2.164.1" # Leave it blank when in Automated Production mode
+[Boolean] $global:foundCompatibleInvariantVersion = $true # Set to $false when in Automated Production mode
 
 function Reset-Logs-Environment-Variable() {
   Write-Host-Custom-Green "Resetting Logs Environment variable."
@@ -482,9 +481,6 @@ function Create-DevVm([string] $relativityVersionToCreate) {
     
       # Find Invariant version
       # Find-Invariant-Version $relativityVersionToCreate
-
-      $global:foundCompatibleInvariantVersion = $true
-      $global:invariantVersion = "5.2.164.1"
 
       if ($global:foundCompatibleInvariantVersion) {
         Copy-Relativity-Installer-And-Response-Files $relativityVersionToCreate
