@@ -1,14 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using Helpers;
+using System;
 using System.Management.Automation;
-using System.Text;
-using System.Threading.Tasks;
-using Helpers;
-using kCura.Relativity.Client;
-using Relativity.Imaging.Services.Interfaces;
-using Relativity.Services.Search;
-using Relativity.Services.ServiceProxy;
 
 namespace DevVmPsModules
 {
@@ -57,7 +49,7 @@ namespace DevVmPsModules
 			IWorkspaceHelper workspaceHelper = new WorkspaceHelper(connectionHelper, null);
 
 			// Run Imaging Job
-			int workspaceArtifactId = workspaceHelper.GetWorkspaceId(WorkspaceName);
+			int workspaceArtifactId = workspaceHelper.GetFirstWorkspaceIdQueryAsync(WorkspaceName).Result;
 			imagingHelper.ImageAllDocumentsInWorkspaceAsync(workspaceArtifactId).Wait();
 		}
 

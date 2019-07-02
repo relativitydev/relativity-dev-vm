@@ -72,8 +72,10 @@ namespace DevVmPsModules
 
 			IImportApiHelper importApi = new ImportApiHelper(connectionHelper);
 
+			IWorkspaceHelper workspaceHelper = new WorkspaceHelper(connectionHelper, null);
+
 			// Get workspaceId
-			int workspaceId = importApi.GetFirstWorkspaceIdQueryAsync(WorkspaceName).Result;
+			int workspaceId = workspaceHelper.GetFirstWorkspaceIdQueryAsync(WorkspaceName).Result;
 
 			// Add documents for each Workspace ID specified
 			importApi.AddDocumentsToWorkspace(workspaceId, FileType, FileCount, ResourceFilePath).Wait();

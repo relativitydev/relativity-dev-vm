@@ -1,6 +1,4 @@
-﻿using kCura.Relativity.Client;
-using kCura.Relativity.Client.DTOs;
-using kCura.Relativity.DataReaderClient;
+﻿using kCura.Relativity.DataReaderClient;
 using kCura.Relativity.ImportAPI;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
@@ -229,41 +227,5 @@ namespace Helpers
 			}
 		}
 
-		public async Task<int> GetFirstWorkspaceIdQueryAsync(string workspaceName)
-		{
-			Console.WriteLine($"Querying for Workspaces [Name: {workspaceName}]");
-
-			try
-			{
-				using (IRSAPIClient rsapiClient = ServiceFactory.CreateProxy<IRSAPIClient>())
-				{
-					rsapiClient.APIOptions.WorkspaceID = Constants.EDDS_WORKSPACE_ARTIFACT_ID;
-
-					TextCondition textCondition = new TextCondition(WorkspaceFieldNames.Name, TextConditionEnum.EqualTo, workspaceName);
-					Query<Workspace> workspaceQuery = new Query<Workspace>
-					{
-						Fields = FieldValue.AllFields,
-						Condition = textCondition
-					};
-
-					QueryResultSet<Workspace> workspaceQueryResultSet = await Task.Run(() => rsapiClient.Repositories.Workspace.Query(workspaceQuery));
-
-					if (!workspaceQueryResultSet.Success || workspaceQueryResultSet.Results == null)
-					{
-						throw new Exception("Failed to query Workspaces");
-					}
-
-					List<int> workspaceArtifactIds = workspaceQueryResultSet.Results.Select(x => x.Artifact.ArtifactID).ToList();
-
-					Console.WriteLine($"Queried for Workspaces! [Count: {workspaceArtifactIds.Count}]");
-
-					return workspaceArtifactIds.First();
-				}
-			}
-			catch (Exception ex)
-			{
-				throw new Exception("An error occured when querying Workspaces", ex);
-			}
-		}
 	}
 }
