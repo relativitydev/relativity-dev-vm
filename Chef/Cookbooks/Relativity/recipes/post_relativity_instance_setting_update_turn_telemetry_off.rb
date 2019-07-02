@@ -2,25 +2,16 @@ custom_log 'custom_log' do msg 'Starting IsOnlineInstance/Telemetry Instance Set
 start_time = DateTime.now
 custom_log 'custom_log' do msg "recipe_start_time(#{recipe_name}): #{start_time}" end
 
-# Get the full path to the SQLPS module.
-sqlps_module_path = ::File.join(ENV['programfiles(x86)'], 'Microsoft SQL Server\130\Tools\PowerShell\Modules\SQLPS')
-
 # Update IsOnlineInstance
 custom_log 'custom_log' do msg 'Updating IsOnlineInstance Instance Setting.' end
+
 powershell_script 'update_instance_setting - IsOnlineInstance' do
   code <<-EOH
-  Import-Module "#{sqlps_module_path}"
-  Invoke-Sqlcmd -Query "
-      UPDATE
-          [EDDS].[eddsdbo].[InstanceSetting]
-      SET
-          [Value] = 'False'
-      WHERE
-          [Section] = 'kCura.LicenseManager' AND
-          [Name] = 'IsOnlineInstance'
-  "
+  #{node['powershell_module']['import_module']}
+  Reset-InstanceSettingValue -RelativityInstanceName #{node['windows']['new_computer_name']} -RelativityAdminUserName #{node['relativity']['admin']['login']} -RelativityAdminPassword #{node['relativity']['admin']['password']} -Name IsOnlineInstance -Section kCura.LicenseManager -NewValue "False"
   EOH
 end
+
 custom_log 'custom_log' do msg 'Updated IsOnlineInstance Instance Setting.' end
 
 end_time = DateTime.now

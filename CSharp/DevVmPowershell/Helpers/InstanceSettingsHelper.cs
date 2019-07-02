@@ -20,7 +20,7 @@ namespace Helpers
 			ServiceFactory = connectionHelper.GetServiceFactory();
 		}
 
-		public int CreateInstanceSetting(string section, string name, string description, string value)
+		public int CreateInstanceSetting(string name, string section, string description, string value)
 		{
 			try
 			{
