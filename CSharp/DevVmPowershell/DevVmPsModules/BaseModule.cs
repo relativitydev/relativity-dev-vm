@@ -55,7 +55,7 @@ namespace DevVmPsModules
 				WriteVerbose($"Start - {nameof(ProcessRecord)} method");
 
 				base.ProcessRecord();
-				RetryProcessRecordCode(ProcessRecordCode, TimeSpan.FromSeconds(5), 5);
+				RetryProcessRecordCode(ProcessRecordCode, TimeSpan.FromSeconds(Constants.Module.TimeInSecondsBetweenRetry), Constants.Module.MaxAttemptCount);
 			}
 			catch (Exception ex)
 			{

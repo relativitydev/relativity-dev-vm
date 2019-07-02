@@ -153,8 +153,8 @@ BEGIN
 	DEALLOCATE cursor_mini
 END
 ";
-    }
-    
+		}
+
 		public class YmlFile
 		{
 			public const string YmlFilePath = @"C:\RelativityDataGrid\elasticsearch-main\config\elasticsearch.yml";
@@ -170,12 +170,18 @@ END
 			public const string ShieldEnabledValue = "shield.enabled: false";
 			public const string PublicJWKsUrl = "publicJWKsUrl";
 		}
-		
+
 		public class EnvironmentVariables
 		{
 			public const string JavaPath = @"C:\Program Files\Java";
 			public const string KcuraJavaHome = "KCURA_JAVA_HOME";
 			public const string JavaHome = "JAVA_HOME";
+		}
+
+		public class Module
+		{
+			public const int MaxAttemptCount = 5;
+			public const int TimeInSecondsBetweenRetry = 5;
 		}
 	}
 }
