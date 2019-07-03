@@ -214,8 +214,37 @@ Vagrant.configure('2') do |config|
     chef.add_recipe('Relativity::post_relativity_Install_datagrid')
     chef.add_recipe('Relativity::post_relativity_update_datagrid_instance_settings')
     chef.add_recipe('Relativity::post_relativity_update_elasticsearch_yml_file')
-    chef.add_recipe('Relativity::post_relativity_powershell_module_resize_databases')
+    # chef.add_recipe('Relativity::post_relativity_powershell_module_add_workspaces')
+    # chef.add_recipe('Relativity::post_relativity_powershell_module_resize_databases')
+    # chef.add_recipe('Relativity::post_relativity_powershell_module_add_data_to_workspaces')
+    # chef.add_recipe('Relativity::post_relativity_powershell_module_full_processing_setup')
+    # chef.add_recipe('Relativity::post_relativity_powershell_module_add_agent_server')
+    # chef.add_recipe('Relativity::post_relativity_powershell_module_add_agents_by_name')
+    # chef.add_recipe('Relativity::post_relativity_image_all_documents')
+  end
+
+  config.vm.provision 'chef_zero' do |chef|
+    chef.cookbooks_path = 'Cookbooks'
+    chef.data_bags_path = 'DataBags'
+    chef.nodes_path = 'Nodes'
+    chef.roles_path = 'Roles'
+    chef.channel = 'stable'
+    chef.version = '13.8.5'
+    chef.json = {
+      'smb_domain' => network_share_smb_domain,
+      'smb_username' => network_share_smb_username,
+      'smb_password' => network_share_smb_password,
+    }
+    # chef.add_recipe('Relativity::default_start_services')
+    # chef.add_recipe('Relativity::post_relativity_sqlserver_distributed_link_servers')
+    # chef.add_recipe('Relativity::post_relativity_sqlserver_distributed_relativity_install')
+    # chef.add_recipe('Relativity::post_relativity_Install_datagrid-presetup')
+    # chef.add_recipe('Relativity::post_relativity_update_java_environment_variables')
+    # chef.add_recipe('Relativity::post_relativity_Install_datagrid')
+    # chef.add_recipe('Relativity::post_relativity_update_datagrid_instance_settings')
+    # chef.add_recipe('Relativity::post_relativity_update_elasticsearch_yml_file')
     chef.add_recipe('Relativity::post_relativity_powershell_module_add_workspaces')
+    chef.add_recipe('Relativity::post_relativity_powershell_module_resize_databases')
     chef.add_recipe('Relativity::post_relativity_powershell_module_add_data_to_workspaces')
     chef.add_recipe('Relativity::post_relativity_powershell_module_full_processing_setup')
     chef.add_recipe('Relativity::post_relativity_powershell_module_add_agent_server')
