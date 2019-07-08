@@ -403,7 +403,6 @@ function New-DevVm() {
   }
   finally {
     if ($global:exportVm -And $global:devVmCreationWasSuccess) {
-      Start-DevVm
       Delete-DevVm
     }
     else {
