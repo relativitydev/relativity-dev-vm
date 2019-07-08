@@ -7,11 +7,8 @@ custom_log 'custom_log' do msg "recipe_start_time(#{recipe_name}): #{start_time}
 # Install Elastic Search
 include_recipe 'Relativity::post_relativity_Install_datagrid_elasticsearch_setup'
 
-# # Prepare DataGrid Workspace (OLD)
-# include_recipe 'Relativity::post_relativity_Install_datagrid_prepare_workspace'
-
-# # Configure Environment for Data Grid (OLD)
-# include_recipe 'Relativity::post_relativity_Install_datagrid_configure_environment'
+# # Configure Environment for Data Grid
+include_recipe 'Relativity::post_relativity_Install_datagrid_configure_environment'
 
 end_time = DateTime.now
 custom_log 'custom_log' do msg "recipe_end_Time(#{recipe_name}): #{end_time}" end
