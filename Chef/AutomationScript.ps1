@@ -431,7 +431,7 @@ function Copy-DevVm-Zip-To-Network-Storage([string] $relativityVersionToCopy) {
   [string] $majorRelativityVersion = "$($relativityVersion.Major).$($relativityVersion.Minor)"
 
   [string] $sourceZipFilePath = "$($global:vmExportPath)\$($global:vmName).$($global:compressedFileExtension)"
-  [string] $destinationFilePath = "$($global:devVmNetworkStorageLocation)\$($majorRelativityVersion)\$($global:vmName)-$($relativityVersionToCopy).$($global:compressedFileExtension)"
+  [string] $destinationFilePath = "$($global:devVmNetworkStorageLocation)\$($majorRelativityVersion)\$($global:vmName).$($global:compressedFileExtension)"
   
   if (Test-Path $sourceZipFilePath) {
     Copy-File-Overwrite-If-It-Exists $sourceZipFilePath $destinationFilePath  
