@@ -1,7 +1,6 @@
 [Boolean] $global:exportVm = $true
 [string] $global:vmName = "RelativityDevVm"
 [string] $global:vmExportPath = "C:\DevVmExport"
-[string] $global:vmDocumentationTextFilePath = "$($global:vmExportPath)\$($global:vmName)\DevVm_Documentation.txt"
 [string] $global:vmDocumentationOnline = "Relativity Dev VM documentation can be found at this link - https://github.com/relativitydev/relativity-dev-vm/blob/master/Documentation/PDF/Relativity%20Dev%20VM%20-%20Pre-built%20VM%20-%20Documentation.pdf"
 [string] $global:vmCheckpointName = "$($global:vmName) Created"
 [string] $global:devVmCreationResultFileName = "result_file.txt"
@@ -156,14 +155,14 @@ function Create-DevVm-Documentation-Text-File() {
   try {
     Write-Heading-Message-To-Screen  "Creating DevVM Documentation text file"
 
-    [string] $documentation_text_file_path = ""
+    [string] $documentation_text_file_path = "$($global:vmExportPath)\$($global:vmName)\DevVm_Documentation.txt"
 
     # Delete DevVM Documentation text file if it already exists
-    Delete-File-If-It-Exists $global:vmDocumentationTextFilePath
+    Delete-File-If-It-Exists $documentation_text_file_path
 
     # Create DevVM Documentation text file
-    New-Item $global:vmDocumentationTextFilePath -type file -Force
-    Set-Content -Path $global:vmDocumentationTextFilePath -Value $global:vmDocumentationOnline -Force
+    New-Item $documentation_text_file_path -type file -Force
+    Set-Content -Path $documentation_text_file_path -Value $global:vmDocumentationOnline -Force
 
     Write-Message-To-Screen  "Created DevVM Documentation text file"
   }
