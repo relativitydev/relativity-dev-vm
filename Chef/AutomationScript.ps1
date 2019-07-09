@@ -460,6 +460,19 @@ function Send-Slack-Success-Message([string] $relativityVersionToCopy){
   }
 }
 
+function Send-Slack-Failure-Message([string] $relativityVersionToCopy){
+  if($global:sendSlackMessage -eq $true){
+    Write-Heading-Message-To-Screen "Sending Slack Failure Message"
+    [System.Version] $relativityVersion = [System.Version]::Parse($relativityVersionToCopy)
+    $BodyJSON = @{
+      "text" = "Failed to create Relativity DevVm ($($relativityVersionToCreate))"
+    } | ConvertTo-Json
+
+    Invoke-WebRequest -Method Post -Body "$BodyJSON" -Uri "https://hooks.slack.com/services/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" -ContentType application/json
+    Write-Message-To-Screen "Sent Slack Failure Message"
+  }
+}
+
 function Check-DevVm-Result-Text-File-For-Success() {
   Write-Heading-Message-To-Screen "Checking if DevVM creation was success."
   
@@ -539,6 +552,7 @@ function Create-DevVm([string] $relativityVersionToCreate) {
 
   if ($global:devVmCreationWasSuccess -eq $false) {
     Write-Error-Message-To-Screen "DevVM creation failed. Attempted $($global:count - 1) times."
+    Send-Slack-Failure-Message $relativityVersionToCreate
   }
 
   Write-Empty-Line-To-Screen
