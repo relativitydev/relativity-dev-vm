@@ -2,7 +2,7 @@ custom_log 'custom_log' do msg 'Starting PowerShell Module Add Data to Workspace
 start_time = DateTime.now
 custom_log 'custom_log' do msg "recipe_start_time(#{recipe_name}): #{start_time}" end
 
-# Add Workspaces
+# Add Data to Workspaces
 custom_log 'custom_log' do msg 'Adding Data to Workspaces' end
 
 powershell_script 'add_data_to_workspaces' do

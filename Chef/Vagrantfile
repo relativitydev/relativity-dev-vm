@@ -288,6 +288,7 @@ Vagrant.configure('2') do |config|
     chef.add_recipe('Relativity::post_relativity_delete_errors_from_errors_tab')
     chef.add_recipe('Relativity::post_relativity_shutoff_windows_firewall')
     chef.add_recipe('Relativity::post_relativity_clear_event_viewer')
+    chef.add_recipe('Relativity::post_relativity_update_agent_off_hour_end_time')
     chef.add_recipe('Relativity::post_relativity_write_script_result_success')
     chef.add_recipe('Relativity::post_relativity_cleanup')
   end
