@@ -2,7 +2,7 @@ custom_log 'custom_log' do msg 'Starting Shutting off Windows Firewall' end
     start_time = DateTime.now
     custom_log 'custom_log' do msg "recipe_start_time(#{recipe_name}): #{start_time}" end
     
-    # Delete Errors from Errors Tab
+    # Shut off Windows Firewall
     custom_log 'custom_log' do msg 'Shutting off Windows Firewall' end
     
     powershell_script 'shut_off_windows_firewall' do

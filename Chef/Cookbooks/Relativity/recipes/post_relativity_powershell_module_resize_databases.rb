@@ -2,7 +2,7 @@ custom_log 'custom_log' do msg 'Starting PowerShell Module Resize Databases' end
 start_time = DateTime.now
 custom_log 'custom_log' do msg "recipe_start_time(#{recipe_name}): #{start_time}" end
 
-# Add Agents
+# Resize Databases
 custom_log 'custom_log' do msg 'Resizing Databases' end
 
 powershell_script 'resize_databases' do

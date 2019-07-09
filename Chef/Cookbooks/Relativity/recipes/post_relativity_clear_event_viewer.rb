@@ -2,7 +2,7 @@ custom_log 'custom_log' do msg 'Starting Clearing Event Viewer' end
     start_time = DateTime.now
     custom_log 'custom_log' do msg "recipe_start_time(#{recipe_name}): #{start_time}" end
     
-    # Delete Errors from Errors Tab
+    # Clear Event Viewer
     custom_log 'custom_log' do msg 'Clearing Event Viewer' end
     
     powershell_script 'clear_event_viewer' do
