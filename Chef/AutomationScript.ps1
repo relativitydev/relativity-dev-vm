@@ -59,7 +59,8 @@ $global:devVmVersionsToCreate = New-Object System.Collections.ArrayList
 [string] $global:testSingleRelativityVersion = "10.2.170.2" # Leave it blank when in Automated Production mode
 [string] $global:invariantVersion = "5.2.164.1" # Leave it blank when in Automated Production mode
 [Boolean] $global:foundCompatibleInvariantVersion = $true # Set to $false when in Automated Production mode
-
+[Boolean] $global:sendSlackMessage = $true # Set to $false when you do not want to send a slack message
+ 
 function Reset-Logs-Environment-Variable() {
   Write-Host-Custom-Green "Resetting Logs Environment variable."
 
@@ -444,6 +445,21 @@ function Copy-DevVm-Zip-To-Network-Storage([string] $relativityVersionToCopy) {
   Write-Empty-Line-To-Screen
 }
 
+function Send-Slack-Success-Message([string] $relativityVersionToCopy){
+  if($global:sendSlackMessage -eq $true){
+    Write-Heading-Message-To-Screen "Sending Slack Success Message"
+    [System.Version] $relativityVersion = [System.Version]::Parse($relativityVersionToCopy)
+    [string] $majorRelativityVersion = "$($relativityVersion.Major).$($relativityVersion.Minor)"
+    [string] $destinationFilePath = "$($global:devVmNetworkStorageLocation)\$($majorRelativityVersion)\$($global:vmName).$($global:compressedFileExtension)"
+    $BodyJSON = @{
+      "text" = "New DevVm ($($relativityVersionToCreate)) is available at $($destinationFilePath)"
+    } | ConvertTo-Json
+
+    Invoke-WebRequest -Method Post -Body "$BodyJSON" -Uri "https://hooks.slack.com/services/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" -ContentType application/json
+    Write-Message-To-Screen "Sent Slack Success Message"
+  }
+}
+
 function Check-DevVm-Result-Text-File-For-Success() {
   Write-Heading-Message-To-Screen "Checking if DevVM creation was success."
   
@@ -494,6 +510,8 @@ function Create-DevVm([string] $relativityVersionToCreate) {
         if ($global:devVmCreationWasSuccess -eq $true) {
           # Copy Zip file to network drive with the version number in name
           Copy-DevVm-Zip-To-Network-Storage $relativityVersionToCreate
+          # Send Slack Message that upload to the network storage succeeded
+          Send-Slack-Success-Message $relativityVersionToCreate
         }
         else {
           $global:count++
