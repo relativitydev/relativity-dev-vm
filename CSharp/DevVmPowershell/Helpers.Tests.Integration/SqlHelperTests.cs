@@ -72,5 +72,16 @@ namespace Helpers.Tests.Integration
 			// Assert
 			Assert.That(Sut.RunShrinkDbProc(), Is.True);
 		}
+
+		[Test]
+		public void InsertRSMFViewerOverrideTest()
+		{
+			// Arrange
+
+			// Act
+
+			// Assert
+			Assert.DoesNotThrow(() => Sut.InsertRSMFViewerOverride());
+		}
 	}
 }
