@@ -236,5 +236,26 @@ namespace Helpers
 
 			return exists;
 		}
+
+		public void InsertRSMFViewerOverride()
+		{
+			bool wasSuccessful = false;
+			try
+			{
+				string sqlDeleteFromTable = "DELETE FROM [EDDS].[eddsdbo].[Toggle] WHERE [Name] = 'Relativity.DocumentViewer.Toggle.ShowShortMessageFilesInViewerOverride'";
+				string sqlInsertIntoTable = "INSERT INTO [EDDS].[eddsdbo].[Toggle] (Name, IsEnabled) VALUES ('Relativity.DocumentViewer.Toggle.ShowShortMessageFilesInViewerOverride', 1)";
+
+				DbContext.ExecuteNonQuerySQLStatement(sqlDeleteFromTable);
+				int rowsAffected = DbContext.ExecuteNonQuerySQLStatement(sqlInsertIntoTable);
+				if (rowsAffected != 1)
+				{
+					throw new Exception("Failed to Insert ShowShortMessageFilesInViewerOverride to Database");
+				}
+			}
+			catch (Exception ex)
+			{
+				throw new Exception("Error Inserting ShowShortMessageFilesInViewerOverride", ex);
+			}
+		}
 	}
 }

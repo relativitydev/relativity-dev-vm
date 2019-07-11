@@ -8,5 +8,6 @@
 		bool CreateOrAlterShrinkDbProc();
 		bool RunShrinkDbProc();
 		int GetErrorsCount();
+		void InsertRSMFViewerOverride();
 	}
 }
