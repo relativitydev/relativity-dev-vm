@@ -193,6 +193,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AddDisclaimerRDOsModule.cs" />
     <Compile Include="AddImagesForAllDocumentsModule.cs" />
     <Compile Include="AddApplicationFromLibraryModule.cs" />
     <Compile Include="AddApplicationFromRapFileModule.cs" />

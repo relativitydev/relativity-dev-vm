@@ -233,6 +233,63 @@ END
 			public const int MaxAttemptCount = 5;
 			public const int TimeInSecondsBetweenRetry = 5;
 		}
-			
+
+		public class DisclaimerAcceptance
+		{
+			public class ObjectNames
+			{
+				public const string Disclaimer = "Disclaimer";
+				public const string DisclaimerSolutionConfiguration = "Disclaimer Solution Configuration";
+			}
+			public class ObjectGuids
+			{
+				public const string Disclaimer = "3F24FC94-F118-44FA-9A40-078D3B92FDB4";
+				public const string DisclaimerSolutionConfiguration = "A0365CEC-2657-4683-8A88-AFAB12724405";
+			}
+
+			public class DisclaimerSolutionConfigurationFieldGuids
+			{
+				public const string Name = "A289CD88-C19E-4713-B752-146AEFFD2BE8";
+				public const string Enabled = "DB58FDCD-7445-40F0-B3C4-510EF4180652";
+				public const string AllowAccessOnError = "9112A06E-7205-4E42-AD70-287C83C0D893";
+			}
+
+			public class DisclaimerFieldGuids
+			{
+				public const string Title = "5A40761E-0FBB-421E-A433-465F9A03642E";
+				public const string Text = "4B49715B-ECE6-4F41-948D-27123E85BE22";
+				public const string Order = "EBDC5E76-79C2-4EBA-BBBF-1AA5CC47E19A";
+				public const string Enabled = "7E61ADE6-7208-4403-8A88-A6DC1DFAFF68";
+				public const string AllUsers = "1A535483-CBE5-4ED4-BD63-16DE7BA605D4";
+			}
+
+			public class LayoutNames
+			{
+				public const string DisclaimerLayout = "Disclaimer Layout";
+				public const string DisclaimerSolutionConfigurationLayout = "Disclaimer Solution Configuration Layout";
+			}
+
+			public const string DisclaimerValue = @"Welcome to the RelativityDevVm! 
+					        - The RelativityDevVm has been designed to help developers test the functionality of their Relativity applications.
+
+					This DevVm is intended to be used for: 
+					-Basic Relativity Development such as creating applications with Custom Pages, Agents, Event Handlers, etc.
+					- Remote Debugging Custom Applications
+
+					-Please note that these VM's should not be used to performance test your applications as system resources are not equivalent to suggested production configurations
+
+					Unavailable Features:
+					-Analytics
+
+					Not - Supported:
+					The following are not supported in Dev VM.
+					- Changing the VM name.
+					- Setting the VM in the cloud like Azure, AWS etc.
+					- Getting the VM image in a VM format other than Hyper - V.
+
+					- For questions related to the RelativityDevVm, we recommend to please refer to the DevVm Category on DevHelp(https://devhelp.relativity.com/c/tools-testing-download-and-tutorials/devvm). If you can't find the answer to your question, please create a new post with your question. Someone from our Developer Support group will respond to your question within a few days.
+
+					For a more detailed documentation on how to use the RelativityDevVm, please refer to this link: https://github.com/relativitydev/relativity-dev-vm/blob/master/Documentation/PDF/Relativity%20Dev%20VM%20-%20Pre-built%20VM%20-%20Documentation.pdf";
+		}
 	}
 }
