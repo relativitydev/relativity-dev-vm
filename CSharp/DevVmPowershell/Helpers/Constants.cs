@@ -276,6 +276,7 @@ END
 			<ul>
 			<li>Basic Relativity Development such as creating applications with Custom Pages, Agents, Event Handlers, etc.&nbsp;</li>
 			<li>Remote Debugging Custom Applications</li>
+			<li>The inteded use of the DevVm is meant to be ephemeral. Loading of test data should be automated and there should be no upgrading the DevVm through the Relativity Installer files.</li>
 			</ul>
 			<h4>Not-Supported:&nbsp;</h4>
 			<p>The following are <strong>not</strong> supported in Dev VM.</p>
