@@ -271,20 +271,56 @@ END
 
 			public const string DisclaimerValue = @"
 			<h2>Welcome to the RelativityDevVm!</h2>
-			<p>- The&nbsp;RelativityDevVm&nbsp;has been designed to help developers test the functionality of their Relativity applications.</p>
+			<p>The&nbsp;RelativityDevVm&nbsp;has been designed to help developers test the functionality of their Relativity applications.</p>
 			<h4>This&nbsp;DevVm&nbsp;is intended to be used for:</h4>
-			<p>- Basic Relativity Development such as creating applications with Custom Pages, Agents, Event Handlers, etc.&nbsp;</p>
-			<p>- Remote Debugging Custom Applications</p>
-			<h4>Unavailable Features:&nbsp;</h4>
-			<p>-&nbsp;Analytics&nbsp;</p>
+			<ul>
+			<li>Basic Relativity Development such as creating applications with Custom Pages, Agents, Event Handlers, etc.&nbsp;</li>
+			<li>Remote Debugging Custom Applications</li>
+			</ul>
 			<h4>Not-Supported:&nbsp;</h4>
 			<p>The following are <strong>not</strong> supported in Dev VM.</p>
-			<p>- Changing the VM name.&nbsp;</p>
-			<p>- Setting the VM in the cloud like Azure, AWS etc.&nbsp;</p>
-			<p>- Getting the VM image in a VM format other than Hyper-V.&nbsp;</p>
-			<p>-&nbsp;<span style='color: #ff0000;'><strong>Please note that these VM's should not be used&nbsp;to performance test your applications as system resources are not equivalent to suggested production configurations</strong></span></p>
-			<p>For questions related to the&nbsp;RelativityDevVm, we recommend to please refer to the&nbsp;DevVm&nbsp;Category on&nbsp;DevHelp&nbsp;(<a href = 'https://devhelp.relativity.com/c/tools-testing-download-and-tutorials/devvm' > https://devhelp.relativity.com/c/tools-testing-download-and-tutorials/devvm</a>). If you can't find the answer to your question, please create a new post with your question. Someone from our Developer Support group will respond to your question within a few days.&nbsp;</p>
-			<p>For a more detailed documentation on how to use the&nbsp;RelativityDevVm, please refer to this link: <a href = 'https://github.com/relativitydev/relativity-dev-vm/blob/master/Documentation/PDF/Relativity%20Dev%20VM%20-%20Pre-built%20VM%20-%20Documentation.pdf' target= '_blank' rel= 'noopener noreferrer' > https://github.com/relativitydev/relativity-dev-vm/blob/master/Documentation/PDF/Relativity%20Dev%20VM%20-%20Pre-built%20VM%20-%20Documentation.pdf</a>&nbsp;</p>";
+			<ul>
+			<li>Changing the VM name.&nbsp;</li>
+			<li>Setting the VM in the cloud like Azure, AWS etc.&nbsp;</li>
+			<li>Getting the VM image in a VM format other than Hyper-V.&nbsp;</li>
+			<li><span style='color: #ff0000;'><strong>Please note that these VM's should not be used&nbsp;to performance test your applications as system resources are not equivalent to suggested production configurations</strong></span></li>
+			</ul>
+			<p>(We usually configure our&nbsp;DevVms&nbsp;to 4 cores and 12GB of RAM and can generally develop/debug applications with minimal lag.)</p>
+			<h4>Unavailable Features:&nbsp;</h4>
+			<ul>
+			<li>Analytics&nbsp;</li>
+			</ul>
+			<h4>License:</h4>
+			<p>The Dev VM comes with the following licenses.</p>
+			<ul>
+			<li>Windows Server 2012 R2 Standard
+			<ul>
+			<li>6-month trial license</li>
+			<li>Instructions to update Windows license - <a href = 'https://github.com/relativitydev/relativity-dev-vm/wiki' > https://github.com/relativitydev/relativity-dev-vm/wiki</a></li>
+			</ul>
+			</li>
+			<li>Relativity
+			<ul>
+			<li>7-day trial license</li>
+			<li>Contact<a href='mailto:support@relativity.com'> support@relativity.com</a> to get a new DevVM Developer license</li>
+			</ul>
+			</li>
+			<li>Processing
+			<ul>
+			<li>7-day trial license</li>
+			<li>Contact<a href='mailto:support@relativity.com'> support@relativity.com</a> to get a new DevVM Developer license</li>
+			</ul>
+			</li>
+			<li>SQL Server 2017 Developer edition
+			<ul>
+			<li>Free for non-production use</li>
+			<li>More info on SQL Licensing -<a href = 'http://download.microsoft.com/download/7/8/c/78cdf005-97c1-4129-926b-ce4a6fe92cf5/sql_server_2017_licensing_guide.pdf' > http://download.microsoft.com/download/7/8/c/78cdf005-97c1-4129-926b-ce4a6fe92cf5/sql_server_2017_licensing_guide.pdf</a></li>
+			</ul>
+			</li>
+			</ul>
+			<p>For questions related to the&nbsp; RelativityDevVm, we recommend to please refer to the&nbsp;DevVm&nbsp;Category on&nbsp;DevHelp&nbsp;(<a href = 'https://devhelp.relativity.com/c/tools-testing-download-and-tutorials/devvm' > https://devhelp.relativity.com/c/tools-testing-download-and-tutorials/devvm</a>). If you can't find the answer to your question, please create a new post with your question. Someone from our Developer Support group will respond to your question within a few days.&nbsp;</p>
+			<p>For a more detailed documentation on how to use the&nbsp;RelativityDevVm, please refer to this link: <a href = 'https://github.com/relativitydev/relativity-dev-vm/blob/master/Documentation/PDF/Relativity%20Dev%20VM%20-%20Pre-built%20VM%20-%20Documentation.pdf' target= '_blank' rel= 'noopener noreferrer' > https://github.com/relativitydev/relativity-dev-vm/blob/master/Documentation/PDF/Relativity%20Dev%20VM%20-%20Pre-built%20VM%20-%20Documentation.pdf</a>&nbsp;</p>
+			<p>Thousands of women are using this online<a href='https://www.ovulation-calculators.com/'> fertility calculator</a> to accurately plan for a baby and find out the best dates of the month for doing so.</p>";
 		}
 	}
 }
