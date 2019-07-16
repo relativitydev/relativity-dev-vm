@@ -9,14 +9,29 @@ custom_log 'custom_log' do msg 'Starting Updating Relativity Logos' end
     destination_samll_image_path = "C:\\Program Files\\kCura Corporation\\Relativity\\EDDS\\Images\\Relativity-Button.png"
     destination_relativity_loging_image_path = "C:\\Program Files\\kCura Corporation\\Relativity\\EDDS\\Images\\relativityLogin.png"
 
-    # Install Disclaimer Acceptance Log Rap
+    # Update Relativity Logos
     custom_log 'custom_log' do msg 'Updating Relativity Logos' end
     
     powershell_script 'update_relativity_logos' do
       code <<-EOH
-        Copy-Item  -Path #{admin_image_path} -Destination "#{destination_admin_image_path}" -Force
-        Copy-Item  -Path #{small_image_path} -Destination "#{destination_samll_image_path}" -Force
-        Copy-Item  -Path #{relativity_login_image_path} -Destination "#{destination_relativity_loging_image_path}" -Force
+        if (Test-Path -Path #{admin_image_path}){
+          Copy-Item  -Path #{admin_image_path} -Destination "#{destination_admin_image_path}" -Force
+        }
+        else{
+          throw [System.IO.FileNotFoundException] "#{admin_image_path} not found."
+        }
+        if (Test-Path -Path #{small_image_path}){
+          Copy-Item  -Path #{small_image_path} -Destination "#{destination_samll_image_path}" -Force
+        }
+        else{
+          throw [System.IO.FileNotFoundException] "#{small_image_path} not found."
+        }
+        if (Test-Path -Path #{relativity_login_image_path}){
+          Copy-Item  -Path #{relativity_login_image_path} -Destination "#{destination_relativity_loging_image_path}" -Force
+        }
+        else{
+          throw [System.IO.FileNotFoundException] "#{relativity_login_image_path} not found."
+        }
         iisreset
         EOH
     end

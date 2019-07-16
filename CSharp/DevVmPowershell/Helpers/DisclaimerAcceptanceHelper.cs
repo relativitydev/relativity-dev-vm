@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
+using Relativity.InstanceSetting;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Services.ServiceProxy;
@@ -171,7 +172,7 @@ namespace Helpers
 				ResultSet<ObjectType> results = RsapiClient.Repositories.ObjectType.Read(
 					new ObjectType(new Guid(Constants.DisclaimerAcceptance.ObjectGuids.Disclaimer))
 					{
-						Fields = FieldValue.AllFields
+						Fields = { new FieldValue(ObjectTypeFieldNames.DescriptorArtifactTypeID) }
 					});
 				if (!results.Success)
 				{
@@ -196,7 +197,7 @@ namespace Helpers
 			Query<Workspace> query = new Query<Workspace>();
 			query.Condition = new kCura.Relativity.Client.TextCondition(WorkspaceFieldNames.Name,
 				kCura.Relativity.Client.TextConditionEnum.EqualTo, workspaceName);
-			query.Fields = FieldValue.AllFields;
+			query.Fields = FieldValue.NoFields;
 			try
 			{
 				kCura.Relativity.Client.DTOs.QueryResultSet<Workspace> resultSet =
@@ -227,7 +228,7 @@ namespace Helpers
 				ResultSet<ObjectType> results = RsapiClient.Repositories.ObjectType.Read(
 					new ObjectType(new Guid(Constants.DisclaimerAcceptance.ObjectGuids.DisclaimerSolutionConfiguration))
 					{
-						Fields = FieldValue.AllFields
+						Fields = { new FieldValue(ObjectTypeFieldNames.DescriptorArtifactTypeID) }
 					});
 				if (!results.Success)
 				{
@@ -253,7 +254,7 @@ namespace Helpers
 				new TextCondition(LayoutFieldNames.Name, TextConditionEnum.EqualTo, Constants.DisclaimerAcceptance.LayoutNames.DisclaimerLayout);
 			Query<kCura.Relativity.Client.DTOs.Layout> layoutQuery = new Query<kCura.Relativity.Client.DTOs.Layout>();
 			layoutQuery.Condition = queryCondition;
-			layoutQuery.Fields = FieldValue.AllFields;
+			layoutQuery.Fields = FieldValue.NoFields;
 			ResultSet<kCura.Relativity.Client.DTOs.Layout> layoutQueryResultSet =
 				new ResultSet<kCura.Relativity.Client.DTOs.Layout>();
 			try
@@ -276,7 +277,7 @@ namespace Helpers
 				new TextCondition(LayoutFieldNames.Name, TextConditionEnum.EqualTo, Constants.DisclaimerAcceptance.LayoutNames.DisclaimerSolutionConfigurationLayout);
 			Query<kCura.Relativity.Client.DTOs.Layout> layoutQuery = new Query<kCura.Relativity.Client.DTOs.Layout>();
 			layoutQuery.Condition = queryCondition;
-			layoutQuery.Fields = FieldValue.AllFields;
+			layoutQuery.Fields = FieldValue.NoFields;
 			ResultSet<kCura.Relativity.Client.DTOs.Layout> layoutQueryResultSet =
 				new ResultSet<kCura.Relativity.Client.DTOs.Layout>();
 			try
