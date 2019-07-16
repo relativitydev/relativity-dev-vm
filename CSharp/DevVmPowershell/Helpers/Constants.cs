@@ -269,27 +269,22 @@ END
 				public const string DisclaimerSolutionConfigurationLayout = "Disclaimer Solution Configuration Layout";
 			}
 
-			public const string DisclaimerValue = @"Welcome to the RelativityDevVm! 
-					        - The RelativityDevVm has been designed to help developers test the functionality of their Relativity applications.
-
-					This DevVm is intended to be used for: 
-					-Basic Relativity Development such as creating applications with Custom Pages, Agents, Event Handlers, etc.
-					- Remote Debugging Custom Applications
-
-					-Please note that these VM's should not be used to performance test your applications as system resources are not equivalent to suggested production configurations
-
-					Unavailable Features:
-					-Analytics
-
-					Not - Supported:
-					The following are not supported in Dev VM.
-					- Changing the VM name.
-					- Setting the VM in the cloud like Azure, AWS etc.
-					- Getting the VM image in a VM format other than Hyper - V.
-
-					- For questions related to the RelativityDevVm, we recommend to please refer to the DevVm Category on DevHelp(https://devhelp.relativity.com/c/tools-testing-download-and-tutorials/devvm). If you can't find the answer to your question, please create a new post with your question. Someone from our Developer Support group will respond to your question within a few days.
-
-					For a more detailed documentation on how to use the RelativityDevVm, please refer to this link: https://github.com/relativitydev/relativity-dev-vm/blob/master/Documentation/PDF/Relativity%20Dev%20VM%20-%20Pre-built%20VM%20-%20Documentation.pdf";
+			public const string DisclaimerValue = @"
+			<h2>Welcome to the RelativityDevVm!</h2>
+			<p>- The&nbsp;RelativityDevVm&nbsp;has been designed to help developers test the functionality of their Relativity applications.</p>
+			<h4>This&nbsp;DevVm&nbsp;is intended to be used for:</h4>
+			<p>- Basic Relativity Development such as creating applications with Custom Pages, Agents, Event Handlers, etc.&nbsp;</p>
+			<p>- Remote Debugging Custom Applications</p>
+			<h4>Unavailable Features:&nbsp;</h4>
+			<p>-&nbsp;Analytics&nbsp;</p>
+			<h4>Not-Supported:&nbsp;</h4>
+			<p>The following are <strong>not</strong> supported in Dev VM.</p>
+			<p>- Changing the VM name.&nbsp;</p>
+			<p>- Setting the VM in the cloud like Azure, AWS etc.&nbsp;</p>
+			<p>- Getting the VM image in a VM format other than Hyper-V.&nbsp;</p>
+			<p>-&nbsp;<span style='color: #ff0000;'><strong>Please note that these VM's should not be used&nbsp;to performance test your applications as system resources are not equivalent to suggested production configurations</strong></span></p>
+			<p>For questions related to the&nbsp;RelativityDevVm, we recommend to please refer to the&nbsp;DevVm&nbsp;Category on&nbsp;DevHelp&nbsp;(<a href = 'https://devhelp.relativity.com/c/tools-testing-download-and-tutorials/devvm' > https://devhelp.relativity.com/c/tools-testing-download-and-tutorials/devvm</a>). If you can't find the answer to your question, please create a new post with your question. Someone from our Developer Support group will respond to your question within a few days.&nbsp;</p>
+			<p>For a more detailed documentation on how to use the&nbsp;RelativityDevVm, please refer to this link: <a href = 'https://github.com/relativitydev/relativity-dev-vm/blob/master/Documentation/PDF/Relativity%20Dev%20VM%20-%20Pre-built%20VM%20-%20Documentation.pdf' target= '_blank' rel= 'noopener noreferrer' > https://github.com/relativitydev/relativity-dev-vm/blob/master/Documentation/PDF/Relativity%20Dev%20VM%20-%20Pre-built%20VM%20-%20Documentation.pdf</a>&nbsp;</p>";
 		}
 	}
 }
