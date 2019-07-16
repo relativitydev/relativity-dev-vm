@@ -197,6 +197,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DisclaimerAcceptanceHelperTests.cs" />
     <Compile Include="EnvironmentVariableTests.cs" />
     <Compile Include="ImagingHelperTests.cs" />
     <Compile Include="RecycleBinTests.cs" />

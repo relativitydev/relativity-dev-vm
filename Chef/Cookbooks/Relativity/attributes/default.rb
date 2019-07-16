@@ -415,6 +415,7 @@ default['relativity_apps_to_install'] = [
 
 default["smoke_test_agent"]["analysis"] = "Smoke Test Analysis Agent"
 default["smoke_test_agent"]["runner"] = "Smoke Test Runner Agent"
+default["disclaimer_acceptance_agent"] = "Disclaimer Acceptance Agent"
 
 # Add RAP application GUIDs to this Array to create the packaged agents. Make sure the RAP application is installed in the environment
 default['relativity_apps_agents_to_install'] = {

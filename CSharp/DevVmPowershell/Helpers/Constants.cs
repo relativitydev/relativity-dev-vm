@@ -233,6 +233,93 @@ END
 			public const int MaxAttemptCount = 5;
 			public const int TimeInSecondsBetweenRetry = 5;
 		}
-			
+
+		public class DisclaimerAcceptance
+		{
+			public class ObjectNames
+			{
+				public const string Disclaimer = "Disclaimer";
+				public const string DisclaimerSolutionConfiguration = "Disclaimer Solution Configuration";
+			}
+			public class ObjectGuids
+			{
+				public const string Disclaimer = "3F24FC94-F118-44FA-9A40-078D3B92FDB4";
+				public const string DisclaimerSolutionConfiguration = "A0365CEC-2657-4683-8A88-AFAB12724405";
+			}
+
+			public class DisclaimerSolutionConfigurationFieldGuids
+			{
+				public const string Name = "A289CD88-C19E-4713-B752-146AEFFD2BE8";
+				public const string Enabled = "DB58FDCD-7445-40F0-B3C4-510EF4180652";
+				public const string AllowAccessOnError = "9112A06E-7205-4E42-AD70-287C83C0D893";
+			}
+
+			public class DisclaimerFieldGuids
+			{
+				public const string Title = "5A40761E-0FBB-421E-A433-465F9A03642E";
+				public const string Text = "4B49715B-ECE6-4F41-948D-27123E85BE22";
+				public const string Order = "EBDC5E76-79C2-4EBA-BBBF-1AA5CC47E19A";
+				public const string Enabled = "7E61ADE6-7208-4403-8A88-A6DC1DFAFF68";
+				public const string AllUsers = "1A535483-CBE5-4ED4-BD63-16DE7BA605D4";
+			}
+
+			public class LayoutNames
+			{
+				public const string DisclaimerLayout = "Disclaimer Layout";
+				public const string DisclaimerSolutionConfigurationLayout = "Disclaimer Solution Configuration Layout";
+			}
+
+			public const string DisclaimerValue = @"
+			<h2>Welcome to the RelativityDevVm!</h2>
+			<p>The&nbsp;RelativityDevVm&nbsp;has been designed to help developers test the functionality of their Relativity applications.</p>
+			<h4>This&nbsp;DevVm&nbsp;is intended to be used for:</h4>
+			<ul>
+			<li>Basic Relativity Development such as creating applications with Custom Pages, Agents, Event Handlers, etc.&nbsp;</li>
+			<li>Remote Debugging Custom Applications</li>
+			</ul>
+			<h4>Not-Supported:&nbsp;</h4>
+			<p>The following are <strong>not</strong> supported in Dev VM.</p>
+			<ul>
+			<li>Changing the VM name.&nbsp;</li>
+			<li>Setting the VM in the cloud like Azure, AWS etc.&nbsp;</li>
+			<li>Getting the VM image in a VM format other than Hyper-V.&nbsp;</li>
+			<li><span style='color: #ff0000;'><strong>Please note that these VM's should not be used&nbsp;to performance test your applications as system resources are not equivalent to suggested production configurations</strong></span></li>
+			</ul>
+			<p>(We usually configure our&nbsp;DevVms&nbsp;to 4 cores and 12GB of RAM and can generally develop/debug applications with minimal lag.)</p>
+			<h4>Unavailable Features:&nbsp;</h4>
+			<ul>
+			<li>Analytics&nbsp;</li>
+			</ul>
+			<h4>License:</h4>
+			<p>The Dev VM comes with the following licenses.</p>
+			<ul>
+			<li>Windows Server 2012 R2 Standard
+			<ul>
+			<li>6-month trial license</li>
+			<li>Instructions to update Windows license - <a href = 'https://github.com/relativitydev/relativity-dev-vm/wiki' > https://github.com/relativitydev/relativity-dev-vm/wiki</a></li>
+			</ul>
+			</li>
+			<li>Relativity
+			<ul>
+			<li>7-day trial license</li>
+			<li>Contact<a href='mailto:support@relativity.com'> support@relativity.com</a> to get a new DevVM Developer license</li>
+			</ul>
+			</li>
+			<li>Processing
+			<ul>
+			<li>7-day trial license</li>
+			<li>Contact<a href='mailto:support@relativity.com'> support@relativity.com</a> to get a new DevVM Developer license</li>
+			</ul>
+			</li>
+			<li>SQL Server 2017 Developer edition
+			<ul>
+			<li>Free for non-production use</li>
+			<li>More info on SQL Licensing -<a href = 'http://download.microsoft.com/download/7/8/c/78cdf005-97c1-4129-926b-ce4a6fe92cf5/sql_server_2017_licensing_guide.pdf' > http://download.microsoft.com/download/7/8/c/78cdf005-97c1-4129-926b-ce4a6fe92cf5/sql_server_2017_licensing_guide.pdf</a></li>
+			</ul>
+			</li>
+			</ul>
+			<p>For questions related to the&nbsp; RelativityDevVm, we recommend to please refer to the&nbsp;DevVm&nbsp;Category on&nbsp;DevHelp&nbsp;(<a href = 'https://devhelp.relativity.com/c/tools-testing-download-and-tutorials/devvm' > https://devhelp.relativity.com/c/tools-testing-download-and-tutorials/devvm</a>). If you can't find the answer to your question, please create a new post with your question. Someone from our Developer Support group will respond to your question within a few days.&nbsp;</p>
+			<p>For a more detailed documentation on how to use the&nbsp;RelativityDevVm, please refer to this link: <a href = 'https://github.com/relativitydev/relativity-dev-vm/blob/master/Documentation/PDF/Relativity%20Dev%20VM%20-%20Pre-built%20VM%20-%20Documentation.pdf' target= '_blank' rel= 'noopener noreferrer' > https://github.com/relativitydev/relativity-dev-vm/blob/master/Documentation/PDF/Relativity%20Dev%20VM%20-%20Pre-built%20VM%20-%20Documentation.pdf</a>&nbsp;</p>";
+		}
 	}
 }
