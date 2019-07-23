@@ -252,7 +252,8 @@ function Start-DevVm() {
 function Delete-DevVm() {
   try {
     Write-Heading-Message-To-Screen  "Deleting VM"
-    vagrant destroy $global:vmName -f
+    Stop-VM -Name $global:vmName -Force
+    Remove-VM -Name $global:vmName -Force
     Write-Message-To-Screen  "Deleted VM"
   }
   Catch [Exception] {
