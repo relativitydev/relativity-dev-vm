@@ -61,7 +61,7 @@ namespace Helpers
 			}
 			catch (Exception ex)
 			{
-				throw new Exception("Failed to Delete all Errors from the Errors Tab");
+				throw new Exception("Failed to Delete all Errors from the Errors Tab", ex);
 			}
 		}
 
@@ -239,7 +239,6 @@ namespace Helpers
 
 		public void InsertRSMFViewerOverride()
 		{
-			bool wasSuccessful = false;
 			try
 			{
 				string sqlDeleteFromTable = "DELETE FROM [EDDS].[eddsdbo].[Toggle] WHERE [Name] = 'Relativity.DocumentViewer.Toggle.ShowShortMessageFilesInViewerOverride'";
