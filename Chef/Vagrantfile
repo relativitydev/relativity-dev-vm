@@ -63,73 +63,73 @@ Vagrant.configure('2') do |config|
     chef.add_recipe('Relativity::default_setup_log_file')
   end
 
-  # Create Base Image - Part-1
-  config.vm.provision 'chef_zero' do |chef|
-    chef.cookbooks_path = 'Cookbooks'
-    chef.data_bags_path = 'DataBags'
-    chef.nodes_path = 'Nodes'
-    chef.roles_path = 'Roles'
-    chef.channel = 'stable'
-    chef.version = '13.8.5'
-    chef.json = {
-      'smb_domain' => network_share_smb_domain,
-      'smb_username' => network_share_smb_username,
-      'smb_password' => network_share_smb_password,
-    }
-    chef.add_recipe('BaseImage::pre_windows_install_nuget_provider')
-    chef.add_recipe('BaseImage::pre_windows_change_computer_name')
-  end
+  # # Create Base Image - Part-1
+  # config.vm.provision 'chef_zero' do |chef|
+  #   chef.cookbooks_path = 'Cookbooks'
+  #   chef.data_bags_path = 'DataBags'
+  #   chef.nodes_path = 'Nodes'
+  #   chef.roles_path = 'Roles'
+  #   chef.channel = 'stable'
+  #   chef.version = '13.8.5'
+  #   chef.json = {
+  #     'smb_domain' => network_share_smb_domain,
+  #     'smb_username' => network_share_smb_username,
+  #     'smb_password' => network_share_smb_password,
+  #   }
+  #   chef.add_recipe('BaseImage::pre_windows_install_nuget_provider')
+  #   chef.add_recipe('BaseImage::pre_windows_change_computer_name')
+  # end
 
-  # Restart VM
-  config.vm.provision :reload
+  # # Restart VM
+  # config.vm.provision :reload
 
-  # Create Base Image - Part-2
-  config.vm.provision 'chef_zero' do |chef|
-    chef.cookbooks_path = 'Cookbooks'
-    chef.data_bags_path = 'DataBags'
-    chef.nodes_path = 'Nodes'
-    chef.roles_path = 'Roles'
-    chef.channel = 'stable'
-    chef.version = '13.8.5'
-    chef.json = {
-      'smb_domain' => network_share_smb_domain,
-      'smb_username' => network_share_smb_username,
-      'smb_password' => network_share_smb_password,
-    }
-    chef.add_recipe('BaseImage::pre_windows_create_default_folders')
-    chef.add_recipe('BaseImage::windows_set_explorer_properties')
-    chef.add_recipe('BaseImage::windows_set_auto_login')
-    chef.add_recipe('BaseImage::windows_disable_firewall')
-    chef.add_recipe('BaseImage::windows_give_background_processes_priority')
-    chef.add_recipe('BaseImage::windows_install_software')
-    chef.add_recipe('BaseImage::windows_add_programs_to_taskbar')
-    chef.add_recipe('BaseImage::pre_relativity_create_shared_folders')
-    chef.add_recipe('BaseImage::pre_relativity_install_windows_features_and_services')
-    chef.add_recipe('BaseImage::pre_relativity_install_windows_update_for_service_bus_defect')
-    chef.add_recipe('BaseImage::pre_relativity_install_sqlserver')
-  end
+  # # Create Base Image - Part-2
+  # config.vm.provision 'chef_zero' do |chef|
+  #   chef.cookbooks_path = 'Cookbooks'
+  #   chef.data_bags_path = 'DataBags'
+  #   chef.nodes_path = 'Nodes'
+  #   chef.roles_path = 'Roles'
+  #   chef.channel = 'stable'
+  #   chef.version = '13.8.5'
+  #   chef.json = {
+  #     'smb_domain' => network_share_smb_domain,
+  #     'smb_username' => network_share_smb_username,
+  #     'smb_password' => network_share_smb_password,
+  #   }
+  #   chef.add_recipe('BaseImage::pre_windows_create_default_folders')
+  #   chef.add_recipe('BaseImage::windows_set_explorer_properties')
+  #   chef.add_recipe('BaseImage::windows_set_auto_login')
+  #   chef.add_recipe('BaseImage::windows_disable_firewall')
+  #   chef.add_recipe('BaseImage::windows_give_background_processes_priority')
+  #   chef.add_recipe('BaseImage::windows_install_software')
+  #   chef.add_recipe('BaseImage::windows_add_programs_to_taskbar')
+  #   chef.add_recipe('BaseImage::pre_relativity_create_shared_folders')
+  #   chef.add_recipe('BaseImage::pre_relativity_install_windows_features_and_services')
+  #   chef.add_recipe('BaseImage::pre_relativity_install_windows_update_for_service_bus_defect')
+  #   chef.add_recipe('BaseImage::pre_relativity_install_sqlserver')
+  # end
 
-  # Restart VM
-  config.vm.provision :reload
+  # # Restart VM
+  # config.vm.provision :reload
 
-  # Create Base Image - Part-3
-  config.vm.provision 'chef_zero' do |chef|
-    chef.cookbooks_path = 'Cookbooks'
-    chef.data_bags_path = 'DataBags'
-    chef.nodes_path = 'Nodes'
-    chef.roles_path = 'Roles'
-    chef.channel = 'stable'
-    chef.version = '13.8.5'
-    chef.json = {
-      'smb_domain' => network_share_smb_domain,
-      'smb_username' => network_share_smb_username,
-      'smb_password' => network_share_smb_password,
-    }
-    chef.add_recipe('BaseImage::pre_relativity_install_servicebus')
-  end
+  # # Create Base Image - Part-3
+  # config.vm.provision 'chef_zero' do |chef|
+  #   chef.cookbooks_path = 'Cookbooks'
+  #   chef.data_bags_path = 'DataBags'
+  #   chef.nodes_path = 'Nodes'
+  #   chef.roles_path = 'Roles'
+  #   chef.channel = 'stable'
+  #   chef.version = '13.8.5'
+  #   chef.json = {
+  #     'smb_domain' => network_share_smb_domain,
+  #     'smb_username' => network_share_smb_username,
+  #     'smb_password' => network_share_smb_password,
+  #   }
+  #   chef.add_recipe('BaseImage::pre_relativity_install_servicebus')
+  # end
 
-  # Restart VM
-  config.vm.provision :reload
+  # # Restart VM
+  # config.vm.provision :reload
 
   config.vm.provision 'chef_zero' do |chef|
     chef.cookbooks_path = 'Cookbooks'
