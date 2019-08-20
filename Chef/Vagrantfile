@@ -206,7 +206,7 @@ Vagrant.configure('2') do |config|
     chef.add_recipe('Relativity::relativity_install_invariant')
     chef.add_recipe('Relativity::post_relativity_instance_setting_update_smtp_email_settings')
     chef.add_recipe('Relativity::post_relativity_powershell_module_setup')
-    chef.add_recipe('Relativity::post_relativity_instance_setting_update_turn_telemetry_off')
+    chef.add_recipe('Relativity::post_relativity_powershell_module_instance_setting_update_turn_telemetry_off')
   end
 
   # Restart VM
@@ -241,8 +241,8 @@ Vagrant.configure('2') do |config|
       'smb_username' => network_share_smb_username,
       'smb_password' => network_share_smb_password,
     }
-    chef.add_recipe('Relativity::post_relativity_Install_datagrid-presetup')
-    chef.add_recipe('Relativity::post_relativity_update_java_environment_variables')
+    chef.add_recipe('Relativity::post_relativity_install_datagrid_presetup')
+    chef.add_recipe('Relativity::post_relativity_powershell_module_update_java_environment_variables')
   end
 
   config.vm.provision 'chef_zero' do |chef|
@@ -258,8 +258,8 @@ Vagrant.configure('2') do |config|
       'smb_password' => network_share_smb_password,
     }
     chef.add_recipe('Relativity::post_relativity_Install_datagrid')
-    chef.add_recipe('Relativity::post_relativity_update_datagrid_instance_settings')
-    chef.add_recipe('Relativity::post_relativity_update_elasticsearch_yml_file')
+    chef.add_recipe('Relativity::post_relativity_powershell_module_update_datagrid_instance_settings')
+    chef.add_recipe('Relativity::post_relativity_powershell_module_update_elasticsearch_yml_file')
   end
 
   config.vm.provision 'chef_zero' do |chef|
@@ -280,7 +280,7 @@ Vagrant.configure('2') do |config|
     chef.add_recipe('Relativity::post_relativity_powershell_module_full_processing_setup')
     chef.add_recipe('Relativity::post_relativity_powershell_module_add_agent_server')
     chef.add_recipe('Relativity::post_relativity_powershell_module_add_agents_by_name')
-    chef.add_recipe('Relativity::post_relativity_image_all_documents')
+    chef.add_recipe('Relativity::post_relativity_powershell_module_image_all_documents')
   end
 
   # Restart VM
@@ -302,13 +302,13 @@ Vagrant.configure('2') do |config|
     chef.add_recipe('Relativity::post_relativity_instance_setting_update_developer_mode')
     chef.add_recipe('Relativity::post_relativity_reset_iis')
     chef.add_recipe('Relativity::post_relativity_update_kcura_services_startup_type')
-    chef.add_recipe('Relativity::post_relativity_install_smoke_test_rap')
-    chef.add_recipe('Relativity::post_relativity_delete_errors_from_errors_tab')
+    chef.add_recipe('Relativity::post_relativity_powershell_module_install_smoke_test_rap')
+    chef.add_recipe('Relativity::post_relativity_powershell_module_delete_errors_from_errors_tab')
     chef.add_recipe('Relativity::post_relativity_shutoff_windows_firewall')
     chef.add_recipe('Relativity::post_relativity_clear_event_viewer')
-    chef.add_recipe('Relativity::post_relativity_update_agent_off_hour_end_time')
-    chef.add_recipe('Relativity::post_relativity_rsmf_viewer_override')
-    chef.add_recipe('Relativity::post_relativity_add_disclaimer_acceptance_log')
+    chef.add_recipe('Relativity::post_relativity_powershell_module_update_agent_off_hour_end_time')
+    chef.add_recipe('Relativity::post_relativity_powershell_module_rsmf_viewer_override')
+    chef.add_recipe('Relativity::post_relativity_powershell_module_add_disclaimer_acceptance_log')
     chef.add_recipe('Relativity::post_relativity_update_relativity_logos')
     chef.add_recipe('Relativity::post_relativity_write_script_result_success')
     chef.add_recipe('Relativity::post_relativity_cleanup')
