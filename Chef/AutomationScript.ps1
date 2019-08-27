@@ -460,6 +460,19 @@ function Send-Slack-Success-Message([string] $relativityVersionToCopy){
   }
 }
 
+function Send-Slack-Success-Message-Follow-Up-Tasks([string] $relativityVersionToCopy){
+  if($global:sendSlackMessage -eq $true){
+    Write-Heading-Message-To-Screen "Sending Slack Success Message - Follow Up Tasks"
+    [System.Version] $relativityVersion = [System.Version]::Parse($relativityVersionToCopy)
+    $BodyJSON = @{
+      "text" = "Add Relativity Version ($($relativityVersionToCreate)) to Solution Snapshot Database and inform DevCon team to update Compatibility info for the Applications."
+    } | ConvertTo-Json
+
+    Invoke-WebRequest -Method Post -Body "$BodyJSON" -Uri "https://hooks.slack.com/services/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" -ContentType application/json
+    Write-Message-To-Screen "Sent Slack Success Message - Follow Up Tasks"
+  }
+}
+
 function Send-Slack-Failure-Message([string] $relativityVersionToCopy){
   if($global:sendSlackMessage -eq $true){
     Write-Heading-Message-To-Screen "Sending Slack Failure Message"
@@ -525,6 +538,8 @@ function Create-DevVm([string] $relativityVersionToCreate) {
           Copy-DevVm-Zip-To-Network-Storage $relativityVersionToCreate
           # Send Slack Message that upload to the network storage succeeded
           Send-Slack-Success-Message $relativityVersionToCreate
+          # Send Slack Message to the Tools Slack channel to remind about the follow up tasks
+          Send-Slack-Success-Message-Follow-Up-Tasks $relativityVersionToCreate
         }
         else {
           $global:count++
