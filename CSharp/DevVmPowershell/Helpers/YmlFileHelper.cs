@@ -1,11 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Dynamic;
 using System.IO;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Helpers
 {
@@ -17,7 +11,7 @@ namespace Helpers
 			{
 				if (!File.Exists(Constants.YmlFile.YmlFilePath))
 				{
-					throw new Exception("File does not exist");
+					throw new Exception($"File does not exist. [{Constants.YmlFile.YmlFilePath}]");
 				}
 
 				// Create Copy of File
@@ -60,7 +54,7 @@ namespace Helpers
 				// Create Yml File
 				FileStream stream = File.Create(Constants.YmlFile.YmlFilePath);
 				stream.Close();
-				
+
 				// Write Updated Contents to Yml File
 				File.WriteAllLines(Constants.YmlFile.YmlFilePath, lines);
 				Console.WriteLine("Updated Values for Yml File");
