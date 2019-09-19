@@ -455,7 +455,7 @@ function Send-Slack-Success-Message([string] $relativityVersionToCopy){
       "text" = "New DevVm ($($relativityVersionToCreate)) is available at $($destinationFilePath)"
     } | ConvertTo-Json
 
-    Invoke-WebRequest -Method Post -Body "$BodyJSON" -Uri "https://hooks.slack.com/services/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" -ContentType application/json
+    Invoke-WebRequest -Method Post -Body "$BodyJSON" -Uri $Env:slack_devex_internal_group_key -ContentType application/json
     Write-Message-To-Screen "Sent Slack Success Message"
   }
 }
@@ -468,7 +468,7 @@ function Send-Slack-Success-Message-Follow-Up-Tasks([string] $relativityVersionT
       "text" = "Add Relativity Version ($($relativityVersionToCreate)) to Solution Snapshot Database and inform DevCon team to update Compatibility info for the Applications."
     } | ConvertTo-Json
 
-    Invoke-WebRequest -Method Post -Body "$BodyJSON" -Uri "https://hooks.slack.com/services/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" -ContentType application/json
+    Invoke-WebRequest -Method Post -Body "$BodyJSON" -Uri $Env:slack_devex_tools_group_key -ContentType application/json
     Write-Message-To-Screen "Sent Slack Success Message - Follow Up Tasks"
   }
 }
@@ -481,7 +481,7 @@ function Send-Slack-Failure-Message([string] $relativityVersionToCopy){
       "text" = "Failed to create Relativity DevVm ($($relativityVersionToCreate))"
     } | ConvertTo-Json
 
-    Invoke-WebRequest -Method Post -Body "$BodyJSON" -Uri "https://hooks.slack.com/services/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" -ContentType application/json
+    Invoke-WebRequest -Method Post -Body "$BodyJSON" -Uri $Env:slack_devex_tools_group_key -ContentType application/json
     Write-Message-To-Screen "Sent Slack Failure Message"
   }
 }
