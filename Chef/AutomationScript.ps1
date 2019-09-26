@@ -56,8 +56,8 @@ $global:devVmVersionsToCreate = New-Object System.Collections.ArrayList
 [Boolean] $global:devVmCreationWasSuccess = $false
 [string] $global:compressedFileExtension = "zip"
 [string] $global:relativityInvariantVersionNumberFileName = "relativity_invariant_version.txt"
-[string] $global:testSingleRelativityVersion = "10.2.170.2" # Leave it blank when in Automated Production mode
-[string] $global:invariantVersion = "5.2.164.1" # Leave it blank when in Automated Production mode
+[string] $global:testSingleRelativityVersion = "10.3.170.1" # Leave it blank when in Automated Production mode
+[string] $global:invariantVersion = "5.3.167.4" # Leave it blank when in Automated Production mode
 [Boolean] $global:foundCompatibleInvariantVersion = $true # Set to $false when in Automated Production mode
 [Boolean] $global:sendSlackMessage = $true # Set to $false when you do not want to send a slack message
  
