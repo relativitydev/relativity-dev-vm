@@ -28,7 +28,7 @@ end
 
 dsc_resource 'Start SQL Server Browser' do
   resource :service
-  property :name, 'SQL Server Browser'
+  property :name, 'SQLBrowser'
   property :startuptype, 'Automatic'
   property :state, 'Running'
   # timeout node['timeout']['default'] #todo
