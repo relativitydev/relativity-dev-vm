@@ -326,6 +326,16 @@ default['invariant']['response_file']['replacement_values'] =
         value: "#{default['windows']['user']['admin']['password']}"
     },
     {
+        # Windows username to run specific processes that don't need administrator access on a worker machine. Optional.
+        name: "RESTRICTEDUSERNAME", 
+        value: ""
+    },
+    {
+        # Password for the Windows username to run specific processes that don't need administrator access on a worker machine. Required if RESTRICTEDUSERNAME is set.
+        name: "RESTRICTEDUSERPASSWORD", 
+        value: ""
+    },
+    {
         # The EDDSDBO password for the target SQL instance
         name: "EDDSDBOPASSWORD", 
         value: "#{default['sql']['user']['eddsdbo']['password']}"
