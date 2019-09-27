@@ -56,8 +56,8 @@ $global:devVmVersionsToCreate = New-Object System.Collections.ArrayList
 [Boolean] $global:devVmCreationWasSuccess = $false
 [string] $global:compressedFileExtension = "zip"
 [string] $global:relativityInvariantVersionNumberFileName = "relativity_invariant_version.txt"
-[string] $global:testSingleRelativityVersion = "10.2.170.2" # Leave it blank when in Automated Production mode
-[string] $global:invariantVersion = "5.2.164.1" # Leave it blank when in Automated Production mode
+[string] $global:testSingleRelativityVersion = "10.3.142.22" # Leave it blank when in Automated Production mode
+[string] $global:invariantVersion = "5.3.135.1" # Leave it blank when in Automated Production mode
 [Boolean] $global:foundCompatibleInvariantVersion = $true # Set to $false when in Automated Production mode
 [Boolean] $global:sendSlackMessage = $true # Set to $false when you do not want to send a slack message
  
@@ -465,7 +465,7 @@ function Send-Slack-Success-Message-Follow-Up-Tasks([string] $relativityVersionT
     Write-Heading-Message-To-Screen "Sending Slack Success Message - Follow Up Tasks"
     [System.Version] $relativityVersion = [System.Version]::Parse($relativityVersionToCopy)
     $BodyJSON = @{
-      "text" = "Add Relativity Version ($($relativityVersionToCreate)) to Solution Snapshot Database and inform DevCon team to update Compatibility info for the Applications."
+      "text" = "REMINDER: 1. Please add Relativity Version ($($relativityVersionToCreate)) to Solution Snapshot Database. 2. Inform DevCon team to update Compatibility info for the Applications. 3. Publish NuGet packages."
     } | ConvertTo-Json
 
     Invoke-WebRequest -Method Post -Body "$BodyJSON" -Uri $Env:slack_devex_tools_group_key -ContentType application/json
