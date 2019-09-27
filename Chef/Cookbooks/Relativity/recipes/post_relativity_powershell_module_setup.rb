@@ -18,26 +18,12 @@ relativity_api_files_to_copy = [
   "Relativity.dll"
 ]
 relativity_api_library_files_to_copy = [
-  "FreeImageNET.dll",
-  "FreeImage.dll",
-  "kCura.OI.FileID.dll",
-  "kCura.ImageValidator.dll",
-  "kCura.Relativity.DataReaderClient.dll",
-  "kCura.Relativity.ImportAPI.dll",
-  "kCura.WinEDDS.dll",
-  "kCura.WinEDDS.ImportExtension.dll",
-  "kCura.WinEDDS.TApi.dll",
-  "kCura.Windows.Process.dll",
-  "oi.dll",
-  "Polly.dll",
-  "Relativity.DataTransfer.MessageService.dll",
-  "Relativity.Logging.dll",
-  "Relativity.Logging.Interfaces.dll",
-  "Relativity.Transfer.Client.Aspera.dll",
-  "Relativity.Transfer.Client.Core.dll",
-  "Relativity.Transfer.Client.dll",
-  "Relativity.Transfer.Client.Http.dll",
-  "Renci.SshNet.dll",
+  "FreeImageNET.dll", # Required for Import API
+  "FreeImage.dll", # Required for Import API
+  "oi.dll", # Required for Import API
+  "Polly.dll", # Required for Import API
+  "Relativity.Logging.dll", # Required for Import API
+  "Relativity.Logging.Interfaces.dll" # Required for Import API
 ]
 
 # Copy ServiceHost files
@@ -85,7 +71,15 @@ powershell_module_related_files_to_copy = [
   'DevVmPsModules.dll',
   'Helpers.dll',
   'DbContextHelper.dll',
-  'Relativity.Imaging.Services.Interfaces.dll'
+  'Relativity.Imaging.Services.Interfaces.dll',
+  'FaspManager.dll', # Required for Import API
+  'Relativity.DataExchange.Client.SDK.dll', # Required for Import API
+  'Relativity.DataTransfer.MessageService.dll', # Required for Import API
+  'Relativity.Transfer.Client.dll', # Required for Import API
+  'Relativity.Transfer.Client.Core.dll', # Required for Import API
+  'Relativity.Transfer.Client.Aspera.dll', # Required for Import API
+  'Relativity.Transfer.Client.FileShare.dll', # Required for Import API
+  'Relativity.Transfer.Client.Http.dll' # Required for Import API
 ]
 
 powershell_module_related_files_to_copy.each do |source_file_name|

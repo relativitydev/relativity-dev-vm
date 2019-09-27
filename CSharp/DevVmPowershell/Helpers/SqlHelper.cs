@@ -61,7 +61,7 @@ namespace Helpers
 			}
 			catch (Exception ex)
 			{
-				throw new Exception("Failed to Delete all Errors from the Errors Tab");
+				throw new Exception("Failed to Delete all Errors from the Errors Tab", ex);
 			}
 		}
 
@@ -104,30 +104,30 @@ namespace Helpers
 			try
 			{
 				string sql = $@"DECLARE @workspaceName nvarchar(max) = '{workspaceName}'
-        DECLARE @serverName nvarchar(max)
-        DECLARE @workspaceArtifactID INT
-        DECLARE @fieldName nvarchar(max) = 'Extracted Text'
-        DECLARE @sql NVARCHAR(MAX)
-      
-        SELECT
-          @serverName = [ERS].[Name],
-          @workspaceArtifactID = [EC].ArtifactID
-        FROM
-          [EDDS].[eddsdbo].[ExtendedCase] [EC] WITH(NOLOCK)
-        INNER JOIN
-          [EDDS].[eddsdbo].[ExtendedResourceServer] [ERS] WITH(NOLOCK) ON [EC].ServerID = [ERS].[ArtifactID]
-        WHERE
-          [EC].Name = @workspaceName
-      
-            SET @sql = '
-              DECLARE @fieldArtifactID INT
-              SET @fieldArtifactID = (SELECT TOP 1 [ArtifactID] FROM [' +@serverName +'].[edds' +CAST(@workspaceArtifactID AS NVARCHAR(MAX)) +'].[eddsdbo].[ExtendedField] WHERE [DisplayName] =''' +@fieldName +'''  AND [FieldArtifactTypeID] = 10)
-              IF @fieldArtifactID > 0
-                  BEGIN
-                      UPDATE [' +@serverName +'].[edds' +CAST(@workspaceArtifactID AS NVARCHAR(MAX)) +'].[eddsdbo].[Field] set [EnableDataGrid] = 1 where [DisplayName] =''' +@fieldName +''' AND [FieldArtifactTypeID] = 10
-                      INSERT INTO [' +@serverName +'].[edds' +CAST(@workspaceArtifactID AS NVARCHAR(MAX)) +'].[eddsdbo].[FieldMapping]([FieldArtifactID], [DataGridFieldName], [DataGridFieldNamespace]) VALUES(@fieldArtifactID, ''' +REPLACE(@fieldName, ' ','') +''',''Fields'')
-                  END'
-              EXECUTE sp_executesql @sql";
+				DECLARE @serverName nvarchar(max)
+				DECLARE @workspaceArtifactID INT
+				DECLARE @fieldName nvarchar(max) = 'Extracted Text'
+				DECLARE @sql NVARCHAR(MAX)
+			
+				SELECT
+					@serverName = [ERS].[Name],
+					@workspaceArtifactID = [EC].ArtifactID
+				FROM
+					[EDDS].[eddsdbo].[ExtendedCase] [EC] WITH(NOLOCK)
+				INNER JOIN
+					[EDDS].[eddsdbo].[ExtendedResourceServer] [ERS] WITH(NOLOCK) ON [EC].ServerID = [ERS].[ArtifactID]
+				WHERE
+					[EC].Name = @workspaceName
+			
+						SET @sql = '
+							DECLARE @fieldArtifactID INT
+							SET @fieldArtifactID = (SELECT TOP 1 [ArtifactID] FROM [' +@serverName +'].[edds' +CAST(@workspaceArtifactID AS NVARCHAR(MAX)) +'].[eddsdbo].[ExtendedField] WHERE [DisplayName] =''' +@fieldName +'''  AND [FieldArtifactTypeID] = 10)
+							IF @fieldArtifactID > 0
+									BEGIN
+											UPDATE [' +@serverName +'].[edds' +CAST(@workspaceArtifactID AS NVARCHAR(MAX)) +'].[eddsdbo].[Field] set [EnableDataGrid] = 1 where [DisplayName] =''' +@fieldName +''' AND [FieldArtifactTypeID] = 10
+											INSERT INTO [' +@serverName +'].[edds' +CAST(@workspaceArtifactID AS NVARCHAR(MAX)) +'].[eddsdbo].[FieldMapping]([FieldArtifactID], [DataGridFieldName], [DataGridFieldNamespace]) VALUES(@fieldArtifactID, ''' +REPLACE(@fieldName, ' ','') +''',''Fields'')
+									END'
+							EXECUTE sp_executesql @sql";
 
 				DbContext.ExecuteNonQuerySQLStatement(sql);
 				Console.WriteLine("Data Grid Enabled for Extracted Text Field");
@@ -239,7 +239,6 @@ namespace Helpers
 
 		public void InsertRSMFViewerOverride()
 		{
-			bool wasSuccessful = false;
 			try
 			{
 				string sqlDeleteFromTable = "DELETE FROM [EDDS].[eddsdbo].[Toggle] WHERE [Name] = 'Relativity.DocumentViewer.Toggle.ShowShortMessageFilesInViewerOverride'";

@@ -19,7 +19,6 @@ namespace Helpers
 	{
 		private ImportAPI importApi;
 		private ServiceFactory ServiceFactory { get; }
-		private string resourceFolderPath;
 
 		public ImportApiHelper(IConnectionHelper connectionHelper)
 		{
