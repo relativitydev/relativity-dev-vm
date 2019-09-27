@@ -204,11 +204,8 @@ Vagrant.configure('2') do |config|
     }
     chef.add_recipe('Relativity::default_start_services')
     chef.add_recipe('Relativity::post_relativity_powershell_module_setup')
-<<<<<<< HEAD
     chef.add_recipe('Relativity::post_relativity_powershell_module_instance_setting_update_set_relativity_instance_url')
     chef.add_recipe('Relativity::relativity_install_invariant')
-=======
->>>>>>> add-new-documentation
     chef.add_recipe('Relativity::post_relativity_powershell_module_instance_setting_update_turn_telemetry_off')
   end
 

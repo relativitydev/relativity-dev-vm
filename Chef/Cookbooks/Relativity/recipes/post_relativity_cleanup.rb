@@ -2,15 +2,16 @@ custom_log 'custom_log' do msg 'Cleaning up the VM by deleting install files' en
 start_time = DateTime.now
 custom_log 'custom_log' do msg "recipe_start_time(#{recipe_name}): #{start_time}" end
 
-# Delete install files
-powershell_script 'Delete install files' do
-  code <<-EOH
-    $fso = New-Object -ComObject scripting.filesystemobject
-    $fso.DeleteFolder("C:\\Chef_Install")
+# Commented below Install files deletion code on 9/27/2019 (Chandra)
+# # Delete install files
+# powershell_script 'Delete install files' do
+#   code <<-EOH
+#     $fso = New-Object -ComObject scripting.filesystemobject
+#     $fso.DeleteFolder("C:\\Chef_Install")
 
-    exit 0
-  EOH
-end
+#     exit 0
+#   EOH
+# end
 
 # Delete vagrant properties which contains workstation domain account credentails
 powershell_script 'Delete vagrant properties' do
