@@ -427,12 +427,13 @@ default['sample_data_population']['image_type'] = 'image'
 default['sample_data_population']['import_images_with_Documents'] = '$TRUE'
 default['sample_data_population']['import_production_images_with_documents'] = '$TRUE'
 
-# Add RAP files to this Array to install them into the sample workspace. Make sure they exist in files/default
-default['relativity_apps_to_install'] = [
-    "Relativity_App_Smoke_Test.rap",
-    "Relativity_App_Data_Sampler.rap",
-    "Single File Upload 1.2.0.16 (for Relativity 9.4 - 9.5 - RelOne).rap"
-    ]
+# Below code not being used so commenting 9/30/19 (Chandra)
+# # Add RAP files to this Array to install them into the sample workspace. Make sure they exist in files/default
+# default['relativity_apps_to_install'] = [
+#     "Relativity_App_Smoke_Test.rap",
+#     "Relativity_App_Data_Sampler.rap",
+#     "Single File Upload 1.2.0.16 (for Relativity 9.4 - 9.5 - RelOne).rap"
+#     ]
 
 default["smoke_test_agent"]["analysis"] = "Smoke Test Analysis Agent"
 default["smoke_test_agent"]["runner"] = "Smoke Test Runner Agent"
