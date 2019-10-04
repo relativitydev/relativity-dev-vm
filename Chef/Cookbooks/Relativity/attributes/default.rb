@@ -326,6 +326,16 @@ default['invariant']['response_file']['replacement_values'] =
         value: "#{default['windows']['user']['admin']['password']}"
     },
     {
+        # Windows username to run specific processes that don't need administrator access on a worker machine. Optional.
+        name: "RESTRICTEDUSERNAME", 
+        value: ""
+    },
+    {
+        # Password for the Windows username to run specific processes that don't need administrator access on a worker machine. Required if RESTRICTEDUSERNAME is set.
+        name: "RESTRICTEDUSERPASSWORD", 
+        value: ""
+    },
+    {
         # The EDDSDBO password for the target SQL instance
         name: "EDDSDBOPASSWORD", 
         value: "#{default['sql']['user']['eddsdbo']['password']}"
@@ -392,6 +402,17 @@ default['invariant']['response_file']['replacement_values'] =
     }
 ]
 
+# Copy Relatiivty and Invariant Response File settings
+default['relativity_and_invariant']['response_file']['save_to_local_file_destination_folder'] = "C:\\Relativity_Invariant_Response_Files"
+default['relativity_and_invariant']['response_file']['source_files'] = [
+    "C:\\Chef_Install\\Relativity\\relativity_invariant_version.txt",
+    "C:\\Chef_Install\\Relativity\\RelativityResponse.txt",
+    "C:\\Chef_Install\\Relativity\\RelativityResponse_Original.txt",
+    "C:\\Chef_Install\\Invariant\\InvariantResponse.txt",
+    "C:\\Chef_Install\\Invariant\\InvariantResponse_Original.txt"
+    ]
+
+# Sample Workspace
 default['sample_workspace_name'] = 'Sample Workspace'
 default['sample_data_grid_workspace_name'] = 'Sample Data Grid Workspace'
 
@@ -406,12 +427,13 @@ default['sample_data_population']['image_type'] = 'image'
 default['sample_data_population']['import_images_with_Documents'] = '$TRUE'
 default['sample_data_population']['import_production_images_with_documents'] = '$TRUE'
 
-# Add RAP files to this Array to install them into the sample workspace. Make sure they exist in files/default
-default['relativity_apps_to_install'] = [
-    "Relativity_App_Smoke_Test.rap",
-    "Relativity_App_Data_Sampler.rap",
-    "Single File Upload 1.2.0.16 (for Relativity 9.4 - 9.5 - RelOne).rap"
-    ]
+# Below code not being used so commenting 9/30/19 (Chandra)
+# # Add RAP files to this Array to install them into the sample workspace. Make sure they exist in files/default
+# default['relativity_apps_to_install'] = [
+#     "Relativity_App_Smoke_Test.rap",
+#     "Relativity_App_Data_Sampler.rap",
+#     "Single File Upload 1.2.0.16 (for Relativity 9.4 - 9.5 - RelOne).rap"
+#     ]
 
 default["smoke_test_agent"]["analysis"] = "Smoke Test Analysis Agent"
 default["smoke_test_agent"]["runner"] = "Smoke Test Runner Agent"

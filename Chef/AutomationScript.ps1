@@ -56,8 +56,8 @@ $global:devVmVersionsToCreate = New-Object System.Collections.ArrayList
 [Boolean] $global:devVmCreationWasSuccess = $false
 [string] $global:compressedFileExtension = "zip"
 [string] $global:relativityInvariantVersionNumberFileName = "relativity_invariant_version.txt"
-[string] $global:testSingleRelativityVersion = "10.3.142.22" # Leave it blank when in Automated Production mode
-[string] $global:invariantVersion = "5.3.135.1" # Leave it blank when in Automated Production mode
+[string] $global:testSingleRelativityVersion = "10.3.170.1" # Leave it blank when in Automated Production mode
+[string] $global:invariantVersion = "5.3.167.4" # Leave it blank when in Automated Production mode
 [Boolean] $global:foundCompatibleInvariantVersion = $true # Set to $false when in Automated Production mode
 [Boolean] $global:sendSlackMessage = $true # Set to $false when you do not want to send a slack message
  
@@ -445,8 +445,8 @@ function Copy-DevVm-Zip-To-Network-Storage([string] $relativityVersionToCopy) {
   Write-Empty-Line-To-Screen
 }
 
-function Send-Slack-Success-Message([string] $relativityVersionToCopy){
-  if($global:sendSlackMessage -eq $true){
+function Send-Slack-Success-Message([string] $relativityVersionToCopy) {
+  if ($global:sendSlackMessage -eq $true) {
     Write-Heading-Message-To-Screen "Sending Slack Success Message"
     [System.Version] $relativityVersion = [System.Version]::Parse($relativityVersionToCopy)
     [string] $majorRelativityVersion = "$($relativityVersion.Major).$($relativityVersion.Minor)"
@@ -460,8 +460,8 @@ function Send-Slack-Success-Message([string] $relativityVersionToCopy){
   }
 }
 
-function Send-Slack-Success-Message-Follow-Up-Tasks([string] $relativityVersionToCopy){
-  if($global:sendSlackMessage -eq $true){
+function Send-Slack-Success-Message-Follow-Up-Tasks([string] $relativityVersionToCopy) {
+  if ($global:sendSlackMessage -eq $true) {
     Write-Heading-Message-To-Screen "Sending Slack Success Message - Follow Up Tasks"
     [System.Version] $relativityVersion = [System.Version]::Parse($relativityVersionToCopy)
     $BodyJSON = @{
@@ -473,8 +473,8 @@ function Send-Slack-Success-Message-Follow-Up-Tasks([string] $relativityVersionT
   }
 }
 
-function Send-Slack-Failure-Message([string] $relativityVersionToCopy){
-  if($global:sendSlackMessage -eq $true){
+function Send-Slack-Failure-Message([string] $relativityVersionToCopy) {
+  if ($global:sendSlackMessage -eq $true) {
     Write-Heading-Message-To-Screen "Sending Slack Failure Message"
     [System.Version] $relativityVersion = [System.Version]::Parse($relativityVersionToCopy)
     $BodyJSON = @{

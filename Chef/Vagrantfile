@@ -203,9 +203,9 @@ Vagrant.configure('2') do |config|
       'smb_password' => network_share_smb_password,
     }
     chef.add_recipe('Relativity::default_start_services')
-    chef.add_recipe('Relativity::relativity_install_invariant')
-    chef.add_recipe('Relativity::post_relativity_instance_setting_update_smtp_email_settings')
     chef.add_recipe('Relativity::post_relativity_powershell_module_setup')
+    chef.add_recipe('Relativity::post_relativity_powershell_module_instance_setting_update_set_relativity_instance_url')
+    chef.add_recipe('Relativity::relativity_install_invariant')
     chef.add_recipe('Relativity::post_relativity_powershell_module_instance_setting_update_turn_telemetry_off')
   end
 

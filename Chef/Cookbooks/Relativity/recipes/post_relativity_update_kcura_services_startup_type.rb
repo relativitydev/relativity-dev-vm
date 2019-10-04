@@ -26,6 +26,14 @@ dsc_resource 'Start kCura Service Host Manager' do
   # timeout node['timeout']['default'] #todo
 end
 
+dsc_resource 'Start SQL Server Browser' do
+  resource :service
+  property :name, 'SQLBrowser'
+  property :startuptype, 'Automatic'
+  property :state, 'Running'
+  # timeout node['timeout']['default'] #todo
+end
+
 end_time = DateTime.now
 custom_log 'custom_log' do msg "recipe_end_Time(#{recipe_name}): #{end_time}" end
 custom_log 'custom_log' do msg "recipe_duration(#{recipe_name}): #{end_time.to_time - start_time.to_time} seconds" end

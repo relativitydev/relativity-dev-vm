@@ -8,10 +8,17 @@ custom_log 'custom_log' do msg 'Updating DataGrid Instance Settings' end
 powershell_script 'update_datagrid_instance_settings' do
   code <<-EOH
     #{node['powershell_module']['import_module']}
-    Reset-InstanceSettingValue -RelativityInstanceName #{node['windows']['new_computer_name']} -RelativityAdminUserName #{node['relativity']['admin']['login']} -RelativityAdminPassword #{node['relativity']['admin']['password']} -Name DataGridEndPoint -Section Relativity.DataGrid -NewValue " "
+    
+    # This instance setting doesn't exist in 10.3 Goatsbeard release 9/27/2019 (Chandra)
+    # Reset-InstanceSettingValue -RelativityInstanceName #{node['windows']['new_computer_name']} -RelativityAdminUserName #{node['relativity']['admin']['login']} -RelativityAdminPassword #{node['relativity']['admin']['password']} -Name DataGridEndPoint -Section Relativity.DataGrid -NewValue " "
+    
     Reset-InstanceSettingValue -RelativityInstanceName #{node['windows']['new_computer_name']} -RelativityAdminUserName #{node['relativity']['admin']['login']} -RelativityAdminPassword #{node['relativity']['admin']['password']} -Name AuditDataGridEndPoint -Section kCura.Audit -NewValue http://RelativityDevVm:9200
-    Reset-InstanceSettingValue -RelativityInstanceName #{node['windows']['new_computer_name']} -RelativityAdminUserName #{node['relativity']['admin']['login']} -RelativityAdminPassword #{node['relativity']['admin']['password']} -Name DataGridSearchIndex  -Section Relativity.DataGrid -NewValue 0
+    
+    # This instance setting doesn't exist in 10.3 Goatsbeard release 9/27/2019 (Chandra)
+    # Reset-InstanceSettingValue -RelativityInstanceName #{node['windows']['new_computer_name']} -RelativityAdminUserName #{node['relativity']['admin']['login']} -RelativityAdminPassword #{node['relativity']['admin']['password']} -Name DataGridSearchIndex  -Section Relativity.DataGrid -NewValue 0
+    
     Reset-InstanceSettingValue -RelativityInstanceName #{node['windows']['new_computer_name']} -RelativityAdminUserName #{node['relativity']['admin']['login']} -RelativityAdminPassword #{node['relativity']['admin']['password']} -Name ESIndexCreationSettings -Section kCura.Audit " "
+    
     Reset-InstanceSettingValue -RelativityInstanceName #{node['windows']['new_computer_name']} -RelativityAdminUserName #{node['relativity']['admin']['login']} -RelativityAdminPassword #{node['relativity']['admin']['password']} -Name ESIndexPrefix -Section kCura.Audit -NewValue audit
     EOH
 end
