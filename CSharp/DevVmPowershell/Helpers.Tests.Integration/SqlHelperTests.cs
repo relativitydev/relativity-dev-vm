@@ -81,7 +81,7 @@ namespace Helpers.Tests.Integration
 			// Act
 
 			// Assert
-			Assert.DoesNotThrow(() => Sut.InsertRSMFViewerOverride());
+			Assert.DoesNotThrow(() => Sut.InsertRsmfViewerOverride());
 		}
 	}
 }

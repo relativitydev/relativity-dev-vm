@@ -237,7 +237,7 @@ namespace Helpers
 			return exists;
 		}
 
-		public void InsertRSMFViewerOverride()
+		public void InsertRsmfViewerOverride()
 		{
 			try
 			{

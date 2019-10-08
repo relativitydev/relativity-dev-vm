@@ -42,7 +42,7 @@ namespace DevVmPsModules
 
 			ISqlHelper sqlHelper = new SqlHelper(RelativityInstanceName, SqlAdminUserName, SqlAdminPassword);
 
-			sqlHelper.InsertRSMFViewerOverride();
+			sqlHelper.InsertRsmfViewerOverride();
 		}
 
 		private void ValidateInputArguments()
