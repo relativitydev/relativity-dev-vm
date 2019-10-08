@@ -74,7 +74,7 @@ namespace Helpers.Tests.Integration
 		}
 
 		[Test]
-		public void InsertRSMFViewerOverrideTest()
+		public void InsertRsmfViewerOverrideTest()
 		{
 			// Arrange
 

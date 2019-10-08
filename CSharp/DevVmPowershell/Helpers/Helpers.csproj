@@ -186,6 +186,7 @@
     <Compile Include="IImportApiHelper.cs" />
     <Compile Include="ImagingHelper.cs" />
     <Compile Include="IRecycleBinHelper.cs" />
+    <Compile Include="ISqlRunner.cs" />
     <Compile Include="IWorkspaceHelper.cs" />
     <Compile Include="IInstanceSettingsHelper.cs" />
     <Compile Include="ImportApiHelper.cs" />
@@ -198,6 +199,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RecycleBinHelper.cs" />
     <Compile Include="SqlHelper.cs" />
+    <Compile Include="SqlRunner.cs" />
     <Compile Include="YmlFileHelper.cs" />
     <Compile Include="WorkspaceHelper.cs" />
     <Compile Include="ZipHelper.cs" />
