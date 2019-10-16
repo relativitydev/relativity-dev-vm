@@ -5,7 +5,7 @@ namespace Helpers
 {
 	public class YmlFileHelper : IYmlFileHelper
 	{
-		public void UpdateElasticSearchYml()
+		public void UpdateElasticSearchYml() //TODO: update this method to pass the elastic search yml file path as input parameter
 		{
 			try
 			{

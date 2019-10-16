@@ -11,14 +11,17 @@ namespace Helpers
 		public string RelativityInstanceName;
 		public string RelativityAdminUserName;
 		public string RelativityAdminPassword;
-		public string RelativityDatabase;
+		public string SqlAdminUserName;
+		public string SqlAdminPassword;
 
-		public ConnectionHelper(string relativityInstanceName, string relativityAdminUserName, string relativityAdminPassword, string relativityDatabase = Constants.Connection.Sql.ConnectionString_DefaultDatabase)
+
+		public ConnectionHelper(string relativityInstanceName, string relativityAdminUserName, string relativityAdminPassword, string sqlAdminUserName, string sqlAdminPassword)
 		{
-			this.RelativityInstanceName = (string.IsNullOrEmpty(relativityInstanceName)) ? throw new ArgumentNullException(nameof(relativityInstanceName)) : relativityInstanceName;
-			this.RelativityAdminUserName = (string.IsNullOrEmpty(relativityAdminUserName)) ? throw new ArgumentNullException(nameof(relativityAdminUserName)) : relativityAdminUserName;
-			this.RelativityAdminPassword = (string.IsNullOrEmpty(relativityAdminPassword)) ? throw new ArgumentNullException(nameof(relativityAdminPassword)) : relativityAdminPassword;
-			this.RelativityDatabase = (string.IsNullOrEmpty(relativityDatabase)) ? throw new ArgumentNullException(nameof(relativityDatabase)) : relativityDatabase;
+			RelativityInstanceName = (string.IsNullOrEmpty(relativityInstanceName)) ? throw new ArgumentNullException(nameof(relativityInstanceName)) : relativityInstanceName;
+			RelativityAdminUserName = (string.IsNullOrEmpty(relativityAdminUserName)) ? throw new ArgumentNullException(nameof(relativityAdminUserName)) : relativityAdminUserName;
+			RelativityAdminPassword = (string.IsNullOrEmpty(relativityAdminPassword)) ? throw new ArgumentNullException(nameof(relativityAdminPassword)) : relativityAdminPassword;
+			SqlAdminUserName = (string.IsNullOrEmpty(sqlAdminUserName)) ? throw new ArgumentNullException(nameof(sqlAdminUserName)) : sqlAdminUserName;
+			SqlAdminPassword = (string.IsNullOrEmpty(sqlAdminPassword)) ? throw new ArgumentNullException(nameof(sqlAdminPassword)) : sqlAdminPassword;
 		}
 
 		public ServiceFactory GetServiceFactory(string protocol = Constants.Connection.PROTOCOL)
@@ -50,13 +53,13 @@ namespace Helpers
 
 		/// <summary>
 		/// Creates a SqlConnection for when DBContext doesn't give you enough power. 
-		/// Leave the connectionTimeout to blank if you want to use the default (30 seconds)
 		/// </summary>
+		/// <param name="sqlDatabaseName"></param>
 		/// <param name="connectionTimeOut"></param>
 		/// <returns></returns>
-		public SqlConnection GetSqlConnection(string connectionTimeOut = Constants.Connection.Sql.ConnectionString_ConnectTimeoutDefault)
+		public SqlConnection GetSqlConnection(string sqlDatabaseName, string connectionTimeOut)
 		{
-			string connectionString = $"data source={RelativityInstanceName};initial catalog={RelativityDatabase};persist security info={Constants.Connection.Sql.ConnectionString_PersistSecurityInfo};user id={RelativityAdminUserName};password={RelativityAdminPassword};packet size={Constants.Connection.Sql.ConnectionString_PacketSize};connect timeout={connectionTimeOut};";
+			string connectionString = $"data source={RelativityInstanceName};initial catalog={sqlDatabaseName};persist security info={Constants.Connection.Sql.CONNECTION_STRING_PERSIST_SECURITY_INFO};user id={SqlAdminUserName};password={SqlAdminPassword};packet size={Constants.Connection.Sql.CONNECTION_STRING_PACKET_SIZE};connect timeout={connectionTimeOut};";
 
 			return new SqlConnection(connectionString);
 		}

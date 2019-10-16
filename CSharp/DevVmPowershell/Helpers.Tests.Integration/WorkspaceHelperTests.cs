@@ -12,10 +12,13 @@ namespace Helpers.Tests.Integration
 		public void SetUp()
 		{
 			IConnectionHelper connectionHelper = new ConnectionHelper(
-				TestConstants.RELATIVITY_INSTANCE_NAME,
-				TestConstants.RELATIVITY_ADMIN_USER_NAME,
-				TestConstants.RELATIVITY_ADMIN_PASSWORD);
-			ISqlHelper sqlHelper = new SqlHelper(TestConstants.RELATIVITY_INSTANCE_NAME, TestConstants.SQL_USER_NAME, TestConstants.SQL_PASSWORD);
+				relativityInstanceName: TestConstants.RELATIVITY_INSTANCE_NAME,
+				relativityAdminUserName: TestConstants.RELATIVITY_ADMIN_USER_NAME,
+				relativityAdminPassword: TestConstants.RELATIVITY_ADMIN_PASSWORD,
+				sqlAdminUserName: TestConstants.SQL_USER_NAME,
+				sqlAdminPassword: TestConstants.SQL_PASSWORD);
+			ISqlRunner sqlRunner = new SqlRunner(connectionHelper);
+			ISqlHelper sqlHelper = new SqlHelper(sqlRunner);
 			Sut = new WorkspaceHelper(connectionHelper, sqlHelper);
 		}
 
@@ -25,69 +28,96 @@ namespace Helpers.Tests.Integration
 			Sut = null;
 		}
 
-		[Test]
-		public async Task CreateWorkspaceAsyncTest()
+		[Test, Order(10)]
+		public async Task CreateSingleWorkspaceAsyncTest()
 		{
 			//Arrange
-			const string workspaceName = "ABC";
-			bool enableDataGrid = false;
+			string workspaceName = $"{nameof(CreateSingleWorkspaceAsyncTest)}";
+			const bool enableDataGrid = false;
+
+			//Cleanup
+			await Sut.DeleteAllWorkspacesAsync(workspaceName);
 
 			//Act
-			int workspaceArtifactId = await Sut.CreateWorkspaceAsync(Constants.Workspace.DEFAULT_WORKSPACE_TEMPLATE_NAME, workspaceName, enableDataGrid); //To Test this method, make sure the Template Workspace exists
+			int workspaceArtifactId = await Sut.CreateSingleWorkspaceAsync(Constants.Workspace.DEFAULT_WORKSPACE_TEMPLATE_NAME, workspaceName, enableDataGrid); //To Test this method, make sure the Template Workspace exists
 
 			//Assert
 			Assert.That(workspaceArtifactId, Is.GreaterThan(0));
-			await Sut.DeleteWorkspaceAsync(workspaceArtifactId);
+
+			//Cleanup
+			await Sut.DeleteAllWorkspacesAsync(workspaceName);
 		}
 
-		[Test]
+		[Test, Order(20)]
 		public async Task CreateDataGridWorkspaceAsyncTest()
 		{
 			//Arrange
-			const string workspaceName = "ABC";
-			bool enableDataGrid = true;
+			string workspaceName = $"{nameof(CreateDataGridWorkspaceAsyncTest)}";
+			const bool enableDataGrid = true;
+
+			//Cleanup
+			await Sut.DeleteAllWorkspacesAsync(workspaceName);
 
 			//Act
-			int workspaceArtifactId = await Sut.CreateWorkspaceAsync(Constants.Workspace.DEFAULT_WORKSPACE_TEMPLATE_NAME, workspaceName, enableDataGrid); //To Test this method, make sure the Template Workspace exists
+			int workspaceArtifactId = await Sut.CreateSingleWorkspaceAsync(Constants.Workspace.DEFAULT_WORKSPACE_TEMPLATE_NAME, workspaceName, enableDataGrid); //To Test this method, make sure the Template Workspace exists
 
 			//Assert
 			Assert.That(workspaceArtifactId, Is.GreaterThan(0));
-			await Sut.DeleteWorkspaceAsync(workspaceArtifactId);
+			await Sut.DeleteSingleWorkspaceAsync(workspaceArtifactId);
+
+			//Cleanup
+			await Sut.DeleteAllWorkspacesAsync(workspaceName);
 		}
 
-		[Test]
-		public void DeleteAllWorkspacesAsyncTest()
+		[Test, Order(30)]
+		public async Task DeleteAllWorkspacesAsyncTest()
 		{
 			//Arrange
-			const string workspaceName = "ABC";
+			string workspaceName = $"{nameof(DeleteAllWorkspacesAsyncTest)}";
+			const bool enableDataGrid = false;
+
+			//Create the workspace to delete
+			await Sut.CreateSingleWorkspaceAsync(Constants.Workspace.DEFAULT_WORKSPACE_TEMPLATE_NAME, workspaceName, enableDataGrid); //To Test this method, make sure the Template Workspace exists
 
 			//Act
+			await Sut.DeleteAllWorkspacesAsync(workspaceName);
+
 			//Assert
-			Assert.DoesNotThrow(async () => await Sut.DeleteAllWorkspacesAsync(workspaceName)); //To Test this method, make sure the workspace(s) you are trying to delete exists
+			int workspaceCount = await Sut.GetWorkspaceCountQueryAsync(workspaceName);
+			Assert.That(workspaceCount, Is.EqualTo(0));
 		}
 
-		[Test]
-		public void DeleteWorkspaceAsyncTest()
+		[Test, Order(40)]
+		public async Task DeleteSingleWorkspaceAsyncTest()
 		{
 			//Arrange
-			const int workspaceArtifactId = 123;
+			string workspaceName = $"{nameof(DeleteSingleWorkspaceAsyncTest)}";
+			const bool enableDataGrid = false;
+
+			//Cleanup
+			await Sut.DeleteAllWorkspacesAsync(workspaceName);
+
+			int workspaceArtifactId = await Sut.CreateSingleWorkspaceAsync(Constants.Workspace.DEFAULT_WORKSPACE_TEMPLATE_NAME, workspaceName, enableDataGrid); //To Test this method, make sure the Template Workspace exists
 
 			//Act
+			await Sut.DeleteSingleWorkspaceAsync(workspaceArtifactId);
+
 			//Assert
-			Assert.DoesNotThrow(async () => await Sut.DeleteWorkspaceAsync(workspaceArtifactId)); //To Test this method, make sure the workspace you are trying to delete exists
+			int workspaceCount = await Sut.GetWorkspaceCountQueryAsync(workspaceName);
+			Assert.That(workspaceCount, Is.EqualTo(0));
 		}
 
-		[Test]
-		public void GetWorkspaceIdTest()
+		[Test, Order(50)]
+		public async Task GetWorkspaceArtifactIdTest()
 		{
 			//Arrange
-			string workspaceName = TestConstants.RELATIVITY_WORKSPACE_NAME;
+			const string workspaceName = TestConstants.SAMPLE_DATA_GRID_WORKSPACE_NAME;
 
 			//Act
-			int workspaceId = Sut.GetFirstWorkspaceIdQueryAsync(workspaceName).Result;
+			int workspaceArtifactId = await Sut.GetFirstWorkspaceArtifactIdQueryAsync(workspaceName);
 
 			//Assert
-			Assert.That(workspaceId > 0);
+			Assert.That(workspaceArtifactId > 0);
 		}
 	}
 }

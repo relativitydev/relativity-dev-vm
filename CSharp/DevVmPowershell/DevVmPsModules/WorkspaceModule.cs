@@ -36,7 +36,7 @@ namespace DevVmPsModules
 			ValueFromPipelineByPropertyName = true,
 			ValueFromPipeline = true,
 			Position = 3,
-			HelpMessage = "Username of the Sql Admin")]
+			HelpMessage = "Username of the Relativity Sql Account")]
 		public string SqlAdminUserName { get; set; }
 
 		[Parameter(
@@ -44,7 +44,7 @@ namespace DevVmPsModules
 			ValueFromPipelineByPropertyName = true,
 			ValueFromPipeline = true,
 			Position = 4,
-			HelpMessage = "Password of the Sql Admin")]
+			HelpMessage = "Password of the Relativity Sql Account")]
 		public string SqlAdminPassword { get; set; }
 
 		[Parameter(
@@ -70,12 +70,18 @@ namespace DevVmPsModules
 			//Validate Input arguments
 			ValidateInputArguments();
 
-			IConnectionHelper connectionHelper = new ConnectionHelper(RelativityInstanceName, RelativityAdminUserName, RelativityAdminPassword);
-			ISqlHelper sqlHelper = new SqlHelper(RelativityInstanceName, SqlAdminUserName, SqlAdminPassword);
+			IConnectionHelper connectionHelper = new ConnectionHelper(
+				relativityInstanceName: RelativityInstanceName,
+				relativityAdminUserName: RelativityAdminUserName,
+				relativityAdminPassword: RelativityAdminPassword,
+				sqlAdminUserName: SqlAdminUserName,
+				sqlAdminPassword: SqlAdminPassword);
+			ISqlRunner sqlRunner = new SqlRunner(connectionHelper);
+			ISqlHelper sqlHelper = new SqlHelper(sqlRunner);
 			IWorkspaceHelper workspaceHelper = new WorkspaceHelper(connectionHelper, sqlHelper);
 
 			//Create Workspace
-			workspaceHelper.CreateWorkspaceAsync(Constants.Workspace.DEFAULT_WORKSPACE_TEMPLATE_NAME, WorkspaceName, _enableDataGrid).Wait();
+			workspaceHelper.CreateSingleWorkspaceAsync(Constants.Workspace.DEFAULT_WORKSPACE_TEMPLATE_NAME, WorkspaceName, _enableDataGrid).Wait();
 		}
 
 		private void ValidateInputArguments()

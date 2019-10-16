@@ -10,6 +10,6 @@ namespace Helpers
 
 		ImportAPI GetImportApi();
 
-		SqlConnection GetSqlConnection(string connectionTimeOut);
+		SqlConnection GetSqlConnection(string sqlDatabaseName, string connectionTimeOut);
 	}
 }

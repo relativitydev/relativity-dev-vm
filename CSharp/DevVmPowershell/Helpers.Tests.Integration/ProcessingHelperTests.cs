@@ -13,9 +13,11 @@ namespace Helpers.Tests.Integration
 		public void Setup()
 		{
 			IConnectionHelper connectionHelper = new ConnectionHelper(
-				TestConstants.RELATIVITY_INSTANCE_NAME,
-				TestConstants.RELATIVITY_ADMIN_USER_NAME,
-				TestConstants.RELATIVITY_ADMIN_PASSWORD);
+				relativityInstanceName: TestConstants.RELATIVITY_INSTANCE_NAME,
+				relativityAdminUserName: TestConstants.RELATIVITY_ADMIN_USER_NAME,
+				relativityAdminPassword: TestConstants.RELATIVITY_ADMIN_PASSWORD,
+				sqlAdminUserName: TestConstants.SQL_USER_NAME,
+				sqlAdminPassword: TestConstants.SQL_PASSWORD);
 
 			Sut = new ProcessingHelper(connectionHelper);
 		}

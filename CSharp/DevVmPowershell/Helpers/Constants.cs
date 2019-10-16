@@ -14,12 +14,11 @@ namespace Helpers
 
 			public class Sql
 			{
-				public const int DEFAULT_SQL_RUNNER_TIMEOUT_IN_SECONDS = 30;
-				public const string ConnectionString_PersistSecurityInfo = "False";
-				public const string ConnectionString_PacketSize = "4096";
-				public const string ConnectionString_ConnectTimeoutDefault = "30";
-				public const string ConnectionString_ConnectTimeoutLong = "120";
-				public const string ConnectionString_DefaultDatabase = "EDDS";
+				public const int DEFAULT_SQL_RUNNER_TIMEOUT_IN_SECONDS = 120;
+				public const string CONNECTION_STRING_PERSIST_SECURITY_INFO = "False";
+				public const string CONNECTION_STRING_PACKET_SIZE = "4096";
+				public const string CONNECTION_STRING_CONNECT_TIMEOUT_DEFAULT = "120";
+				public const string EDDS_DATABASE = "EDDS";
 			}
 		}
 		public class Agents
@@ -177,9 +176,9 @@ END
 
 		public class EnvironmentVariables
 		{
-			public const string JavaPath = @"C:\Program Files\Java";
-			public const string KcuraJavaHome = "KCURA_JAVA_HOME";
-			public const string JavaHome = "JAVA_HOME";
+			public const string JAVA_INSTALL_PATH = @"C:\Program Files\Java";
+			public const string KCURA_JAVA_HOME = "KCURA_JAVA_HOME";
+			public const string JAVA_HOME = "JAVA_HOME";
 		}
 
 		public class Imaging

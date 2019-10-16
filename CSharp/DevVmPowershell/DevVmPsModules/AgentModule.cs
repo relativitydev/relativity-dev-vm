@@ -36,6 +36,22 @@ namespace DevVmPsModules
 			ValueFromPipelineByPropertyName = true,
 			ValueFromPipeline = true,
 			Position = 3,
+			HelpMessage = "Username of the Relativity Sql Account")]
+		public string SqlAdminUserName { get; set; }
+
+		[Parameter(
+			Mandatory = true,
+			ValueFromPipelineByPropertyName = true,
+			ValueFromPipeline = true,
+			Position = 4,
+			HelpMessage = "Password of the Relativity Sql Account")]
+		public string SqlAdminPassword { get; set; }
+
+		[Parameter(
+			Mandatory = true,
+			ValueFromPipelineByPropertyName = true,
+			ValueFromPipeline = true,
+			Position = 5,
 			HelpMessage = "Comma separated list of Relativity Application Names to create agents")]
 		public string[] ApplicationNames { get; set; }
 
@@ -44,7 +60,12 @@ namespace DevVmPsModules
 			//Validate Input arguments
 			ValidateInputArguments();
 
-			IConnectionHelper connectionHelper = new ConnectionHelper(RelativityInstanceName, RelativityAdminUserName, RelativityAdminPassword);
+			IConnectionHelper connectionHelper = new ConnectionHelper(
+				relativityInstanceName: RelativityInstanceName,
+				relativityAdminUserName: RelativityAdminUserName,
+				relativityAdminPassword: RelativityAdminPassword,
+				sqlAdminUserName: SqlAdminUserName,
+				sqlAdminPassword: SqlAdminPassword);
 			IAgentHelper agentHelper = new AgentHelper(connectionHelper);
 
 			//Create Agents for all Applications

@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using Helpers;
+using System;
 using System.Management.Automation;
-using System.Text;
-using System.Threading.Tasks;
-using Helpers;
 
 namespace DevVmPsModules
 {
@@ -40,6 +36,22 @@ namespace DevVmPsModules
 			ValueFromPipelineByPropertyName = true,
 			ValueFromPipeline = true,
 			Position = 3,
+			HelpMessage = "Username of the Relativity Sql Account")]
+		public string SqlAdminUserName { get; set; }
+
+		[Parameter(
+			Mandatory = true,
+			ValueFromPipelineByPropertyName = true,
+			ValueFromPipeline = true,
+			Position = 4,
+			HelpMessage = "Password of the Relativity Sql Account")]
+		public string SqlAdminPassword { get; set; }
+
+		[Parameter(
+			Mandatory = true,
+			ValueFromPipelineByPropertyName = true,
+			ValueFromPipeline = true,
+			Position = 5,
 			HelpMessage = "Workspace Name that you want to install the application in")]
 		public string WorkspaceName { get; set; }
 
@@ -47,7 +59,7 @@ namespace DevVmPsModules
 			Mandatory = true,
 			ValueFromPipelineByPropertyName = true,
 			ValueFromPipeline = true,
-			Position = 4,
+			Position = 6,
 			HelpMessage = "The Guid of the Application you want to install")]
 		public string ApplicationGuid { get; set; }
 
@@ -56,7 +68,12 @@ namespace DevVmPsModules
 			//Validate Input arguments
 			ValidateInputArguments();
 
-			IConnectionHelper connectionHelper = new ConnectionHelper(RelativityInstanceName, RelativityAdminUserName, RelativityAdminPassword);
+			IConnectionHelper connectionHelper = new ConnectionHelper(
+				relativityInstanceName: RelativityInstanceName,
+				relativityAdminUserName: RelativityAdminUserName,
+				relativityAdminPassword: RelativityAdminPassword,
+				sqlAdminUserName: SqlAdminUserName,
+				sqlAdminPassword: SqlAdminPassword);
 			IApplicationInstallHelper applicationInstallHelper = new ApplicationInstallHelper(connectionHelper);
 
 			// Install Application

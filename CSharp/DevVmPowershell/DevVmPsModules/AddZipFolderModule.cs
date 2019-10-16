@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Helpers;
+using System;
 using System.IO;
-using System.Linq;
 using System.Management.Automation;
-using System.Text;
-using System.Threading.Tasks;
-using Helpers;
-using kCura.Vendor.Castle.Core.Internal;
 
 namespace DevVmPsModules
 {
@@ -54,7 +49,7 @@ namespace DevVmPsModules
 
 			FileInfo destinationZipFileInfo = new FileInfo(DestinationZipFilePath);
 			if (destinationZipFileInfo.Directory != null)
-			{ 
+			{
 				if (SourceFolderPath == destinationZipFileInfo.Directory.FullName)
 				{
 					throw new ArgumentException(nameof(DestinationZipFilePath), $"{nameof(DestinationZipFilePath)} cannot be in the same folder as {nameof(SourceFolderPath)}.");

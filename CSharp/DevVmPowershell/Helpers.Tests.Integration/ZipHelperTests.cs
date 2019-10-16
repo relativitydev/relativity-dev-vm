@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using NUnit.Framework;
-using Relativity.Services.Document;
+﻿using NUnit.Framework;
+using System;
+using System.IO;
 using File = System.IO.File;
 
 namespace Helpers.Tests.Integration
@@ -30,13 +26,18 @@ namespace Helpers.Tests.Integration
 		public void ZipFolderTest()
 		{
 			// Arrange
-			string sourceFolderPath = @"C:\Users\aaron.gilbert\Documents\TempFolder"; // Enter a path to a valid source folder
-			string destinationFolderPath = @"C:\Users\aaron.gilbert\Documents\test.zip"; // Enter a desired path to create your zip file not in the same folder as the sourceFolderPath
+			string binFolderPath = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+			if (string.IsNullOrWhiteSpace(binFolderPath))
+			{
+				throw new Exception($"{nameof(binFolderPath)} is invalid.");
+			}
+			string sourceFolderPath = Path.Combine(binFolderPath, TestConstants.TEST_ZIP_FILES_FOLDER_PATH); // Enter a path to a valid source folder
+			string destinationZipFilePath = Path.Combine(binFolderPath, "test.zip"); // Enter a desired path to create your zip file not in the same folder as the sourceFolderPath
 
 			// Act
 			// Assert
-			Assert.DoesNotThrow(() => Sut.ZipFolder(sourceFolderPath, destinationFolderPath));
-			File.Delete(destinationFolderPath);
+			Assert.DoesNotThrow(() => Sut.ZipFolder(sourceFolderPath, destinationZipFilePath));
+			File.Delete(destinationZipFilePath);
 		}
 	}
 }

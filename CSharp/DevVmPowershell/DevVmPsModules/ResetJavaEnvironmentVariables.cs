@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using Helpers;
 using System.Management.Automation;
-using System.Text;
-using System.Threading.Tasks;
-using Helpers;
 
 namespace DevVmPsModules
 {
@@ -14,7 +9,7 @@ namespace DevVmPsModules
 		protected override void ProcessRecordCode()
 		{
 			IEnvironmentVariableHelper environmentVariableHelper = new EnvironmentVariableHelper();
-			
+
 			// Update Java Environment Variables
 			environmentVariableHelper.UpdateJavaEnvironmentVariables();
 		}

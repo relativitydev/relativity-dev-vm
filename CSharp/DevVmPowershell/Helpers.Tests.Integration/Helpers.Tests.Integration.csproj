@@ -37,9 +37,6 @@
     <Reference Include="BCrypt.Net, Version=0.1.5073.29922, Culture=neutral, PublicKeyToken=6bcd409ee6bc9292, processorArchitecture=MSIL">
       <HintPath>..\packages\BCrypt-Official.0.1.109\lib\BCrypt.Net.dll</HintPath>
     </Reference>
-    <Reference Include="DbContextHelper, Version=5.0.0.1, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\RelativityDev.DbContextHelper.5.0.0.1\lib\net462\DbContextHelper.dll</HintPath>
-    </Reference>
     <Reference Include="FaspManager, Version=3.7.2.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.Transfer.Client.6.2.1\lib\net462\FaspManager.dll</HintPath>
     </Reference>
@@ -189,10 +186,23 @@
   <ItemGroup>
     <None Include="app.config" />
     <None Include="packages.config" />
+    <None Include="TestFiles\DataGrid\elasticsearch.yml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="TestFiles\RAP\Single-Object_Single-Field_Application_1.0.0.0.rap">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="TestFiles\FilesToZip\Test1.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TestFiles\FilesToZip\Test2.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="LICENSE.txt" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>

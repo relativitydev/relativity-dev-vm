@@ -10,7 +10,14 @@ namespace Helpers.Tests.Integration
 		[SetUp]
 		public void Setup()
 		{
-			Sut = new SqlHelper(TestConstants.RELATIVITY_INSTANCE_NAME, TestConstants.SQL_USER_NAME, TestConstants.SQL_PASSWORD);
+			IConnectionHelper connectionHelper = new ConnectionHelper(
+				relativityInstanceName: TestConstants.RELATIVITY_INSTANCE_NAME,
+				relativityAdminUserName: TestConstants.RELATIVITY_ADMIN_USER_NAME,
+				relativityAdminPassword: TestConstants.RELATIVITY_ADMIN_PASSWORD,
+				sqlAdminUserName: TestConstants.SQL_USER_NAME,
+				sqlAdminPassword: TestConstants.SQL_PASSWORD);
+			ISqlRunner sqlRunner = new SqlRunner(connectionHelper);
+			Sut = new SqlHelper(sqlRunner);
 		}
 
 		[TearDown]
@@ -23,8 +30,8 @@ namespace Helpers.Tests.Integration
 		public void DeleteAllErrorsTest()
 		{
 			// Act
-			bool result = Sut.DeleteAllErrors();
-			int errorsCount = Sut.GetErrorsCount();
+			bool result = Sut.DeleteAllErrors(Constants.Connection.Sql.EDDS_DATABASE);
+			int errorsCount = Sut.GetErrorsCount(Constants.Connection.Sql.EDDS_DATABASE);
 
 			// Assert
 			Assert.True(errorsCount == 0);
@@ -34,7 +41,7 @@ namespace Helpers.Tests.Integration
 		public void GetFileShareResourceServerArtifactIdTest()
 		{
 			// Act
-			int fileShareResourceServerArtifactId = Sut.GetFileShareResourceServerArtifactId();
+			int fileShareResourceServerArtifactId = Sut.GetFileShareResourceServerArtifactId(Constants.Connection.Sql.EDDS_DATABASE);
 
 			// Assert
 			Assert.That(fileShareResourceServerArtifactId, Is.GreaterThan(0));
@@ -48,7 +55,7 @@ namespace Helpers.Tests.Integration
 
 			// Act
 			// Assert
-			Assert.DoesNotThrow(() => Sut.EnableDataGridOnExtractedText(workspaceName));
+			Assert.DoesNotThrow(() => Sut.EnableDataGridOnExtractedText(Constants.Connection.Sql.EDDS_DATABASE, workspaceName));
 		}
 
 		[Test]
@@ -59,7 +66,7 @@ namespace Helpers.Tests.Integration
 			// Act
 
 			// Assert
-			Assert.That(Sut.CreateOrAlterShrinkDbProc(), Is.True);
+			Assert.That(Sut.CreateOrAlterShrinkDbProc(Constants.Connection.Sql.EDDS_DATABASE), Is.True);
 		}
 
 		[Test]
@@ -70,7 +77,7 @@ namespace Helpers.Tests.Integration
 			// Act
 
 			// Assert
-			Assert.That(Sut.RunShrinkDbProc(), Is.True);
+			Assert.That(Sut.RunShrinkDbProc(Constants.Connection.Sql.EDDS_DATABASE), Is.True);
 		}
 
 		[Test]
@@ -81,7 +88,7 @@ namespace Helpers.Tests.Integration
 			// Act
 
 			// Assert
-			Assert.DoesNotThrow(() => Sut.InsertRsmfViewerOverride());
+			Assert.DoesNotThrow(() => Sut.InsertRsmfViewerOverride(Constants.Connection.Sql.EDDS_DATABASE));
 		}
 	}
 }

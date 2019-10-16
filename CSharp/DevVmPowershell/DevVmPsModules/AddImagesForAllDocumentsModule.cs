@@ -36,6 +36,22 @@ namespace DevVmPsModules
 			ValueFromPipelineByPropertyName = true,
 			ValueFromPipeline = true,
 			Position = 3,
+			HelpMessage = "Username of the Relativity Sql Account")]
+		public string SqlAdminUserName { get; set; }
+
+		[Parameter(
+			Mandatory = true,
+			ValueFromPipelineByPropertyName = true,
+			ValueFromPipeline = true,
+			Position = 4,
+			HelpMessage = "Password of the Relativity Sql Account")]
+		public string SqlAdminPassword { get; set; }
+
+		[Parameter(
+			Mandatory = true,
+			ValueFromPipelineByPropertyName = true,
+			ValueFromPipeline = true,
+			Position = 5,
 			HelpMessage = "Workspace Name that you want to install the application in")]
 		public string WorkspaceName { get; set; }
 
@@ -44,12 +60,17 @@ namespace DevVmPsModules
 			//Validate Input arguments
 			ValidateInputArguments();
 
-			IConnectionHelper connectionHelper = new ConnectionHelper(RelativityInstanceName, RelativityAdminUserName, RelativityAdminPassword);
+			IConnectionHelper connectionHelper = new ConnectionHelper(
+				relativityInstanceName: RelativityInstanceName,
+				relativityAdminUserName: RelativityAdminUserName,
+				relativityAdminPassword: RelativityAdminPassword,
+				sqlAdminUserName: SqlAdminUserName,
+				sqlAdminPassword: SqlAdminPassword);
 			IImagingHelper imagingHelper = new ImagingHelper(connectionHelper);
 			IWorkspaceHelper workspaceHelper = new WorkspaceHelper(connectionHelper, null);
 
 			// Run Imaging Job
-			int workspaceArtifactId = workspaceHelper.GetFirstWorkspaceIdQueryAsync(WorkspaceName).Result;
+			int workspaceArtifactId = workspaceHelper.GetFirstWorkspaceArtifactIdQueryAsync(WorkspaceName).Result;
 			imagingHelper.ImageAllDocumentsInWorkspaceAsync(workspaceArtifactId).Wait();
 		}
 

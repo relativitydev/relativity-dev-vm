@@ -15,37 +15,38 @@ namespace Helpers
 			NonQuery = 2,
 			DataSet = 3
 		}
-		private IDbConnection SqlConnection { get; }
+		public IConnectionHelper ConnectionHelper { get; }
 
-		public SqlRunner(IDbConnection sqlConnection)
+		public SqlRunner(IConnectionHelper connectionHelper)
 		{
-			SqlConnection = sqlConnection;
+			ConnectionHelper = connectionHelper;
 		}
 
-		public void Dispose()
+		private void SqlConnectionCloseAndDispose(IDbConnection sqlConnection)
 		{
-			if (SqlConnection != null)
+			if (sqlConnection != null)
 			{
-				if (SqlConnection.State != ConnectionState.Closed)
+				if (sqlConnection.State != ConnectionState.Closed)
 				{
-					SqlConnection.Close();
+					sqlConnection.Close();
 				}
-				SqlConnection.Dispose();
+				sqlConnection.Dispose();
 			}
 		}
 
-		private object ExecuteSqlStatement(SqlQueryType sqlQueryType, string sqlStatement, List<SqlParameter> sqlParameters, int timeout)
+		private object ExecuteSqlStatement(string sqlDatabaseName, SqlQueryType sqlQueryType, string sqlStatement, List<SqlParameter> sqlParameters, int timeout)
 		{
 			try
 			{
-				if (SqlConnection.State != ConnectionState.Open)
+				IDbConnection sqlConnection = ConnectionHelper.GetSqlConnection(sqlDatabaseName, Constants.Connection.Sql.CONNECTION_STRING_CONNECT_TIMEOUT_DEFAULT);
+				if (sqlConnection.State != ConnectionState.Open)
 				{
-					SqlConnection.Open();
+					sqlConnection.Open();
 				}
 
-				IDbCommand sqlCommand = SqlConnection.CreateCommand();
-				IDbTransaction sqlTransaction = SqlConnection.BeginTransaction();
-				sqlCommand.Connection = SqlConnection;
+				IDbCommand sqlCommand = sqlConnection.CreateCommand();
+				IDbTransaction sqlTransaction = sqlConnection.BeginTransaction();
+				sqlCommand.Connection = sqlConnection;
 				sqlCommand.Transaction = sqlTransaction;
 				sqlCommand.CommandTimeout = timeout;
 				sqlCommand.CommandText = sqlStatement;
@@ -95,7 +96,14 @@ namespace Helpers
 				}
 				finally
 				{
-					SqlConnection.Close();
+					if (sqlConnection != null)
+					{
+						if (sqlConnection.State != ConnectionState.Closed)
+						{
+							sqlConnection.Close();
+						}
+						sqlConnection.Dispose();
+					}
 				}
 			}
 			catch (Exception ex)
@@ -105,7 +113,7 @@ namespace Helpers
 			}
 		}
 
-		public T ExecuteSqlStatementAsScalar<T>(string sqlStatement, List<SqlParameter> sqlParameters, int timeout = Constants.Connection.Sql.DEFAULT_SQL_RUNNER_TIMEOUT_IN_SECONDS)
+		public T ExecuteSqlStatementAsScalar<T>(string sqlDatabaseName, string sqlStatement, List<SqlParameter> sqlParameters, int timeout = Constants.Connection.Sql.DEFAULT_SQL_RUNNER_TIMEOUT_IN_SECONDS)
 		{
 			try
 			{
@@ -121,7 +129,7 @@ namespace Helpers
 
 				try
 				{
-					T returnValue = (T)ExecuteSqlStatement(SqlQueryType.Scalar, sqlStatement, sqlParameters, timeout);
+					T returnValue = (T)ExecuteSqlStatement(sqlDatabaseName, SqlQueryType.Scalar, sqlStatement, sqlParameters, timeout);
 					return returnValue;
 				}
 				catch (Exception ex)
@@ -136,7 +144,7 @@ namespace Helpers
 			}
 		}
 
-		public T ExecuteSqlStatementAsScalar<T>(string sqlStatement)
+		public T ExecuteSqlStatementAsScalar<T>(string sqlDatabaseName, string sqlStatement)
 		{
 			try
 			{
@@ -149,7 +157,7 @@ namespace Helpers
 			}
 		}
 
-		public DataTable ExecuteSqlStatementAsDataTable(string sqlStatement, List<SqlParameter> sqlParameters, int timeout = Constants.Connection.Sql.DEFAULT_SQL_RUNNER_TIMEOUT_IN_SECONDS)
+		public DataTable ExecuteSqlStatementAsDataTable(string sqlDatabaseName, string sqlStatement, List<SqlParameter> sqlParameters, int timeout = Constants.Connection.Sql.DEFAULT_SQL_RUNNER_TIMEOUT_IN_SECONDS)
 		{
 			try
 			{
@@ -165,7 +173,7 @@ namespace Helpers
 
 				try
 				{
-					DataTable returnValue = (DataTable)ExecuteSqlStatement(SqlQueryType.DataTable, sqlStatement, sqlParameters, timeout);
+					DataTable returnValue = (DataTable)ExecuteSqlStatement(sqlDatabaseName, SqlQueryType.DataTable, sqlStatement, sqlParameters, timeout);
 					return returnValue;
 				}
 				catch (Exception ex)
@@ -180,7 +188,7 @@ namespace Helpers
 			}
 		}
 
-		public DataSet ExecuteSqlStatementAsDataSet(string sqlStatement, List<SqlParameter> sqlParameters, int timeout = Constants.Connection.Sql.DEFAULT_SQL_RUNNER_TIMEOUT_IN_SECONDS)
+		public DataSet ExecuteSqlStatementAsDataSet(string sqlDatabaseName, string sqlStatement, List<SqlParameter> sqlParameters, int timeout = Constants.Connection.Sql.DEFAULT_SQL_RUNNER_TIMEOUT_IN_SECONDS)
 		{
 			try
 			{
@@ -196,7 +204,7 @@ namespace Helpers
 
 				try
 				{
-					DataSet returnValue = (DataSet)ExecuteSqlStatement(SqlQueryType.DataSet, sqlStatement, sqlParameters, timeout);
+					DataSet returnValue = (DataSet)ExecuteSqlStatement(sqlDatabaseName, SqlQueryType.DataSet, sqlStatement, sqlParameters, timeout);
 					return returnValue;
 				}
 				catch (Exception ex)
@@ -211,7 +219,7 @@ namespace Helpers
 			}
 		}
 
-		public DataTable ExecuteSqlStatementAsDataTable(string sqlStatement)
+		public DataTable ExecuteSqlStatementAsDataTable(string sqlDatabaseName, string sqlStatement)
 		{
 			try
 			{
@@ -224,7 +232,7 @@ namespace Helpers
 			}
 		}
 
-		public DataSet ExecuteSqlStatementAsDataSet(string sqlStatement)
+		public DataSet ExecuteSqlStatementAsDataSet(string sqlDatabaseName, string sqlStatement)
 		{
 			try
 			{
@@ -237,7 +245,7 @@ namespace Helpers
 			}
 		}
 
-		public int ExecuteNonQuerySqlStatement(string sqlStatement, List<SqlParameter> sqlParameters, int timeout = Constants.Connection.Sql.DEFAULT_SQL_RUNNER_TIMEOUT_IN_SECONDS)
+		public int ExecuteNonQuerySqlStatement(string sqlDatabaseName, string sqlStatement, List<SqlParameter> sqlParameters, int timeout = Constants.Connection.Sql.DEFAULT_SQL_RUNNER_TIMEOUT_IN_SECONDS)
 		{
 			try
 			{
@@ -253,7 +261,7 @@ namespace Helpers
 
 				try
 				{
-					int returnValue = (int)ExecuteSqlStatement(SqlQueryType.NonQuery, sqlStatement, sqlParameters, timeout);
+					int returnValue = (int)ExecuteSqlStatement(sqlDatabaseName, SqlQueryType.NonQuery, sqlStatement, sqlParameters, timeout);
 					return returnValue;
 				}
 				catch (Exception ex)
@@ -268,11 +276,11 @@ namespace Helpers
 			}
 		}
 
-		public int ExecuteNonQuerySqlStatement(string sqlStatement)
+		public int ExecuteNonQuerySqlStatement(string sqlDatabaseName, string sqlStatement)
 		{
 			try
 			{
-				return ExecuteNonQuerySqlStatement(sqlStatement, null);
+				return ExecuteNonQuerySqlStatement(Constants.Connection.Sql.EDDS_DATABASE, sqlStatement, null);
 			}
 			catch (Exception ex)
 			{

@@ -36,6 +36,22 @@ namespace DevVmPsModules
 			ValueFromPipelineByPropertyName = true,
 			ValueFromPipeline = true,
 			Position = 3,
+			HelpMessage = "Username of the Relativity Sql Account")]
+		public string SqlAdminUserName { get; set; }
+
+		[Parameter(
+			Mandatory = true,
+			ValueFromPipelineByPropertyName = true,
+			ValueFromPipeline = true,
+			Position = 4,
+			HelpMessage = "Password of the Relativity Sql Account")]
+		public string SqlAdminPassword { get; set; }
+
+		[Parameter(
+			Mandatory = true,
+			ValueFromPipelineByPropertyName = true,
+			ValueFromPipeline = true,
+			Position = 5,
 			HelpMessage = "Relativity Workspace Name to receive the files")]
 		public string WorkspaceName { get; set; }
 
@@ -43,7 +59,7 @@ namespace DevVmPsModules
 			Mandatory = true,
 			ValueFromPipelineByPropertyName = true,
 			ValueFromPipeline = true,
-			Position = 4,
+			Position = 6,
 			HelpMessage = "Either " + Constants.FileType.Document + " or " + Constants.FileType.Image)]
 		public string FileType { get; set; }
 
@@ -51,7 +67,7 @@ namespace DevVmPsModules
 			Mandatory = true,
 			ValueFromPipelineByPropertyName = true,
 			ValueFromPipeline = true,
-			Position = 5,
+			Position = 7,
 			HelpMessage = "How many files you want to upload")]
 		public int FileCount { get; set; }
 
@@ -59,7 +75,7 @@ namespace DevVmPsModules
 			Mandatory = false,
 			ValueFromPipelineByPropertyName = true,
 			ValueFromPipeline = true,
-			Position = 6,
+			Position = 8,
 			HelpMessage = "Path to the Resource Folder (do not include /Resources in this)")]
 		public string ResourceFilePath { get; set; }
 
@@ -68,17 +84,20 @@ namespace DevVmPsModules
 			//Validate Input arguments
 			ValidateInputArguments();
 
-			IConnectionHelper connectionHelper = new ConnectionHelper(RelativityInstanceName, RelativityAdminUserName, RelativityAdminPassword);
-
-			IImportApiHelper importApi = new ImportApiHelper(connectionHelper);
-
+			IConnectionHelper connectionHelper = new ConnectionHelper(
+				relativityInstanceName: RelativityInstanceName,
+				relativityAdminUserName: RelativityAdminUserName,
+				relativityAdminPassword: RelativityAdminPassword,
+				sqlAdminUserName: SqlAdminUserName,
+				sqlAdminPassword: SqlAdminPassword);
+			IImportApiHelper importApiHelper = new ImportApiHelper(connectionHelper);
 			IWorkspaceHelper workspaceHelper = new WorkspaceHelper(connectionHelper, null);
 
 			// Get workspaceId
-			int workspaceId = workspaceHelper.GetFirstWorkspaceIdQueryAsync(WorkspaceName).Result;
+			int workspaceId = workspaceHelper.GetFirstWorkspaceArtifactIdQueryAsync(WorkspaceName).Result;
 
 			// Add documents for each Workspace ID specified
-			importApi.AddDocumentsToWorkspace(workspaceId, FileType, FileCount, ResourceFilePath).Wait();
+			importApiHelper.AddDocumentsToWorkspace(workspaceId, FileType, FileCount, ResourceFilePath).Wait();
 		}
 
 		private void ValidateInputArguments()
