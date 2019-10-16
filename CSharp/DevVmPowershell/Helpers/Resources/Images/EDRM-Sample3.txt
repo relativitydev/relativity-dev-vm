@@ -1,0 +1,2 @@
+Package applications
+Use the ADS to package the custom applications that you develop. In the Relativity UI, you can add Relativity Dynamic Objects (RDOs), fields, layouts, choices, views, tabs, and other data objects to your application. The ADS provides a framework for packaging both the objects that you develop in Relativity UI, and custom assemblies that you upload. It also includes functionality that facilitates exporting applications for deployment in other workspaces and Relativity instances. See Create an application in Relativity.

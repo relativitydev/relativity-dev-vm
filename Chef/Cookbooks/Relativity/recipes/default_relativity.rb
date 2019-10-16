@@ -5,8 +5,8 @@ custom_log 'custom_log' do msg "recipe_start_time(#{recipe_name}): #{start_time}
 # Install Relativity
 include_recipe 'Relativity::relativity_install'
 
-# Install Invariant
-include_recipe 'Relativity::relativity_install_invariant'
+include_recipe 'Relativity::post_relativity_configure_invariant_instance_setting_update_processingwebapipath'
+include_recipe 'Relativity::post_relativity_instance_setting_update_cookie_secure'
 
 end_time = DateTime.now
 custom_log 'custom_log' do msg "recipe_end_Time(#{recipe_name}): #{end_time}" end

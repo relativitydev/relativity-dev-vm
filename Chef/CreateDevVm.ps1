@@ -1,12 +1,19 @@
-[Boolean] $global:exportVm = $false
+[Boolean] $global:exportVm = $true
 [string] $global:vmName = "RelativityDevVm"
 [string] $global:vmExportPath = "C:\DevVmExport"
-[string] $global:vmDocumentationTextFilePath = "$($global:vmExportPath)\$($global:vmName)\DevVm_Documentation.txt"
 [string] $global:vmDocumentationOnline = "Relativity Dev VM documentation can be found at this link - https://github.com/relativitydev/relativity-dev-vm/blob/master/Documentation/PDF/Relativity%20Dev%20VM%20-%20Pre-built%20VM%20-%20Documentation.pdf"
 [string] $global:vmCheckpointName = "$($global:vmName) Created"
 [string] $global:devVmCreationResultFileName = "result_file.txt"
 [Boolean] $global:devVmCreationWasSuccess = $false
 [string] $global:compressedFileExtension = "zip"
+
+[string] $devVmAutomationConfigFilePath = "C:\DevVm_Automation_Config.json"
+[string] $json = Get-Content -Path $devVmAutomationConfigFilePath
+$jsonContents = $json | ConvertFrom-Json
+[string] $global:devVmInstallFolder = $jsonContents.devVmInstallFolder
+[string] $global:relativityInvariantVersionNumberFileName = "relativity_invariant_version.txt"
+$global:vmProcessorsOnExport = 2
+$global:vmMemoryOnExport = 8000MB
 
 function Write-Empty-Line-To-Screen () {
   Write-Host ""
@@ -50,7 +57,6 @@ function Delete-File-If-It-Exists ([string] $filePath) {
     }
   }
   Catch [Exception] {
-    $env:DevVmCreationErrorStatus = "true"
     Write-Error-Message-To-Screen "An error occured when deleting a file."
     Write-Error-Message-To-Screen "-----> Exception: $($_.Exception.GetType().FullName)"
     Write-Error-Message-To-Screen "-----> Exception Message: $($_.Exception.Message)"
@@ -69,7 +75,6 @@ function Delete-Folder-If-It-Exists ([string] $directoryPath) {
     }
   }
   Catch [Exception] {
-    $env:DevVmCreationErrorStatus = "true"
     Write-Error-Message-To-Screen "An error occured when deleting a folder."
     Write-Error-Message-To-Screen "-----> Exception: $($_.Exception.GetType().FullName)"
     Write-Error-Message-To-Screen "-----> Exception Message: $($_.Exception.Message)"
@@ -90,7 +95,6 @@ function Create-DevVm() {
     Write-Message-To-Screen  "Created VM"
   }
   Catch [Exception] {
-    $env:DevVmCreationErrorStatus = "true"
     Write-Error-Message-To-Screen "An error occured when creating VM. (Vagrant Up)"
     Write-Error-Message-To-Screen "-----> Exception: $($_.Exception.GetType().FullName)"
     Write-Error-Message-To-Screen "-----> Exception Message: $($_.Exception.Message)"
@@ -105,7 +109,6 @@ function Stop-DevVm() {
     Write-Message-To-Screen  "Stopped VM"
   }
   Catch [Exception] {
-    $env:DevVmCreationErrorStatus = "true"
     Write-Error-Message-To-Screen "An error occured when stopping VM."
     Write-Error-Message-To-Screen "-----> Exception: $($_.Exception.GetType().FullName)"
     Write-Error-Message-To-Screen "-----> Exception Message: $($_.Exception.Message)"
@@ -120,8 +123,28 @@ function Create-DevVm-Checkpoint() {
     Write-Message-To-Screen  "Created VM Checkpoint"
   }
   Catch [Exception] {
-    $env:DevVmCreationErrorStatus = "true"
     Write-Error-Message-To-Screen "An error occured when creating VM checkpoint."
+    Write-Error-Message-To-Screen "-----> Exception: $($_.Exception.GetType().FullName)"
+    Write-Error-Message-To-Screen "-----> Exception Message: $($_.Exception.Message)"
+    throw
+  }
+}
+
+function Rename-DevVm() {
+  try{
+    Write-Heading-Message-To-Screen  "Renaming VM"
+    $relativityAndInvariantVersions = Get-Content -Path "$($global:devVmInstallFolder)\Relativity\$($global:relativityInvariantVersionNumberFileName)"
+    $indexOfComma = $relativityAndInvariantVersions.IndexOf(',')
+    $indexOfColon = $relativityAndInvariantVersions.IndexOf(':')
+    $relativityVersion = $relativityAndInvariantVersions.Substring(($indexOfColon + 2), ($indexOfComma - ($indexOfColon +2)))
+    $relativityVersion = $relativityVersion.Replace(" ", "")
+    [string] $newName = "$($global:vmName)-$($relativityVersion)"
+    Rename-Vm -Name $global:vmName -NewName $newName
+    $global:vmName = $newName
+    Write-Message-To-Screen  "Renamed VM"
+  }
+  Catch [Exception] {
+    Write-Error-Message-To-Screen "An error occured when renaming the VM."
     Write-Error-Message-To-Screen "-----> Exception: $($_.Exception.GetType().FullName)"
     Write-Error-Message-To-Screen "-----> Exception Message: $($_.Exception.Message)"
     throw
@@ -132,20 +155,32 @@ function Create-DevVm-Documentation-Text-File() {
   try {
     Write-Heading-Message-To-Screen  "Creating DevVM Documentation text file"
 
-    [string] $documentation_text_file_path = ""
+    [string] $documentation_text_file_path = "$($global:vmExportPath)\$($global:vmName)\DevVm_Documentation.txt"
 
     # Delete DevVM Documentation text file if it already exists
-    Delete-File-If-It-Exists $global:vmDocumentationTextFilePath
+    Delete-File-If-It-Exists $documentation_text_file_path
 
     # Create DevVM Documentation text file
-    New-Item $global:vmDocumentationTextFilePath -type file -Force
-    Set-Content -Path $global:vmDocumentationTextFilePath -Value $global:vmDocumentationOnline -Force
+    New-Item $documentation_text_file_path -type file -Force
+    Set-Content -Path $documentation_text_file_path -Value $global:vmDocumentationOnline -Force
 
     Write-Message-To-Screen  "Created DevVM Documentation text file"
   }
   Catch [Exception] {
-    $env:DevVmCreationErrorStatus = "true"
     Write-Error-Message-To-Screen "An error occured when creating DevVM Documentation text file"
+    Write-Error-Message-To-Screen "-----> Exception: $($_.Exception.GetType().FullName)"
+    Write-Error-Message-To-Screen "-----> Exception Message: $($_.Exception.Message)"
+    throw
+  }
+}
+
+function Downgrade-DevVm-Resources() {
+  try{
+    Set-VMProcessor $global:vmName -Count $global:vmProcessorsOnExport
+    Set-VMMemory $global:vmName -StartupBytes $global:vmMemoryOnExport
+  }
+  Catch [Exception] {
+    Write-Error-Message-To-Screen "An error occured when dowgrading the VM resources."
     Write-Error-Message-To-Screen "-----> Exception: $($_.Exception.GetType().FullName)"
     Write-Error-Message-To-Screen "-----> Exception Message: $($_.Exception.Message)"
     throw
@@ -165,7 +200,6 @@ function Export-DevVm() {
     Write-Message-To-Screen  "Exported VM"
   }
   Catch [Exception] {
-    $env:DevVmCreationErrorStatus = "true"
     Write-Error-Message-To-Screen "An error occured when exporting VM."
     Write-Error-Message-To-Screen "-----> Exception: $($_.Exception.GetType().FullName)"
     Write-Error-Message-To-Screen "-----> Exception Message: $($_.Exception.Message)"
@@ -188,12 +222,12 @@ function Compress-DevVm() {
     Delete-File-If-It-Exists $zipFilePath
 
     # Create new zip file
-    .\ZipFolderConsole.exe $folderToCompressPath $zipFilePath
+    Import-Module .\Cookbooks\Relativity\files\default\DevVmPsModules.dll
+    Add-ZipFolder -SourceFolderPath $folderToCompressPath -DestinationZipFilePath $zipFilePath
 
     Write-Message-To-Screen  "Converted Exported VM to a Zip file"
   }
   Catch [Exception] {
-    $env:DevVmCreationErrorStatus = "true"
     Write-Error-Message-To-Screen "An error occured when converting Exported VM to a Zip file"
     Write-Error-Message-To-Screen "-----> Exception: $($_.Exception.GetType().FullName)"
     Write-Error-Message-To-Screen "-----> Exception Message: $($_.Exception.Message)"
@@ -208,7 +242,6 @@ function Start-DevVm() {
     Write-Message-To-Screen  "Started VM"
   }
   Catch [Exception] {
-    $env:DevVmCreationErrorStatus = "true"
     Write-Error-Message-To-Screen "An error occured when starting VM."
     Write-Error-Message-To-Screen "-----> Exception: $($_.Exception.GetType().FullName)"
     Write-Error-Message-To-Screen "-----> Exception Message: $($_.Exception.Message)"
@@ -219,11 +252,11 @@ function Start-DevVm() {
 function Delete-DevVm() {
   try {
     Write-Heading-Message-To-Screen  "Deleting VM"
-    vagrant destroy $global:vmName -f
+    Stop-VM -Name $global:vmName -Force
+    Remove-VM -Name $global:vmName -Force
     Write-Message-To-Screen  "Deleted VM"
   }
   Catch [Exception] {
-    $env:DevVmCreationErrorStatus = "true"
     Write-Error-Message-To-Screen "An error occured when deleting VM."
     Write-Error-Message-To-Screen "-----> Exception: $($_.Exception.GetType().FullName)"
     Write-Error-Message-To-Screen "-----> Exception Message: $($_.Exception.Message)"
@@ -257,7 +290,6 @@ function Check-DevVm-Result-Text-File-For-Success() {
     Write-Empty-Line-To-Screen
   }
   Catch [Exception] {
-    $env:DevVmCreationErrorStatus = "true"
     Write-Error-Message-To-Screen "An error occured when checking DevVM Result file for Success."
     Write-Error-Message-To-Screen "-----> Exception: $($_.Exception.GetType().FullName)"
     Write-Error-Message-To-Screen "-----> Exception Message: $($_.Exception.Message)"
@@ -275,7 +307,6 @@ function Delete-DevVm-Export-Folder() {
     Write-Empty-Line-To-Screen
   }
   Catch [Exception] {
-    $env:DevVmCreationErrorStatus = "true"
     Write-Error-Message-To-Screen "An error occured when deleting DevVM Export folder."
     Write-Error-Message-To-Screen "-----> Exception: $($_.Exception.GetType().FullName)"
     Write-Error-Message-To-Screen "-----> Exception Message: $($_.Exception.Message)"
@@ -294,7 +325,6 @@ function Delete-DevVm-Creation-Result-File() {
     Write-Empty-Line-To-Screen
   }
   Catch [Exception] {
-    $env:DevVmCreationErrorStatus = "true"
     Write-Error-Message-To-Screen "An error occured when deleting DevVM Result file."
     Write-Error-Message-To-Screen "-----> Exception: $($_.Exception.GetType().FullName)"
     Write-Error-Message-To-Screen "-----> Exception Message: $($_.Exception.Message)"
@@ -318,7 +348,6 @@ function Delete-DevVm-If-It-Exists() {
     } 
   }
   Catch [Exception] {
-    $env:DevVmCreationErrorStatus = "true"
     Write-Error-Message-To-Screen "An error occured when deleting previous VM."
     Write-Error-Message-To-Screen "-----> Exception: $($_.Exception.GetType().FullName)"
     Write-Error-Message-To-Screen "-----> Exception Message: $($_.Exception.Message)"
@@ -351,7 +380,9 @@ function New-DevVm() {
     if ($global:devVmCreationWasSuccess -eq $true) {    
       if ($global:exportVm) {
         Stop-DevVm
+        Downgrade-DevVm-Resources
         Create-DevVm-Checkpoint
+        Rename-DevVm
         Export-DevVm
         Create-DevVm-Documentation-Text-File
         Compress-DevVm
@@ -365,15 +396,13 @@ function New-DevVm() {
     }
   }
   Catch [Exception] {
-    $env:DevVmCreationErrorStatus = "true"
     Write-Error-Message-To-Screen "An error occured when creating DevVM."
     Write-Error-Message-To-Screen "-----> Exception: $($_.Exception.GetType().FullName)"
     Write-Error-Message-To-Screen "-----> Exception Message: $($_.Exception.Message)"
     throw
   }
   finally {
-    if ($global:exportVm) {
-      Start-DevVm
+    if ($global:exportVm -And $global:devVmCreationWasSuccess) {
       Delete-DevVm
     }
     else {
@@ -386,8 +415,6 @@ function New-DevVm() {
 function Start-DevVm-Process() {
   $stopWatch = [System.Diagnostics.Stopwatch]::StartNew() 
   try {
-    $env:DevVmCreationErrorStatus = "false"
-
     # Make sure we are in the folder where the running script exists
     Write-Message-To-Screen "PSScriptroot: $($PSScriptroot)"
     Set-Location $PSScriptroot
@@ -396,7 +423,6 @@ function Start-DevVm-Process() {
     New-DevVm
   }
   Catch [Exception] {
-    $env:DevVmCreationErrorStatus = "true"
     Write-Error-Message-To-Screen "An error occured in Start-DevVm-Process function."
     Write-Error-Message-To-Screen "-----> Exception: $($_.Exception.GetType().FullName)"
     Write-Error-Message-To-Screen "-----> Exception Message: $($_.Exception.Message)"

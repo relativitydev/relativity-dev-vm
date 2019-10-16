@@ -1,0 +1,10 @@
+Writing custom code for applications
+The main components of a Relativity application generally include event handlers, custom pages and agents. These components can share common code by using interfaces available in the Relativity.API.dll. The interfaces provided by Relativity.API Helpers expose functionality used for these operations:
+
+Interact with database.
+Obtain the RelativityServices URI
+Retrieve authentication tokens.
+Perform other operations.
+In addition, your application should reference the kCura.Relativity.Client.dll, which contains the RSAPIClient proxy. All method calls that go through the RSAPIClient use the Relativity business engine. This proxy communicates with the RelativityServices API, which you can use when developing application code. The Services API ensures backwards compatibility and eliminates errors that may occur when writing direct SQL calls.
+
+The component that you are developing determines the .dlls that you need to reference in your Visual Studio project. The following diagram illustrates assemblies referenced when developing event handlers, custom pages and agents. The Relativity.API and kCura.Relativity.Client assemblies are common to all three components.
