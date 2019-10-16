@@ -4,9 +4,10 @@ namespace Helpers
 {
 	public interface IWorkspaceHelper
 	{
-		Task<int> CreateWorkspaceAsync(string workspaceTemplateName, string workspaceName, bool enableDataGrid);
+		Task<int> CreateSingleWorkspaceAsync(string workspaceTemplateName, string workspaceName, bool enableDataGrid);
 		Task DeleteAllWorkspacesAsync(string workspaceName);
-		Task DeleteWorkspaceAsync(int workspaceArtifactId);
-		Task<int> GetFirstWorkspaceIdQueryAsync(string workspaceName);
+		Task DeleteSingleWorkspaceAsync(int workspaceArtifactId);
+		Task<int> GetWorkspaceCountQueryAsync(string workspaceName);
+		Task<int> GetFirstWorkspaceArtifactIdQueryAsync(string workspaceName);
 	}
 }

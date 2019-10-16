@@ -12,15 +12,15 @@ namespace Helpers
 	public class WorkspaceHelper : IWorkspaceHelper
 	{
 		private ServiceFactory ServiceFactory { get; }
-		public ISqlHelper SQLHelper { get; set; }
+		public ISqlHelper SqlHelper { get; set; }
 
 		public WorkspaceHelper(IConnectionHelper connectionHelper, ISqlHelper sqlHelper)
 		{
 			ServiceFactory = connectionHelper.GetServiceFactory();
-			SQLHelper = sqlHelper;
+			SqlHelper = sqlHelper;
 		}
 
-		public async Task<int> CreateWorkspaceAsync(string workspaceTemplateName, string workspaceName, bool enableDataGrid)
+		public async Task<int> CreateSingleWorkspaceAsync(string workspaceTemplateName, string workspaceName, bool enableDataGrid)
 		{
 			// Query for the RelativityOne Quick Start Template
 			List<int> workspaceArtifactIds = await WorkspaceQueryAsync(workspaceTemplateName);
@@ -48,13 +48,13 @@ namespace Helpers
 				Console.WriteLine("Deleting all Workspaces");
 				foreach (int workspaceArtifactId in workspaceArtifactIds)
 				{
-					await DeleteWorkspaceAsync(workspaceArtifactId);
+					await DeleteSingleWorkspaceAsync(workspaceArtifactId);
 				}
 				Console.WriteLine("Deleted all Workspaces!");
 			}
 		}
 
-		public async Task DeleteWorkspaceAsync(int workspaceArtifactId)
+		public async Task DeleteSingleWorkspaceAsync(int workspaceArtifactId)
 		{
 			Console.WriteLine("Deleting Workspace");
 
@@ -129,7 +129,7 @@ namespace Helpers
 						rsapiClient.Repositories.Workspace.UpdateSingle(workspace);
 
 						//Enable Data Grid on Extracted Text field
-						SQLHelper.EnableDataGridOnExtractedText(workspaceName);
+						SqlHelper.EnableDataGridOnExtractedText(Constants.Connection.Sql.EDDS_DATABASE, workspaceName);
 
 						Console.WriteLine("Workspace updated to be Data Grid Enabled");
 					}
@@ -190,7 +190,7 @@ namespace Helpers
 			}
 		}
 
-		public async Task<int> GetFirstWorkspaceIdQueryAsync(string workspaceName)
+		public async Task<int> GetWorkspaceCountQueryAsync(string workspaceName)
 		{
 			Console.WriteLine($"Querying for Workspace Name: {workspaceName}");
 
@@ -203,7 +203,45 @@ namespace Helpers
 					TextCondition textCondition = new TextCondition(WorkspaceFieldNames.Name, TextConditionEnum.EqualTo, workspaceName);
 					Query<Workspace> workspaceQuery = new Query<Workspace>
 					{
-						Fields = FieldValue.AllFields,
+						Fields = FieldValue.NoFields,
+						Condition = textCondition
+					};
+
+					QueryResultSet<Workspace> workspaceQueryResultSet = await Task.Run(() => rsapiClient.Repositories.Workspace.Query(workspaceQuery));
+
+					if (!workspaceQueryResultSet.Success || workspaceQueryResultSet.Results == null)
+					{
+						throw new Exception("Failed to query Workspaces");
+					}
+
+					List<int> workspaceArtifactIds = workspaceQueryResultSet.Results.Select(x => x.Artifact.ArtifactID).ToList();
+
+					int workspaceCount = workspaceArtifactIds.Count;
+					Console.WriteLine($"Queried for Workspaces! [Count: {workspaceCount}]");
+
+					return workspaceCount;
+				}
+			}
+			catch (Exception ex)
+			{
+				throw new Exception("An error occured when querying for Workspace count", ex);
+			}
+		}
+
+		public async Task<int> GetFirstWorkspaceArtifactIdQueryAsync(string workspaceName)
+		{
+			Console.WriteLine($"Querying for Workspace Name: {workspaceName}");
+
+			try
+			{
+				using (IRSAPIClient rsapiClient = ServiceFactory.CreateProxy<IRSAPIClient>())
+				{
+					rsapiClient.APIOptions.WorkspaceID = Constants.EDDS_WORKSPACE_ARTIFACT_ID;
+
+					TextCondition textCondition = new TextCondition(WorkspaceFieldNames.Name, TextConditionEnum.EqualTo, workspaceName);
+					Query<Workspace> workspaceQuery = new Query<Workspace>
+					{
+						Fields = FieldValue.NoFields,
 						Condition = textCondition
 					};
 
@@ -218,7 +256,13 @@ namespace Helpers
 
 					Console.WriteLine($"Queried for Workspaces! [Count: {workspaceArtifactIds.Count}]");
 
-					return workspaceArtifactIds.First();
+					if (workspaceArtifactIds.Count == 0)
+					{
+						throw new Exception($"No workspace exists! [{nameof(workspaceName)}: {workspaceName}]");
+					}
+
+					int firstWorkspaceArtifactId = workspaceArtifactIds.FirstOrDefault();
+					return firstWorkspaceArtifactId;
 				}
 			}
 			catch (Exception ex)

@@ -1,6 +1,4 @@
-﻿using DbContextHelper;
-using Relativity.API;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
@@ -9,18 +7,15 @@ namespace Helpers
 {
 	public class SqlHelper : ISqlHelper
 	{
-		private IDBContext DbContext { get; set; }
-		private ConnectionHelper connectionHelper { get; set; }
+		private ISqlRunner SqlRunner { get; set; }
+		//private ConnectionHelper ConnectionHelper { get; set; }
 
-
-		public SqlHelper(string relativityInstanceName, string sqlUserName, string sqlPassword)
+		public SqlHelper(ISqlRunner sqlRunner)
 		{
-			connectionHelper = new ConnectionHelper(relativityInstanceName, sqlUserName, sqlPassword, Constants.Connection.Sql.ConnectionString_DefaultDatabase);
-
-			DbContext = new DbContext(relativityInstanceName, Constants.Connection.Sql.ConnectionString_DefaultDatabase, sqlUserName, sqlPassword);
+			SqlRunner = sqlRunner;
 		}
 
-		public bool DeleteAllErrors()
+		public bool DeleteAllErrors(string sqlDatabaseName)
 		{
 			string sqlSelectTopError = "SELECT TOP (1) [ArtifactID] FROM [EDDS].[eddsdbo].[Error]";
 			string sqlDeleteFromArtifactGuidTable = "DELETE FROM [EDDS].[eddsdbo].[ArtifactGuid] WHERE [ArtifactID] = @artifactId";
@@ -29,7 +24,7 @@ namespace Helpers
 			string sqlDeleteFromArtifactTable = "DELETE FROM [EDDS].[eddsdbo].[Artifact] WHERE [ArtifactID] = @artifactId";
 			try
 			{
-				int? artifactId = DbContext.ExecuteSqlStatementAsScalar<int?>(sqlSelectTopError);
+				int? artifactId = SqlRunner.ExecuteSqlStatementAsScalar<int?>(sqlDatabaseName, sqlSelectTopError);
 				if (artifactId.HasValue)
 				{
 					Console.WriteLine("Deleting Error Records");
@@ -47,13 +42,13 @@ namespace Helpers
 					};
 
 					// Delete from all tables
-					DbContext.ExecuteNonQuerySQLStatement(sqlDeleteFromArtifactGuidTable, sqlParams);
-					DbContext.ExecuteNonQuerySQLStatement(sqlDeleteFromErrorTable, sqlParams);
-					DbContext.ExecuteNonQuerySQLStatement(sqlDeleteFromArtifactAncestryTable, sqlParams);
-					DbContext.ExecuteNonQuerySQLStatement(sqlDeleteFromArtifactTable, sqlParams);
+					SqlRunner.ExecuteNonQuerySqlStatement(sqlDatabaseName, sqlDeleteFromArtifactGuidTable, sqlParams);
+					SqlRunner.ExecuteNonQuerySqlStatement(sqlDatabaseName, sqlDeleteFromErrorTable, sqlParams);
+					SqlRunner.ExecuteNonQuerySqlStatement(sqlDatabaseName, sqlDeleteFromArtifactAncestryTable, sqlParams);
+					SqlRunner.ExecuteNonQuerySqlStatement(sqlDatabaseName, sqlDeleteFromArtifactTable, sqlParams);
 
 					// Check to see if there is another error record
-					artifactId = DbContext.ExecuteSqlStatementAsScalar<int?>(sqlSelectTopError);
+					artifactId = SqlRunner.ExecuteSqlStatementAsScalar<int?>(sqlDatabaseName, sqlSelectTopError);
 				}
 
 				Console.WriteLine("Error Records Deleted!");
@@ -65,12 +60,12 @@ namespace Helpers
 			}
 		}
 
-		public int GetErrorsCount()
+		public int GetErrorsCount(string sqlDatabaseName)
 		{
 			string sqlErrorCount = "SELECT COUNT(*) [ArtifactID] FROM [EDDS].[eddsdbo].[Error]";
 			try
 			{
-				int errorCount = DbContext.ExecuteSqlStatementAsScalar<int>(sqlErrorCount);
+				int errorCount = SqlRunner.ExecuteSqlStatementAsScalar<int>(sqlDatabaseName, sqlErrorCount);
 				return errorCount;
 			}
 			catch (Exception ex)
@@ -79,13 +74,13 @@ namespace Helpers
 			}
 		}
 
-		public int GetFileShareResourceServerArtifactId()
+		public int GetFileShareResourceServerArtifactId(string sqlDatabaseName)
 		{
 			try
 			{
 				string sql = @"SELECT [ArtifactID] FROM [EDDS].[eddsdbo].[ResourceServer] WHERE [Name] = '\\RELATIVITYDEVVM\Fileshare\'";
 
-				int? artifactId = DbContext.ExecuteSqlStatementAsScalar<int?>(sql);
+				int? artifactId = SqlRunner.ExecuteSqlStatementAsScalar<int?>(sqlDatabaseName, sql);
 				if (!artifactId.HasValue)
 				{
 					throw new Exception("Resource Server does not exist");
@@ -99,7 +94,7 @@ namespace Helpers
 			}
 		}
 
-		public void EnableDataGridOnExtractedText(string workspaceName)
+		public void EnableDataGridOnExtractedText(string sqlDatabaseName, string workspaceName)
 		{
 			try
 			{
@@ -129,7 +124,7 @@ namespace Helpers
 									END'
 							EXECUTE sp_executesql @sql";
 
-				DbContext.ExecuteNonQuerySQLStatement(sql);
+				SqlRunner.ExecuteNonQuerySqlStatement(sqlDatabaseName, sql);
 				Console.WriteLine("Data Grid Enabled for Extracted Text Field");
 			}
 			catch (Exception ex)
@@ -142,14 +137,14 @@ namespace Helpers
 		/// This only creates or alters the ShrinkDb procedure in the EDDS database.  Alter if it already exists, create if it does not
 		/// </summary>
 		/// <returns></returns>
-		public bool CreateOrAlterShrinkDbProc()
+		public bool CreateOrAlterShrinkDbProc(string sqlDatabaseName)
 		{
 			bool wasSuccessful = false;
 			Console.WriteLine($"{nameof(CreateOrAlterShrinkDbProc)} - Creating or Altering {Constants.SqlScripts.ShrinkDbProcName}");
 
 			string sql = Constants.SqlScripts.CreateOrAlterShrinkDbProc;
 
-			if (DoesSqlObjectExist(Constants.SqlScripts.SchemaName, Constants.SqlScripts.ShrinkDbProcName))
+			if (DoesSqlObjectExist(sqlDatabaseName, Constants.SqlScripts.SchemaName, Constants.SqlScripts.ShrinkDbProcName))
 			{
 				Console.WriteLine($"{nameof(CreateOrAlterShrinkDbProc)} - {Constants.SqlScripts.ShrinkDbProcName} exists so changing statement to ALTER");
 				sql = sql.Replace("CREATE PROCEDURE", "ALTER PROCEDURE");
@@ -157,7 +152,7 @@ namespace Helpers
 
 			try
 			{
-				DbContext.ExecuteNonQuerySQLStatement(sql);
+				SqlRunner.ExecuteNonQuerySqlStatement(sqlDatabaseName, sql);
 				wasSuccessful = true;
 				Console.WriteLine($"{nameof(CreateOrAlterShrinkDbProc)} - Successfully updated {Constants.SqlScripts.ShrinkDbProcName}");
 			}
@@ -174,22 +169,24 @@ namespace Helpers
 		/// This will create and alter the ShrinkDb procedure before attempting to run.
 		/// </summary>
 		/// <returns></returns>
-		public bool RunShrinkDbProc()
+		public bool RunShrinkDbProc(string sqlDatabaseName)
 		{
 			bool wasSuccessful = false;
 			Console.WriteLine($"{nameof(RunShrinkDbProc)} - About to Run {Constants.SqlScripts.ShrinkDbProcName}");
 
 			try
 			{
-				bool doesShrinkDbExist = CreateOrAlterShrinkDbProc();
+				bool doesShrinkDbExist = CreateOrAlterShrinkDbProc(sqlDatabaseName);
 
 				if (doesShrinkDbExist)
 				{
-					using (SqlConnection connection = connectionHelper.GetSqlConnection(Constants.Connection.Sql.ConnectionString_ConnectTimeoutLong))
+					using (SqlConnection sqlConnection = SqlRunner.ConnectionHelper.GetSqlConnection(sqlDatabaseName, Constants.Connection.Sql.CONNECTION_STRING_CONNECT_TIMEOUT_DEFAULT))
 					{
 						Console.WriteLine($"{nameof(RunShrinkDbProc)} - Running {Constants.SqlScripts.ShrinkDbProcName}...");
-						SqlCommand command = new SqlCommand(Constants.SqlScripts.ExecuteShringDbProc, connection);
-						command.CommandTimeout = connection.ConnectionTimeout;
+						SqlCommand command = new SqlCommand(Constants.SqlScripts.ExecuteShringDbProc, sqlConnection)
+						{
+							CommandTimeout = sqlConnection.ConnectionTimeout
+						};
 						command.Connection.Open();
 						command.ExecuteNonQuery();
 					}
@@ -211,7 +208,7 @@ namespace Helpers
 			return wasSuccessful;
 		}
 
-		private bool DoesSqlObjectExist(string schema, string objectName)
+		private bool DoesSqlObjectExist(string sqlDatabaseName, string schema, string objectName)
 		{
 			bool exists = false;
 			string sql = Constants.SqlScripts.DoesExist.Replace("@@schema", schema).Replace("@@objectName", objectName);
@@ -220,7 +217,7 @@ namespace Helpers
 
 			try
 			{
-				int queryResult = DbContext.ExecuteSqlStatementAsScalar<int>(sql);
+				int queryResult = SqlRunner.ExecuteSqlStatementAsScalar<int>(sqlDatabaseName, sql);
 
 				if (queryResult > 0)
 				{
@@ -237,15 +234,15 @@ namespace Helpers
 			return exists;
 		}
 
-		public void InsertRSMFViewerOverride()
+		public void InsertRsmfViewerOverride(string sqlDatabaseName)
 		{
 			try
 			{
 				string sqlDeleteFromTable = "DELETE FROM [EDDS].[eddsdbo].[Toggle] WHERE [Name] = 'Relativity.DocumentViewer.Toggle.ShowShortMessageFilesInViewerOverride'";
 				string sqlInsertIntoTable = "INSERT INTO [EDDS].[eddsdbo].[Toggle] (Name, IsEnabled) VALUES ('Relativity.DocumentViewer.Toggle.ShowShortMessageFilesInViewerOverride', 1)";
 
-				DbContext.ExecuteNonQuerySQLStatement(sqlDeleteFromTable);
-				int rowsAffected = DbContext.ExecuteNonQuerySQLStatement(sqlInsertIntoTable);
+				SqlRunner.ExecuteNonQuerySqlStatement(sqlDatabaseName, sqlDeleteFromTable);
+				int rowsAffected = SqlRunner.ExecuteNonQuerySqlStatement(sqlDatabaseName, sqlInsertIntoTable);
 				if (rowsAffected != 1)
 				{
 					throw new Exception("Failed to Insert ShowShortMessageFilesInViewerOverride to Database");

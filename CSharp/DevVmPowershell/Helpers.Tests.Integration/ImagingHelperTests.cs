@@ -1,30 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Text;
+﻿using NUnit.Framework;
 using System.Threading.Tasks;
-using kCura.Relativity.Client;
-using NUnit.Framework;
-using Relativity.Imaging.Services.Interfaces;
-using Relativity.Services.Search;
-using Relativity.Services.ServiceProxy;
 
 namespace Helpers.Tests.Integration
 {
 	[TestFixture]
 	public class ImagingHelperTests
 	{
+		private IWorkspaceHelper WorkspaceHelper { get; set; }
 		private IImagingHelper Sut { get; set; }
 
 		[SetUp]
 		public void Setup()
 		{
 			IConnectionHelper connectionHelper = new ConnectionHelper(
-				TestConstants.RELATIVITY_INSTANCE_NAME,
-				TestConstants.RELATIVITY_ADMIN_USER_NAME,
-				TestConstants.RELATIVITY_ADMIN_PASSWORD);
-			
+				relativityInstanceName: TestConstants.RELATIVITY_INSTANCE_NAME,
+				relativityAdminUserName: TestConstants.RELATIVITY_ADMIN_USER_NAME,
+				relativityAdminPassword: TestConstants.RELATIVITY_ADMIN_PASSWORD,
+				sqlAdminUserName: TestConstants.SQL_USER_NAME,
+				sqlAdminPassword: TestConstants.SQL_PASSWORD);
+			ISqlRunner sqlRunner = new SqlRunner(connectionHelper);
+			ISqlHelper sqlHelper = new SqlHelper(sqlRunner);
+			WorkspaceHelper = new WorkspaceHelper(connectionHelper, sqlHelper);
 			Sut = new ImagingHelper(connectionHelper);
 		}
 
@@ -35,14 +31,21 @@ namespace Helpers.Tests.Integration
 		}
 
 		[Test]
-		public void ImagingTest()
+		public async Task ImagingTest()
 		{
 			// Arrange
-			int workspaceArtifactId = 1017386;
+			//Arrange
+			const string workspaceName = TestConstants.SAMPLE_DATA_GRID_WORKSPACE_NAME;
+
+			//Act
+			int workspaceArtifactId = await WorkspaceHelper.GetFirstWorkspaceArtifactIdQueryAsync(workspaceName);
 
 			// Act
 			// Assert
 			Assert.DoesNotThrow(() => Sut.ImageAllDocumentsInWorkspaceAsync(workspaceArtifactId).Wait());
+
+			//Cleanup
+			await WorkspaceHelper.DeleteAllWorkspacesAsync(workspaceName);
 		}
 	}
 }

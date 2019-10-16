@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using Helpers;
+using System;
 using System.Management.Automation;
-using System.Text;
-using System.Threading.Tasks;
-using Helpers;
 
 namespace DevVmPsModules
 {
@@ -24,6 +20,22 @@ namespace DevVmPsModules
 			ValueFromPipelineByPropertyName = true,
 			ValueFromPipeline = true,
 			Position = 1,
+			HelpMessage = "Username of the Relativity Admin")]
+		public string RelativityAdminUserName { get; set; }
+
+		[Parameter(
+			Mandatory = true,
+			ValueFromPipelineByPropertyName = true,
+			ValueFromPipeline = true,
+			Position = 2,
+			HelpMessage = "Password of the Relativity Admin")]
+		public string RelativityAdminPassword { get; set; }
+
+		[Parameter(
+			Mandatory = true,
+			ValueFromPipelineByPropertyName = true,
+			ValueFromPipeline = true,
+			Position = 3,
 			HelpMessage = "Username of the Relativity Sql Account")]
 		public string SqlAdminUserName { get; set; }
 
@@ -31,7 +43,7 @@ namespace DevVmPsModules
 			Mandatory = true,
 			ValueFromPipelineByPropertyName = true,
 			ValueFromPipeline = true,
-			Position = 2,
+			Position = 4,
 			HelpMessage = "Password of the Relativity Sql Account")]
 		public string SqlAdminPassword { get; set; }
 
@@ -40,10 +52,17 @@ namespace DevVmPsModules
 			//Validate Input arguments
 			ValidateInputArguments();
 
-			ISqlHelper sqlHelper = new SqlHelper(RelativityInstanceName, SqlAdminUserName, SqlAdminPassword);
+			IConnectionHelper connectionHelper = new ConnectionHelper(
+				relativityInstanceName: RelativityInstanceName,
+				relativityAdminUserName: RelativityAdminUserName,
+				relativityAdminPassword: RelativityAdminPassword,
+				sqlAdminUserName: SqlAdminUserName,
+				sqlAdminPassword: SqlAdminPassword);
+			ISqlRunner sqlRunner = new SqlRunner(connectionHelper);
+			ISqlHelper sqlHelper = new SqlHelper(sqlRunner);
 
 			// Delete all Errors
-			sqlHelper.DeleteAllErrors();
+			sqlHelper.DeleteAllErrors(Constants.Connection.Sql.EDDS_DATABASE);
 		}
 
 		private void ValidateInputArguments()

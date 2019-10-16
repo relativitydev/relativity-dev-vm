@@ -19,7 +19,7 @@ namespace DevVmPsModules
 			Mandatory = true,
 			ValueFromPipelineByPropertyName = true,
 			ValueFromPipeline = true,
-			Position = 2,
+			Position = 1,
 			HelpMessage = "Username of the Relativity Admin")]
 		public string RelativityAdminUserName { get; set; }
 
@@ -27,17 +27,37 @@ namespace DevVmPsModules
 			Mandatory = true,
 			ValueFromPipelineByPropertyName = true,
 			ValueFromPipeline = true,
-			Position = 3,
+			Position = 2,
 			HelpMessage = "Password of the Relativity Admin")]
 		public string RelativityAdminPassword { get; set; }
+
+		[Parameter(
+			Mandatory = true,
+			ValueFromPipelineByPropertyName = true,
+			ValueFromPipeline = true,
+			Position = 3,
+			HelpMessage = "Username of the Relativity Sql Account")]
+		public string SqlAdminUserName { get; set; }
+
+		[Parameter(
+			Mandatory = true,
+			ValueFromPipelineByPropertyName = true,
+			ValueFromPipeline = true,
+			Position = 4,
+			HelpMessage = "Password of the Relativity Sql Account")]
+		public string SqlAdminPassword { get; set; }
 
 		protected override void ProcessRecordCode()
 		{
 			//Validate Input arguments
 			ValidateInputArguments();
 
-			IConnectionHelper connectionHelper = new ConnectionHelper(RelativityInstanceName, RelativityAdminUserName, RelativityAdminPassword);
-
+			IConnectionHelper connectionHelper = new ConnectionHelper(
+				relativityInstanceName: RelativityInstanceName,
+				relativityAdminUserName: RelativityAdminUserName,
+				relativityAdminPassword: RelativityAdminPassword,
+				sqlAdminUserName: SqlAdminUserName,
+				sqlAdminPassword: SqlAdminPassword);
 			IAgentServerHelper agentServerHelper = new AgentServerHelper(connectionHelper);
 
 			agentServerHelper.AddAgentServerToDefaultResourcePoolAsync().Wait();

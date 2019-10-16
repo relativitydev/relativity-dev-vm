@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 
 namespace Helpers.Tests.Integration
 {
@@ -16,9 +11,11 @@ namespace Helpers.Tests.Integration
 		public void Setup()
 		{
 			IConnectionHelper connectionHelper = new ConnectionHelper(
-				TestConstants.RELATIVITY_INSTANCE_NAME,
-				TestConstants.RELATIVITY_ADMIN_USER_NAME,
-				TestConstants.RELATIVITY_ADMIN_PASSWORD);
+				relativityInstanceName: TestConstants.RELATIVITY_INSTANCE_NAME,
+				relativityAdminUserName: TestConstants.RELATIVITY_ADMIN_USER_NAME,
+				relativityAdminPassword: TestConstants.RELATIVITY_ADMIN_PASSWORD,
+				sqlAdminUserName: TestConstants.SQL_USER_NAME,
+				sqlAdminPassword: TestConstants.SQL_PASSWORD);
 
 			Sut = new InstanceSettingsHelper(connectionHelper);
 		}
@@ -40,7 +37,7 @@ namespace Helpers.Tests.Integration
 
 			// Act
 			int createdInstanceSettingId = Sut.CreateInstanceSetting(section, name, description, value);
-			
+
 			// Assert
 			Assert.True(createdInstanceSettingId > 1);
 			Sut.DeleteInstanceSetting(createdInstanceSettingId);

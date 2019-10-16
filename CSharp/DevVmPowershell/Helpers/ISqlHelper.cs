@@ -2,12 +2,12 @@
 {
 	public interface ISqlHelper
 	{
-		bool DeleteAllErrors();
-		int GetFileShareResourceServerArtifactId();
-		void EnableDataGridOnExtractedText(string workspaceName);
-		bool CreateOrAlterShrinkDbProc();
-		bool RunShrinkDbProc();
-		int GetErrorsCount();
-		void InsertRSMFViewerOverride();
+		bool DeleteAllErrors(string sqlDatabaseName);
+		int GetFileShareResourceServerArtifactId(string sqlDatabaseName);
+		void EnableDataGridOnExtractedText(string sqlDatabaseName, string workspaceName);
+		bool CreateOrAlterShrinkDbProc(string sqlDatabaseName);
+		bool RunShrinkDbProc(string sqlDatabaseName);
+		int GetErrorsCount(string sqlDatabaseName);
+		void InsertRsmfViewerOverride(string sqlDatabaseName);
 	}
 }

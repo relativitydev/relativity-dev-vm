@@ -12,9 +12,11 @@ namespace Helpers.Tests.Integration
 		public void Setup()
 		{
 			IConnectionHelper connectionHelper = new ConnectionHelper(
-				TestConstants.RELATIVITY_INSTANCE_NAME,
-				TestConstants.RELATIVITY_ADMIN_USER_NAME,
-				TestConstants.RELATIVITY_ADMIN_PASSWORD);
+				relativityInstanceName: TestConstants.RELATIVITY_INSTANCE_NAME,
+				relativityAdminUserName: TestConstants.RELATIVITY_ADMIN_USER_NAME,
+				relativityAdminPassword: TestConstants.RELATIVITY_ADMIN_PASSWORD,
+				sqlAdminUserName: TestConstants.SQL_USER_NAME,
+				sqlAdminPassword: TestConstants.SQL_PASSWORD);
 
 			Sut = new ImportApiHelper(connectionHelper);
 			WorkspaceHelper = new WorkspaceHelper(connectionHelper, null);
@@ -29,14 +31,14 @@ namespace Helpers.Tests.Integration
 		}
 
 		[Test]
-		[TestCase(TestConstants.RELATIVITY_WORKSPACE_NAME, Constants.FileType.Document, 15)]
-		[TestCase(TestConstants.RELATIVITY_WORKSPACE_NAME, Constants.FileType.Image, 15)]
+		[TestCase(TestConstants.SAMPLE_DATA_GRID_WORKSPACE_NAME, Constants.FileType.Document, 15)]
+		[TestCase(TestConstants.SAMPLE_DATA_GRID_WORKSPACE_NAME, Constants.FileType.Image, 15)]
 		public void/*async Task*/ AddDocumentsToWorkspaceTest(string workspaceName, string fileType, int numberOfFiles)
 		{
 			//Arrange
 
 			//Act
-			int numberOfFilesImported = Sut.AddDocumentsToWorkspace(WorkspaceHelper.GetFirstWorkspaceIdQueryAsync(workspaceName).Result, fileType, numberOfFiles, "").Result;
+			int numberOfFilesImported = Sut.AddDocumentsToWorkspace(WorkspaceHelper.GetFirstWorkspaceArtifactIdQueryAsync(workspaceName).Result, fileType, numberOfFiles, "").Result;
 
 			//Assert
 			Assert.That(numberOfFilesImported, Is.EqualTo(numberOfFiles));

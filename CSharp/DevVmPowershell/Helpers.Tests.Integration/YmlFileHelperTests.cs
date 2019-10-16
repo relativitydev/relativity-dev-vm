@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using NUnit.Framework;
+﻿using NUnit.Framework;
+using System;
+using System.IO;
 
 namespace Helpers.Tests.Integration
 {
@@ -28,10 +25,25 @@ namespace Helpers.Tests.Integration
 		public void UpdateElasticSearchYmlTest()
 		{
 			// Arrange
+			//Create folders if they doesn't already exist
+			System.IO.Directory.CreateDirectory(@"C:\RelativityDataGrid");
+			System.IO.Directory.CreateDirectory(@"C:\RelativityDataGrid\elasticsearch-main");
+			System.IO.Directory.CreateDirectory(@"C:\RelativityDataGrid\elasticsearch-main\config");
+
+			string binFolderPath = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+			if (string.IsNullOrWhiteSpace(binFolderPath))
+			{
+				throw new Exception($"{nameof(binFolderPath)} is invalid.");
+			}
+			string sourceFilePath = Path.Combine(binFolderPath, TestConstants.ELASTIC_SEARCH_YML_FILE_PATH); // Enter a path to a valid yml file
+			const string destinationFilePath = @"C:\RelativityDataGrid\elasticsearch-main\config\elasticsearch.yml";
+			System.IO.File.Copy(sourceFilePath, destinationFilePath, true);
 
 			// Act
 			// Assert
 			Assert.DoesNotThrow(() => Sut.UpdateElasticSearchYml()); // To test this method make sure that the yml file exists at C:\RelativityDataGrid\elasticsearch-main\config\elasticsearch.yml
+			File.Delete(destinationFilePath);
+			System.IO.Directory.Delete(@"C:\RelativityDataGrid", true);
 		}
 	}
 }

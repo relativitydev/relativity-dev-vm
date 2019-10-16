@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using kCura.Relativity.Client.DTOs;
-using Relativity.API;
-using Relativity.Services;
+﻿using Relativity.Services;
 using Relativity.Services.InstanceSetting;
 using Relativity.Services.ServiceProxy;
+using System;
+using System.Linq;
 
 namespace Helpers
 {
