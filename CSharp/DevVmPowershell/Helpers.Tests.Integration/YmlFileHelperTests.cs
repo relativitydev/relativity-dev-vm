@@ -25,10 +25,18 @@ namespace Helpers.Tests.Integration
 		public void UpdateElasticSearchYmlTest()
 		{
 			// Arrange
+			const string parentDataGridDirectory = @"C:\RelativityDataGrid";
+
+			//Cleanup
+			if (Directory.Exists(parentDataGridDirectory))
+			{
+				Directory.Delete(parentDataGridDirectory, true);
+			}
+
 			//Create folders if they doesn't already exist
-			System.IO.Directory.CreateDirectory(@"C:\RelativityDataGrid");
-			System.IO.Directory.CreateDirectory(@"C:\RelativityDataGrid\elasticsearch-main");
-			System.IO.Directory.CreateDirectory(@"C:\RelativityDataGrid\elasticsearch-main\config");
+			Directory.CreateDirectory(parentDataGridDirectory);
+			Directory.CreateDirectory($@"{parentDataGridDirectory}\elasticsearch-main");
+			Directory.CreateDirectory($@"{parentDataGridDirectory}\elasticsearch-main\config");
 
 			string binFolderPath = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
 			if (string.IsNullOrWhiteSpace(binFolderPath))
@@ -37,13 +45,21 @@ namespace Helpers.Tests.Integration
 			}
 			string sourceFilePath = Path.Combine(binFolderPath, TestConstants.ELASTIC_SEARCH_YML_FILE_PATH); // Enter a path to a valid yml file
 			const string destinationFilePath = @"C:\RelativityDataGrid\elasticsearch-main\config\elasticsearch.yml";
-			System.IO.File.Copy(sourceFilePath, destinationFilePath, true);
+			File.Copy(sourceFilePath, destinationFilePath, true);
 
 			// Act
 			// Assert
 			Assert.DoesNotThrow(() => Sut.UpdateElasticSearchYml()); // To test this method make sure that the yml file exists at C:\RelativityDataGrid\elasticsearch-main\config\elasticsearch.yml
-			File.Delete(destinationFilePath);
-			System.IO.Directory.Delete(@"C:\RelativityDataGrid", true);
+
+			//Cleanup
+			if (File.Exists(destinationFilePath))
+			{
+				File.Delete(destinationFilePath);
+			}
+			if (Directory.Exists(parentDataGridDirectory))
+			{
+				Directory.Delete(parentDataGridDirectory, true);
+			}
 		}
 	}
 }

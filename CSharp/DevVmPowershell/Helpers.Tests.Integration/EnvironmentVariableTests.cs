@@ -30,9 +30,9 @@ namespace Helpers.Tests.Integration
 
 			//Setup Java Install folder
 			//Create folders if they doesn't already exist
-			System.IO.Directory.CreateDirectory(TestConstants.JAVA_INSTALL_PATH);
+			Directory.CreateDirectory(TestConstants.JAVA_INSTALL_PATH);
 			string javaVersionFolderPath = Path.Combine(TestConstants.JAVA_INSTALL_PATH, @"JavaVersionFolder");
-			System.IO.Directory.CreateDirectory(javaVersionFolderPath);
+			Directory.CreateDirectory(javaVersionFolderPath);
 
 			// Act
 			// Assert
