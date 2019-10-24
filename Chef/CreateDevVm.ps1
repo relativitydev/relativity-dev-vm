@@ -131,12 +131,12 @@ function Create-DevVm-Checkpoint() {
 }
 
 function Rename-DevVm() {
-  try{
+  try {
     Write-Heading-Message-To-Screen  "Renaming VM"
     $relativityAndInvariantVersions = Get-Content -Path "$($global:devVmInstallFolder)\Relativity\$($global:relativityInvariantVersionNumberFileName)"
     $indexOfComma = $relativityAndInvariantVersions.IndexOf(',')
     $indexOfColon = $relativityAndInvariantVersions.IndexOf(':')
-    $relativityVersion = $relativityAndInvariantVersions.Substring(($indexOfColon + 2), ($indexOfComma - ($indexOfColon +2)))
+    $relativityVersion = $relativityAndInvariantVersions.Substring(($indexOfColon + 2), ($indexOfComma - ($indexOfColon + 2)))
     $relativityVersion = $relativityVersion.Replace(" ", "")
     [string] $newName = "$($global:vmName)-$($relativityVersion)"
     Rename-Vm -Name $global:vmName -NewName $newName
@@ -175,7 +175,7 @@ function Create-DevVm-Documentation-Text-File() {
 }
 
 function Downgrade-DevVm-Resources() {
-  try{
+  try {
     Set-VMProcessor $global:vmName -Count $global:vmProcessorsOnExport
     Set-VMMemory $global:vmName -StartupBytes $global:vmMemoryOnExport
   }
@@ -381,7 +381,7 @@ function New-DevVm() {
       if ($global:exportVm) {
         Stop-DevVm
         Downgrade-DevVm-Resources
-        Create-DevVm-Checkpoint
+        # Create-DevVm-Checkpoint # Decided to not create checkpoints for DevVM's (Chandra 10/24/2019)
         Rename-DevVm
         Export-DevVm
         Create-DevVm-Documentation-Text-File
