@@ -60,8 +60,8 @@
     <Reference Include="Relativity, Version=10.3.170.1, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.Other.10.3.170.1\lib\net462\Relativity.dll</HintPath>
     </Reference>
-    <Reference Include="Relativity.API, Version=10.3.170.1, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.Api.10.3.170.1\lib\net462\Relativity.API.dll</HintPath>
+    <Reference Include="Relativity.API, Version=10.3.170.11, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.API.10.3.170.11\lib\net462\Relativity.API.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.DataExchange.Client.SDK, Version=1.5.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.DataExchange.Client.SDK.1.5.0\lib\net462\Relativity.DataExchange.Client.SDK.dll</HintPath>
@@ -73,8 +73,8 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\DLL\Relativity.Imaging.Services.Interfaces.dll</HintPath>
     </Reference>
-    <Reference Include="Relativity.Kepler, Version=1.0.1.627, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.ObjectManager.10.3.170.1\lib\net462\Relativity.Kepler.dll</HintPath>
+    <Reference Include="Relativity.Kepler, Version=2.0.8.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.ObjectManager.10.3.170.11\lib\net462\Relativity.Kepler.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.Logging, Version=2019.5.1.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.Logging.2019.5.1\lib\net462\Relativity.Logging.dll</HintPath>
@@ -97,18 +97,18 @@
     <Reference Include="Relativity.OAuth2Client.Interfaces, Version=1.0.27.2, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.OAuth2.Client.1.0.27\lib\net462\Relativity.OAuth2Client.Interfaces.dll</HintPath>
     </Reference>
-    <Reference Include="Relativity.Services.DataContracts, Version=10.3.170.1, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.ObjectManager.10.3.170.1\lib\net462\Relativity.Services.DataContracts.dll</HintPath>
+    <Reference Include="Relativity.Services.DataContracts, Version=10.3.170.11, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.ObjectManager.10.3.170.11\lib\net462\Relativity.Services.DataContracts.dll</HintPath>
     </Reference>
-    <Reference Include="Relativity.Services.Interfaces, Version=10.3.170.1, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.ObjectManager.10.3.170.1\lib\net462\Relativity.Services.Interfaces.dll</HintPath>
+    <Reference Include="Relativity.Services.Interfaces, Version=10.3.170.11, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.ObjectManager.10.3.170.11\lib\net462\Relativity.Services.Interfaces.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.Services.Interfaces.Private, Version=10.3.170.1, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\DLL\Relativity.Services.Interfaces.Private.dll</HintPath>
     </Reference>
-    <Reference Include="Relativity.Services.ServiceProxy, Version=1.0.1.627, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.ObjectManager.10.3.170.1\lib\net462\Relativity.Services.ServiceProxy.dll</HintPath>
+    <Reference Include="Relativity.Services.ServiceProxy, Version=2.0.8.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.ObjectManager.10.3.170.11\lib\net462\Relativity.Services.ServiceProxy.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.Telemetry.APM, Version=9.4.164.2, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.Telemetry.Client.9.4.164\lib\net462\Relativity.Telemetry.APM.dll</HintPath>
@@ -160,49 +160,50 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
-    <Reference Include="ZetaLongPaths, Version=1.0.0.16, Culture=neutral, PublicKeyToken=b764f59068f31f38, processorArchitecture=MSIL">
-      <HintPath>..\packages\ZetaLongPaths.1.0.0.16\lib\net40-full\ZetaLongPaths.dll</HintPath>
+    <Reference Include="ZetaLongPaths, Version=1.0.0.32, Culture=neutral, PublicKeyToken=b764f59068f31f38, processorArchitecture=MSIL">
+      <HintPath>..\packages\ZetaLongPaths.1.0.0.32\lib\net452-full\ZetaLongPaths.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AgentHelper.cs" />
-    <Compile Include="AgentServerHelper.cs" />
-    <Compile Include="ApplicationInstallHelper.cs" />
-    <Compile Include="ConnectionHelper.cs" />
+    <Compile Include="Implementations\AgentHelper.cs" />
+    <Compile Include="Implementations\AgentServerHelper.cs" />
+    <Compile Include="Implementations\ApplicationInstallHelper.cs" />
+    <Compile Include="Implementations\ConnectionHelper.cs" />
     <Compile Include="Constants.cs" />
-    <Compile Include="DisclaimerAcceptanceHelper.cs" />
-    <Compile Include="EnvironmentVariableHelper.cs" />
-    <Compile Include="ErrorMessageHelper.cs" />
-    <Compile Include="IAgentHelper.cs" />
-    <Compile Include="IAgentServerHelper.cs" />
-    <Compile Include="IApplicationInstallHelper.cs" />
-    <Compile Include="IConnectionHelper.cs" />
-    <Compile Include="IDisclaimerAcceptanceHelper.cs" />
-    <Compile Include="IEnvironmentVariableHelper.cs" />
-    <Compile Include="IImagingHelper.cs" />
-    <Compile Include="IImportApiHelper.cs" />
-    <Compile Include="ImagingHelper.cs" />
-    <Compile Include="IRecycleBinHelper.cs" />
-    <Compile Include="ISqlRunner.cs" />
-    <Compile Include="IWorkspaceHelper.cs" />
-    <Compile Include="IInstanceSettingsHelper.cs" />
-    <Compile Include="ImportApiHelper.cs" />
-    <Compile Include="InstanceSettingsHelper.cs" />
-    <Compile Include="IProcessingHelper.cs" />
-    <Compile Include="ISqlHelper.cs" />
-    <Compile Include="IYmlFileHelper.cs" />
-    <Compile Include="IZipHelper.cs" />
-    <Compile Include="ProcessingHelper.cs" />
+    <Compile Include="Implementations\DisclaimerAcceptanceHelper.cs" />
+    <Compile Include="Implementations\EnvironmentVariableHelper.cs" />
+    <Compile Include="Implementations\ErrorMessageHelper.cs" />
+    <Compile Include="Interfaces\IAgentHelper.cs" />
+    <Compile Include="Interfaces\IAgentServerHelper.cs" />
+    <Compile Include="Interfaces\IApplicationInstallHelper.cs" />
+    <Compile Include="Interfaces\IConnectionHelper.cs" />
+    <Compile Include="Interfaces\IDisclaimerAcceptanceHelper.cs" />
+    <Compile Include="Interfaces\IEnvironmentVariableHelper.cs" />
+    <Compile Include="Interfaces\IImagingHelper.cs" />
+    <Compile Include="Interfaces\IImportApiHelper.cs" />
+    <Compile Include="Implementations\ImagingHelper.cs" />
+    <Compile Include="Interfaces\IRecycleBinHelper.cs" />
+    <Compile Include="Interfaces\ISqlRunner.cs" />
+    <Compile Include="Interfaces\IWorkspaceHelper.cs" />
+    <Compile Include="Interfaces\IInstanceSettingsHelper.cs" />
+    <Compile Include="Implementations\ImportApiHelper.cs" />
+    <Compile Include="Implementations\InstanceSettingsHelper.cs" />
+    <Compile Include="Interfaces\IProcessingHelper.cs" />
+    <Compile Include="Interfaces\ISqlHelper.cs" />
+    <Compile Include="Interfaces\IYmlFileHelper.cs" />
+    <Compile Include="Interfaces\IZipHelper.cs" />
+    <Compile Include="Implementations\ProcessingHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RecycleBinHelper.cs" />
-    <Compile Include="SqlHelper.cs" />
-    <Compile Include="SqlRunner.cs" />
-    <Compile Include="YmlFileHelper.cs" />
-    <Compile Include="WorkspaceHelper.cs" />
-    <Compile Include="ZipHelper.cs" />
+    <Compile Include="Implementations\RecycleBinHelper.cs" />
+    <Compile Include="Implementations\SqlHelper.cs" />
+    <Compile Include="Implementations\SqlRunner.cs" />
+    <Compile Include="Implementations\YmlFileHelper.cs" />
+    <Compile Include="Implementations\WorkspaceHelper.cs" />
+    <Compile Include="Implementations\ZipHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+    <None Include="oi\unmanaged\cmmap000.bin" />
     <None Include="packages.config" />
     <None Include="Resources\Documents\EDRM-Sample1.pdf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -225,6 +226,21 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="LICENSE.txt" />
+    <Content Include="oi\unmanaged\oilink.exe" />
+    <Content Include="oi\unmanaged\oilink.jar" />
+    <Content Include="oi\unmanaged\sccca-R1.dll" />
+    <Content Include="oi\unmanaged\sccch-R1.dll" />
+    <Content Include="oi\unmanaged\sccda-R1.dll" />
+    <Content Include="oi\unmanaged\sccex-R1.dll" />
+    <Content Include="oi\unmanaged\sccfa-R1.dll" />
+    <Content Include="oi\unmanaged\sccfi-R1.dll" />
+    <Content Include="oi\unmanaged\sccfmt-R1.dll" />
+    <Content Include="oi\unmanaged\sccfnt-R1.dll" />
+    <Content Include="oi\unmanaged\sccfut-R1.dll" />
+    <Content Include="oi\unmanaged\sccind-R1.dll" />
+    <Content Include="oi\unmanaged\scclo-R1.dll" />
+    <Content Include="oi\unmanaged\sccut-R1.dll" />
+    <Content Include="oi\unmanaged\wvcore-R1.dll" />
     <Content Include="Resources\Documents\EDRM-Sample1.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -294,6 +310,7 @@
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="..\packages\Relativity.OutsideIn.2019.3.0\build\Relativity.OutsideIn.targets" Condition="Exists('..\packages\Relativity.OutsideIn.2019.3.0\build\Relativity.OutsideIn.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
@@ -301,6 +318,5 @@
     <Error Condition="!Exists('..\packages\Relativity.OutsideIn.2019.3.0\build\Relativity.OutsideIn.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Relativity.OutsideIn.2019.3.0\build\Relativity.OutsideIn.targets'))" />
     <Error Condition="!Exists('..\packages\Relativity.DataExchange.Client.SDK.1.5.0\build\Relativity.DataExchange.Client.SDK.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Relativity.DataExchange.Client.SDK.1.5.0\build\Relativity.DataExchange.Client.SDK.targets'))" />
   </Target>
-  <Import Project="..\packages\Relativity.OutsideIn.2019.3.0\build\Relativity.OutsideIn.targets" Condition="Exists('..\packages\Relativity.OutsideIn.2019.3.0\build\Relativity.OutsideIn.targets')" />
   <Import Project="..\packages\Relativity.DataExchange.Client.SDK.1.5.0\build\Relativity.DataExchange.Client.SDK.targets" Condition="Exists('..\packages\Relativity.DataExchange.Client.SDK.1.5.0\build\Relativity.DataExchange.Client.SDK.targets')" />
 </Project>
