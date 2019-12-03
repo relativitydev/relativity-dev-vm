@@ -33,17 +33,22 @@ namespace Helpers.Tests.Integration.Tests
 		}
 
 		[Test]
-		[TestCase(TestConstants.SAMPLE_DATA_GRID_WORKSPACE_NAME, Constants.FileType.Document, 15)]
-		[TestCase(TestConstants.SAMPLE_DATA_GRID_WORKSPACE_NAME, Constants.FileType.Image, 15)]
-		public void/*async Task*/ AddDocumentsToWorkspaceTest(string workspaceName, string fileType, int numberOfFiles)
+		[TestCase(Constants.FileType.Document, 15)]
+		[TestCase(Constants.FileType.Image, 15)]
+		public void AddDocumentsToWorkspaceTest(string fileType, int numberOfFiles)
 		{
 			//Arrange
+			string workspaceName = "ImportApi Test Workspace";
+			int workspaceArtifactId = WorkspaceHelper.CreateSingleWorkspaceAsync(Constants.Workspace.DEFAULT_WORKSPACE_TEMPLATE_NAME, workspaceName, false).Result;
 
 			//Act
 			int numberOfFilesImported = Sut.AddDocumentsToWorkspace(WorkspaceHelper.GetFirstWorkspaceArtifactIdQueryAsync(workspaceName).Result, fileType, numberOfFiles, "").Result;
 
 			//Assert
 			Assert.That(numberOfFilesImported, Is.EqualTo(numberOfFiles));
+
+			//Cleanup
+			WorkspaceHelper.DeleteSingleWorkspaceAsync(workspaceArtifactId);
 		}
 	}
 }
