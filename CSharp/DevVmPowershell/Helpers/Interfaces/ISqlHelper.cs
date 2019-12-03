@@ -1,4 +1,7 @@
-﻿namespace Helpers.Interfaces
+﻿using System;
+using System.Collections.Generic;
+
+namespace Helpers.Interfaces
 {
 	public interface ISqlHelper
 	{
@@ -9,5 +12,6 @@
 		bool RunShrinkDbProc(string sqlDatabaseName);
 		int GetErrorsCount(string sqlDatabaseName);
 		void InsertRsmfViewerOverride(string sqlDatabaseName);
+		List<int> RetrieveWorkspacesWhereApplicationIsInstalled(Guid applicationGuid);
 	}
 }

@@ -254,5 +254,43 @@ namespace Helpers.Implementations
 				throw new Exception("Error Inserting ShowShortMessageFilesInViewerOverride", ex);
 			}
 		}
+
+		public List<int> RetrieveWorkspacesWhereApplicationIsInstalled(Guid applicationGuid)
+		{
+			try
+			{
+				const string sql = @"DECLARE @appArtifactID INT
+						SET @appArtifactID = (SELECT ArtifactID FROM ArtifactGuid WHERE ArtifactGuid = @appGuid)
+
+						SELECT  C.ArtifactID, C.Name
+						FROM CaseApplication (NOLOCK) CA
+						 INNER JOIN eddsdbo.[ExtendedCase] C ON CA.CaseID = C.ArtifactID
+						 INNER JOIN eddsdbo.ResourceServer RS ON C.ServerID = RS.ArtifactID
+						 INNER JOIN eddsdbo.Artifact A (NOLOCK) ON C.ArtifactID = A.ArtifactID
+						 INNER JOIN eddsdbo.[ApplicationInstall] as AI on CA.CurrentApplicationInstallID = AI.ApplicationInstallID
+						WHERE CA.ApplicationID = @appArtifactId
+							AND AI.[Status] = 6 --Installed
+						ORDER BY A.CreatedOn
+						";
+
+				var sqlParams = new List<SqlParameter>
+				{
+					new SqlParameter("@appGuid", SqlDbType.UniqueIdentifier) {Value = applicationGuid}
+				};
+
+				DataTable dt = SqlRunner.ExecuteSqlStatementAsDataTable("EDDS", sql, sqlParams);
+				List<int> workspaceArtifactIds = new List<int>();
+				foreach (DataRow row in dt.Rows)
+				{
+					workspaceArtifactIds.Add((int)row["ArtifactID"]);
+				}
+
+				return workspaceArtifactIds;
+			}
+			catch (Exception ex)
+			{
+				throw new Exception("Error Retrieving Workspaces where the Application is installed");
+			}
+		}
 	}
 }

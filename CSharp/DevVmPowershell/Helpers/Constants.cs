@@ -236,6 +236,10 @@ END
 
 		public class DisclaimerAcceptance
 		{
+			public class ApplicationGuids
+			{
+				public const string ApplicationGuid = "87E45C02-2D97-41A6-834C-E6AAA905EA85";
+			}
 			public class ObjectNames
 			{
 				public const string Disclaimer = "Disclaimer";
