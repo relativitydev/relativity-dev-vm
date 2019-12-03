@@ -66,7 +66,7 @@ namespace Helpers.Tests.Integration.Tests
 			// Act / Assert
 			Assert.DoesNotThrow(() => Sut.AddDisclaimerConfiguration(workspaceName));
 
-			//Delete Workspace
+			//Cleanup
 			WorkspaceHelper.DeleteSingleWorkspaceAsync(workspaceArtifactId);
 		}
 
@@ -100,7 +100,7 @@ namespace Helpers.Tests.Integration.Tests
 			// Act / Assert
 			Assert.DoesNotThrow(() => Sut.AddDisclaimer(workspaceName));
 
-			//Delete Workspace
+			//Cleanup
 			WorkspaceHelper.DeleteSingleWorkspaceAsync(workspaceArtifactId);
 		}
 	}
