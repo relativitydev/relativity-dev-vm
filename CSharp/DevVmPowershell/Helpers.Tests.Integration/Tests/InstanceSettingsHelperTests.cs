@@ -8,6 +8,7 @@ namespace Helpers.Tests.Integration.Tests
 	public class InstanceSettingsHelperTests
 	{
 		private IInstanceSettingsHelper Sut { get; set; }
+		private int _createdInstanceSettingId;
 
 		[SetUp]
 		public void Setup()
@@ -25,6 +26,7 @@ namespace Helpers.Tests.Integration.Tests
 		[TearDown]
 		public void TearDown()
 		{
+			Sut.DeleteInstanceSetting(_createdInstanceSettingId);
 			Sut = null;
 		}
 
@@ -38,11 +40,10 @@ namespace Helpers.Tests.Integration.Tests
 			string value = "Test";
 
 			// Act
-			int createdInstanceSettingId = Sut.CreateInstanceSetting(section, name, description, value);
+			_createdInstanceSettingId = Sut.CreateInstanceSetting(section, name, description, value);
 
 			// Assert
-			Assert.True(createdInstanceSettingId > 1);
-			Sut.DeleteInstanceSetting(createdInstanceSettingId);
+			Assert.True(_createdInstanceSettingId != 0);
 		}
 
 		[Test]

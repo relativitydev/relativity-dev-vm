@@ -1,6 +1,9 @@
-﻿using Helpers.Implementations;
+﻿using System;
+using Helpers.Implementations;
 using Helpers.Interfaces;
 using NUnit.Framework;
+using Renci.SshNet;
+using Exception = kCura.Notification.Exception;
 
 namespace Helpers.Tests.Integration.Tests
 {
@@ -8,6 +11,7 @@ namespace Helpers.Tests.Integration.Tests
 	public class SqlHelperTests
 	{
 		private ISqlHelper Sut { get; set; }
+		private IWorkspaceHelper WorkspaceHelper { get; set; }
 
 		[SetUp]
 		public void Setup()
@@ -20,6 +24,7 @@ namespace Helpers.Tests.Integration.Tests
 				sqlAdminPassword: TestConstants.SQL_PASSWORD);
 			ISqlRunner sqlRunner = new SqlRunner(connectionHelper);
 			Sut = new SqlHelper(sqlRunner);
+			WorkspaceHelper = new WorkspaceHelper(connectionHelper, Sut);
 		}
 
 		[TearDown]
@@ -52,12 +57,26 @@ namespace Helpers.Tests.Integration.Tests
 		[Test]
 		public void EnableDataGridOnExtractedTextTest()
 		{
-			// Arrange
-			string workspaceName = ""; // To Test set workspace name of DataGrid Enabled workspace
+			var workspaceName = "EnableDataGridOnExtractedTextTest";
+			var workspaceId = 0;
+			try
+			{
+				// Arrange
+				workspaceId = WorkspaceHelper.CreateSingleWorkspaceAsync(Constants.Workspace.DEFAULT_WORKSPACE_TEMPLATE_NAME, workspaceName, true).Result;
 
-			// Act
-			// Assert
-			Assert.DoesNotThrow(() => Sut.EnableDataGridOnExtractedText(Constants.Connection.Sql.EDDS_DATABASE, workspaceName));
+				// Act
+				// Assert
+				Assert.DoesNotThrow(() => Sut.EnableDataGridOnExtractedText(Constants.Connection.Sql.EDDS_DATABASE, workspaceName));
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine(ex.Message);
+			}
+			finally
+			{
+				WorkspaceHelper.DeleteSingleWorkspaceAsync(workspaceId);
+			}
+
 		}
 
 		[Test]
