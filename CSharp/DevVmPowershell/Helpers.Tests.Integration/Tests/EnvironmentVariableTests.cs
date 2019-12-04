@@ -26,6 +26,7 @@ namespace Helpers.Tests.Integration.Tests
 		[Test]
 		public void UpdateJavaEnvironmentVariables()
 		{
+			/*NOTE: This test creates the environment variables in some cache so you will not see it in your environment*/
 			// Arrange
 			bool toDelete1 = CreateEnvironmentVariableIfDoesNotExist(TestConstants.ENVIRONMENT_VARIABLE_KCURA_JAVA_HOME);
 			bool toDelete2 = CreateEnvironmentVariableIfDoesNotExist(TestConstants.ENVIRONMENT_VARIABLE_JAVA_HOME);
