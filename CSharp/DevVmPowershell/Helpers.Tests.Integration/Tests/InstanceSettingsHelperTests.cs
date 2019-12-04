@@ -1,5 +1,6 @@
 ﻿using Helpers.Implementations;
 using Helpers.Interfaces;
+using kCura.Notification;
 using NUnit.Framework;
 
 namespace Helpers.Tests.Integration.Tests
@@ -26,24 +27,35 @@ namespace Helpers.Tests.Integration.Tests
 		[TearDown]
 		public void TearDown()
 		{
-			Sut.DeleteInstanceSetting(_createdInstanceSettingId);
 			Sut = null;
 		}
 
 		[Test]
 		public void CreateInstanceSettingTest()
 		{
-			// Arrange
-			string section = "TestInstanceSetting";
-			string name = "TestInstanceSetting";
-			string description = "";
-			string value = "Test";
+			try
+			{
+				// Arrange
+				string section = "TestInstanceSetting";
+				string name = "TestInstanceSetting";
+				string description = "";
+				string value = "Test";
 
-			// Act
-			_createdInstanceSettingId = Sut.CreateInstanceSetting(section, name, description, value);
+				// Act
+				_createdInstanceSettingId = Sut.CreateInstanceSetting(section, name, description, value);
 
-			// Assert
-			Assert.True(_createdInstanceSettingId != 0);
+				// Assert
+				Assert.True(_createdInstanceSettingId != 0);
+			}
+			catch (Exception ex)
+			{
+				System.Console.WriteLine(ex.Message);
+			}
+			finally
+			{
+				Sut.DeleteInstanceSetting(_createdInstanceSettingId);
+			}
+
 		}
 
 		[Test]
@@ -52,14 +64,26 @@ namespace Helpers.Tests.Integration.Tests
 			// Arrange
 			string section = "Relativity.DataGrid";
 			string name = "DataGridEndPoint";
-			string value = " ";
+			string value = "new_value";
 
-			// Act
-			bool success = Sut.UpdateInstanceSettingValue(name, section, value);
-			string instanceSettingValue = Sut.GetInstanceSettingValue(name, section);
+			try
+			{
+				// Act
+				bool success = Sut.UpdateInstanceSettingValue(name, section, value);
+				string instanceSettingValue = Sut.GetInstanceSettingValue(name, section);
 
-			// Assert
-			Assert.AreEqual(value, instanceSettingValue);
+				// Assert
+				Assert.AreEqual(value, instanceSettingValue);
+			}
+			catch (Exception ex)
+			{
+				System.Console.WriteLine(ex.Message);
+			}
+			finally
+			{
+				Sut.UpdateInstanceSettingValue(name, section, "");
+			}
+			
 		}
 	}
 }
