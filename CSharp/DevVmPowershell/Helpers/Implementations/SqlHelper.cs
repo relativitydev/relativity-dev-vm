@@ -37,16 +37,11 @@ namespace Helpers.Implementations
 				}
 				while (artifactId.HasValue)
 				{
-					List<SqlParameter> sqlParams = new List<SqlParameter>
-					{
-						new SqlParameter("@artifactId", SqlDbType.Int) {Value = artifactId.Value}
-					};
-
 					// Delete from all tables
-					SqlRunner.ExecuteNonQuerySqlStatement(sqlDatabaseName, sqlDeleteFromArtifactGuidTable, sqlParams);
-					SqlRunner.ExecuteNonQuerySqlStatement(sqlDatabaseName, sqlDeleteFromErrorTable, sqlParams);
-					SqlRunner.ExecuteNonQuerySqlStatement(sqlDatabaseName, sqlDeleteFromArtifactAncestryTable, sqlParams);
-					SqlRunner.ExecuteNonQuerySqlStatement(sqlDatabaseName, sqlDeleteFromArtifactTable, sqlParams);
+					SqlRunner.ExecuteNonQuerySqlStatement(sqlDatabaseName, sqlDeleteFromArtifactGuidTable, new List<SqlParameter>{ new SqlParameter("@artifactId", SqlDbType.Int) { Value = artifactId.Value } });
+					SqlRunner.ExecuteNonQuerySqlStatement(sqlDatabaseName, sqlDeleteFromErrorTable, new List<SqlParameter> { new SqlParameter("@artifactId", SqlDbType.Int) { Value = artifactId.Value } });
+					SqlRunner.ExecuteNonQuerySqlStatement(sqlDatabaseName, sqlDeleteFromArtifactAncestryTable, new List<SqlParameter> { new SqlParameter("@artifactId", SqlDbType.Int) { Value = artifactId.Value } });
+					SqlRunner.ExecuteNonQuerySqlStatement(sqlDatabaseName, sqlDeleteFromArtifactTable, new List<SqlParameter> { new SqlParameter("@artifactId", SqlDbType.Int) { Value = artifactId.Value } });
 
 					// Check to see if there is another error record
 					artifactId = SqlRunner.ExecuteSqlStatementAsScalar<int?>(sqlDatabaseName, sqlSelectTopError);
