@@ -68,10 +68,6 @@ namespace Helpers.Tests.Integration.Tests
 				// Assert
 				Assert.DoesNotThrow(() => Sut.EnableDataGridOnExtractedText(Constants.Connection.Sql.EDDS_DATABASE, workspaceName));
 			}
-			catch (Exception ex)
-			{
-				Console.WriteLine(ex.Message);
-			}
 			finally
 			{
 				WorkspaceHelper.DeleteSingleWorkspaceAsync(workspaceId);

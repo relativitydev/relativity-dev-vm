@@ -110,6 +110,10 @@ namespace Helpers.Implementations
 					InstanceSettingQueryResultSet instanceSettingQueryResultSet = instanceSettingManager.QueryAsync(query).Result;
 					if (instanceSettingQueryResultSet.Success)
 					{
+						if (instanceSettingQueryResultSet.TotalCount == 0)
+						{
+							return null;
+						}
 						Relativity.Services.Result<InstanceSetting> result = instanceSettingQueryResultSet.Results.First();
 						if (result.Artifact != null)
 						{
@@ -119,6 +123,38 @@ namespace Helpers.Implementations
 				}
 
 				return retVal;
+			}
+			catch (Exception ex)
+			{
+				throw new Exception("Failed to Get Instance Setting Value", ex);
+			}
+		}
+
+		public int GetInstanceSettingArtifactIdByName(string name, string section)
+		{
+			try
+			{
+				int artifactId = 0;
+				using (IInstanceSettingManager instanceSettingManager = ServiceFactory.CreateProxy<IInstanceSettingManager>())
+				{
+					Query query = new Query();
+					query.Condition = $"'Section' == '{section}' AND 'Name' == '{name}'";
+					InstanceSettingQueryResultSet instanceSettingQueryResultSet = instanceSettingManager.QueryAsync(query).Result;
+					if (instanceSettingQueryResultSet.Success)
+					{
+						if (instanceSettingQueryResultSet.TotalCount == 0)
+						{
+							return 0;
+						}
+						Relativity.Services.Result<InstanceSetting> result = instanceSettingQueryResultSet.Results.First();
+						if (result.Artifact != null)
+						{
+							artifactId = result.Artifact.ArtifactID;
+						}
+					}
+				}
+
+				return artifactId;
 			}
 			catch (Exception ex)
 			{

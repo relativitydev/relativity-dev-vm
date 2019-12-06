@@ -40,6 +40,13 @@ namespace Helpers.Tests.Integration.Tests
 				string name = "TestInstanceSetting";
 				string description = "";
 				string value = "Test";
+				_createdInstanceSettingId = 0;
+
+				var existingInstanceSettingId = Sut.GetInstanceSettingArtifactIdByName(name, section);
+				if (existingInstanceSettingId != 0)
+				{
+					Sut.DeleteInstanceSetting(existingInstanceSettingId);
+				}
 
 				// Act
 				_createdInstanceSettingId = Sut.CreateInstanceSetting(section, name, description, value);
@@ -47,15 +54,13 @@ namespace Helpers.Tests.Integration.Tests
 				// Assert
 				Assert.True(_createdInstanceSettingId != 0);
 			}
-			catch (Exception ex)
-			{
-				System.Console.WriteLine(ex.Message);
-			}
 			finally
 			{
-				Sut.DeleteInstanceSetting(_createdInstanceSettingId);
+				if (_createdInstanceSettingId != 0)
+				{
+					Sut.DeleteInstanceSetting(_createdInstanceSettingId);
+				}
 			}
-
 		}
 
 		[Test]
@@ -75,15 +80,24 @@ namespace Helpers.Tests.Integration.Tests
 				// Assert
 				Assert.AreEqual(value, instanceSettingValue);
 			}
-			catch (Exception ex)
-			{
-				System.Console.WriteLine(ex.Message);
-			}
 			finally
 			{
 				Sut.UpdateInstanceSettingValue(name, section, "");
 			}
-			
+		}
+
+		[Test]
+		public void GetInstanceSettingArtifactIdByName()
+		{
+			// Arrange
+			string section = "Relativity.DataGrid";
+			string name = "DataGridEndPoint";
+
+			// Act
+			int instanceSettingId = Sut.GetInstanceSettingArtifactIdByName(name, section);
+
+			// Assert
+			Assert.AreNotEqual(instanceSettingId, 0);
 		}
 	}
 }
