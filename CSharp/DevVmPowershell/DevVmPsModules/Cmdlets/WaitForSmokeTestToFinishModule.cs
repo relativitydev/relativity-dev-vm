@@ -121,10 +121,14 @@ namespace DevVmPsModules.Cmdlets
 				throw new ArgumentNullException(nameof(WorkspaceName), $"{nameof(WorkspaceName)} cannot be NULL or Empty.");
 			}
 
-			int timeoutValue;
-			if (string.IsNullOrWhiteSpace(TimeoutValueInMinutes) || !int.TryParse(TimeoutValueInMinutes, out timeoutValue))
+			if (string.IsNullOrWhiteSpace(TimeoutValueInMinutes))
 			{
-				throw new ArgumentNullException(nameof(TimeoutValueInMinutes), $"{nameof(TimeoutValueInMinutes)} cannot be NULL, Empty, or an invalid Guid.");
+				throw new ArgumentNullException(nameof(TimeoutValueInMinutes), $"{nameof(TimeoutValueInMinutes)} cannot be NULL, Empty.");
+			}
+			int timeoutValue;
+			if (!int.TryParse(TimeoutValueInMinutes, out timeoutValue))
+			{
+				throw new ArgumentNullException(nameof(TimeoutValueInMinutes), $"{nameof(TimeoutValueInMinutes)} cannot be an invalid INT.");
 			}
 		}
 	}
