@@ -1,6 +1,7 @@
 ﻿using Relativity.Imaging.Services.Interfaces;
 using Relativity.Services.Agent;
 using System;
+using System.Management.Automation.Runspaces;
 
 namespace Helpers
 {
@@ -342,6 +343,21 @@ END
 				public const string QUERY_APPLICATION_VERSION_NAME_FOR_GIVEN_APPLICATION_VERSION_ID_ERROR = "An error occurred when querying for the ApplicationVersion Name for given ApplicationVersion Id.";
 				public const string QUERY_ALL_RELATIVITY_VERSIONS_FOR_GIVEN_APPLICATION_VERSION_IDS_ERROR = "An error occurred when querying for the ApplicationVersions for given ApplicationIds.";
 
+			}
+		}
+
+		public class SmokeTest
+		{
+			public class Guids
+			{
+				public const string ApplicationGuid = "0125C8D4-8354-4D8F-B031-01E73C866C7C";
+				public const string TestObjectType = "71ED667F-EE38-4BC7-AB76-6645D8A5587F";
+
+				public class Fields
+				{
+					public const string Name_FixedLengthText = "9D9F70EF-0AB1-4912-849E-418976EA92CF";
+					public const string Status_FixedLengthText = "A057E0A2-73CE-44B1-AF8D-F8B896358446";
+				}
 			}
 		}
 	}

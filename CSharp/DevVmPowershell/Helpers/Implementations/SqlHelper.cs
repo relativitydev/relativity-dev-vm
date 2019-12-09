@@ -269,7 +269,7 @@ namespace Helpers.Implementations
 						 INNER JOIN eddsdbo.Artifact A (NOLOCK) ON C.ArtifactID = A.ArtifactID
 						 INNER JOIN eddsdbo.[ApplicationInstall] as AI on CA.CurrentApplicationInstallID = AI.ApplicationInstallID
 						WHERE CA.ApplicationID = @appArtifactId
-							AND AI.[Status] = 6 --Installed
+							AND AI.[Status_FixedLengthText] = 6 --Installed
 						ORDER BY A.CreatedOn
 						";
 
