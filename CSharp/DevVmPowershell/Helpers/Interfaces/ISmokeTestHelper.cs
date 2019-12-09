@@ -8,6 +8,6 @@ namespace Helpers.Interfaces
 {
 	public interface ISmokeTestHelper
 	{
-		bool WaitForSmokeTestToComplete(string workspaceName);
+		bool WaitForSmokeTestToComplete(string workspaceName, int timeoutValueInMinutes);
 	}
 }

@@ -60,6 +60,14 @@ namespace DevVmPsModules.Cmdlets
 			HelpMessage = "Name of the Workspace that the Smoke Tests are being run in")]
 		public string WorkspaceName { get; set; }
 
+		[Parameter(
+			Mandatory = true,
+			ValueFromPipelineByPropertyName = true,
+			ValueFromPipeline = true,
+			Position = 6,
+			HelpMessage = "Timeout Value in minutes for the Wait")]
+		public string TimeoutValueInMinutes { get; set; }
+
 		protected override void ProcessRecordCode()
 		{
 			//Validate Input arguments
@@ -73,7 +81,8 @@ namespace DevVmPsModules.Cmdlets
 				sqlAdminPassword: SqlAdminPassword);
 			ISmokeTestHelper smokeTestHelper = new SmokeTestHelper(connectionHelper);
 
-			bool testsCompleted = smokeTestHelper.WaitForSmokeTestToComplete(WorkspaceName);
+			int timeoutValueInMinutes = int.Parse(TimeoutValueInMinutes);
+			bool testsCompleted = smokeTestHelper.WaitForSmokeTestToComplete(WorkspaceName, timeoutValueInMinutes);
 			if (!testsCompleted)
 			{
 				throw new Exception("Tests did not all complete successfully");
@@ -110,6 +119,12 @@ namespace DevVmPsModules.Cmdlets
 			if (string.IsNullOrWhiteSpace(WorkspaceName))
 			{
 				throw new ArgumentNullException(nameof(WorkspaceName), $"{nameof(WorkspaceName)} cannot be NULL or Empty.");
+			}
+
+			int timeoutValue;
+			if (string.IsNullOrWhiteSpace(TimeoutValueInMinutes) || !int.TryParse(TimeoutValueInMinutes, out timeoutValue))
+			{
+				throw new ArgumentNullException(nameof(TimeoutValueInMinutes), $"{nameof(TimeoutValueInMinutes)} cannot be NULL, Empty, or an invalid Guid.");
 			}
 		}
 	}

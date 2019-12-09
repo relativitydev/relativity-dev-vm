@@ -23,13 +23,13 @@ namespace Helpers.Implementations
 			ServiceFactory = connectionHelper.GetServiceFactory();
 		}
 
-		public bool WaitForSmokeTestToComplete(string workspaceName)
+		public bool WaitForSmokeTestToComplete(string workspaceName, int timeoutValueInMinutes)
 		{
 			try
 			{
 				bool completed = false;
 				bool hasFailingTests = false;
-				const int maxTimeInMilliseconds = (Constants.Waiting.MAX_WAIT_TIME_IN_MINUTES * 60 * 1000);
+				int maxTimeInMilliseconds = timeoutValueInMinutes * 60 * 1000;
 				const int sleepTimeInMilliSeconds = Constants.Waiting.SLEEP_TIME_IN_SECONDS * 1000;
 				int currentWaitTimeInMilliseconds = 0;
 				using (IRSAPIClient rsapiClient = ServiceFactory.CreateProxy<IRSAPIClient>())

@@ -69,6 +69,9 @@ namespace Helpers.Tests.Integration.Tests
 					}
 				}
 
+				//Delete Smoke Test Agents if they exist
+				AgentHelper.DeleteAgentsInRelativityApplicationAsync(applicationName).Wait();
+
 				//Create Workspace
 				workspaceArtifactId = WorkspaceHelper
 					.CreateSingleWorkspaceAsync(Constants.Workspace.DEFAULT_WORKSPACE_TEMPLATE_NAME, workspaceName, true).Result;
@@ -81,11 +84,6 @@ namespace Helpers.Tests.Integration.Tests
 				{
 					throw new Exception("Smoke Test Application failed to Install");
 				}
-
-				//Delete Smoke Test Agents if they exist
-				AgentHelper.DeleteAgentsInRelativityApplicationAsync(applicationName).Wait();
-
-				Thread.Sleep(15000);
 
 				//Create Smoke Test Agents
 				bool smokeTestRunnerAgentCreated =
@@ -106,7 +104,7 @@ namespace Helpers.Tests.Integration.Tests
 				}
 
 				//Act
-				bool result = Sut.WaitForSmokeTestToComplete(workspaceName);
+				bool result = Sut.WaitForSmokeTestToComplete(workspaceName, 10);
 
 				//Assert
 				Assert.IsTrue(result);
