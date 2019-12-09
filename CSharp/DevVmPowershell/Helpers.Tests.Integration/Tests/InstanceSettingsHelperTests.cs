@@ -1,5 +1,6 @@
 ﻿using Helpers.Implementations;
 using Helpers.Interfaces;
+using kCura.Notification;
 using NUnit.Framework;
 
 namespace Helpers.Tests.Integration.Tests
@@ -8,6 +9,7 @@ namespace Helpers.Tests.Integration.Tests
 	public class InstanceSettingsHelperTests
 	{
 		private IInstanceSettingsHelper Sut { get; set; }
+		private int _createdInstanceSettingId;
 
 		[SetUp]
 		public void Setup()
@@ -31,18 +33,34 @@ namespace Helpers.Tests.Integration.Tests
 		[Test]
 		public void CreateInstanceSettingTest()
 		{
-			// Arrange
-			string section = "TestInstanceSetting";
-			string name = "TestInstanceSetting";
-			string description = "";
-			string value = "Test";
+			try
+			{
+				// Arrange
+				string section = "TestInstanceSetting";
+				string name = "TestInstanceSetting";
+				string description = "";
+				string value = "Test";
+				_createdInstanceSettingId = 0;
 
-			// Act
-			int createdInstanceSettingId = Sut.CreateInstanceSetting(section, name, description, value);
+				var existingInstanceSettingId = Sut.GetInstanceSettingArtifactIdByName(name, section);
+				if (existingInstanceSettingId != 0)
+				{
+					Sut.DeleteInstanceSetting(existingInstanceSettingId);
+				}
 
-			// Assert
-			Assert.True(createdInstanceSettingId > 1);
-			Sut.DeleteInstanceSetting(createdInstanceSettingId);
+				// Act
+				_createdInstanceSettingId = Sut.CreateInstanceSetting(section, name, description, value);
+
+				// Assert
+				Assert.True(_createdInstanceSettingId != 0);
+			}
+			finally
+			{
+				if (_createdInstanceSettingId != 0)
+				{
+					Sut.DeleteInstanceSetting(_createdInstanceSettingId);
+				}
+			}
 		}
 
 		[Test]
@@ -51,14 +69,35 @@ namespace Helpers.Tests.Integration.Tests
 			// Arrange
 			string section = "Relativity.DataGrid";
 			string name = "DataGridEndPoint";
-			string value = " ";
+			string value = "new_value";
+
+			try
+			{
+				// Act
+				bool success = Sut.UpdateInstanceSettingValue(name, section, value);
+				string instanceSettingValue = Sut.GetInstanceSettingValue(name, section);
+
+				// Assert
+				Assert.AreEqual(value, instanceSettingValue);
+			}
+			finally
+			{
+				Sut.UpdateInstanceSettingValue(name, section, "");
+			}
+		}
+
+		[Test]
+		public void GetInstanceSettingArtifactIdByName()
+		{
+			// Arrange
+			string section = "Relativity.DataGrid";
+			string name = "DataGridEndPoint";
 
 			// Act
-			bool success = Sut.UpdateInstanceSettingValue(name, section, value);
-			string instanceSettingValue = Sut.GetInstanceSettingValue(name, section);
+			int instanceSettingId = Sut.GetInstanceSettingArtifactIdByName(name, section);
 
 			// Assert
-			Assert.AreEqual(value, instanceSettingValue);
+			Assert.AreNotEqual(instanceSettingId, 0);
 		}
 	}
 }

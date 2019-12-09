@@ -14,6 +14,7 @@ namespace Helpers.Tests.Integration.Tests
 {
 	public class SmokeTestHelperTests
 	{
+		private ISqlHelper SqlHelper { get; set; }
 		private IWorkspaceHelper WorkspaceHelper { get; set; }
 		private IApplicationInstallHelper ApplicationInstallHelper { get; set; }
 		private IAgentHelper AgentHelper { get; set; }
@@ -30,8 +31,8 @@ namespace Helpers.Tests.Integration.Tests
 				sqlAdminUserName: TestConstants.SQL_USER_NAME,
 				sqlAdminPassword: TestConstants.SQL_PASSWORD);
 			ISqlRunner sqlRunner = new SqlRunner(connectionHelper);
-			ISqlHelper sqlHelper = new SqlHelper(sqlRunner);
-			WorkspaceHelper = new WorkspaceHelper(connectionHelper, sqlHelper);
+			SqlHelper = new SqlHelper(sqlRunner);
+			WorkspaceHelper = new WorkspaceHelper(connectionHelper, SqlHelper);
 			ApplicationInstallHelper = new ApplicationInstallHelper(connectionHelper);
 			AgentHelper = new AgentHelper(connectionHelper);
 			ImportApiHelper = new ImportApiHelper(connectionHelper);
@@ -57,6 +58,16 @@ namespace Helpers.Tests.Integration.Tests
 				//Arrange
 				const string workspaceName = "Smoke Test Helper Workspace";
 				const string applicationName = "Smoke Test";
+
+				//Delete Workspace with Disclaimer Acceptance Installed
+				List<int> workspacesWhereApplicationIsInstalled = SqlHelper.RetrieveWorkspacesWhereApplicationIsInstalled(new Guid(Constants.SmokeTest.Guids.ApplicationGuid));
+				if (workspacesWhereApplicationIsInstalled.Count > 0)
+				{
+					foreach (int workspaceId in workspacesWhereApplicationIsInstalled)
+					{
+						WorkspaceHelper.DeleteSingleWorkspaceAsync(workspaceId).Wait();
+					}
+				}
 
 				//Create Workspace
 				workspaceArtifactId = WorkspaceHelper
@@ -86,12 +97,12 @@ namespace Helpers.Tests.Integration.Tests
 					throw new Exception("Failed to Create Smoke Test Agents");
 				}
 
-				//Import Documents
-				int numberOfDocumentsCreated =
-					ImportApiHelper.AddDocumentsToWorkspace(workspaceArtifactId, "document", 100, "").Result;
-				if (numberOfDocumentsCreated <= 0)
+				//Import Imaged Documents
+				int numberOfImagedDocuments =
+					ImportApiHelper.AddDocumentsToWorkspace(workspaceArtifactId, "image", 100, "").Result;
+				if (numberOfImagedDocuments <= 0)
 				{
-					throw new Exception("Failed to Import Documents to the workspace");
+					throw new Exception("Failed to Import Imaged Documents to the workspace");
 				}
 
 				//Act
