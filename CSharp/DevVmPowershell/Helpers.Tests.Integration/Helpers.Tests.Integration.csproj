@@ -46,8 +46,8 @@
     <Reference Include="kCura, Version=10.0.161.8, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.Other.10.0.161.8\lib\kCura.dll</HintPath>
     </Reference>
-    <Reference Include="kCura.Relativity.Client, Version=10.0.161.8, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.Rsapi.10.0.161.8\lib\kCura.Relativity.Client.dll</HintPath>
+    <Reference Include="kCura.Relativity.Client, Version=10.3.170.1, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.Rsapi.10.3.170.1\lib\net462\kCura.Relativity.Client.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.12.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
@@ -164,6 +164,7 @@
     <Compile Include="Tests\EnvironmentVariableTests.cs" />
     <Compile Include="Tests\ImagingHelperTests.cs" />
     <Compile Include="Tests\RecycleBinTests.cs" />
+    <Compile Include="Tests\SmokeTestHelperTests.cs" />
     <Compile Include="Tests\WorkspaceHelperTests.cs" />
     <Compile Include="Tests\AgentHelperTests.cs" />
     <Compile Include="Tests\AgentServerHelperTests.cs" />

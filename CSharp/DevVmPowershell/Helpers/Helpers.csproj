@@ -173,6 +173,7 @@
     <Compile Include="Implementations\DisclaimerAcceptanceHelper.cs" />
     <Compile Include="Implementations\EnvironmentVariableHelper.cs" />
     <Compile Include="Implementations\ErrorMessageHelper.cs" />
+    <Compile Include="Implementations\SmokeTestHelper.cs" />
     <Compile Include="Interfaces\IAgentHelper.cs" />
     <Compile Include="Interfaces\IAgentServerHelper.cs" />
     <Compile Include="Interfaces\IApplicationInstallHelper.cs" />
@@ -183,6 +184,7 @@
     <Compile Include="Interfaces\IImportApiHelper.cs" />
     <Compile Include="Implementations\ImagingHelper.cs" />
     <Compile Include="Interfaces\IRecycleBinHelper.cs" />
+    <Compile Include="Interfaces\ISmokeTestHelper.cs" />
     <Compile Include="Interfaces\ISqlRunner.cs" />
     <Compile Include="Interfaces\IWorkspaceHelper.cs" />
     <Compile Include="Interfaces\IInstanceSettingsHelper.cs" />

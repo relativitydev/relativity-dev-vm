@@ -2,8 +2,6 @@
 using Helpers.Implementations;
 using Helpers.Interfaces;
 using NUnit.Framework;
-using Renci.SshNet;
-using Exception = kCura.Notification.Exception;
 
 namespace Helpers.Tests.Integration.Tests
 {

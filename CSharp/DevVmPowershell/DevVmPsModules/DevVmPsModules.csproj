@@ -167,6 +167,7 @@
     <Compile Include="Cmdlets\BaseModule.cs" />
     <Compile Include="Cmdlets\AgentModule.cs" />
     <Compile Include="Cmdlets\ClearRecycleBinModule.cs" />
+    <Compile Include="Cmdlets\WaitForSmokeTestToFinishModule.cs" />
     <Compile Include="CustomExceptions\DevVmPowerShellModuleException.cs" />
     <Compile Include="Cmdlets\DocumentModule.cs" />
     <Compile Include="Cmdlets\AgentServerAddAgentServerToDefaultResourcePoolModule.cs" />

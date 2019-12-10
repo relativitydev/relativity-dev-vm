@@ -38,7 +38,7 @@ namespace Helpers.Implementations
 				while (artifactId.HasValue)
 				{
 					// Delete from all tables
-					SqlRunner.ExecuteNonQuerySqlStatement(sqlDatabaseName, sqlDeleteFromArtifactGuidTable, new List<SqlParameter>{ new SqlParameter("@artifactId", SqlDbType.Int) { Value = artifactId.Value } });
+					SqlRunner.ExecuteNonQuerySqlStatement(sqlDatabaseName, sqlDeleteFromArtifactGuidTable, new List<SqlParameter> { new SqlParameter("@artifactId", SqlDbType.Int) { Value = artifactId.Value } });
 					SqlRunner.ExecuteNonQuerySqlStatement(sqlDatabaseName, sqlDeleteFromErrorTable, new List<SqlParameter> { new SqlParameter("@artifactId", SqlDbType.Int) { Value = artifactId.Value } });
 					SqlRunner.ExecuteNonQuerySqlStatement(sqlDatabaseName, sqlDeleteFromArtifactAncestryTable, new List<SqlParameter> { new SqlParameter("@artifactId", SqlDbType.Int) { Value = artifactId.Value } });
 					SqlRunner.ExecuteNonQuerySqlStatement(sqlDatabaseName, sqlDeleteFromArtifactTable, new List<SqlParameter> { new SqlParameter("@artifactId", SqlDbType.Int) { Value = artifactId.Value } });
