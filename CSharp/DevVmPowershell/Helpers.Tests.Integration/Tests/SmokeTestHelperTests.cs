@@ -53,11 +53,11 @@ namespace Helpers.Tests.Integration.Tests
 		public void WaitForSmokeTestToCompleteAsyncTest()
 		{
 			int workspaceArtifactId = 0;
+			const string workspaceName = "Smoke Test Helper Workspace";
+			const string applicationName = "Smoke Test";
 			try
 			{
 				//Arrange
-				const string workspaceName = "Smoke Test Helper Workspace";
-				const string applicationName = "Smoke Test";
 
 				//Delete Workspace with Disclaimer Acceptance Installed
 				List<int> workspacesWhereApplicationIsInstalled = SqlHelper.RetrieveWorkspacesWhereApplicationIsInstalled(new Guid(Constants.SmokeTest.Guids.ApplicationGuid));
@@ -112,6 +112,11 @@ namespace Helpers.Tests.Integration.Tests
 			finally
 			{
 				//Cleanup
+
+				//Delete Smoke Test Agents if they exist
+				AgentHelper.DeleteAgentsInRelativityApplicationAsync(applicationName).Wait();
+
+				//Delete Workspace
 				WorkspaceHelper.DeleteSingleWorkspaceAsync(workspaceArtifactId).Wait();
 			}
 		}
