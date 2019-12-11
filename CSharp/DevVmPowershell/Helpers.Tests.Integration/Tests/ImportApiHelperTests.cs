@@ -59,8 +59,7 @@ namespace Helpers.Tests.Integration.Tests
 		{
 			try
 			{
-				int existingWorkspaceArtifactId = WorkspaceHelper.GetFirstWorkspaceArtifactIdQueryAsync(workspaceName).Result;
-				WorkspaceHelper.DeleteSingleWorkspaceAsync(existingWorkspaceArtifactId);
+				WorkspaceHelper.DeleteAllWorkspacesAsync(workspaceName).Wait();
 			}
 			catch (Exception ex)
 			{

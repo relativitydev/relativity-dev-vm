@@ -56,7 +56,7 @@ namespace Helpers.Tests.Integration.Tests
 			// Act
 			// Assert
 			Assert.DoesNotThrow(() => Sut.ImageAllDocumentsInWorkspaceAsync(workspaceArtifactId).Wait());
-		  Assert.IsTrue(Sut.CheckThatAllDocumentsInWorkspaceAreImaged(workspaceArtifactId).Result);
+			Assert.IsTrue(Sut.CheckThatAllDocumentsInWorkspaceAreImaged(workspaceArtifactId).Result);
 
 			//Cleanup
 			await WorkspaceHelper.DeleteSingleWorkspaceAsync(workspaceArtifactId);
@@ -66,8 +66,7 @@ namespace Helpers.Tests.Integration.Tests
 		{
 			try
 			{
-				int existingWorkspaceArtifactId = WorkspaceHelper.GetFirstWorkspaceArtifactIdQueryAsync(workspaceName).Result;
-				WorkspaceHelper.DeleteSingleWorkspaceAsync(existingWorkspaceArtifactId);
+				WorkspaceHelper.DeleteAllWorkspacesAsync(workspaceName).Wait();
 			}
 			catch (Exception ex)
 			{
