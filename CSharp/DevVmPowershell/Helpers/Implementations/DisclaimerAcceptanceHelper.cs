@@ -38,6 +38,19 @@ namespace Helpers.Implementations
 			}
 		}
 
+		public bool CheckIfDisclaimerConfigurationRDOExists(int workspaceId)
+		{
+			RsapiClient.APIOptions.WorkspaceID = workspaceId;
+			int objectTypeId = GetDisclaimerSolutionConfigurationObjectTypeId(workspaceId);
+			Query<RDO> query = new Query<RDO>
+			{
+				ArtifactTypeID = objectTypeId
+			};
+
+			QueryResultSet<RDO> queryResultSet = RsapiClient.Repositories.RDO.Query(query);
+			return queryResultSet.TotalCount > 0;
+		}
+
 		public void AddDisclaimer(string workspaceName)
 		{
 			try
@@ -51,6 +64,19 @@ namespace Helpers.Implementations
 			{
 				throw new Exception("Error Adding Disclaimer", ex);
 			}
+		}
+
+		public bool CheckIfDisclaimerRDOExists(int workspaceId)
+		{
+			RsapiClient.APIOptions.WorkspaceID = workspaceId;
+			int objectTypeId = GetDisclaimerObjectTypeId(workspaceId);
+			Query<RDO> query = new Query<RDO>
+			{
+				ArtifactTypeID = objectTypeId
+			};
+
+			QueryResultSet<RDO> queryResultSet = RsapiClient.Repositories.RDO.Query(query);
+			return queryResultSet.TotalCount > 0;
 		}
 
 		private void CreateDisclaimerConfigurationRDO(int objectTypeId, int layoutId, int workspaceId)

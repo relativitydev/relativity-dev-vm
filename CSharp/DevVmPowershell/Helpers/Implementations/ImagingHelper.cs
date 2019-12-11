@@ -249,5 +249,39 @@ namespace Helpers.Implementations
 				throw new Exception("An error occured when creating Keyword Search", ex);
 			}
 		}
+
+		public async Task<bool> CheckThatAllDocumentsInWorkspaceAreImaged(int workspaceArtifactId)
+		{
+			try
+			{
+				RsapiClient.APIOptions.WorkspaceID = workspaceArtifactId;
+				Query<Document> query = new Query<Document>
+				{
+					Fields = new List<FieldValue> { new FieldValue("Has Images") }
+				};
+
+				QueryResultSet<Document> queryResultSet = await Task.Run(() => RsapiClient.Repositories.Document.Query(query));
+				if (!queryResultSet.Success)
+				{
+					throw new Exception("Failed to Query for all Documents in the Workspace");
+				}
+
+				bool allDocumentsHaveImages = true;
+				foreach (Result<Document> result in queryResultSet.Results)
+				{
+					if (result.Artifact.HasImages.Name.Equals("No"))
+					{
+						allDocumentsHaveImages = false;
+						break;
+					}
+				}
+
+				return allDocumentsHaveImages;
+			}
+			catch (Exception ex)
+			{
+				throw new Exception("An error occured when Checking that all documents in the Workspace are Imaged", ex);
+			}
+		}
 	}
 }

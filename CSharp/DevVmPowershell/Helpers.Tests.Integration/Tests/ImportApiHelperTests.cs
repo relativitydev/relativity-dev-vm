@@ -1,5 +1,7 @@
-﻿using Helpers.Implementations;
+﻿using System;
+using Helpers.Implementations;
 using Helpers.Interfaces;
+using kCura.Relativity.ImportAPI.Data;
 using NUnit.Framework;
 
 namespace Helpers.Tests.Integration.Tests
@@ -39,6 +41,8 @@ namespace Helpers.Tests.Integration.Tests
 		{
 			//Arrange
 			string workspaceName = "ImportApi Test Workspace";
+			CleanupWorkspaceIfItExists(workspaceName);
+
 			int workspaceArtifactId = WorkspaceHelper.CreateSingleWorkspaceAsync(Constants.Workspace.DEFAULT_WORKSPACE_TEMPLATE_NAME, workspaceName, false).Result;
 
 			//Act
@@ -49,6 +53,18 @@ namespace Helpers.Tests.Integration.Tests
 
 			//Cleanup
 			WorkspaceHelper.DeleteSingleWorkspaceAsync(workspaceArtifactId);
+		}
+
+		private void CleanupWorkspaceIfItExists(string workspaceName)
+		{
+			try
+			{
+				WorkspaceHelper.DeleteAllWorkspacesAsync(workspaceName).Wait();
+			}
+			catch (Exception ex)
+			{
+				//Workspace Does Not Exist
+			}
 		}
 	}
 }

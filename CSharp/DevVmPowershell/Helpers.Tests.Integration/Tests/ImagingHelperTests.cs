@@ -40,6 +40,7 @@ namespace Helpers.Tests.Integration.Tests
 		{
 			// Arrange
 			const string workspaceName = "Imaging Test Workspace";
+			CleanupWorkspaceIfItExists(workspaceName);
 
 			//Create Workspace
 			int workspaceArtifactId = WorkspaceHelper.CreateSingleWorkspaceAsync(Constants.Workspace.DEFAULT_WORKSPACE_TEMPLATE_NAME, workspaceName, false).Result;
@@ -55,9 +56,22 @@ namespace Helpers.Tests.Integration.Tests
 			// Act
 			// Assert
 			Assert.DoesNotThrow(() => Sut.ImageAllDocumentsInWorkspaceAsync(workspaceArtifactId).Wait());
+			Assert.IsTrue(Sut.CheckThatAllDocumentsInWorkspaceAreImaged(workspaceArtifactId).Result);
 
 			//Cleanup
 			await WorkspaceHelper.DeleteSingleWorkspaceAsync(workspaceArtifactId);
+		}
+
+		private void CleanupWorkspaceIfItExists(string workspaceName)
+		{
+			try
+			{
+				WorkspaceHelper.DeleteAllWorkspacesAsync(workspaceName).Wait();
+			}
+			catch (Exception ex)
+			{
+				//Workspace Does Not Exist
+			}
 		}
 	}
 }
