@@ -455,7 +455,7 @@ function Send-Slack-Success-Message([string] $relativityVersionToCopy) {
       "text" = "New DevVm ($($relativityVersionToCreate)) is available at $($destinationFilePath)"
     } | ConvertTo-Json
 
-    Invoke-WebRequest -Method Post -Body "$BodyJSON" -Uri $Env:slack_devex_internal_group_key -ContentType application/json
+    Invoke-WebRequest -Method Post -Body "$BodyJSON" -Uri $Env:slack_devex_announcements_group_key -ContentType application/json
     Write-Message-To-Screen "Sent Slack Success Message"
   }
 }
