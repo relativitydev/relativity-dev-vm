@@ -8,7 +8,7 @@ custom_log 'custom_log' do msg 'Resizing Databases' end
 powershell_script 'resize_databases' do
   code <<-EOH
     #{node['powershell_module']['import_module']}
-    Resize-Databases -RelativityInstanceName #{node['windows']['new_computer_name']} -SqlAdminUserName #{node['sql']['user']['eddsdbo']['login']} -SqlAdminPassword #{node['sql']['user']['sa']['password']}
+    Resize-Databases -RelativityInstanceName #{node['windows']['new_computer_name']} -RelativityAdminUserName #{node['relativity']['admin']['login']} -RelativityAdminPassword #{node['relativity']['admin']['password']} -SqlAdminUserName #{node['sql']['user']['eddsdbo']['login']} -SqlAdminPassword #{node['sql']['user']['sa']['password']}
     EOH
 end
 

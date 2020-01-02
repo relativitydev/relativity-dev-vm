@@ -8,7 +8,7 @@ custom_log 'custom_log' do msg 'Updating Agent Off Hour End Time' end
 powershell_script 'update_agent_off_hour_end_time' do
   code <<-EOH
     #{node['powershell_module']['import_module']}
-    Reset-InstanceSettingValue -RelativityInstanceName #{node['windows']['new_computer_name']} -RelativityAdminUserName #{node['relativity']['admin']['login']} -RelativityAdminPassword #{node['relativity']['admin']['password']} -Name AgentOffHourEndTime -Section kCura.EDDS.Agents -NewValue "23:59:59"
+    Reset-InstanceSettingValue -RelativityInstanceName #{node['windows']['new_computer_name']} -RelativityAdminUserName #{node['relativity']['admin']['login']} -RelativityAdminPassword #{node['relativity']['admin']['password']} -SqlAdminUserName #{node['sql']['user']['eddsdbo']['login']} -SqlAdminPassword #{node['sql']['user']['sa']['password']} -Name AgentOffHourEndTime -Section kCura.EDDS.Agents -NewValue "23:59:59"
     EOH
 end
 

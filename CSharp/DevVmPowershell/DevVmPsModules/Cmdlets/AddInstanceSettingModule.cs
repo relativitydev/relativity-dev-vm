@@ -114,6 +114,16 @@ namespace DevVmPsModules.Cmdlets
 				throw new ArgumentNullException(nameof(RelativityAdminPassword), $"{nameof(RelativityAdminPassword)} cannot be NULL or Empty.");
 			}
 
+			if (string.IsNullOrWhiteSpace(SqlAdminUserName))
+			{
+				throw new ArgumentNullException(nameof(SqlAdminUserName), $"{nameof(SqlAdminUserName)} cannot be NULL or Empty.");
+			}
+
+			if (string.IsNullOrWhiteSpace(SqlAdminPassword))
+			{
+				throw new ArgumentNullException(nameof(SqlAdminPassword), $"{nameof(SqlAdminPassword)} cannot be NULL or Empty.");
+			}
+
 			if (string.IsNullOrWhiteSpace(Name))
 			{
 				throw new ArgumentNullException(nameof(Name), $"{nameof(Name)} cannot be NULL or Empty.");

@@ -292,6 +292,12 @@ END
 			<li><span style='color: #ff0000;'><strong>Please note that these VM's should not be used&nbsp;to performance test your applications as system resources are not equivalent to suggested production configurations</strong></span></li>
 			</ul>
 			<p>(We usually configure our&nbsp;DevVms&nbsp;to 4 cores and 12GB of RAM and can generally develop/debug applications with minimal lag.)</p>
+			<h4>Disclaimer:&nbsp;</h4>
+			<ul>
+			<li>You are responsible for OS updates on the Dev VM&nbsp;</li>
+			<li>You should <strong>NOT</strong> put sensitive data on the Dev VM. We can provide a sample data set&nbsp;</li>
+			<li>The Dev VM is not to be shared with anyone outside of your organization&nbsp;</li>
+			</ul>
 			<h4>Unavailable Features:&nbsp;</h4>
 			<ul>
 			<li>Analytics&nbsp;</li>
