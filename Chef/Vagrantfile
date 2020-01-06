@@ -128,6 +128,9 @@ Vagrant.configure('2') do |config|
   #   chef.add_recipe('BaseImage::pre_relativity_install_servicebus')
   # end
 
+  # # Restart VM
+  # config.vm.provision :reload
+
   # Update Windows
   config.vm.provision 'chef_zero' do |chef|
     chef.cookbooks_path = 'Cookbooks'
