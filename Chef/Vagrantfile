@@ -141,7 +141,7 @@ Vagrant.configure('2') do |config|
       'smb_username' => network_share_smb_username,
       'smb_password' => network_share_smb_password,
     }
-    chef.add_recipe('Relativity::windows_update')
+    chef.add_recipe('Relativity::pre_relativity_install_windows_updates')
   end
 
   # Restart VM
