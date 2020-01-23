@@ -1,17 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using Helpers.Interfaces;
+﻿using Helpers.Interfaces;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
-using kCura.Utility;
-using kCura.Vendor.Castle.DynamicProxy.Generators.Emitters.SimpleAST;
-using Relativity.API;
 using Relativity.Services.ServiceProxy;
-using Field = kCura.Relativity.Client.Field;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
 
 namespace Helpers.Implementations
 {
@@ -62,7 +56,10 @@ namespace Helpers.Implementations
 								numberFail++;
 								hasFailingTests = true;
 								completed = true;
-								Console.WriteLine("Failing Test Found");
+								string testName = result.Artifact.Fields.Get(new Guid(Constants.SmokeTest.Guids.Fields.Name_FixedLengthText)).ValueAsFixedLengthText;
+								string errorDetails = result.Artifact.Fields.Get(new Guid(Constants.SmokeTest.Guids.Fields.ErrorDetails_LongText)).ValueAsLongText;
+								Console.WriteLine($"Failing Test Found: {testName}");
+								Console.WriteLine($"Error Details: {errorDetails}");
 								break;
 							}
 						}
@@ -108,7 +105,9 @@ namespace Helpers.Implementations
 			query.Fields = new List<FieldValue>
 			{
 				new FieldValue(new Guid(Constants.SmokeTest.Guids.Fields.Name_FixedLengthText)),
-				new FieldValue(new Guid(Constants.SmokeTest.Guids.Fields.Status_FixedLengthText))
+				new FieldValue(new Guid(Constants.SmokeTest.Guids.Fields.Status_FixedLengthText)),
+				new FieldValue(new Guid(Constants.SmokeTest.Guids.Fields.Error_LongText)),
+				new FieldValue(new Guid(Constants.SmokeTest.Guids.Fields.ErrorDetails_LongText))
 			};
 
 			QueryResultSet<RDO> queryResultSet = rsapiClient.Repositories.RDO.Query(query);
