@@ -2,7 +2,7 @@ custom_log 'custom_log' do msg 'Starting Installing Smoke Test Rap' end
 start_time = DateTime.now
 custom_log 'custom_log' do msg "recipe_start_time(#{recipe_name}): #{start_time}" end
 
-rap_file_path = win_friendly_path(File.join(Chef::Config[:file_cache_path], '\cookbooks\Relativity\files\default\RA_Smoke_Test_2.2.0.9.rap'))
+rap_file_path = win_friendly_path(File.join(Chef::Config[:file_cache_path], '\cookbooks\Relativity\files\default\RA_Smoke_Test_2.2.2.1.rap'))
 
 # Install Smoke Test RAP
 custom_log 'custom_log' do msg 'Installing Smoke Test Rap' end

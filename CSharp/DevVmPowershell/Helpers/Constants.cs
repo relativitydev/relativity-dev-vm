@@ -1,7 +1,6 @@
 ﻿using Relativity.Imaging.Services.Interfaces;
 using Relativity.Services.Agent;
 using System;
-using System.Management.Automation.Runspaces;
 
 namespace Helpers
 {
@@ -363,6 +362,8 @@ END
 				{
 					public const string Name_FixedLengthText = "9D9F70EF-0AB1-4912-849E-418976EA92CF";
 					public const string Status_FixedLengthText = "A057E0A2-73CE-44B1-AF8D-F8B896358446";
+					public const string Error_LongText = "D289FEAA-76F4-4E82-86D6-E2E522F42A71";
+					public const string ErrorDetails_LongText = "F615298C-EB1E-4892-B8AA-103CEE85888B";
 				}
 			}
 		}
