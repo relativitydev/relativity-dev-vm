@@ -77,6 +77,7 @@ function CreateRelativityVersionAsync() {
 		Write-Error-Message "Http Status Description: $($_.Exception.Response.StatusDescription)"
 		$responseJson = $_.Exception.Response | ConvertTo-Json
 		Write-Error-Message "Response Json: $($responseJson)"
+		Send-Slack-Failure-Message $relativityVersion
 	}
   }
 }
@@ -90,6 +91,17 @@ function Send-Slack-Success-Message([string] $relativityVersionToCreate) {
    Invoke-WebRequest -Method Post -Body "$BodyJSON" -Uri $Env:slack_devex_announcements_group_key -ContentType application/json
 
    Write-Message-To-Screen "Sent Slack Success Message"
+}
+
+function Send-Slack-Failure-Message([string] $relativityVersionToCreate) {
+   Write-Heading-Message-To-Screen "Sending Slack Failure Message"
+   $BodyJSON = @{
+     "text" = "Failed to add ($($relativityVersionToCreate)) to Solution Snapshot Database"
+   } | ConvertTo-Json
+
+   Invoke-WebRequest -Method Post -Body "$BodyJSON" -Uri $Env:slack_devex_tools_group_key -ContentType application/json
+
+   Write-Message-To-Screen "Sent Slack Failure Message"
 }
 
 GetSessionId
