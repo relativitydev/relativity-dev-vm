@@ -68,6 +68,7 @@ function CreateRelativityVersionAsync() {
   catch {
 	if($_.ToString().Contains('Relativity Version ' + $relativityVersion + ' already exists')){
 		Write-Error-Message "Relativity Version already exists"
+		Send-Slack-Skip-Message $relativityVersion
 	}
 	else {
 		Write-Error-Message "An error occurred when calling CreateRelativityVersionAsyncUrl API."
@@ -93,13 +94,24 @@ function Send-Slack-Success-Message([string] $relativityVersionToCreate) {
    Write-Message-To-Screen "Sent Slack Success Message"
 }
 
+function Send-Slack-Skip-Message([string] $relativityVersionToCreate) {
+   Write-Heading-Message-To-Screen "Sending Slack Skip Message"
+   $BodyJSON = @{
+     "text" = "Skipped adding ($($relativityVersionToCreate)) to Solution Snapshot Database, since it already exists."
+   } | ConvertTo-Json
+
+   Invoke-WebRequest -Method Post -Body "$BodyJSON" -Uri $Env:slack_devex_announcements_group_key -ContentType application/json
+
+   Write-Message-To-Screen "Sent Slack Skip Message"
+}
+
 function Send-Slack-Failure-Message([string] $relativityVersionToCreate) {
    Write-Heading-Message-To-Screen "Sending Slack Failure Message"
    $BodyJSON = @{
      "text" = "Failed to add ($($relativityVersionToCreate)) to Solution Snapshot Database"
    } | ConvertTo-Json
 
-   Invoke-WebRequest -Method Post -Body "$BodyJSON" -Uri $Env:slack_devex_tools_group_key -ContentType application/json
+   Invoke-WebRequest -Method Post -Body "$BodyJSON" -Uri $Env:slack_devex_announcements_group_key -ContentType application/json
 
    Write-Message-To-Screen "Sent Slack Failure Message"
 }
