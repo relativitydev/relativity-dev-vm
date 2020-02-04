@@ -143,12 +143,12 @@ function UpdateNewestAdviceHubApplicationVersions() {
       if ($application.Version.Contains(";")){
         $versions = $application.Version -split ";"
         foreach ($version in $versions) {
-          Write-Message "Updating $($application.Name) Version $($version)"
+          Write-Message "Updating Application: $($application.Name), Version: $($version)"
           UpdateApplicationVersionAsync $application.Guid $version
         }
       }
       else {
-        Write-Message "Updating $($application.Name) Version $($application.Version)"
+        Write-Message "Updating Application: $($application.Name), Version: $($application.Version)"
         UpdateApplicationVersionAsync $application.Guid $application.Version
       }
     }
