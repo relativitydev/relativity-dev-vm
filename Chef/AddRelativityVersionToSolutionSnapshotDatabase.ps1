@@ -93,7 +93,55 @@ $global:salesforceSessionObject = $null
 
 [string] $workspaceFolderGroupSecurityGuid = '07B44E66-1DDF-4607-987F-150C9C772B43'
 [string] $workspaceFolderGroupSecurityVersion = '1.0.0.0'
- 
+
+[string] $solutionSnapshotGuid = 'D51C3E3E-EBF4-402A-B41E-35C4018C8396'
+[string] $solutionSnapshotVersion = '4.0.0.4'
+
+class Application {
+  [string]$Name
+  [string]$Guid
+  [string]$Version
+
+  Application($name, $guid, $version) {
+    $this.Name = $name
+    $this.Guid = $guid
+    $this.Version = $version
+  }
+}
+
+[Application[]] $applications = @(
+  [Application]::new('Propogate Coding Post-Import', $propogateCodingPostImportGuid, $propogateCodingPostImportVersion1),
+  [Application]::new('Propagate Coding Post-Import', $propogateCodingPostImportGuid, $propogateCodingPostImportVersion2),
+  [Application]::new('Collect Folder Path Data', $collectFolderPathDataGuid, $collectFolderPathDataVersion),
+  [Application]::new('Remove Documents from Batch Sets', $removeDocumentsFromBatchSetsGuid, $removeDocumentsFromBatchSetsVersion),
+  [Application]::new('File Validation Agent', $fileValidationAgentGuid, $fileValidationAgentVersion),
+  [Application]::new('Copy Redactions Across Markup Sets', $copyRedactionsAcrossMarkupSetsGuid, $copyRedactionsAcrossMarkupSetsVersion),
+  [Application]::new('Copy Redactions Across Workspaces', $copyRedactionsAcrossWorkspacesGuid, $copyRedactionsAcrossWorkspacesVersion),
+  [Application]::new('Disable Inactive Users', $disableInactiveUsersGuid, $disableInactiveUsersVersion),
+  [Application]::new('Populate Parent ID and Child ID', $populateParentIdAndChildIdGuid, $populateParentIdAndChildIdVersion),
+  [Application]::new('Production Gap and Overlap Check', $productionGapAndOverlapCheckGuid, $productionGapAndOverlapCheckVersion),
+  [Application]::new('Reproduce Redaction To Document Universe', $reproduceRedactionToDocumentUniverseGuid, $reproduceRedactionToDocumentUniverseVersion),
+  [Application]::new('User Import Application', $userImportApplicationGuid, $userImportApplicationVersion),
+  [Application]::new('Auto Increment Field on Object', $autoIncrementFieldOnObjectGuid, $autoIncrementFieldOnObjectVersion),
+  [Application]::new('Document Utilities', $documentUtilitiesGuid, $documentUtilitiesVersion),
+  [Application]::new('Reviewer Productivity', $reviewerProductivityGuid, $reviewerProductivityVersion),
+  [Application]::new('Track Document Field Edits By Reviewer', $trackDocumentFieldEditsByReviewerGuid, $trackDocumentFieldEditsByReviewerVersion),
+  [Application]::new('Data Field Parsing', $dataFieldParsingGuid, $dataFieldParsingVersion),
+  [Application]::new('Native Time Zone Offset with DST', $nativeTimeZoneOffsetWithDstGuid, $nativeTimeZoneOffsetWithDstVersion),
+  [Application]::new('Delete Empty Case Folders', $deleteEmptyCaseFoldersGuid, $deleteEmptyCaseFoldersVersion),
+  [Application]::new('Change Redaction Type', $changeRedactionTypeGuid, $changeRedactionTypeVersion),
+  [Application]::new('Normalize Redactions Across Relational Groups', $normalizeRedactionsAcrossRelationalGroupsGuid, $normalizeRedactionsAcrossRelationalGroupsVersion),
+  [Application]::new('Collect Saved Search Data Sizes', $collectSavedSearchDataSizesGuid, $collectSavedSearchDataSizesVersion),
+  [Application]::new('Environment Level User Login and Workspace Admin', $environmentLevelUserLoginAndWorkspaceAdminGuid, $environmentLevelUserLoginAndWorkspaceAdminVersion),
+  [Application]::new('Login History By User Report', $loginHistoryByUserReportGuid, $loginHistoryByUserReportVersion),
+  [Application]::new('Search Term Counts', $searchTermCountsGuid, $searchTermCountsVersion),
+  [Application]::new('User Counts Per Workspace', $userCountsPerWorkspaceGuid, $userCountsPerWorkspaceVersion),
+  [Application]::new('User Workspace Access and Last Login', $userWorkspaceAccessAndLastLoginGuid, $userWorkspaceAccessAndLastLoginVersion),
+  [Application]::new('Workspace Folder Group Security', $workspaceFolderGroupSecurityGuid, $workspaceFolderGroupSecurityVersion),
+  [Application]::new('Collect Folder Path Data', $collectFolderPathDataGuid, $collectFolderPathDataVersion),
+  [Application]::new('Solution Snapshot', $solutionSnapshotGuid, $solutionSnapshotVersion)
+)
+
 function Write-Empty-Message() {
   Write-Host ""
 }
@@ -155,6 +203,7 @@ function CreateRelativityVersionAsync() {
   catch {
 	  if($_.ToString().Contains('Relativity Version ' + $relativityVersion + ' already exists')){
       Write-Error-Message "Relativity Version already exists"
+
       # Send Slack Skip Message
 	  	Send-Slack-Skip-Message $relativityVersion
 	  }
@@ -177,114 +226,10 @@ function UpdateNewestAdviceHubApplicationVersions() {
   try {
     Write-Method-Call-Message "Updating Newest Advice Hub Application Versions"
 
-    # Propogate Coding Post-Import
-    Write-Message "Updating Propogate Coding Post-Import"
-    UpdateApplicationVersionAsync $propogateCodingPostImportGuid $propogateCodingPostImportVersion1
-    UpdateApplicationVersionAsync $propogateCodingPostImportGuid $propogateCodingPostImportVersion2
-
-    # Collect Folder Path Data
-    Write-Message "Updating Collect Folder Path Data"
-    UpdateApplicationVersionAsync $collectFolderPathDataGuid $collectFolderPathDataVersion
-
-    # Remove Documents from Batch Sets
-    Write-Message "Updating Remove Documents from Batch Sets"
-    UpdateApplicationVersionAsync $removeDocumentsFromBatchSetsGuid $removeDocumentsFromBatchSetsVersion
-
-    # File Validation Agent
-    Write-Message "Updating File Validation Agent"
-    UpdateApplicationVersionAsync $fileValidationAgentGuid $fileValidationAgentVersion
-
-    # Copy Redactions Across Markup Sets
-    Write-Message "Updating Copy Redactions Across Markup Sets"
-    UpdateApplicationVersionAsync $copyRedactionsAcrossMarkupSetsGuid $copyRedactionsAcrossMarkupSetsVersion
-    
-    # Copy Redactions Across Workspaces
-    Write-Message "Updating Copy Redactions Across Workspaces"
-    UpdateApplicationVersionAsync $copyRedactionsAcrossWorkspacesGuid $copyRedactionsAcrossWorkspacesVersion
-
-    # Disable Inactive Users
-    Write-Message "Updating Disable Inactive Users"
-    UpdateApplicationVersionAsync $disableInactiveUsersGuid $disableInactiveUsersVersion
-
-    # Populate Parent ID and Child ID
-    Write-Message "Updating Populate Parent ID and Child ID"
-    UpdateApplicationVersionAsync $populateParentIdAndChildIdGuid $populateParentIdAndChildIdVersion
-
-    # Production Gap and Overlap Check
-    Write-Message "Updating Production Gap and Overlap Check"
-    UpdateApplicationVersionAsync $productionGapAndOverlapCheckGuid $productionGapAndOverlapCheckVersion
-
-    # Reproduce Redaction to Document Universe
-    Write-Message "Updating Reproduce Redaction to Document Universe"
-    UpdateApplicationVersionAsync $reproduceRedactionToDocumentUniverseGuid $reproduceRedactionToDocumentUniverseVersion
-
-    # User Import Application
-    Write-Message "Updating User Import Application"
-    UpdateApplicationVersionAsync $userImportApplicationGuid $userImportApplicationVersion
-
-    # Auto Increment Field on Object
-    Write-Message "Updating Auto Increment Field on Object"
-    UpdateApplicationVersionAsync $autoIncrementFieldOnObjectGuid $autoIncrementFieldOnObjectVersion
-
-    # Document Utilities
-    Write-Message "Updating Document Utilities"
-    UpdateApplicationVersionAsync $documentUtilitiesGuid $documentUtilitiesVersion
-
-    # Reviewer Productivity
-    Write-Message "Updating Reviewer Productivity"
-    UpdateApplicationVersionAsync $reviewerProductivityGuid $reviewerProductivityVersion
-
-    # Track Document Field Edits by Reviewer
-    Write-Message "Updating Track Document Field Edits by Reviewer"
-    UpdateApplicationVersionAsync $trackDocumentFieldEditsByReviewerGuid $trackDocumentFieldEditsByReviewerVersion
-
-    # Data Field Parsing
-    Write-Message "Updating Data Field Parsing"
-    UpdateApplicationVersionAsync $dataFieldParsingGuid $dataFieldParsingVersion
-
-    # Native Time Zone Offset with DST
-    Write-Message "Updating Native Time Zone Offset with DST"
-    UpdateApplicationVersionAsync $nativeTimeZoneOffsetWithDstGuid $nativeTimeZoneOffsetWithDstVersion
-
-    # Delete Empty Case Folders
-    Write-Message "Updating Delete Empty Case Folders"
-    UpdateApplicationVersionAsync $deleteEmptyCaseFoldersGuid $deleteEmptyCaseFoldersVersion
-
-    # Change Redaction Type
-    Write-Message "Updating Change Redaction Type"
-    UpdateApplicationVersionAsync $changeRedactionTypeGuid $changeRedactionTypeVersion
-
-    # Normalize Redactions Across Relational Groups
-    Write-Message "Updating Normalize Redactions Across Relational Groups"
-    UpdateApplicationVersionAsync $normalizeRedactionsAcrossRelationalGroupsGuid $normalizeRedactionsAcrossRelationalGroupsVersion
-
-    # Collect Saved Search Data Sizes
-    Write-Message "Updating Collect Saved Search Data Sizes"
-    UpdateApplicationVersionAsync $collectSavedSearchDataSizesGuid $collectSavedSearchDataSizesVersion
-
-    # Environment Level User Login and Workspace Access
-    Write-Message "Updating Environment Level User Login and Workspace Access"
-    UpdateApplicationVersionAsync $environmentLevelUserLoginAndWorkspaceAdminGuid $environmentLevelUserLoginAndWorkspaceAdminVersion
-
-    # Login History by User Report
-    Write-Message "Updating Login History by User Report"
-    UpdateApplicationVersionAsync $loginHistoryByUserReportGuid $loginHistoryByUserReportVersion
-
-    # Search Term Counts
-    Write-Message "Updating Search Term Counts"
-    UpdateApplicationVersionAsync $searchTermCountsGuid $searchTermCountsVersion
-
-    # User Counts Per Workspace
-    Write-Message "Updating User Counts Per Workspace"
-    UpdateApplicationVersionAsync $userCountsPerWorkspaceGuid $userCountsPerWorkspaceVersion
-
-    # User Workspace Access and Last Login
-    Write-Message "Updating User Workspace Access and Last Login"
-    UpdateApplicationVersionAsync $userWorkspaceAccessAndLastLoginGuid $userWorkspaceAccessAndLastLoginVersion
-
-    # Workspace Folder Group Security
-    Write-Message "Updating Workspace Folder Group Security"
-    UpdateApplicationVersionAsync $workspaceFolderGroupSecurityGuid $workspaceFolderGroupSecurityVersion
+    foreach ($application in $applications) {
+      Write-Message "Updating $($application.Name)"
+      #UpdateApplicationVersionAsync $application.Guid $application.Version
+    }
 
     # Send Slack Message that Updating Apps Finished
     Send-Slack-Message-Update-Finished $relativityVersion
