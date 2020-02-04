@@ -25,7 +25,7 @@ class Application {
 }
 
 [Application[]] $applications = @(
-  [Application]::new('Propogate Coding Post-Import', 'C0C7A2BE-12C9-49C0-BF3F-44EB85CFF3EA', '15.1.0.0;15.1.0.12'),
+  [Application]::new('Propogate Coding Post-Import', 'C0C7A2BE-12C9-49C0-BF3F-44EB85CFF3EA', '15.1.0.0; 15.1.0.12'),
   [Application]::new('Collect Folder Path Data', '4EFA7758-06B9-4A46-A936-9E035356748E', '6.1.0.7'),
   [Application]::new('Remove Documents from Batch Sets', '02F4FD31-BB51-4F27-956D-20E4D6A9DB59', '3.6.0.2'),
   [Application]::new('File Validation Agent', '912EE010-B25E-4B11-B1F5-8D42D03F33C6', '6.10.0.0'),
@@ -143,6 +143,7 @@ function UpdateNewestAdviceHubApplicationVersions() {
       if ($application.Version.Contains(";")){
         $versions = $application.Version -split ";"
         foreach ($version in $versions) {
+          $version = $version.trim()
           Write-Message "Updating Application: $($application.Name), Version: $($version)"
           UpdateApplicationVersionAsync $application.Guid $version
         }
