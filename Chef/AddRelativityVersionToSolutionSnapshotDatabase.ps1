@@ -149,6 +149,7 @@ function UpdateNewestAdviceHubApplicationVersions() {
         }
       }
       else {
+        $application.Version = $application.Version.trim()
         Write-Message "Updating Application: $($application.Name), Version: $($application.Version)"
         UpdateApplicationVersionAsync $application.Guid $application.Version
       }
