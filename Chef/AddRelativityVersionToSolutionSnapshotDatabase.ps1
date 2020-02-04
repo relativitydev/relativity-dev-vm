@@ -12,91 +12,6 @@ Clear-Host
 
 $global:salesforceSessionObject = $null
 
-[string] $propogateCodingPostImportGuid = 'C0C7A2BE-12C9-49C0-BF3F-44EB85CFF3EA'
-[string] $propogateCodingPostImportVersion1 = '15.1.0.0'
-[string] $propogateCodingPostImportVersion2 = '15.1.0.12'
-
-[string] $collectFolderPathDataGuid = '4EFA7758-06B9-4A46-A936-9E035356748E'
-[string] $collectFolderPathDataVersion = '6.1.0.7'
-
-[string] $removeDocumentsFromBatchSetsGuid = '02F4FD31-BB51-4F27-956D-20E4D6A9DB59'
-[string] $removeDocumentsFromBatchSetsVersion = '3.6.0.2'
-
-[string] $fileValidationAgentGuid = '912EE010-B25E-4B11-B1F5-8D42D03F33C6'
-[string] $fileValidationAgentVersion = '6.10.0.0'
-
-[string] $copyRedactionsAcrossMarkupSetsGuid = '460FD2CC-8BB6-465D-B2DA-720E80294FA4'
-[string] $copyRedactionsAcrossMarkupSetsVersion = '1.2.0.0'
-
-[string] $copyRedactionsAcrossWorkspacesGuid = '9748387D-3BAA-4A33-BD39-83AF02FFBEB5'
-[string] $copyRedactionsAcrossWorkspacesVersion = '4.4.0.1'
-
-[string] $disableInactiveUsersGuid = 'F93FE68D-C732-4CFF-ABDA-0124248D2239'
-[string] $disableInactiveUsersVersion = '0.0.0.1'
-
-[string] $populateParentIdAndChildIdGuid = 'B2E09BD0-438D-4C66-B247-0891528BF4A3'
-[string] $populateParentIdAndChildIdVersion = '8.0.0.1'
-
-[string] $productionGapAndOverlapCheckGuid = '6FB47352-7E1C-4A3E-8C8A-7FB10ABDC805'
-[string] $productionGapAndOverlapCheckVersion = '3.2.0.0'
-
-[string] $reproduceRedactionToDocumentUniverseGuid = '1724DAA9-396C-4DFA-9685-9C7104BA2098'
-[string] $reproduceRedactionToDocumentUniverseVersion = '2.3.0.0'
-
-[string] $userImportApplicationGuid = '08AF6BFE-6B4E-445D-AFB1-16BFBF91B7A4'
-[string] $userImportApplicationVersion = '1.0.4.1'
-
-[string] $autoIncrementFieldOnObjectGuid = '41DE3DEA-F760-4A1D-84D1-392484A81B63'
-[string] $autoIncrementFieldOnObjectVersion = '2.1.0.1'
-
-[string] $documentUtilitiesGuid = '6894DF96-B204-4157-9318-4073D8A7476D'
-[string] $documentUtilitiesVersion = '10.1.7.8'
-
-[string] $reviewerProductivityGuid = '2FDDD2D6-53E3-4888-BD7E-EC265E0C5F7A'
-[string] $reviewerProductivityVersion = '9.0.0.2'
-
-[string] $trackDocumentFieldEditsByReviewerGuid = 'DC31F042-2653-4801-88ED-13CDC10A8A0C'
-[string] $trackDocumentFieldEditsByReviewerVersion = '5.7.0.1'
-
-[string] $dataFieldParsingGuid = 'E41DE486-8775-4A38-A4C0-CEFC382E7CF8'
-[string] $dataFieldParsingVersion = '0.0.0.1'
-
-[string] $nativeTimeZoneOffsetWithDstGuid = 'C3B47CCC-4469-4FEF-8080-5BCF78BB81DC'
-[string] $nativeTimeZoneOffsetWithDstVersion = '6.1.0.2'
-
-[string] $deleteEmptyCaseFoldersGuid = '83824CC7-15D5-4BAD-9730-A2307EF5B803'
-[string] $deleteEmptyCaseFoldersVersion = '0.0.0.1'
-
-[string] $changeRedactionTypeGuid = '5EA43B8D-2B93-4944-A06E-1D86C8A74665'
-[string] $changeRedactionTypeVersion = '0.0.0.1'
-
-[string] $normalizeRedactionsAcrossRelationalGroupsGuid = 'E8E1CAB6-47C5-4535-9D66-EB8AD69ACAE0'
-[string] $normalizeRedactionsAcrossRelationalGroupsVersion = '0.0.0.1'
-
-[string] $collectSavedSearchDataSizesGuid = '9B50933A-7C1E-4A06-9859-1C2CC62A4250'
-[string] $collectSavedSearchDataSizesVersion = '0.0.0.1'
-
-[string] $environmentLevelUserLoginAndWorkspaceAdminGuid = 'E327D1D4-3591-4BFA-86BC-24A3B4A2F666'
-[string] $environmentLevelUserLoginAndWorkspaceAdminVersion = '2.4.0.2'
-
-[string] $loginHistoryByUserReportGuid = 'D5A67A08-B7B9-4E54-9C24-B91254AA1F2B'
-[string] $loginHistoryByUserReportVersion = '5.0.0.0'
-
-[string] $searchTermCountsGuid = '751070C2-5C96-4F72-99D0-626FC96B354D'
-[string] $searchTermCountsVersion = '0.0.0.1'
-
-[string] $userCountsPerWorkspaceGuid = '45A67CA3-DE44-4411-8C51-8DDE3B7C22BB'
-[string] $userCountsPerWorkspaceVersion = '0.0.0.1'
-
-[string] $userWorkspaceAccessAndLastLoginGuid = '9B52B19E-6ADB-4020-8330-B44219BFEA28'
-[string] $userWorkspaceAccessAndLastLoginVersion = '0.0.0.1'
-
-[string] $workspaceFolderGroupSecurityGuid = '07B44E66-1DDF-4607-987F-150C9C772B43'
-[string] $workspaceFolderGroupSecurityVersion = '1.0.0.0'
-
-[string] $solutionSnapshotGuid = 'D51C3E3E-EBF4-402A-B41E-35C4018C8396'
-[string] $solutionSnapshotVersion = '4.0.0.4'
-
 class Application {
   [string]$Name
   [string]$Guid
@@ -110,36 +25,34 @@ class Application {
 }
 
 [Application[]] $applications = @(
-  [Application]::new('Propogate Coding Post-Import', $propogateCodingPostImportGuid, $propogateCodingPostImportVersion1),
-  [Application]::new('Propagate Coding Post-Import', $propogateCodingPostImportGuid, $propogateCodingPostImportVersion2),
-  [Application]::new('Collect Folder Path Data', $collectFolderPathDataGuid, $collectFolderPathDataVersion),
-  [Application]::new('Remove Documents from Batch Sets', $removeDocumentsFromBatchSetsGuid, $removeDocumentsFromBatchSetsVersion),
-  [Application]::new('File Validation Agent', $fileValidationAgentGuid, $fileValidationAgentVersion),
-  [Application]::new('Copy Redactions Across Markup Sets', $copyRedactionsAcrossMarkupSetsGuid, $copyRedactionsAcrossMarkupSetsVersion),
-  [Application]::new('Copy Redactions Across Workspaces', $copyRedactionsAcrossWorkspacesGuid, $copyRedactionsAcrossWorkspacesVersion),
-  [Application]::new('Disable Inactive Users', $disableInactiveUsersGuid, $disableInactiveUsersVersion),
-  [Application]::new('Populate Parent ID and Child ID', $populateParentIdAndChildIdGuid, $populateParentIdAndChildIdVersion),
-  [Application]::new('Production Gap and Overlap Check', $productionGapAndOverlapCheckGuid, $productionGapAndOverlapCheckVersion),
-  [Application]::new('Reproduce Redaction To Document Universe', $reproduceRedactionToDocumentUniverseGuid, $reproduceRedactionToDocumentUniverseVersion),
-  [Application]::new('User Import Application', $userImportApplicationGuid, $userImportApplicationVersion),
-  [Application]::new('Auto Increment Field on Object', $autoIncrementFieldOnObjectGuid, $autoIncrementFieldOnObjectVersion),
-  [Application]::new('Document Utilities', $documentUtilitiesGuid, $documentUtilitiesVersion),
-  [Application]::new('Reviewer Productivity', $reviewerProductivityGuid, $reviewerProductivityVersion),
-  [Application]::new('Track Document Field Edits By Reviewer', $trackDocumentFieldEditsByReviewerGuid, $trackDocumentFieldEditsByReviewerVersion),
-  [Application]::new('Data Field Parsing', $dataFieldParsingGuid, $dataFieldParsingVersion),
-  [Application]::new('Native Time Zone Offset with DST', $nativeTimeZoneOffsetWithDstGuid, $nativeTimeZoneOffsetWithDstVersion),
-  [Application]::new('Delete Empty Case Folders', $deleteEmptyCaseFoldersGuid, $deleteEmptyCaseFoldersVersion),
-  [Application]::new('Change Redaction Type', $changeRedactionTypeGuid, $changeRedactionTypeVersion),
-  [Application]::new('Normalize Redactions Across Relational Groups', $normalizeRedactionsAcrossRelationalGroupsGuid, $normalizeRedactionsAcrossRelationalGroupsVersion),
-  [Application]::new('Collect Saved Search Data Sizes', $collectSavedSearchDataSizesGuid, $collectSavedSearchDataSizesVersion),
-  [Application]::new('Environment Level User Login and Workspace Admin', $environmentLevelUserLoginAndWorkspaceAdminGuid, $environmentLevelUserLoginAndWorkspaceAdminVersion),
-  [Application]::new('Login History By User Report', $loginHistoryByUserReportGuid, $loginHistoryByUserReportVersion),
-  [Application]::new('Search Term Counts', $searchTermCountsGuid, $searchTermCountsVersion),
-  [Application]::new('User Counts Per Workspace', $userCountsPerWorkspaceGuid, $userCountsPerWorkspaceVersion),
-  [Application]::new('User Workspace Access and Last Login', $userWorkspaceAccessAndLastLoginGuid, $userWorkspaceAccessAndLastLoginVersion),
-  [Application]::new('Workspace Folder Group Security', $workspaceFolderGroupSecurityGuid, $workspaceFolderGroupSecurityVersion),
-  [Application]::new('Collect Folder Path Data', $collectFolderPathDataGuid, $collectFolderPathDataVersion),
-  [Application]::new('Solution Snapshot', $solutionSnapshotGuid, $solutionSnapshotVersion)
+  [Application]::new('Propogate Coding Post-Import', 'C0C7A2BE-12C9-49C0-BF3F-44EB85CFF3EA', '15.1.0.0;15.1.0.12'),
+  [Application]::new('Collect Folder Path Data', '4EFA7758-06B9-4A46-A936-9E035356748E', '6.1.0.7'),
+  [Application]::new('Remove Documents from Batch Sets', '02F4FD31-BB51-4F27-956D-20E4D6A9DB59', '3.6.0.2'),
+  [Application]::new('File Validation Agent', '912EE010-B25E-4B11-B1F5-8D42D03F33C6', '6.10.0.0'),
+  [Application]::new('Copy Redactions Across Markup Sets', '460FD2CC-8BB6-465D-B2DA-720E80294FA4', '1.2.0.0'),
+  [Application]::new('Copy Redactions Across Workspaces', '9748387D-3BAA-4A33-BD39-83AF02FFBEB5', '4.4.0.1'),
+  [Application]::new('Disable Inactive Users', 'F93FE68D-C732-4CFF-ABDA-0124248D2239', '0.0.0.1'),
+  [Application]::new('Populate Parent ID and Child ID', 'B2E09BD0-438D-4C66-B247-0891528BF4A3', '8.0.0.1'),
+  [Application]::new('Production Gap and Overlap Check', '6FB47352-7E1C-4A3E-8C8A-7FB10ABDC805', '3.2.0.0'),
+  [Application]::new('Reproduce Redaction To Document Universe', '1724DAA9-396C-4DFA-9685-9C7104BA2098', '2.3.0.0'),
+  [Application]::new('User Import Application', '08AF6BFE-6B4E-445D-AFB1-16BFBF91B7A4', '1.0.4.1'),
+  [Application]::new('Auto Increment Field on Object', '41DE3DEA-F760-4A1D-84D1-392484A81B63', '2.1.0.1'),
+  [Application]::new('Document Utilities', '6894DF96-B204-4157-9318-4073D8A7476D', '10.1.7.8'),
+  [Application]::new('Reviewer Productivity', '2FDDD2D6-53E3-4888-BD7E-EC265E0C5F7A', '9.0.0.2'),
+  [Application]::new('Track Document Field Edits By Reviewer', 'DC31F042-2653-4801-88ED-13CDC10A8A0C', '5.7.0.1'),
+  [Application]::new('Data Field Parsing', 'E41DE486-8775-4A38-A4C0-CEFC382E7CF8', '0.0.0.1'),
+  [Application]::new('Native Time Zone Offset with DST', 'C3B47CCC-4469-4FEF-8080-5BCF78BB81DC', '6.1.0.2'),
+  [Application]::new('Delete Empty Case Folders', '83824CC7-15D5-4BAD-9730-A2307EF5B803', '0.0.0.1'),
+  [Application]::new('Change Redaction Type', '5EA43B8D-2B93-4944-A06E-1D86C8A74665', '0.0.0.1'),
+  [Application]::new('Normalize Redactions Across Relational Groups', 'E8E1CAB6-47C5-4535-9D66-EB8AD69ACAE0', '0.0.0.1'),
+  [Application]::new('Collect Saved Search Data Sizes', '9B50933A-7C1E-4A06-9859-1C2CC62A4250', '0.0.0.1'),
+  [Application]::new('Environment Level User Login and Workspace Admin', 'E327D1D4-3591-4BFA-86BC-24A3B4A2F666', '2.4.0.2'),
+  [Application]::new('Login History By User Report', 'D5A67A08-B7B9-4E54-9C24-B91254AA1F2B', '5.0.0.0'),
+  [Application]::new('Search Term Counts', '751070C2-5C96-4F72-99D0-626FC96B354D', '0.0.0.1'),
+  [Application]::new('User Counts Per Workspace', '45A67CA3-DE44-4411-8C51-8DDE3B7C22BB', '0.0.0.1'),
+  [Application]::new('User Workspace Access and Last Login', '9B52B19E-6ADB-4020-8330-B44219BFEA28', '0.0.0.1'),
+  [Application]::new('Workspace Folder Group Security', '07B44E66-1DDF-4607-987F-150C9C772B43', '1.0.0.0'),
+  [Application]::new('Solution Snapshot', 'D51C3E3E-EBF4-402A-B41E-35C4018C8396', '4.0.0.4')
 )
 
 function Write-Empty-Message() {
@@ -227,8 +140,17 @@ function UpdateNewestAdviceHubApplicationVersions() {
     Write-Method-Call-Message "Updating Newest Advice Hub Application Versions"
 
     foreach ($application in $applications) {
-      Write-Message "Updating $($application.Name)"
-      #UpdateApplicationVersionAsync $application.Guid $application.Version
+      if ($application.Version.Contains(";")){
+        $versions = $application.Version -split ";"
+        foreach ($version in $versions) {
+          Write-Message "Updating $($application.Name) Version $($version)"
+          UpdateApplicationVersionAsync $application.Guid $version
+        }
+      }
+      else {
+        Write-Message "Updating $($application.Name) Version $($application.Version)"
+        UpdateApplicationVersionAsync $application.Guid $application.Version
+      }
     }
 
     # Send Slack Message that Updating Apps Finished
