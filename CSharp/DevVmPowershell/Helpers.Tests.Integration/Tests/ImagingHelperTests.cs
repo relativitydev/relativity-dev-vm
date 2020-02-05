@@ -1,4 +1,5 @@
-﻿using Helpers.Implementations;
+﻿using System;
+using Helpers.Implementations;
 using Helpers.Interfaces;
 using NUnit.Framework;
 using System.Threading.Tasks;
@@ -10,6 +11,7 @@ namespace Helpers.Tests.Integration.Tests
 	{
 		private IWorkspaceHelper WorkspaceHelper { get; set; }
 		private IImagingHelper Sut { get; set; }
+		private IImportApiHelper ImportApiHelper { get; set; }
 
 		[SetUp]
 		public void Setup()
@@ -24,6 +26,7 @@ namespace Helpers.Tests.Integration.Tests
 			ISqlHelper sqlHelper = new SqlHelper(sqlRunner);
 			WorkspaceHelper = new WorkspaceHelper(connectionHelper, sqlHelper);
 			Sut = new ImagingHelper(connectionHelper);
+			ImportApiHelper = new ImportApiHelper(connectionHelper);
 		}
 
 		[TearDown]
@@ -36,18 +39,39 @@ namespace Helpers.Tests.Integration.Tests
 		public async Task ImagingTest()
 		{
 			// Arrange
-			//Arrange
-			const string workspaceName = TestConstants.SAMPLE_DATA_GRID_WORKSPACE_NAME;
+			const string workspaceName = "Imaging Test Workspace";
+			CleanupWorkspaceIfItExists(workspaceName);
 
-			//Act
-			int workspaceArtifactId = await WorkspaceHelper.GetFirstWorkspaceArtifactIdQueryAsync(workspaceName);
+			//Create Workspace
+			int workspaceArtifactId = WorkspaceHelper.CreateSingleWorkspaceAsync(Constants.Workspace.DEFAULT_WORKSPACE_TEMPLATE_NAME, workspaceName, false).Result;
+
+			//Import Documents
+			int numberImported = ImportApiHelper.AddDocumentsToWorkspace(workspaceArtifactId, "document", 100, "").Result;
+			if (numberImported == 0)
+			{
+				await WorkspaceHelper.DeleteSingleWorkspaceAsync(workspaceArtifactId);
+				throw new Exception("Failed to Import Documents to the Workspace");
+			}
 
 			// Act
 			// Assert
 			Assert.DoesNotThrow(() => Sut.ImageAllDocumentsInWorkspaceAsync(workspaceArtifactId).Wait());
+			Assert.IsTrue(Sut.CheckThatAllDocumentsInWorkspaceAreImaged(workspaceArtifactId).Result);
 
 			//Cleanup
-			await WorkspaceHelper.DeleteAllWorkspacesAsync(workspaceName);
+			await WorkspaceHelper.DeleteSingleWorkspaceAsync(workspaceArtifactId);
+		}
+
+		private void CleanupWorkspaceIfItExists(string workspaceName)
+		{
+			try
+			{
+				WorkspaceHelper.DeleteAllWorkspacesAsync(workspaceName).Wait();
+			}
+			catch (Exception ex)
+			{
+				//Workspace Does Not Exist
+			}
 		}
 	}
 }

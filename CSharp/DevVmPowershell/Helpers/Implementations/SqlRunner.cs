@@ -54,6 +54,7 @@ namespace Helpers.Implementations
 
 				if (sqlParameters != null && sqlParameters.ToList().Any())
 				{
+					sqlCommand.Parameters.Clear();
 					foreach (SqlParameter sqlParameter in sqlParameters)
 					{
 						sqlCommand.Parameters.Add(sqlParameter);
@@ -149,7 +150,7 @@ namespace Helpers.Implementations
 		{
 			try
 			{
-				return ExecuteSqlStatementAsScalar<T>(sqlStatement, null);
+				return ExecuteSqlStatementAsScalar<T>(sqlDatabaseName, sqlStatement, null);
 			}
 			catch (Exception ex)
 			{

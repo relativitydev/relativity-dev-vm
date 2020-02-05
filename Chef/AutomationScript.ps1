@@ -56,10 +56,12 @@ $global:devVmVersionsToCreate = New-Object System.Collections.ArrayList
 [Boolean] $global:devVmCreationWasSuccess = $false
 [string] $global:compressedFileExtension = "zip"
 [string] $global:relativityInvariantVersionNumberFileName = "relativity_invariant_version.txt"
-[string] $global:testSingleRelativityVersion = "10.3.170.1" # Leave it blank when in Automated Production mode
-[string] $global:invariantVersion = "5.3.167.4" # Leave it blank when in Automated Production mode
+[string] $global:testSingleRelativityVersion = "" # Leave it blank when in Automated Production mode
+[string] $global:invariantVersion = "" # Leave it blank when in Automated Production mode
 [Boolean] $global:foundCompatibleInvariantVersion = $true # Set to $false when in Automated Production mode
-[Boolean] $global:sendSlackMessage = $true # Set to $false when you do not want to send a slack message
+[Boolean] $global:sendSlackMessage = $false # Set to $false when you do not want to send a slack message
+[Boolean] $global:copyToNetworkStorage = $false # Set to $false when you do not want to copy the DevVm to the network storage
+[Boolean] $global:addVersionToSolutionSnapshotDatabase = $false # Set to $false when you do not want to add the Relativity Version to the Solution Snapshot Database
  
 function Reset-Logs-Environment-Variable() {
   Write-Host-Custom-Green "Resetting Logs Environment variable."
@@ -426,23 +428,25 @@ function Run-DevVm-Creation-Script([string] $relativityVersionToCreate) {
 }
 
 function Copy-DevVm-Zip-To-Network-Storage([string] $relativityVersionToCopy) {
-  Write-Heading-Message-To-Screen "Copying DevVm created [$($relativityVersionToCopy)] to Network storage."
+  if ($global:copyToNetworkStorage -eq $true) {
+    Write-Heading-Message-To-Screen "Copying DevVm created [$($relativityVersionToCopy)] to Network storage."
    
-  [System.Version] $relativityVersion = [System.Version]::Parse($relativityVersionToCopy)
-  [string] $majorRelativityVersion = "$($relativityVersion.Major).$($relativityVersion.Minor)"
-
-  [string] $sourceZipFilePath = "$($global:vmExportPath)\$($global:vmName).$($global:compressedFileExtension)"
-  [string] $destinationFilePath = "$($global:devVmNetworkStorageLocation)\$($majorRelativityVersion)\$($global:vmName).$($global:compressedFileExtension)"
+    [System.Version] $relativityVersion = [System.Version]::Parse($relativityVersionToCopy)
+    [string] $majorRelativityVersion = "$($relativityVersion.Major).$($relativityVersion.Minor)"
   
-  if (Test-Path $sourceZipFilePath) {
-    Copy-File-Overwrite-If-It-Exists $sourceZipFilePath $destinationFilePath  
+    [string] $sourceZipFilePath = "$($global:vmExportPath)\$($global:vmName).$($global:compressedFileExtension)"
+    [string] $destinationFilePath = "$($global:devVmNetworkStorageLocation)\$($majorRelativityVersion)\$($global:vmName).$($global:compressedFileExtension)"
+    
+    if (Test-Path $sourceZipFilePath) {
+      Copy-File-Overwrite-If-It-Exists $sourceZipFilePath $destinationFilePath  
+    }
+    else {
+      Write-Message-To-Screen "File[$($sourceZipFilePath)] doesn't exist. Skipped copying to Network storage."
+    }  
+  
+    Write-Message-To-Screen "Copied DevVm created [$($relativityVersionToCopy)] to Network storage."
+    Write-Empty-Line-To-Screen
   }
-  else {
-    Write-Message-To-Screen "File[$($sourceZipFilePath)] doesn't exist. Skipped copying to Network storage."
-  }  
-
-  Write-Message-To-Screen "Copied DevVm created [$($relativityVersionToCopy)] to Network storage."
-  Write-Empty-Line-To-Screen
 }
 
 function Send-Slack-Success-Message([string] $relativityVersionToCopy) {
@@ -455,7 +459,7 @@ function Send-Slack-Success-Message([string] $relativityVersionToCopy) {
       "text" = "New DevVm ($($relativityVersionToCreate)) is available at $($destinationFilePath)"
     } | ConvertTo-Json
 
-    Invoke-WebRequest -Method Post -Body "$BodyJSON" -Uri $Env:slack_devex_internal_group_key -ContentType application/json
+    Invoke-WebRequest -Method Post -Body "$BodyJSON" -Uri $Env:slack_devex_announcements_group_key -ContentType application/json
     Write-Message-To-Screen "Sent Slack Success Message"
   }
 }
@@ -483,6 +487,22 @@ function Send-Slack-Failure-Message([string] $relativityVersionToCopy) {
 
     Invoke-WebRequest -Method Post -Body "$BodyJSON" -Uri $Env:slack_devex_tools_group_key -ContentType application/json
     Write-Message-To-Screen "Sent Slack Failure Message"
+  }
+}
+
+function Add-Relativity-Version-To-Solution-Snapshot-Database([string] $relativityVersion) {
+  if ($global:addVersionToSolutionSnapshotDatabase -eq $true) {
+    Write-Heading-Message-To-Screen "Adding Relativity Version to the Solution Snapshot Database"
+
+    #Make sure we are in the folder where the running script exists
+    Write-Message-To-Screen "PSScriptroot: $($PSScriptroot)"
+    Set-Location $PSScriptroot
+    
+    # Run DevVm Script
+    &"$PSScriptroot\AddRelativityVersionToSolutionSnapshotDatabase.ps1" "$Env:devvm_automation_salesforce_username" "$Env:devvm_automation_salesforce_password" "$relativityVersion"
+  
+    Write-Message-To-Screen "Ran Add Relativity Version to Solution Snapshot Database script."
+    Write-Empty-Line-To-Screen
   }
 }
 
@@ -540,6 +560,8 @@ function Create-DevVm([string] $relativityVersionToCreate) {
           Send-Slack-Success-Message $relativityVersionToCreate
           # Send Slack Message to the Tools Slack channel to remind about the follow up tasks
           Send-Slack-Success-Message-Follow-Up-Tasks $relativityVersionToCreate
+          # Add Relativity Version to Solution Snapshot Database
+          Add-Relativity-Version-To-Solution-Snapshot-Database $relativityVersionToCreate
         }
         else {
           $global:count++

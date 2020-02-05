@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace Helpers.Tests.Integration.Tests
 {
+	//These tests must be run in a specific order
 	[TestFixture]
 	public class ProcessingHelperTests
 	{
