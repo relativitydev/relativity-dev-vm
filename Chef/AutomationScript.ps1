@@ -499,7 +499,7 @@ function Add-Relativity-Version-To-Solution-Snapshot-Database([string] $relativi
     Set-Location $PSScriptroot
     
     # Run DevVm Script
-    &"$PSScriptroot\AddRelativityVersionToSolutionSnapshotDatabase.ps1" "$Env:devvm_automation_salesforce_username" "$Env:devvm_automation_salesforce_password" "$relativityVersion"
+    &"$PSScriptroot\AddRelativityVersionToSolutionSnapshotDatabase.ps1" "$Env:devvm_automation_salesforce_username" "$Env:devvm_automation_salesforce_password" "$relativityVersion" $global:sendSlackMessage
   
     Write-Message-To-Screen "Ran Add Relativity Version to Solution Snapshot Database script."
     Write-Empty-Line-To-Screen
