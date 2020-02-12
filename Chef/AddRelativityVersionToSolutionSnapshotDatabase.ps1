@@ -202,6 +202,7 @@ function UpdateApplicationVersionAsync([string] $applicationGuid, [string] $appl
 }
 
 function Send-Slack-Message-Update-Finished([string] $relativityVersionToUpdate) {
+  [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
   if ($sendSlackMessage -eq $true) {
     Write-Method-Call-Message "Sending Slack Message that Updating Advice Hub Apps finished"
     $BodyJSON = @{
@@ -213,6 +214,7 @@ function Send-Slack-Message-Update-Finished([string] $relativityVersionToUpdate)
 }
 
 function Send-Slack-Message-Update-Failed([string] $relativityVersionToUpdate) {
+  [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
   if ($sendSlackMessage -eq $true) {
     Write-Method-Call-Message "Sending Slack Message that Updating Advice Hub Apps failed to finish"
     $BodyJSON = @{
@@ -224,6 +226,7 @@ function Send-Slack-Message-Update-Failed([string] $relativityVersionToUpdate) {
 }
 
 function Send-Slack-Success-Message([string] $relativityVersionToCreate) {
+  [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
   if ($sendSlackMessage -eq $true) {
     Write-Method-Call-Message "Sending Slack Success Message"
     $BodyJSON = @{
@@ -235,6 +238,7 @@ function Send-Slack-Success-Message([string] $relativityVersionToCreate) {
 }
 
 function Send-Slack-Skip-Message([string] $relativityVersionToCreate) {
+  [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
   if ($sendSlackMessage -eq $true) {
     Write-Method-Call-Message "Sending Slack Skip Message"
     $BodyJSON = @{
@@ -246,6 +250,7 @@ function Send-Slack-Skip-Message([string] $relativityVersionToCreate) {
 }
 
 function Send-Slack-Failure-Message([string] $relativityVersionToCreate) {
+  [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
   if ($sendSlackMessage -eq $true) {
     Write-Method-Call-Message "Sending Slack Failure Message"
     $BodyJSON = @{
