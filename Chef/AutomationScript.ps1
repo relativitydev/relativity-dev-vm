@@ -471,7 +471,7 @@ function Send-Slack-Success-Message-Follow-Up-Tasks([string] $relativityVersionT
     Write-Heading-Message-To-Screen "Sending Slack Success Message - Follow Up Tasks"
     [System.Version] $relativityVersion = [System.Version]::Parse($relativityVersionToCopy)
     $BodyJSON = @{
-      "text" = "REMINDER: 1. Please confirm Relativity Version ($($relativityVersionToCreate)) was added to Solution Snapshot Database. 2. Confirm Compatibility info for the Advice Hub Applications was updated with new version. 3. Publish NuGet packages."
+      "text" = "Follow this checklist (https://einstein.kcura.com/x/61e3C) for the new Relativity Version ($($relativityVersionToCreate))."
     } | ConvertTo-Json
 
     Invoke-WebRequest -Method Post -Body "$BodyJSON" -Uri $Env:slack_devex_tools_group_key -ContentType application/json
