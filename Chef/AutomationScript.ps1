@@ -450,6 +450,7 @@ function Copy-DevVm-Zip-To-Network-Storage([string] $relativityVersionToCopy) {
 }
 
 function Send-Slack-Success-Message([string] $relativityVersionToCopy) {
+  [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
   if ($global:sendSlackMessage -eq $true) {
     Write-Heading-Message-To-Screen "Sending Slack Success Message"
     [System.Version] $relativityVersion = [System.Version]::Parse($relativityVersionToCopy)
@@ -465,11 +466,12 @@ function Send-Slack-Success-Message([string] $relativityVersionToCopy) {
 }
 
 function Send-Slack-Success-Message-Follow-Up-Tasks([string] $relativityVersionToCopy) {
+  [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
   if ($global:sendSlackMessage -eq $true) {
     Write-Heading-Message-To-Screen "Sending Slack Success Message - Follow Up Tasks"
     [System.Version] $relativityVersion = [System.Version]::Parse($relativityVersionToCopy)
     $BodyJSON = @{
-      "text" = "REMINDER: 1. Please add Relativity Version ($($relativityVersionToCreate)) to Solution Snapshot Database. 2. Inform DevCon team to update Compatibility info for the Applications. 3. Publish NuGet packages."
+      "text" = "REMINDER: 1. Please confirm Relativity Version ($($relativityVersionToCreate)) was added to Solution Snapshot Database. 2. Confirm Compatibility info for the Advice Hub Applications was updated with new version. 3. Publish NuGet packages."
     } | ConvertTo-Json
 
     Invoke-WebRequest -Method Post -Body "$BodyJSON" -Uri $Env:slack_devex_tools_group_key -ContentType application/json
@@ -478,6 +480,7 @@ function Send-Slack-Success-Message-Follow-Up-Tasks([string] $relativityVersionT
 }
 
 function Send-Slack-Failure-Message([string] $relativityVersionToCopy) {
+  [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
   if ($global:sendSlackMessage -eq $true) {
     Write-Heading-Message-To-Screen "Sending Slack Failure Message"
     [System.Version] $relativityVersion = [System.Version]::Parse($relativityVersionToCopy)
