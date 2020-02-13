@@ -1,13 +1,13 @@
 [Boolean] $global:exportVm = $true
 [string] $global:vmName = "RelativityDevVm"
-[string] $global:vmExportPath = "C:\DevVmExport"
+[string] $global:vmExportPath = "D:\DevVmExport"
 [string] $global:vmDocumentationOnline = "Relativity Dev VM documentation can be found at this link - https://github.com/relativitydev/relativity-dev-vm/blob/master/Documentation/PDF/Relativity%20Dev%20VM%20-%20Pre-built%20VM%20-%20Documentation.pdf"
 [string] $global:vmCheckpointName = "$($global:vmName) Created"
 [string] $global:devVmCreationResultFileName = "result_file.txt"
 [Boolean] $global:devVmCreationWasSuccess = $false
 [string] $global:compressedFileExtension = "zip"
 
-[string] $devVmAutomationConfigFilePath = "C:\DevVm_Automation_Config.json"
+[string] $devVmAutomationConfigFilePath = "D:\DevVm_Automation_Config.json"
 [string] $json = Get-Content -Path $devVmAutomationConfigFilePath
 $jsonContents = $json | ConvertFrom-Json
 [string] $global:devVmInstallFolder = $jsonContents.devVmInstallFolder
