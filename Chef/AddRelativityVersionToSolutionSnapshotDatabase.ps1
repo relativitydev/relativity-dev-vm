@@ -6,12 +6,23 @@ Clear-Host
 [Boolean] $sendSlackMessage =  $args[3]
 [string] $relativityVersionReleaseName = ''
 
-[string] $server = 'solutionsnapshotapi.azurewebsites.net'
-
-[string] $CreateRelativityVersionAsyncUrl = "https://$($server)/api/external/CreateRelativityVersionAsync"
-[string] $updateApplicationVersionAsyncUrl = "https://$($server)/api/external/UpdateApplicationVersionAsync"
-
 $global:salesforceSessionObject = $null
+
+class Environment {
+  [string]$Name
+  [string]$Server
+
+  Environment($name, $server) {
+    $this.Name = $name
+    $this.Server = $server
+  }
+}
+
+[Environment[]] $environments = @(
+  [Environment]::new('Production','api.solutionsnapshot.relativity.com'),
+  [Environment]::new('Staging','solutionsnapshotstagingapi.azurewebsites.net'),
+  [Environment]::new('Develop','solutionsnapshotdevapi.azurewebsites.net')
+)
 
 class Application {
   [string]$Name
@@ -91,7 +102,7 @@ function GetSessionId() {
   }
 }
 
-function CreateRelativityVersionAsync() {
+function CreateRelativityVersionAsync([Environment] $environment) {
   try {
     Write-Method-Call-Message "Calling CreateRelativityVersionAsync API"
     $request = new-object psobject
@@ -102,22 +113,23 @@ function CreateRelativityVersionAsync() {
     $requestJson = $request | ConvertTo-Json
     Write-Message "Request Json: $($requestJson)"
 
-    $response = invoke-restmethod -uri $createrelativityversionasyncurl -method post -body $requestjson -contenttype 'application/json' -headers @{"x-csrf-header"="-"}
+    $createRelativityVersionAsyncUrl = "https://$($environment.Server)/api/external/CreateRelativityVersionAsync"
+    $response = invoke-restmethod -uri $createRelativityVersionAsyncUrl -method post -body $requestjson -contenttype 'application/json' -headers @{"x-csrf-header"="-"}
     $responsejson = $response | convertto-json
-    Write-Message "Created Relativity Version"
+    Write-Message "Created Relativity Version in $($environment.Name)"
 
     # Send Slack Success Message
-    Send-Slack-Success-Message $relativityVersion
+    Send-Slack-Success-Message $relativityVersion $environment.Name
 
     # Update Advice Hub Solutions with Compatibility for Newest Relativity Version
-    UpdateNewestAdviceHubApplicationVersions
+    UpdateNewestAdviceHubApplicationVersions $environment
   }
   catch {
 	  if($_.ToString().Contains('Relativity Version ' + $relativityVersion + ' already exists')){
       Write-Error-Message "Relativity Version already exists"
 
       # Send Slack Skip Message
-	  	Send-Slack-Skip-Message $relativityVersion
+	  	Send-Slack-Skip-Message $relativityVersion $environment.Name
 	  }
 	  else {
 	  	Write-Error-Message "An error occurred when calling CreateRelativityVersionAsyncUrl API."
@@ -129,12 +141,12 @@ function CreateRelativityVersionAsync() {
       Write-Error-Message "Response Json: $($responseJson)"
       
       # Send Slack Failure Message
-	  	Send-Slack-Failure-Message $relativityVersion
+	  	Send-Slack-Failure-Message $relativityVersion $environment.Name
 	  }
   }
 }
 
-function UpdateNewestAdviceHubApplicationVersions() {
+function UpdateNewestAdviceHubApplicationVersions([Environment] $environment) {
   try {
     Write-Method-Call-Message "Updating Newest Advice Hub Application Versions"
 
@@ -144,29 +156,29 @@ function UpdateNewestAdviceHubApplicationVersions() {
         foreach ($version in $versions) {
           $version = $version.trim()
           Write-Message "Updating Application: $($application.Name), Version: $($version)"
-          UpdateApplicationVersionAsync $application.Guid $version
+          UpdateApplicationVersionAsync $application.Guid $version $environment
         }
       }
       else {
         $application.Version = $application.Version.trim()
         Write-Message "Updating Application: $($application.Name), Version: $($application.Version)"
-        UpdateApplicationVersionAsync $application.Guid $application.Version
+        UpdateApplicationVersionAsync $application.Guid $application.Version $environment
       }
     }
 
     # Send Slack Message that Updating Apps Finished
-    Send-Slack-Message-Update-Finished $relativityVersion
+    Send-Slack-Message-Update-Finished $relativityVersion $environment.Name
   }
   catch {
     Write-Error-Message "An error occurred when trying to Update All Advice Hub Solutions."
     Write-Error-Message "Error Message: ($_)"
 
     # Send Slack Message that Updating Apps Failed
-    Send-Slack-Message-Update-Failed $relativityVersion
+    Send-Slack-Message-Update-Failed $relativityVersion $environment.Name
   }
 }
 
-function UpdateApplicationVersionAsync([string] $applicationGuid, [string] $applicationVersion) {
+function UpdateApplicationVersionAsync([string] $applicationGuid, [string] $applicationVersion, [Environment] $environment) {
   try {
     Write-Method-Call-Message "Calling UpdateApplicationVersionAsync API"
     $request = new-object psobject
@@ -182,10 +194,10 @@ function UpdateApplicationVersionAsync([string] $applicationGuid, [string] $appl
     $relativityVersionArray += $relativityVersionObject1
 
     $request | add-member noteproperty RelativityVersions $relativityVersionArray
-
     $requestJson = $request | ConvertTo-Json
     Write-Message "Request Json: $($requestJson)"
 
+    $updateApplicationVersionAsyncUrl = "https://$($environment.Server)/api/external/UpdateApplicationVersionAsync"
     $response = Invoke-RestMethod -Uri $updateApplicationVersionAsyncUrl -Method Post -Body $requestJson -ContentType 'application/json' -Headers @{"x-csrf-header"="-"}
     $responseJson = $response | ConvertTo-Json
     Write-Message "Updated Application Version"
@@ -201,60 +213,60 @@ function UpdateApplicationVersionAsync([string] $applicationGuid, [string] $appl
   }  
 }
 
-function Send-Slack-Message-Update-Finished([string] $relativityVersionToUpdate) {
+function Send-Slack-Message-Update-Finished([string] $relativityVersionToUpdate, [string] $environmentName) {
   [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
   if ($sendSlackMessage -eq $true) {
     Write-Method-Call-Message "Sending Slack Message that Updating Advice Hub Apps finished"
     $BodyJSON = @{
-       "text" = "Successfully updated all Advice Hub apps with compatibility with ($($relativityVersionToCreate)) in the Solution Snapshot Database"
+       "text" = "Successfully updated all Advice Hub apps with compatibility with ($($relativityVersionToCreate)) in the Solution Snapshot Database in the $($environmentName) Environment"
     } | ConvertTo-Json
     Invoke-WebRequest -Method Post -Body "$BodyJSON" -Uri $Env:slack_devex_announcements_group_key -ContentType application/json
     Write-Message "Sent Slack Message that Updating Advice Hub Apps finished"
   }
 }
 
-function Send-Slack-Message-Update-Failed([string] $relativityVersionToUpdate) {
+function Send-Slack-Message-Update-Failed([string] $relativityVersionToUpdate, [string] $environmentName) {
   [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
   if ($sendSlackMessage -eq $true) {
     Write-Method-Call-Message "Sending Slack Message that Updating Advice Hub Apps failed to finish"
     $BodyJSON = @{
-       "text" = "Failed to update all Advice Hub apps with compatibility with ($($relativityVersionToCreate)) in the Solution Snapshot Database"
+       "text" = "Failed to update all Advice Hub apps with compatibility with ($($relativityVersionToCreate)) in the Solution Snapshot Database in the $($environmentName) Environment"
     } | ConvertTo-Json
     Invoke-WebRequest -Method Post -Body "$BodyJSON" -Uri $Env:slack_devex_announcements_group_key -ContentType application/json
     Write-Message "Sent Slack Message that Updating Advice Hub Apps failed to finished"
   }
 }
 
-function Send-Slack-Success-Message([string] $relativityVersionToCreate) {
+function Send-Slack-Success-Message([string] $relativityVersionToCreate, [string] $environmentName) {
   [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
   if ($sendSlackMessage -eq $true) {
     Write-Method-Call-Message "Sending Slack Success Message"
     $BodyJSON = @{
-       "text" = "Added ($($relativityVersionToCreate)) to Solution Snapshot Database"
+       "text" = "Added ($($relativityVersionToCreate)) to Solution Snapshot Database in the $($environmentName) Environment"
     } | ConvertTo-Json
     Invoke-WebRequest -Method Post -Body "$BodyJSON" -Uri $Env:slack_devex_announcements_group_key -ContentType application/json
     Write-Message "Sent Slack Success Message" 
   }
 }
 
-function Send-Slack-Skip-Message([string] $relativityVersionToCreate) {
+function Send-Slack-Skip-Message([string] $relativityVersionToCreate, [string] $environmentName) {
   [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
   if ($sendSlackMessage -eq $true) {
     Write-Method-Call-Message "Sending Slack Skip Message"
     $BodyJSON = @{
-      "text" = "Skipped adding ($($relativityVersionToCreate)) to Solution Snapshot Database, since it already exists."
+      "text" = "Skipped adding ($($relativityVersionToCreate)) to Solution Snapshot Database in the $($environmentName) Environment, since it already exists"
     } | ConvertTo-Json
     Invoke-WebRequest -Method Post -Body "$BodyJSON" -Uri $Env:slack_devex_announcements_group_key -ContentType application/json
     Write-Message "Sent Slack Skip Message" 
   }
 }
 
-function Send-Slack-Failure-Message([string] $relativityVersionToCreate) {
+function Send-Slack-Failure-Message([string] $relativityVersionToCreate, [string] $environmentName) {
   [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
   if ($sendSlackMessage -eq $true) {
     Write-Method-Call-Message "Sending Slack Failure Message"
     $BodyJSON = @{
-      "text" = "Failed to add ($($relativityVersionToCreate)) to Solution Snapshot Database"
+      "text" = "Failed to add ($($relativityVersionToCreate)) to Solution Snapshot Database in the $($environmentName) Environment"
     } | ConvertTo-Json
     Invoke-WebRequest -Method Post -Body "$BodyJSON" -Uri $Env:slack_devex_announcements_group_key -ContentType application/json
     Write-Message "Sent Slack Failure Message"
@@ -262,4 +274,7 @@ function Send-Slack-Failure-Message([string] $relativityVersionToCreate) {
 }
 
 GetSessionId
-CreateRelativityVersionAsync
+
+foreach($environment in $environments){
+  CreateRelativityVersionAsync $environment
+}
