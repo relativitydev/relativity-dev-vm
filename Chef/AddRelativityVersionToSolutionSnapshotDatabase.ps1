@@ -6,22 +6,23 @@ Clear-Host
 [Boolean] $sendSlackMessage =  $args[3]
 [string] $relativityVersionReleaseName = ''
 
-[string] $productionEnvironmentName = 'Production'
-[string] $stagingEnvironmentName = 'Staging'
-[string] $developEnvironmentName = 'Develop'
-
-[string] $server_production = 'solutionsnapshotapi.azurewebsites.net'
-[string] $server_staging = 'solutionsnapshotstagingapi.azurewebsites.net'
-[string] $server_develop = 'solutionsnapshotdevapi.azurewebsites.net'
-
-[string] $CreateRelativityVersionAsyncUrl_Production = "https://$($server_production)/api/external/CreateRelativityVersionAsync"
-[string] $UpdateApplicationVersionAsyncUrl_Production = "https://$($server_production)/api/external/UpdateApplicationVersionAsync"
-[string] $CreateRelativityVersionAsyncUrl_Staging = "https://$($server_staging)/api/external/CreateRelativityVersionAsync"
-[string] $UpdateApplicationVersionAsyncUrl_Staging = "https://$($server_staging)/api/external/UpdateApplicationVersionAsync"
-[string] $CreateRelativityVersionAsyncUrl_Develop = "https://$($server_develop)/api/external/CreateRelativityVersionAsync"
-[string] $UpdateApplicationVersionAsyncUrl_Develop = "https://$($server_develop)/api/external/UpdateApplicationVersionAsync"
-
 $global:salesforceSessionObject = $null
+
+class Environment {
+  [string]$Name
+  [string]$Server
+
+  Environment($name, $server) {
+    $this.Name = $name
+    $this.Server = $server
+  }
+}
+
+[Environment[]] $environments = @(
+  [Environment]::new('Production','api.solutionsnapshot.relativity.com'),
+  [Environment]::new('Staging','solutionsnapshotstagingapi.azurewebsites.net'),
+  [Environment]::new('Develop','solutionsnapshotdevapi.azurewebsites.net')
+)
 
 class Application {
   [string]$Name
@@ -101,7 +102,7 @@ function GetSessionId() {
   }
 }
 
-function CreateRelativityVersionAsync([string] $environmentName) {
+function CreateRelativityVersionAsync([Environment] $environment) {
   try {
     Write-Method-Call-Message "Calling CreateRelativityVersionAsync API"
     $request = new-object psobject
@@ -112,34 +113,23 @@ function CreateRelativityVersionAsync([string] $environmentName) {
     $requestJson = $request | ConvertTo-Json
     Write-Message "Request Json: $($requestJson)"
 
-    if ($environmentName -eq 'Production') {
-      $response = invoke-restmethod -uri $CreateRelativityVersionAsyncUrl_Production -method post -body $requestjson -contenttype 'application/json' -headers @{"x-csrf-header"="-"}
-      $responsejson = $response | convertto-json
-      Write-Message "Created Relativity Version in Production"
-    }
-    elseif ($environmentName -eq 'Staging') {
-      $response = invoke-restmethod -uri $CreateRelativityVersionAsyncUrl_Staging -method post -body $requestjson -contenttype 'application/json' -headers @{"x-csrf-header"="-"}
-      $responsejson = $response | convertto-json
-      Write-Message "Created Relativity Version in Staging"
-    }
-    else {
-      $response = invoke-restmethod -uri $CreateRelativityVersionAsyncUrl_Develop -method post -body $requestjson -contenttype 'application/json' -headers @{"x-csrf-header"="-"}
-      $responsejson = $response | convertto-json
-      Write-Message "Created Relativity Version in Develop"
-    }
+    $createRelativityVersionAsyncUrl = "https://$($environment.Server)/api/external/CreateRelativityVersionAsync"
+    $response = invoke-restmethod -uri $createRelativityVersionAsyncUrl -method post -body $requestjson -contenttype 'application/json' -headers @{"x-csrf-header"="-"}
+    $responsejson = $response | convertto-json
+    Write-Message "Created Relativity Version in $($environment.Name)"
 
     # Send Slack Success Message
-    Send-Slack-Success-Message $relativityVersion $environmentName
+    Send-Slack-Success-Message $relativityVersion $environment.Name
 
     # Update Advice Hub Solutions with Compatibility for Newest Relativity Version
-    UpdateNewestAdviceHubApplicationVersions $environmentName
+    UpdateNewestAdviceHubApplicationVersions $environment
   }
   catch {
 	  if($_.ToString().Contains('Relativity Version ' + $relativityVersion + ' already exists')){
       Write-Error-Message "Relativity Version already exists"
 
       # Send Slack Skip Message
-	  	Send-Slack-Skip-Message $relativityVersion $environmentName
+	  	Send-Slack-Skip-Message $relativityVersion $environment.Name
 	  }
 	  else {
 	  	Write-Error-Message "An error occurred when calling CreateRelativityVersionAsyncUrl API."
@@ -151,12 +141,12 @@ function CreateRelativityVersionAsync([string] $environmentName) {
       Write-Error-Message "Response Json: $($responseJson)"
       
       # Send Slack Failure Message
-	  	Send-Slack-Failure-Message $relativityVersion $environmentName
+	  	Send-Slack-Failure-Message $relativityVersion $environment.Name
 	  }
   }
 }
 
-function UpdateNewestAdviceHubApplicationVersions([string] $environmentName) {
+function UpdateNewestAdviceHubApplicationVersions([Environment] $environment) {
   try {
     Write-Method-Call-Message "Updating Newest Advice Hub Application Versions"
 
@@ -166,29 +156,29 @@ function UpdateNewestAdviceHubApplicationVersions([string] $environmentName) {
         foreach ($version in $versions) {
           $version = $version.trim()
           Write-Message "Updating Application: $($application.Name), Version: $($version)"
-          UpdateApplicationVersionAsync $application.Guid $version $environmentName
+          UpdateApplicationVersionAsync $application.Guid $version $environment
         }
       }
       else {
         $application.Version = $application.Version.trim()
         Write-Message "Updating Application: $($application.Name), Version: $($application.Version)"
-        UpdateApplicationVersionAsync $application.Guid $application.Version $environmentName
+        UpdateApplicationVersionAsync $application.Guid $application.Version $environment
       }
     }
 
     # Send Slack Message that Updating Apps Finished
-    Send-Slack-Message-Update-Finished $relativityVersion $environmentName
+    Send-Slack-Message-Update-Finished $relativityVersion $environment.Name
   }
   catch {
     Write-Error-Message "An error occurred when trying to Update All Advice Hub Solutions."
     Write-Error-Message "Error Message: ($_)"
 
     # Send Slack Message that Updating Apps Failed
-    Send-Slack-Message-Update-Failed $relativityVersion $environmentName
+    Send-Slack-Message-Update-Failed $relativityVersion $environment.Name
   }
 }
 
-function UpdateApplicationVersionAsync([string] $applicationGuid, [string] $applicationVersion, [string] $environmentName) {
+function UpdateApplicationVersionAsync([string] $applicationGuid, [string] $applicationVersion, [Environment] $environment) {
   try {
     Write-Method-Call-Message "Calling UpdateApplicationVersionAsync API"
     $request = new-object psobject
@@ -204,25 +194,13 @@ function UpdateApplicationVersionAsync([string] $applicationGuid, [string] $appl
     $relativityVersionArray += $relativityVersionObject1
 
     $request | add-member noteproperty RelativityVersions $relativityVersionArray
-
     $requestJson = $request | ConvertTo-Json
     Write-Message "Request Json: $($requestJson)"
 
-    if ($environmentName -eq $productionEnvironmentName) {
-      $response = Invoke-RestMethod -Uri $UpdateApplicationVersionAsyncUrl_Production -Method Post -Body $requestJson -ContentType 'application/json' -Headers @{"x-csrf-header"="-"}
-      $responseJson = $response | ConvertTo-Json
-      Write-Message "Updated Application Version"
-    } 
-    elseif ($environmentName -eq $stagingEnvironmentName) {
-      $response = Invoke-RestMethod -Uri $UpdateApplicationVersionAsyncUrl_Staging -Method Post -Body $requestJson -ContentType 'application/json' -Headers @{"x-csrf-header"="-"}
-      $responseJson = $response | ConvertTo-Json
-      Write-Message "Updated Application Version"
-    }
-    else {
-      $response = Invoke-RestMethod -Uri $UpdateApplicationVersionAsyncUrl_Develop -Method Post -Body $requestJson -ContentType 'application/json' -Headers @{"x-csrf-header"="-"}
-      $responseJson = $response | ConvertTo-Json
-      Write-Message "Updated Application Version"
-    }
+    $updateApplicationVersionAsyncUrl = "https://$($environment.Server)/api/external/UpdateApplicationVersionAsync"
+    $response = Invoke-RestMethod -Uri $updateApplicationVersionAsyncUrl -Method Post -Body $requestJson -ContentType 'application/json' -Headers @{"x-csrf-header"="-"}
+    $responseJson = $response | ConvertTo-Json
+    Write-Message "Updated Application Version"
   }
   catch {
     Write-Error-Message "An error occured when calling UpdateApplicationVersionAsync API."
@@ -296,6 +274,7 @@ function Send-Slack-Failure-Message([string] $relativityVersionToCreate, [string
 }
 
 GetSessionId
-CreateRelativityVersionAsync $productionEnvironmentName
-CreateRelativityVersionAsync $stagingEnvironmentName
-CreateRelativityVersionAsync $developEnvironmentName
+
+foreach($environment in $environments){
+  CreateRelativityVersionAsync $environment
+}
