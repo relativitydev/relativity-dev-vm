@@ -218,7 +218,7 @@ function Send-Slack-Message-Update-Finished([string] $relativityVersionToUpdate,
   if ($sendSlackMessage -eq $true) {
     Write-Method-Call-Message "Sending Slack Message that Updating Advice Hub Apps finished"
     $BodyJSON = @{
-       "text" = "Successfully updated all Advice Hub apps with compatibility with ($($relativityVersionToCreate)) in the Solution Snapshot Database in the $($environmentName) Environment"
+       "text" = "Successfully updated all Advice Hub apps with compatibility with ($($relativityVersionToUpdate)) in the Solution Snapshot Database in the $($environmentName) Environment"
     } | ConvertTo-Json
     Invoke-WebRequest -Method Post -Body "$BodyJSON" -Uri $Env:slack_devex_announcements_group_key -ContentType application/json
     Write-Message "Sent Slack Message that Updating Advice Hub Apps finished"
@@ -230,9 +230,9 @@ function Send-Slack-Message-Update-Failed([string] $relativityVersionToUpdate, [
   if ($sendSlackMessage -eq $true) {
     Write-Method-Call-Message "Sending Slack Message that Updating Advice Hub Apps failed to finish"
     $BodyJSON = @{
-       "text" = "Failed to update all Advice Hub apps with compatibility with ($($relativityVersionToCreate)) in the Solution Snapshot Database in the $($environmentName) Environment"
+       "text" = "Failed to update all Advice Hub apps with compatibility with ($($relativityVersionToUpdate)) in the Solution Snapshot Database in the $($environmentName) Environment"
     } | ConvertTo-Json
-    Invoke-WebRequest -Method Post -Body "$BodyJSON" -Uri $Env:slack_devex_announcements_group_key -ContentType application/json
+    Invoke-WebRequest -Method Post -Body "$BodyJSON" -Uri $Env:slack_devex_tools_group_key -ContentType application/json
     Write-Message "Sent Slack Message that Updating Advice Hub Apps failed to finished"
   }
 }
@@ -256,7 +256,7 @@ function Send-Slack-Skip-Message([string] $relativityVersionToCreate, [string] $
     $BodyJSON = @{
       "text" = "Skipped adding ($($relativityVersionToCreate)) to Solution Snapshot Database in the $($environmentName) Environment, since it already exists"
     } | ConvertTo-Json
-    Invoke-WebRequest -Method Post -Body "$BodyJSON" -Uri $Env:slack_devex_announcements_group_key -ContentType application/json
+    Invoke-WebRequest -Method Post -Body "$BodyJSON" -Uri $Env:slack_devex_tools_group_key -ContentType application/json
     Write-Message "Sent Slack Skip Message" 
   }
 }
@@ -268,7 +268,7 @@ function Send-Slack-Failure-Message([string] $relativityVersionToCreate, [string
     $BodyJSON = @{
       "text" = "Failed to add ($($relativityVersionToCreate)) to Solution Snapshot Database in the $($environmentName) Environment"
     } | ConvertTo-Json
-    Invoke-WebRequest -Method Post -Body "$BodyJSON" -Uri $Env:slack_devex_announcements_group_key -ContentType application/json
+    Invoke-WebRequest -Method Post -Body "$BodyJSON" -Uri $Env:slack_devex_tools_group_key -ContentType application/json
     Write-Message "Sent Slack Failure Message"
   }
 }
