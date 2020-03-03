@@ -131,6 +131,25 @@ Vagrant.configure('2') do |config|
   # # Restart VM
   # config.vm.provision :reload
 
+  # Update Windows
+  config.vm.provision 'chef_zero' do |chef|
+    chef.cookbooks_path = 'Cookbooks'
+    chef.data_bags_path = 'DataBags'
+    chef.nodes_path = 'Nodes'
+    chef.roles_path = 'Roles'
+    chef.channel = 'stable'
+    chef.version = '13.8.5'
+    chef.json = {
+      'smb_domain' => network_share_smb_domain,
+      'smb_username' => network_share_smb_username,
+      'smb_password' => network_share_smb_password,
+    }
+    chef.add_recipe('Relativity::pre_relativity_install_windows_updates')
+  end
+
+  # Restart VM
+  config.vm.provision :reload
+
   config.vm.provision 'chef_zero' do |chef|
     chef.cookbooks_path = 'Cookbooks'
     chef.data_bags_path = 'DataBags'
