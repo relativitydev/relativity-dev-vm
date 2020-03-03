@@ -441,7 +441,7 @@ function Copy-DevVm-Zip-To-Network-Storage([string] $relativityVersionToCopy) {
       Copy-File-Overwrite-If-It-Exists $sourceZipFilePath $destinationFilePath  
     }
     else {
-      Write-Message-To-Screen "File[$($sourceZipFilePath)] doesn't exist. Skipped copying to Network storage."
+      Write-Message-To-Screen "Source file[$($sourceZipFilePath)] doesn't exist. Skipped copying to Network storage."
     }  
   
     Write-Message-To-Screen "Copied DevVm created [$($relativityVersionToCopy)] to Network storage."
