@@ -4,6 +4,7 @@ custom_log 'custom_log' do msg 'Starting Windows Updates' end
     
     powershell_script 'Install_Bootstrapper_And_Update_Windows' do
       code <<-EOH
+        [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
         Invoke-WebRequest -UseBasicParsing -Uri https://boxstarter.org/bootstrapper.ps1 | Invoke-Expression; Get-Boxstarter -Force
         Import-Module Boxstarter.WinConfig
         Enable-MicrosoftUpdate
