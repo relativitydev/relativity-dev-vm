@@ -1,6 +1,6 @@
-[string] $parentFolderName = $args[0]
-[string] $sourceFileFullPath = $args[1]
-[string] $destinationFileName = $args[2]
+[string] $global:parentFolderName = $args[0]
+[string] $global:sourceFileFullPath = $args[1]
+[string] $global:destinationFileName = $args[2]
 
 function Write-Host-Custom-Blue ([string] $writeMessage) {
   Write-Host $writeMessage -ForegroundColor Blue
@@ -14,9 +14,33 @@ function Write-Host-Custom-Red ([string] $writeMessage) {
   Write-Host $writeMessage -ForegroundColor Red
 }
 
-function Upload-File-To-Azure-Blob-Storage ([string] $parentFolderName, [string] $sourceFileFullPath, [string] $destinationFileName) {
+function Upload-File-To-Azure-Blob-Storage {
+  Write-Host-Custom-Green "parentFolderName: $($global:parentFolderName)"
+  Write-Host-Custom-Green "sourceFileFullPath: $($global:sourceFileFullPath)"
+  Write-Host-Custom-Green "destinationFileName: $($global:destinationFileName)"
+  Write-Host-Custom-Green "`n"
+  
+  [string] $error_message = ""
 
   try {
+    if ([string]::IsNullOrWhitespace($global:parentFolderName)) {
+      $error_message = "Error: Argument(parentFolderName) is Empty.`n"
+      Write-Host-Custom-Red $error_message
+      throw $error_message
+    }
+
+    if ([string]::IsNullOrWhitespace($global:sourceFileFullPath)) {
+      $error_message = "Error: Argument(sourceFileFullPath) is Empty.`n"
+      Write-Host-Custom-Red $error_message
+      throw $error_message
+    }
+
+    if ([string]::IsNullOrWhitespace($global:destinationFileName)) {
+      $error_message = "Error: Argument(destinationFileName) is Empty.`n"
+      Write-Host-Custom-Red $error_message
+      throw $error_message
+    }
+
     # Install Azure Az PS Module
     Write-Host-Custom-Green "Installing Azure Az PS Module.....`n";
     Install-Module -Name Az -AllowClobber -Scope CurrentUser
@@ -46,11 +70,11 @@ function Upload-File-To-Azure-Blob-Storage ([string] $parentFolderName, [string]
 
     # Upload a file to blob storage
     Write-Host-Custom-Green "Uploading file to Azure DevVM blob storage.....`n";
-    Set-AzStorageBlobContent -File "S:\Local_DevVms\abc.zip" -Container $containerName -Blob "Folder/abc2.zip" -Context $storageAccountContext -Force
+    Set-AzStorageBlobContent -File $global:sourceFileFullPath -Container $containerName -Blob "$($global:parentFolderName)/$($global:destinationFileName)" -Context $storageAccountContext -Force
     Write-Host-Custom-Green "Uploaded file to Azure DevVM blob storage.....`n";
   }
   Catch [Exception] {
-    Write-Host-Custom-Red "An error occured when uploading file to Azure DevVM blob storage [$($sourceFileFullPath)]"
+    Write-Host-Custom-Red "An error occured when uploading file to Azure DevVM blob storage [$($global:sourceFileFullPath)]"
     Write-Host-Custom-Red "-----> Exception: $($_.Exception.GetType().FullName)"
     Write-Host-Custom-Red "-----> Exception Message: $($_.Exception.Message)"
     throw
@@ -59,6 +83,6 @@ function Upload-File-To-Azure-Blob-Storage ([string] $parentFolderName, [string]
 
 Write-Host-Custom-Blue "Start Time: $(Get-Date)`n";
 
-Upload-File-To-Azure-Blob-Storage ( $parentFolderName, $sourceFileFullPath, $destinationFileName)
+Upload-File-To-Azure-Blob-Storage
 
 Write-Host-Custom-Blue "End Time: $(Get-Date)`n";
