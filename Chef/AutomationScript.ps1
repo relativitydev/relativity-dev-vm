@@ -33,6 +33,8 @@ Write-Host "global:devVmInstallFolder = $($global:devVmInstallFolder)"
 Write-Host "global:devVmAutomationLogsFolder = $($global:devVmAutomationLogsFolder)"
 [string] $global:devVmNetworkStorageLocation = $jsonContents.devVmNetworkStorageLocation
 Write-Host "global:devVmNetworkStorageLocation = $($global:devVmNetworkStorageLocation)"
+[string] $global:devVmLocalDriveStorageLocation = "T:\DevVmImages"
+Write-Host "global:devVmLocalDriveStorageLocation = $($global:devVmLocalDriveStorageLocation)"
 
 # Display parsed Relativity and Invariant folder arrays
 Write-Host ""
@@ -427,24 +429,52 @@ function Run-DevVm-Creation-Script([string] $relativityVersionToCreate) {
   Write-Empty-Line-To-Screen
 }
 
-function Copy-DevVm-Zip-To-Network-Storage([string] $relativityVersionToCopy) {
+function Copy-DevVm-Zip-File-To-File-Storages([string] $relativityVersionToCopy) {
   if ($global:copyToNetworkStorage -eq $true) {
     Write-Heading-Message-To-Screen "Copying DevVm created [$($relativityVersionToCopy)] to Network storage."
    
     [System.Version] $relativityVersion = [System.Version]::Parse($relativityVersionToCopy)
     [string] $majorRelativityVersion = "$($relativityVersion.Major).$($relativityVersion.Minor)"
   
-    [string] $sourceZipFilePath = "$($global:vmExportPath)\$($global:vmName).$($global:compressedFileExtension)"
-    [string] $destinationFilePath = "$($global:devVmNetworkStorageLocation)\$($majorRelativityVersion)\$($global:vmName).$($global:compressedFileExtension)"
+    # Copy to Network Storage
+    [string] $destinationFileParentFolderPathForNetworkStorage = "$($global:devVmNetworkStorageLocation)\$($majorRelativityVersion)"
+    [string] $destinationFilePathForNetworkStorage = "$($destinationFileParentFolderPathForNetworkStorage)\$($global:vmName).$($global:compressedFileExtension)"    
     
+    # Create Parent folder if it doesn't already exist
+    If (!(test-path $destinationFileParentFolderPathForNetworkStorage)) {
+      New-Item -ItemType Directory -Force -Path $destinationFileParentFolderPathForNetworkStorage
+    }
+    Copy-DevVm-Zip-File $relativityVersionToCopy $destinationFilePathForNetworkStorage
+
+    # Copy to Local Drive
+    [string] $destinationFileParentFolderPathForLocalDriveStorage = "$($global:devVmLocalDriveStorageLocation)\$($majorRelativityVersion)"
+    [string] $destinationFilePathForLocalDriveStorage = "$($destinationFileParentFolderPathForLocalDriveStorage)\$($global:vmName).$($global:compressedFileExtension)"    
+    
+    # Create Parent folder if it doesn't already exist
+    If (!(test-path $destinationFileParentFolderPathForLocalDriveStorage)) {
+      New-Item -ItemType Directory -Force -Path $destinationFileParentFolderPathForLocalDriveStorage
+    }
+    Copy-DevVm-Zip-File $relativityVersionToCopy $destinationFilePathForLocalDriveStorage
+  
+    Write-Message-To-Screen "Copied DevVm created [$($relativityVersionToCopy)] to Network storage."
+    Write-Empty-Line-To-Screen
+  }
+}
+
+function Copy-DevVm-Zip-File([string] $relativityVersionToCopy, [string] $destinationFilePath) {
+  if ($global:copyToNetworkStorage -eq $true) {
+    Write-Heading-Message-To-Screen "Copying DevVm created [$($relativityVersionToCopy)] to storage [$($destinationFilePath)]" 
+  
+    [string] $sourceZipFilePath = "$($global:vmExportPath)\$($global:vmName).$($global:compressedFileExtension)"
+        
     if (Test-Path $sourceZipFilePath) {
       Copy-File-Overwrite-If-It-Exists $sourceZipFilePath $destinationFilePath  
     }
     else {
-      Write-Message-To-Screen "Source file[$($sourceZipFilePath)] doesn't exist. Skipped copying to Network storage."
+      Write-Message-To-Screen "Source file[$($sourceZipFilePath)] doesn't exist. Skipped copying to storage [$($destinationFilePath)]"
     }  
   
-    Write-Message-To-Screen "Copied DevVm created [$($relativityVersionToCopy)] to Network storage."
+    Write-Message-To-Screen "Copied DevVm created [$($relativityVersionToCopy)] to storage [$($destinationFilePath)]"
     Write-Empty-Line-To-Screen
   }
 }
@@ -558,11 +588,14 @@ function Create-DevVm([string] $relativityVersionToCreate) {
        
         if ($global:devVmCreationWasSuccess -eq $true) {
           # Copy Zip file to network drive with the version number in name
-          Copy-DevVm-Zip-To-Network-Storage $relativityVersionToCreate
+          Copy-DevVm-Zip-File-To-File-Storages $relativityVersionToCreate
+          
           # Send Slack Message that upload to the network storage succeeded
           Send-Slack-Success-Message $relativityVersionToCreate
+          
           # Send Slack Message to the Tools Slack channel to remind about the follow up tasks
           Send-Slack-Success-Message-Follow-Up-Tasks $relativityVersionToCreate
+          
           # Add Relativity Version to Solution Snapshot Database
           Add-Relativity-Version-To-Solution-Snapshot-Database $relativityVersionToCreate
         }
