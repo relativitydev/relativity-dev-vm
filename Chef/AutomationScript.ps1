@@ -62,9 +62,11 @@ $global:devVmVersionsToCreate = New-Object System.Collections.ArrayList
 [string] $global:invariantVersion = "	6.1.121.4" # Leave it blank when in Automated Production mode
 [Boolean] $global:foundCompatibleInvariantVersion = $true # Set to $false when in Automated Production mode
 [Boolean] $global:sendSlackMessage = $false # Set to $false when you do not want to send a slack message
-[Boolean] $global:copyToLocalStorage = $false # Set to $false when you do not want to copy the DevVm to the network storage
+[Boolean] $global:copyToLocalNetworkStorage = $false # Set to $false when you do not want to copy the DevVm to the network storage
+[Boolean] $global:copyToLocalDriveStorage = $false # Set to $false when you do not want to copy the DevVm to the local drive storage
 [Boolean] $global:uploadToAzureDevVmBlobStorage = $false # Set to $false when you do not want to copy the DevVm to the network storage
 [Boolean] $global:addVersionToSolutionSnapshotDatabase = $false # Set to $false when you do not want to add the Relativity Version to the Solution Snapshot Database
+[Boolean] $global:simulateDevVmCreation = $false # Set to $true when you want to simulate the DevVm creation to test the other parts of the automation script
  
 function Reset-Logs-Environment-Variable() {
   Write-Host-Custom-Green "Resetting Logs Environment variable."
@@ -437,48 +439,53 @@ function Copy-DevVm-Zip-File-To-File-Storages([string] $relativityVersionToCopy)
   [string] $majorRelativityVersion = "$($relativityVersion.Major).$($relativityVersion.Minor)"
   
   # Copy to Network Storage
-  [string] $destinationFileParentFolderPathForNetworkStorage = "$($global:devVmNetworkStorageLocation)\$($majorRelativityVersion)"
-  [string] $destinationFilePathForNetworkStorage = "$($destinationFileParentFolderPathForNetworkStorage)\$($global:vmName).$($global:compressedFileExtension)"    
+  if ($global:copyToLocalNetworkStorage -eq $true) {
+    [string] $destinationFileParentFolderPathForNetworkStorage = "$($global:devVmNetworkStorageLocation)\$($majorRelativityVersion)"
+    [string] $destinationFilePathForNetworkStorage = "$($destinationFileParentFolderPathForNetworkStorage)\$($global:vmName).$($global:compressedFileExtension)"    
     
-  # Create Parent folder if it doesn't already exist
-  If (!(test-path $destinationFileParentFolderPathForNetworkStorage)) {
-    New-Item -ItemType Directory -Force -Path $destinationFileParentFolderPathForNetworkStorage
+    # Create Parent folder if it doesn't already exist
+    If (!(test-path $destinationFileParentFolderPathForNetworkStorage)) {
+      New-Item -ItemType Directory -Force -Path $destinationFileParentFolderPathForNetworkStorage
+    }
+    Copy-DevVm-Zip-File $relativityVersionToCopy $destinationFilePathForNetworkStorage
   }
-  Copy-DevVm-Zip-File $relativityVersionToCopy $destinationFilePathForNetworkStorage
+  else {
+    Write-Message-To-Screen "copyToLocalNetworkStorage Toggle is set to False"    
+  }
 
   # Copy to Local Drive
-  [string] $destinationFileParentFolderPathForLocalDriveStorage = "$($global:devVmLocalDriveStorageLocation)\$($majorRelativityVersion)"
-  [string] $destinationFilePathForLocalDriveStorage = "$($destinationFileParentFolderPathForLocalDriveStorage)\$($global:vmName).$($global:compressedFileExtension)"    
+  if ($global:copyToLocalDriveStorage -eq $true) {
+    [string] $destinationFileParentFolderPathForLocalDriveStorage = "$($global:devVmLocalDriveStorageLocation)\$($majorRelativityVersion)"
+    [string] $destinationFilePathForLocalDriveStorage = "$($destinationFileParentFolderPathForLocalDriveStorage)\$($global:vmName).$($global:compressedFileExtension)"    
     
-  # Create Parent folder if it doesn't already exist
-  If (!(test-path $destinationFileParentFolderPathForLocalDriveStorage)) {
-    New-Item -ItemType Directory -Force -Path $destinationFileParentFolderPathForLocalDriveStorage
+    # Create Parent folder if it doesn't already exist
+    If (!(test-path $destinationFileParentFolderPathForLocalDriveStorage)) {
+      New-Item -ItemType Directory -Force -Path $destinationFileParentFolderPathForLocalDriveStorage
+    }
+    Copy-DevVm-Zip-File $relativityVersionToCopy $destinationFilePathForLocalDriveStorage
   }
-  Copy-DevVm-Zip-File $relativityVersionToCopy $destinationFilePathForLocalDriveStorage
+  else {
+    Write-Message-To-Screen "copyToLocalDriveStorage Toggle is set to False"    
+  }
   
   Write-Message-To-Screen "Copied DevVm created [$($relativityVersionToCopy)] to Network storage."
   Write-Empty-Line-To-Screen
 }
 
 function Copy-DevVm-Zip-File([string] $relativityVersionToCopy, [string] $destinationFilePath) {
-  if ($global:copyToLocalStorage -eq $true) {
-    Write-Heading-Message-To-Screen "Copying DevVm created [$($relativityVersionToCopy)] to storage [$($destinationFilePath)]" 
+  Write-Heading-Message-To-Screen "Copying DevVm created [$($relativityVersionToCopy)] to storage [$($destinationFilePath)]" 
   
-    [string] $sourceZipFilePath = "$($global:vmExportPath)\$($global:vmName).$($global:compressedFileExtension)"
+  [string] $sourceZipFilePath = "$($global:vmExportPath)\$($global:vmName).$($global:compressedFileExtension)"
         
-    if (Test-Path $sourceZipFilePath) {
-      Copy-File-Overwrite-If-It-Exists $sourceZipFilePath $destinationFilePath  
-    }
-    else {
-      Write-Message-To-Screen "Source file[$($sourceZipFilePath)] doesn't exist. Skipped copying to storage [$($destinationFilePath)]"
-    }  
-  
-    Write-Message-To-Screen "Copied DevVm created [$($relativityVersionToCopy)] to storage [$($destinationFilePath)]"
-    Write-Empty-Line-To-Screen
+  if (Test-Path $sourceZipFilePath) {
+    Copy-File-Overwrite-If-It-Exists $sourceZipFilePath $destinationFilePath  
   }
   else {
-    Write-Message-To-Screen "copyToLocalStorage Toggle is set to False"    
-  }
+    Write-Message-To-Screen "Source file[$($sourceZipFilePath)] doesn't exist. Skipped copying to storage [$($destinationFilePath)]"
+  }  
+  
+  Write-Message-To-Screen "Copied DevVm created [$($relativityVersionToCopy)] to storage [$($destinationFilePath)]"
+  Write-Empty-Line-To-Screen  
 }
 
 function Upload-DevVm-Zip-To-Azure-Blob-Storage([string] $relativityVersion) {
