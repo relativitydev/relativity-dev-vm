@@ -52,6 +52,7 @@ $global:allRelativityVersionsReleased = New-Object System.Collections.ArrayList
 $global:devVmVersionsCreated = New-Object System.Collections.ArrayList
 $global:devVmVersionsToCreate = New-Object System.Collections.ArrayList
 [string] $global:vmName = "RelativityDevVm"
+[string] $global:vmNameAfterCreation = ""
 [string] $global:vmExportPath = "D:\DevVmExport"
 [Int32] $global:invariantVersionSqlRecordCount = 0
 [string] $global:devVmCreationResultFileName = "result_file.txt"
@@ -62,11 +63,11 @@ $global:devVmVersionsToCreate = New-Object System.Collections.ArrayList
 [string] $global:invariantVersion = "	6.1.121.4" # Leave it blank when in Automated Production mode
 [Boolean] $global:foundCompatibleInvariantVersion = $true # Set to $false when in Automated Production mode
 [Boolean] $global:toggleSimulateDevVmCreation = $false # Set to $true when you want to simulate the DevVm creation to test the other parts of the automation script
-[Boolean] $global:toggleSendSlackMessage = $false # Set to $false when you do not want to send a slack message
-[Boolean] $global:toggleCopyToLocalNetworkStorage = $false # Set to $false when you do not want to copy the DevVm to the network storage
-[Boolean] $global:toggleCopyToLocalDriveStorage = $false # Set to $false when you do not want to copy the DevVm to the local drive storage
-[Boolean] $global:toggleUploadToAzureDevVmBlobStorage = $false # Set to $false when you do not want to copy the DevVm to the network storage
-[Boolean] $global:toggleAddVersionToSolutionSnapshotDatabase = $false # Set to $false when you do not want to add the Relativity Version to the Solution Snapshot Database
+[Boolean] $global:toggleSendSlackMessage = $true # Set to $false when you do not want to send a slack message
+[Boolean] $global:toggleCopyToLocalNetworkStorage = $true # Set to $false when you do not want to copy the DevVm to the network storage
+[Boolean] $global:toggleCopyToLocalDriveStorage = $true # Set to $false when you do not want to copy the DevVm to the local drive storage
+[Boolean] $global:toggleUploadToAzureDevVmBlobStorage = $true # Set to $false when you do not want to copy the DevVm to the network storage
+[Boolean] $global:toggleAddVersionToSolutionSnapshotDatabase = $true # Set to $false when you do not want to add the Relativity Version to the Solution Snapshot Database
  
 function Reset-Logs-Environment-Variable() {
   Write-Host-Custom-Green "Resetting Logs Environment variable."
@@ -432,8 +433,8 @@ function Run-DevVm-Creation-Script([string] $relativityVersionToCreate) {
   Write-Empty-Line-To-Screen
 }
 
-function Copy-DevVm-Zip-File-To-File-Storages([string] $relativityVersionToCopy) {
-  Write-Heading-Message-To-Screen "Copying DevVm created [$($relativityVersionToCopy)] to Network storage."
+function Copy-DevVm-Zip-File-To-All-File-Storages([string] $relativityVersionToCopy) {
+  Write-Heading-Message-To-Screen "Copying DevVm created [$($relativityVersionToCopy)] to File storage(s)."
    
   [System.Version] $relativityVersion = [System.Version]::Parse($relativityVersionToCopy)
   [string] $majorRelativityVersion = "$($relativityVersion.Major).$($relativityVersion.Minor)"
@@ -443,7 +444,7 @@ function Copy-DevVm-Zip-File-To-File-Storages([string] $relativityVersionToCopy)
     Write-Message-To-Screen "toggleCopyToLocalNetworkStorage is set to True"
 
     [string] $destinationFileParentFolderPathForNetworkStorage = "$($global:devVmNetworkStorageLocation)\$($majorRelativityVersion)"
-    [string] $destinationFilePathForNetworkStorage = "$($destinationFileParentFolderPathForNetworkStorage)\$($global:vmName).$($global:compressedFileExtension)"    
+    [string] $destinationFilePathForNetworkStorage = "$($destinationFileParentFolderPathForNetworkStorage)\$($global:vmNameAfterCreation).$($global:compressedFileExtension)"    
     
     # Create Parent folder if it doesn't already exist
     If (!(test-path $destinationFileParentFolderPathForNetworkStorage)) {
@@ -460,7 +461,7 @@ function Copy-DevVm-Zip-File-To-File-Storages([string] $relativityVersionToCopy)
     Write-Message-To-Screen "toggleCopyToLocalDriveStorage is set to True"
 
     [string] $destinationFileParentFolderPathForLocalDriveStorage = "$($global:devVmLocalDriveStorageLocation)\$($majorRelativityVersion)"
-    [string] $destinationFilePathForLocalDriveStorage = "$($destinationFileParentFolderPathForLocalDriveStorage)\$($global:vmName).$($global:compressedFileExtension)"    
+    [string] $destinationFilePathForLocalDriveStorage = "$($destinationFileParentFolderPathForLocalDriveStorage)\$($global:vmNameAfterCreation).$($global:compressedFileExtension)"    
     
     # Create Parent folder if it doesn't already exist
     If (!(test-path $destinationFileParentFolderPathForLocalDriveStorage)) {
@@ -472,14 +473,14 @@ function Copy-DevVm-Zip-File-To-File-Storages([string] $relativityVersionToCopy)
     Write-Message-To-Screen "toggleCopyToLocalDriveStorage is set to False"    
   }
   
-  Write-Message-To-Screen "Copied DevVm created [$($relativityVersionToCopy)] to Network storage."
+  Write-Message-To-Screen "Copied DevVm created [$($relativityVersionToCopy)] to All File storages."
   Write-Empty-Line-To-Screen
 }
 
 function Copy-DevVm-Zip-File([string] $relativityVersionToCopy, [string] $destinationFilePath) {
   Write-Heading-Message-To-Screen "Copying DevVm created [$($relativityVersionToCopy)] to storage [$($destinationFilePath)]" 
   
-  [string] $sourceZipFilePath = "$($global:vmExportPath)\$($global:vmName).$($global:compressedFileExtension)"
+  [string] $sourceZipFilePath = "$($global:vmExportPath)\$($global:vmNameAfterCreation).$($global:compressedFileExtension)"
         
   if (Test-Path $sourceZipFilePath) {
     Copy-File-Overwrite-If-It-Exists $sourceZipFilePath $destinationFilePath  
@@ -492,18 +493,23 @@ function Copy-DevVm-Zip-File([string] $relativityVersionToCopy, [string] $destin
   Write-Empty-Line-To-Screen  
 }
 
-function Upload-DevVm-Zip-To-Azure-Blob-Storage([string] $relativityVersion) {
+function Upload-DevVm-Zip-To-Azure-Blob-Storage([string] $relativityVersionToUpload) {
   if ($global:toggleUploadToAzureDevVmBlobStorage -eq $true) {
     Write-Message-To-Screen "toggleUploadToAzureDevVmBlobStorage is set to True"
 
     Write-Heading-Message-To-Screen "Uploading DevVM zip file to Azure DevVM Blob Storage"
+
+    [System.Version] $relativityVersion = [System.Version]::Parse($relativityVersionToUpload)
+    [string] $majorRelativityVersion = "$($relativityVersion.Major).$($relativityVersion.Minor)"
+
+    [string] $sourceZipFilePath = "$($global:vmExportPath)\$($global:vmNameAfterCreation).$($global:compressedFileExtension)"
 
     #Make sure we are in the folder where the running script exists
     Write-Message-To-Screen "PSScriptroot: $($PSScriptroot)"
     Set-Location $PSScriptroot
     
     # Run Solution Snapshot Script
-    &"$PSScriptroot\AddRelativityVersionToSolutionSnapshotDatabase.ps1" "$Env:devvm_automation_salesforce_username" "$Env:devvm_automation_salesforce_password" "$relativityVersion" $global:toggleSendSlackMessage
+    &"$PSScriptroot\UploadFileToAzureBlobStorage.ps1" $majorRelativityVersion $sourceZipFilePath "$($global:vmNameAfterCreation).$($global:compressedFileExtension)"
   
     Write-Message-To-Screen "Finished running PowerShell script to Upload DevVM zip file to Azure DevVM Blob Storage"
     Write-Empty-Line-To-Screen
@@ -521,7 +527,7 @@ function Send-Slack-Success-Message([string] $relativityVersionToCopy) {
     Write-Heading-Message-To-Screen "Sending Slack Success Message"
     [System.Version] $relativityVersion = [System.Version]::Parse($relativityVersionToCopy)
     [string] $majorRelativityVersion = "$($relativityVersion.Major).$($relativityVersion.Minor)"
-    [string] $destinationFilePath = "$($global:devVmNetworkStorageLocation)\$($majorRelativityVersion)\$($global:vmName).$($global:compressedFileExtension)"
+    [string] $destinationFilePath = "$($global:devVmNetworkStorageLocation)\$($majorRelativityVersion)\$($global:vmNameAfterCreation).$($global:compressedFileExtension)"
     $BodyJSON = @{
       "text" = "New DevVm ($($relativityVersionToCreate)) is available at $($destinationFilePath)"
     } | ConvertTo-Json
@@ -621,6 +627,9 @@ function Check-DevVm-Result-Text-File-For-Success() {
 function Create-DevVm([string] $relativityVersionToCreate) {
   Write-Heading-Message-To-Screen "Creating DevVm. [$($relativityVersionToCreate)]"
 
+  # Set new VM name in a variable which will be used in the CreateDevVm.ps1 script to rename the VM once it's created
+  $global:vmNameAfterCreation = "$($global:vmName)-$($relativityVersionToCreate)"
+
   $global:devVmCreationWasSuccess = $false
   Write-Message-To-Screen "Total attempts: $($global:maxRetry)"
 
@@ -651,8 +660,11 @@ function Create-DevVm([string] $relativityVersionToCreate) {
         }        
        
         if ($global:devVmCreationWasSuccess -eq $true) {
-          # Copy Zip file to network drive with the version number in name
-          Copy-DevVm-Zip-File-To-File-Storages $relativityVersionToCreate
+          # Copy Zip file to all file drive with the version number in name
+          Copy-DevVm-Zip-File-To-All-File-Storages $relativityVersionToCreate
+
+          # Copy Zip file to Azure DevVM Blob storage with the version number in name
+          Upload-DevVm-Zip-To-Azure-Blob-Storage $relativityVersionToCreate
           
           # Send Slack Message that upload to the network storage succeeded
           Send-Slack-Success-Message $relativityVersionToCreate
@@ -676,9 +688,6 @@ function Create-DevVm([string] $relativityVersionToCreate) {
       $global:count++
       Write-Message-To-Screen "Exception: $($_.Exception.GetType().FullName)"
       Write-Message-To-Screen "Exception Message: $($_.Exception.Message)"
-    }
-    finally {
-      Check-DevVm-Result-Text-File-For-Success
     }
     
     Write-Heading-Message-To-Screen "Retry variables:"
