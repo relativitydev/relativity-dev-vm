@@ -527,7 +527,9 @@ function Send-Slack-Success-Message([string] $relativityVersionToCopy) {
     Write-Heading-Message-To-Screen "Sending Slack Success Message"
     [System.Version] $relativityVersion = [System.Version]::Parse($relativityVersionToCopy)
     [string] $majorRelativityVersion = "$($relativityVersion.Major).$($relativityVersion.Minor)"
+
     [string] $destinationFilePath = "$($global:devVmNetworkStorageLocation)\$($majorRelativityVersion)\$($global:vmNameAfterCreation).$($global:compressedFileExtension)"
+    
     $BodyJSON = @{
       "text" = "New DevVm ($($relativityVersionToCreate)) is available at $($destinationFilePath)"
     } | ConvertTo-Json
@@ -661,13 +663,13 @@ function Create-DevVm([string] $relativityVersionToCreate) {
         }        
        
         if ($global:devVmCreationWasSuccess -eq $true) {
-          # Copy Zip file to all file drive with the version number in name
+          # Copy Zip file to all file storage locations with the version number in name
           Copy-DevVm-Zip-File-To-All-File-Storages $relativityVersionToCreate
 
-          # Copy Zip file to Azure DevVM Blob storage with the version number in name
+          # Upload Zip file to Azure DevVM Blob storage with the version number in name
           Upload-DevVm-Zip-To-Azure-Blob-Storage $relativityVersionToCreate
           
-          # Send Slack Message that upload to the network storage succeeded
+          # Send Slack Message that upload to all the local file storage(s) succeeded
           Send-Slack-Success-Message $relativityVersionToCreate
           
           # Send Slack Message to the Tools Slack channel to remind about the follow up tasks
