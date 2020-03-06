@@ -56,8 +56,8 @@ function Upload-File-To-Azure-Blob-Storage {
     Get-AzSubscription
 
     # Set Azure Subscription to the Production Subscription
-    Write-Host-Custom-Green "Setting current Azure Subscription to Production Subscription.....`n";
-    Set-AzContext -SubscriptionId "9491b162-7d26-4956-890b-3f882ed78a8d" # Subscription (CS - DevEx - SolutionSnapshot - Prod)
+    Write-Host-Custom-Green "Setting current Azure Subscription to DevVM Blob Storage Subscription.....`n";
+    Set-AzContext -SubscriptionId "$Env:devvm_azure_blob_storage_subscription_id"
 
     # Get Azure Storage Account for DevVM blob storage
     Write-Host-Custom-Green "Getting Azure Storage Account for DevVM blob storage.....`n";
