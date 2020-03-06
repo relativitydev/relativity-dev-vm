@@ -670,7 +670,7 @@ function Create-DevVm([string] $relativityVersionToCreate) {
           # Upload Zip file to Azure DevVM Blob storage with the version number in name
           Upload-DevVm-Zip-To-Azure-Blob-Storage $relativityVersionToCreate
           
-          # Send Slack Message that upload to all the local file storage(s) succeeded
+          # Send Slack Message that copying to all the local file storage(s) succeeded
           Send-Slack-Success-Message $relativityVersionToCreate
           
           # Send Slack Message to the Tools Slack channel to remind about the follow up tasks
