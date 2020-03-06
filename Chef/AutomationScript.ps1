@@ -426,7 +426,7 @@ function Run-DevVm-Creation-Script([string] $relativityVersionToCreate) {
   Write-Message-To-Screen "PSScriptroot: $($PSScriptroot)"
   Set-Location $PSScriptroot
   
-  # Run DevVm Creation Script
+  # Run separate DevVm Creation PowerShell Script
   &"$PSScriptroot\CreateDevVm.ps1"
 
   Write-Message-To-Screen "Ran DevVm creation script."
@@ -508,7 +508,7 @@ function Upload-DevVm-Zip-To-Azure-Blob-Storage([string] $relativityVersionToUpl
     Write-Message-To-Screen "PSScriptroot: $($PSScriptroot)"
     Set-Location $PSScriptroot
     
-    # Run DevVM Azure Blob Upload Script
+    # Run separate DevVM Azure Blob storage Upload PowerShell Script
     &"$PSScriptroot\UploadFileToAzureBlobStorage.ps1" $majorRelativityVersion $sourceZipFilePath "$($global:vmNameAfterCreation).$($global:compressedFileExtension)"
   
     Write-Message-To-Screen "Finished running PowerShell script to Upload DevVM zip file to Azure DevVM Blob Storage"
@@ -588,7 +588,7 @@ function Add-Relativity-Version-To-Solution-Snapshot-Database([string] $relativi
     Write-Message-To-Screen "PSScriptroot: $($PSScriptroot)"
     Set-Location $PSScriptroot
     
-    # Run Solution Snapshot API Calls Script
+    # Run separate Solution Snapshot API Calls PowerShell Script
     &"$PSScriptroot\AddRelativityVersionToSolutionSnapshotDatabase.ps1" "$Env:devvm_automation_salesforce_username" "$Env:devvm_automation_salesforce_password" "$relativityVersion" $global:sendSlackMessage
   
     Write-Message-To-Screen "Ran Add Relativity Version to Solution Snapshot Database script."
