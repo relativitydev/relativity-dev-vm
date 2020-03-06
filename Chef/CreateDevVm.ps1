@@ -138,10 +138,8 @@ function Rename-DevVm() {
     $indexOfColon = $relativityAndInvariantVersions.IndexOf(':')
     $relativityVersion = $relativityAndInvariantVersions.Substring(($indexOfColon + 2), ($indexOfComma - ($indexOfColon + 2)))
     $relativityVersion = $relativityVersion.Replace(" ", "")
-    [string] $newName = "$($global:vmName)-$($relativityVersion)"
-    Rename-Vm -Name $global:vmName -NewName $newName
-    $global:vmName = $newName
-    Write-Message-To-Screen  "Renamed VM"
+    Rename-Vm -Name $global:vmName -NewName $global:vmNameAfterCreation
+    Write-Message-To-Screen  "Renamed VM [$($global:vmNameAfterCreation)]"
   }
   Catch [Exception] {
     Write-Error-Message-To-Screen "An error occured when renaming the VM."
@@ -155,7 +153,7 @@ function Create-DevVm-Documentation-Text-File() {
   try {
     Write-Heading-Message-To-Screen  "Creating DevVM Documentation text file"
 
-    [string] $documentation_text_file_path = "$($global:vmExportPath)\$($global:vmName)\DevVm_Documentation.txt"
+    [string] $documentation_text_file_path = "$($global:vmExportPath)\$($global:vmNameAfterCreation)\DevVm_Documentation.txt"
 
     # Delete DevVM Documentation text file if it already exists
     Delete-File-If-It-Exists $documentation_text_file_path
@@ -195,7 +193,7 @@ function Export-DevVm() {
     Delete-Folder-If-It-Exists $global:vmExportPath  
 
     # Export VM
-    Export-VM -Name $global:vmName -Path $global:vmExportPath
+    Export-VM -Name $global:vmNameAfterCreation -Path $global:vmExportPath
 
     Write-Message-To-Screen  "Exported VM"
   }
@@ -211,8 +209,8 @@ function Compress-DevVm() {
   try {
     Write-Heading-Message-To-Screen  "Converting Exported VM to a Zip file"
     
-    [string] $folderToCompressPath = "$($global:vmExportPath)\$($global:vmName)"
-    [string] $zipFilePath = "$($global:vmExportPath)\$($global:vmName).$($global:compressedFileExtension)"
+    [string] $folderToCompressPath = "$($global:vmExportPath)\$($global:vmNameAfterCreation)"
+    [string] $zipFilePath = "$($global:vmExportPath)\$($global:vmNameAfterCreation).$($global:compressedFileExtension)"
 
     # Make sure we are in the folder where the running script exists
     Write-Message-To-Screen "PSScriptroot: $($PSScriptroot)"
