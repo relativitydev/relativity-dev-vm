@@ -646,6 +646,7 @@ function Create-DevVm([string] $relativityVersionToCreate) {
           Write-Message-To-Screen "toggleSimulateDevVmCreation is set to True"
 
           $global:devVmCreationWasSuccess = $true
+          Write-Message-To-Screen "Skipped DevVm creation! (In DevVM Creation Siumlation mode)"
         }
         else {
           Write-Message-To-Screen "toggleSimulateDevVmCreation is set to False"
