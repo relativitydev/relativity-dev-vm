@@ -422,11 +422,11 @@ function Copy-Relativity-And-Invariant-Version-Numbers-To-Text-File([string] $re
 function Run-DevVm-Creation-Script([string] $relativityVersionToCreate) {
   Write-Heading-Message-To-Screen "Running DevVm creation script."
 
-  # Make sure we are in the folder where the running script exists
+  # Make sure we are in the same folder where the current running script (AutomationScript.ps1) exists
   Write-Message-To-Screen "PSScriptroot: $($PSScriptroot)"
   Set-Location $PSScriptroot
   
-  # Run DevVm Script
+  # Run DevVm Creation Script
   &"$PSScriptroot\CreateDevVm.ps1"
 
   Write-Message-To-Screen "Ran DevVm creation script."
@@ -504,11 +504,11 @@ function Upload-DevVm-Zip-To-Azure-Blob-Storage([string] $relativityVersionToUpl
 
     [string] $sourceZipFilePath = "$($global:vmExportPath)\$($global:vmNameAfterCreation).$($global:compressedFileExtension)"
 
-    #Make sure we are in the folder where the running script exists
+    # Make sure we are in the same folder where the current running script (AutomationScript.ps1) exists
     Write-Message-To-Screen "PSScriptroot: $($PSScriptroot)"
     Set-Location $PSScriptroot
     
-    # Run Solution Snapshot Script
+    # Run DevVM Azure Blob Upload Script
     &"$PSScriptroot\UploadFileToAzureBlobStorage.ps1" $majorRelativityVersion $sourceZipFilePath "$($global:vmNameAfterCreation).$($global:compressedFileExtension)"
   
     Write-Message-To-Screen "Finished running PowerShell script to Upload DevVM zip file to Azure DevVM Blob Storage"
@@ -584,11 +584,11 @@ function Add-Relativity-Version-To-Solution-Snapshot-Database([string] $relativi
 
     Write-Heading-Message-To-Screen "Adding Relativity Version to the Solution Snapshot Database"
 
-    #Make sure we are in the folder where the running script exists
+    # Make sure we are in the same folder where the current running script (AutomationScript.ps1) exists
     Write-Message-To-Screen "PSScriptroot: $($PSScriptroot)"
     Set-Location $PSScriptroot
     
-    # Run DevVm Script
+    # Run Solution Snapshot API Calls Script
     &"$PSScriptroot\AddRelativityVersionToSolutionSnapshotDatabase.ps1" "$Env:devvm_automation_salesforce_username" "$Env:devvm_automation_salesforce_password" "$relativityVersion" $global:sendSlackMessage
   
     Write-Message-To-Screen "Ran Add Relativity Version to Solution Snapshot Database script."
