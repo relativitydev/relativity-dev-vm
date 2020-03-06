@@ -49,6 +49,8 @@ function Upload-File-To-Azure-Blob-Storage {
     Write-Host-Custom-Green "Getting Current Installed Azure Az PS Module Version.....`n";
     Get-InstalledModule -Name Az -AllVersions | Select-Object Name, Version | Write-Host
 
+    #NOTE: There is one manual step here which has to be done on the machine - Connecting to Azure portal with your credentails by running this command in PowerShell - Connect-AzAccount
+
     # Get All Azure Subscriptions
     Write-Host-Custom-Green "Getting all Azure Subscriptions.....`n";
     Get-AzSubscription
