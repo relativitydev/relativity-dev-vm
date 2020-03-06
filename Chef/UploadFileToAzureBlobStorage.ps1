@@ -20,25 +20,25 @@ function Upload-File-To-Azure-Blob-Storage {
   Write-Host-Custom-Green "destinationFileName: $($global:destinationFileName)"
   Write-Host-Custom-Green "`n"
   
-  [string] $error_message = ""
+  [string] $error_message_for_input_arguments = ""
 
   try {
     if ([string]::IsNullOrWhitespace($global:parentFolderName)) {
-      $error_message = "Error: Argument(parentFolderName) is Empty.`n"
-      Write-Host-Custom-Red $error_message
-      throw $error_message
+      $error_message_for_input_arguments = "Error: Argument(parentFolderName) is Empty.`n"
+      Write-Host-Custom-Red $error_message_for_input_arguments
+      throw $error_message_for_input_arguments
     }
 
     if ([string]::IsNullOrWhitespace($global:sourceFileFullPath)) {
-      $error_message = "Error: Argument(sourceFileFullPath) is Empty.`n"
-      Write-Host-Custom-Red $error_message
-      throw $error_message
+      $error_message_for_input_arguments = "Error: Argument(sourceFileFullPath) is Empty.`n"
+      Write-Host-Custom-Red $error_message_for_input_arguments
+      throw $error_message_for_input_arguments
     }
 
     if ([string]::IsNullOrWhitespace($global:destinationFileName)) {
-      $error_message = "Error: Argument(destinationFileName) is Empty.`n"
-      Write-Host-Custom-Red $error_message
-      throw $error_message
+      $error_message_for_input_arguments = "Error: Argument(destinationFileName) is Empty.`n"
+      Write-Host-Custom-Red $error_message_for_input_arguments
+      throw $error_message_for_input_arguments
     }
 
     # Install Azure Az PS Module
