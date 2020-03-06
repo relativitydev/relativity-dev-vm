@@ -528,10 +528,11 @@ function Send-Slack-Success-Message([string] $relativityVersionToCopy) {
     [System.Version] $relativityVersion = [System.Version]::Parse($relativityVersionToCopy)
     [string] $majorRelativityVersion = "$($relativityVersion.Major).$($relativityVersion.Minor)"
 
-    [string] $destinationFilePath = "$($global:devVmNetworkStorageLocation)\$($majorRelativityVersion)\$($global:vmNameAfterCreation).$($global:compressedFileExtension)"
-    
+    [string] $destinationFilePathNetworkStorage = "$($global:devVmNetworkStorageLocation)\$($majorRelativityVersion)\$($global:vmNameAfterCreation).$($global:compressedFileExtension)"
+    [string] $destinationFilePathLocalDriveStorage = "\\P-DV-DSK-DEVEX\DevVmImages\$($majorRelativityVersion)\$($global:vmNameAfterCreation).$($global:compressedFileExtension)"
+
     $BodyJSON = @{
-      "text" = "New DevVm ($($relativityVersionToCreate)) is available at $($destinationFilePath)"
+      "text" = "New DevVm ($($relativityVersionToCreate)) is available at the following location(s) - [$($destinationFilePathNetworkStorage)] & [$($destinationFilePathLocalDriveStorage)]"
     } | ConvertTo-Json
 
     Invoke-WebRequest -Method Post -Body "$BodyJSON" -Uri $Env:slack_devex_announcements_group_key -ContentType application/json
