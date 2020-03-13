@@ -12,10 +12,6 @@ function Write-Host-Custom-Green ([string] $writeMessage) {
   Write-Host "$($writeMessage)`n" -ForegroundColor Green
 }
 
-function Write-Host-Custom-Magenta ([string] $writeMessage) {
-  Write-Host "$($writeMessage)`n" -ForegroundColor Magenta
-}
-
 # Retrieve values from DevVm_Automation_Config.json file
 [string] $devVmAutomationConfigFilePath = "D:\DevVm_Automation_Config.json"
 [string] $json = Get-Content -Path $devVmAutomationConfigFilePath
@@ -64,7 +60,7 @@ $global:devVmVersionsToCreate = New-Object System.Collections.ArrayList
 [string] $global:compressedFileExtension = "zip"
 [string] $global:relativityInvariantVersionNumberFileName = "relativity_invariant_version.txt"
 [string] $global:testSingleRelativityVersion = "11.1.120.1" # Leave it blank when in Automated Production mode
-[string] $global:invariantVersion = "	6.1.121.4" # Leave it blank when in Automated Production mode
+[string] $global:invariantVersion = "6.1.121.4" # Leave it blank when in Automated Production mode
 [Boolean] $global:foundCompatibleInvariantVersion = $true # Set to $false when in Automated Production mode
 
 # Define Toggle variables
