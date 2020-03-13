@@ -1,15 +1,19 @@
 Clear-Host
 
 function Write-Host-Custom ([string] $writeMessage) {
-  Write-Host $writeMessage -ForegroundColor Magenta
+  Write-Host "$($writeMessage)`n" -ForegroundColor Magenta
 }
 
 function Write-Host-Custom-Red ([string] $writeMessage) {
-  Write-Host $writeMessage -ForegroundColor Red
+  Write-Host "$($writeMessage)`n" -ForegroundColor Red
 }
 
 function Write-Host-Custom-Green ([string] $writeMessage) {
-  Write-Host $writeMessage -ForegroundColor Green
+  Write-Host "$($writeMessage)`n" -ForegroundColor Green
+}
+
+function Write-Host-Custom-Magenta ([string] $writeMessage) {
+  Write-Host "$($writeMessage)`n" -ForegroundColor Magenta
 }
 
 # Retrieve values from DevVm_Automation_Config.json file
@@ -62,6 +66,8 @@ $global:devVmVersionsToCreate = New-Object System.Collections.ArrayList
 [string] $global:testSingleRelativityVersion = "11.1.120.1" # Leave it blank when in Automated Production mode
 [string] $global:invariantVersion = "	6.1.121.4" # Leave it blank when in Automated Production mode
 [Boolean] $global:foundCompatibleInvariantVersion = $true # Set to $false when in Automated Production mode
+
+# Define Toggle variables
 [Boolean] $global:toggleSimulateDevVmCreation = $false # Set to $true when you want to simulate the DevVm creation to test the other parts of the automation script
 [Boolean] $global:toggleSendSlackMessage = $true # Set to $false when you do not want to send a slack message
 [Boolean] $global:toggleCopyToLocalNetworkStorage = $true # Set to $false when you do not want to copy the DevVm to the network storage
