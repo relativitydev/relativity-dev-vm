@@ -512,7 +512,7 @@ function Upload-DevVm-Zip-To-Azure-Blob-Storage([string] $relativityVersionToUpl
     Set-Location $PSScriptroot
     
     # Run separate DevVM Azure Blob storage Upload PowerShell Script
-    &"$PSScriptroot\UploadFileToAzureBlobStorage.ps1" $majorRelativityVersion $sourceZipFilePath "$($global:vmNameAfterCreation).$($global:compressedFileExtension)"
+    &"$PSScriptroot\UploadFileToAzureBlobStorage.ps1" $majorRelativityVersion $sourceZipFilePath "$($global:vmNameAfterCreation).$($global:compressedFileExtension)" $false
 
     # Example(s) for running the separate DevVM Azure Blob storage Upload PowerShell Script
     # .\UploadFileToAzureBlobStorage.ps1 [parentFolderName] [sourceFileFullPath] [destinationFileName] [skipAzurePsModuleInstallation] # Showing Arguments
