@@ -70,6 +70,7 @@ $global:devVmVersionsToCreate = New-Object System.Collections.ArrayList
 [Boolean] $global:toggleCopyToLocalDriveStorage = $true # Set to $false when you do not want to copy the DevVm to the local drive storage
 [Boolean] $global:toggleUploadToAzureDevVmBlobStorage = $true # Set to $false when you do not want to copy the DevVm to the network storage
 [Boolean] $global:toggleAddVersionToSolutionSnapshotDatabase = $true # Set to $false when you do not want to add the Relativity Version to the Solution Snapshot Database
+[Boolean] $global:toggleSkipCopyingRelativityAndInvariantInstallerAndResponseFiles = $false # Set to $true when you want to create DevVM with pre-release Relativity Versions. Remember to manually copy the Relativity and Invariant installer and response files to the network storage (\\kcura.corp\shares\Development\DevEx\DevVm\Production\DevVm_Install_Files)
  
 function Reset-Logs-Environment-Variable() {
   Write-Host-Custom-Green "Resetting Logs Environment variable."
@@ -661,9 +662,17 @@ function Create-DevVm([string] $relativityVersionToCreate) {
         else {
           Write-Message-To-Screen "toggleSimulateDevVmCreation is set to False"
 
-          Copy-Relativity-Installer-And-Response-Files $relativityVersionToCreate
-          Copy-Invariant-Installer-And-Response-Files $global:invariantVersion
-          Copy-Relativity-And-Invariant-Version-Numbers-To-Text-File $relativityVersionToCreate $global:invariantVersion
+          # Copy Relativity and Invariant Installer and Respponse Files
+          if ($global:toggleSkipCopyingRelativityAndInvariantInstallerAndResponseFiles -eq $true) {
+            Write-Message-To-Screen "Skipped Copying Relativity and Invariant Installer and Response Files for Pre-Release DevVM [`$global:toggleSkipCopyingRelativityAndInvariantInstallerAndResponseFiles: $($global:toggleSkipCopyingRelativityAndInvariantInstallerAndResponseFiles)]....."
+          } 
+          else {
+            Copy-Relativity-Installer-And-Response-Files $relativityVersionToCreate
+            Copy-Invariant-Installer-And-Response-Files $global:invariantVersion
+            Copy-Relativity-And-Invariant-Version-Numbers-To-Text-File $relativityVersionToCreate $global:invariantVersion
+          }
+
+          # Create DevVM
           Run-DevVm-Creation-Script
           Write-Message-To-Screen "Created DevVm. [$($relativityVersionToCreate)]"
 
