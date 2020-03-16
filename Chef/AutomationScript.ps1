@@ -59,8 +59,8 @@ $global:devVmVersionsToCreate = New-Object System.Collections.ArrayList
 [Boolean] $global:devVmCreationWasSuccess = $false
 [string] $global:compressedFileExtension = "zip"
 [string] $global:relativityInvariantVersionNumberFileName = "relativity_invariant_version.txt"
-[string] $global:testSingleRelativityVersion = "11.1.120.1" # Leave it blank when in Automated Production mode
-[string] $global:invariantVersion = "6.1.121.4" # Leave it blank when in Automated Production mode
+[string] $global:testSingleRelativityVersion = "11.0.232.1" # Leave it blank when in Automated Production mode
+[string] $global:invariantVersion = "6.0.226.2" # Leave it blank when in Automated Production mode
 [Boolean] $global:foundCompatibleInvariantVersion = $true # Set to $false when in Automated Production mode
 
 # Define Toggle variables
@@ -512,6 +512,11 @@ function Upload-DevVm-Zip-To-Azure-Blob-Storage([string] $relativityVersionToUpl
     
     # Run separate DevVM Azure Blob storage Upload PowerShell Script
     &"$PSScriptroot\UploadFileToAzureBlobStorage.ps1" $majorRelativityVersion $sourceZipFilePath "$($global:vmNameAfterCreation).$($global:compressedFileExtension)"
+
+    # Example(s) for running the separate DevVM Azure Blob storage Upload PowerShell Script
+    # .\UploadFileToAzureBlobStorage.ps1 [parentFolderName] [sourceFileFullPath] [destinationFileName] [skipAzurePsModuleInstallation] # Showing Arguments
+    # .\UploadFileToAzureBlobStorage.ps1 "ParentFolder" "S:\Local_DevVms\abc.zip" "abc2.zip" $false
+    # .\UploadFileToAzureBlobStorage.ps1 "11.0" "D:\DevVmExport\RelativityDevVm-11.0.232.1.zip" "RelativityDevVm-11.0.232.1.zip" $false
   
     Write-Message-To-Screen "Finished running PowerShell script to Upload DevVM zip file to Azure DevVM Blob Storage"
     Write-Empty-Line-To-Screen

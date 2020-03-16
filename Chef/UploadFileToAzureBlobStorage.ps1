@@ -2,6 +2,7 @@
 [string] $global:parentFolderName = $args[0]
 [string] $global:sourceFileFullPath = $args[1]
 [string] $global:destinationFileName = $args[2]
+[Boolean] $global:skipAzurePsModuleInstallation = $args[3]
 
 # Define script contants
 $global:devVmAzureResourceGroupNameConstant = "DevVm"
@@ -42,11 +43,6 @@ function Display-Script-Constants {
 }
 
 function Upload-File-To-Azure-Blob-Storage {
-  Write-Host-Custom-Green "`$parentFolderName: $($global:parentFolderName)"
-  Write-Host-Custom-Green "`$sourceFileFullPath: $($global:sourceFileFullPath)"
-  Write-Host-Custom-Green "`$destinationFileName: $($global:destinationFileName)"
-  Write-Host-Custom-Green ""
-  
   [string] $error_message_for_input_arguments = ""
 
   try {
@@ -55,11 +51,17 @@ function Upload-File-To-Azure-Blob-Storage {
       Write-Host-Custom-Red $error_message_for_input_arguments
       throw $error_message_for_input_arguments
     }
+    else {
+      Write-Host-Custom-Blue "`$parentFolderName: $($global:parentFolderName)"
+    }
 
     if ([string]::IsNullOrWhitespace($global:sourceFileFullPath)) {
       $error_message_for_input_arguments = "Error: Argument(`$sourceFileFullPath) is Empty."
       Write-Host-Custom-Red $error_message_for_input_arguments
       throw $error_message_for_input_arguments
+    }
+    else {
+      Write-Host-Custom-Blue "`$sourceFileFullPath: $($global:sourceFileFullPath)"s
     }
 
     if ([string]::IsNullOrWhitespace($global:destinationFileName)) {
@@ -67,13 +69,30 @@ function Upload-File-To-Azure-Blob-Storage {
       Write-Host-Custom-Red $error_message_for_input_arguments
       throw $error_message_for_input_arguments
     }
+    else {
+      Write-Host-Custom-Blue "`$destinationFileName: $($global:destinationFileName)"
+    }
 
-    # Install Azure Az PS Module
-    Write-Host-Custom-Green "Installing Azure Az PS Module.....";
-    Install-Module `
-      -Name Az `
-      -AllowClobber `
-      -Scope CurrentUser
+    if ([string]::IsNullOrWhitespace($global:skipAzurePsModuleInstallation)) {
+      $error_message_for_input_arguments = "Error: Argument(`$skipAzurePsModuleInstallation) is Empty."
+      Write-Host-Custom-Red $error_message_for_input_arguments
+      throw $error_message_for_input_arguments
+    }
+    else {
+      Write-Host-Custom-Blue "`$skipAzurePsModuleInstallation: $($global:skipAzurePsModuleInstallation)"
+    }
+
+    if ($global:skipAzurePsModuleInstallation -eq $true) {
+      Write-Message-To-Screen "Skipped Azure PS Module installation [`$global:skipAzurePsModuleInstallation: $($global:skipAzurePsModuleInstallation)]....."
+    } 
+    else {
+      # Install Azure Az PS Module
+      Write-Host-Custom-Green "Installing Azure Az PS Module.....";
+      Install-Module `
+        -Name Az `
+        -AllowClobber `
+        -Scope CurrentUser
+    }
 
     # Query for Current Installed Azure Az PS module version 
     Write-Host-Custom-Green "Getting Current Installed Azure Az PS Module Version.....";
@@ -123,6 +142,8 @@ function Upload-File-To-Azure-Blob-Storage {
 
 Write-Host-Custom-Blue "Start Time: $(Get-Date)";
 
+Parse-And-Display-Azure-Environment-Variables
+Display-Script-Constants
 Upload-File-To-Azure-Blob-Storage
 
 Write-Host-Custom-Blue "End Time: $(Get-Date)";
