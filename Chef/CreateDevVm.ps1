@@ -250,8 +250,8 @@ function Start-DevVm() {
 function Delete-DevVm() {
   try {
     Write-Heading-Message-To-Screen  "Deleting VM"
-    Stop-VM -Name $global:vmName -Force
-    Remove-VM -Name $global:vmName -Force
+    Stop-VM -Name $global:vmNameAfterCreation -Force
+    Remove-VM -Name $global:vmNameAfterCreation -Force
     Write-Message-To-Screen  "Deleted VM"
   }
   Catch [Exception] {
@@ -337,7 +337,6 @@ function Delete-DevVm-If-It-Exists() {
     $devVmExists = Get-Vm -Name $global:vmName -ErrorAction SilentlyContinue  
     if ($devVmExists) {  
       Write-Message-To-Screen "Previous DevVM exists. Deleting it."
-      Start-DevVm
       Delete-DevVm 
       Write-Message-To-Screen "Previous DevVM deleted."
     }  
