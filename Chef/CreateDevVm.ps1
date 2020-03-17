@@ -337,7 +337,6 @@ function Delete-DevVm-If-It-Exists() {
     $devVmExists = Get-Vm -Name $global:vmName -ErrorAction SilentlyContinue  
     if ($devVmExists) {  
       Write-Message-To-Screen "Previous DevVM exists. Deleting it."
-      # Start-DevVm # CA: I don't think starting of the VM is required to delete it. So commenting it.
       Delete-DevVm 
       Write-Message-To-Screen "Previous DevVM deleted."
     }  
