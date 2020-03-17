@@ -1,15 +1,15 @@
 Clear-Host
 
 function Write-Host-Custom ([string] $writeMessage) {
-  Write-Host $writeMessage -ForegroundColor Magenta
+  Write-Host "$($writeMessage)`n" -ForegroundColor Magenta
 }
 
 function Write-Host-Custom-Red ([string] $writeMessage) {
-  Write-Host $writeMessage -ForegroundColor Red
+  Write-Host "$($writeMessage)`n" -ForegroundColor Red
 }
 
 function Write-Host-Custom-Green ([string] $writeMessage) {
-  Write-Host $writeMessage -ForegroundColor Green
+  Write-Host "$($writeMessage)`n" -ForegroundColor Green
 }
 
 # Retrieve values from DevVm_Automation_Config.json file
@@ -59,15 +59,18 @@ $global:devVmVersionsToCreate = New-Object System.Collections.ArrayList
 [Boolean] $global:devVmCreationWasSuccess = $false
 [string] $global:compressedFileExtension = "zip"
 [string] $global:relativityInvariantVersionNumberFileName = "relativity_invariant_version.txt"
-[string] $global:testSingleRelativityVersion = "11.1.120.1" # Leave it blank when in Automated Production mode
-[string] $global:invariantVersion = "	6.1.121.4" # Leave it blank when in Automated Production mode
+[string] $global:testSingleRelativityVersion = "11.0.232.1" # Leave it blank when in Automated Production mode
+[string] $global:invariantVersion = "6.0.226.2" # Leave it blank when in Automated Production mode
 [Boolean] $global:foundCompatibleInvariantVersion = $true # Set to $false when in Automated Production mode
+
+# Define Toggle variables
 [Boolean] $global:toggleSimulateDevVmCreation = $false # Set to $true when you want to simulate the DevVm creation to test the other parts of the automation script
 [Boolean] $global:toggleSendSlackMessage = $true # Set to $false when you do not want to send a slack message
 [Boolean] $global:toggleCopyToLocalNetworkStorage = $true # Set to $false when you do not want to copy the DevVm to the network storage
 [Boolean] $global:toggleCopyToLocalDriveStorage = $true # Set to $false when you do not want to copy the DevVm to the local drive storage
 [Boolean] $global:toggleUploadToAzureDevVmBlobStorage = $true # Set to $false when you do not want to copy the DevVm to the network storage
 [Boolean] $global:toggleAddVersionToSolutionSnapshotDatabase = $true # Set to $false when you do not want to add the Relativity Version to the Solution Snapshot Database
+[Boolean] $global:toggleSkipCopyingRelativityAndInvariantInstallerAndResponseFiles = $false # Set to $true when you want to create DevVM with pre-release Relativity Versions. Remember to manually copy the Relativity and Invariant installer and response files to the network storage (\\kcura.corp\shares\Development\DevEx\DevVm\Production\DevVm_Install_Files)
  
 function Reset-Logs-Environment-Variable() {
   Write-Host-Custom-Green "Resetting Logs Environment variable."
@@ -509,7 +512,12 @@ function Upload-DevVm-Zip-To-Azure-Blob-Storage([string] $relativityVersionToUpl
     Set-Location $PSScriptroot
     
     # Run separate DevVM Azure Blob storage Upload PowerShell Script
-    &"$PSScriptroot\UploadFileToAzureBlobStorage.ps1" $majorRelativityVersion $sourceZipFilePath "$($global:vmNameAfterCreation).$($global:compressedFileExtension)"
+    &"$PSScriptroot\UploadFileToAzureBlobStorage.ps1" $majorRelativityVersion $sourceZipFilePath "$($global:vmNameAfterCreation).$($global:compressedFileExtension)" $false
+
+    # Example(s) for running the separate DevVM Azure Blob storage Upload PowerShell Script
+    # .\UploadFileToAzureBlobStorage.ps1 [parentFolderName] [sourceFileFullPath] [destinationFileName] [skipAzurePsModuleInstallation] # Showing Arguments
+    # .\UploadFileToAzureBlobStorage.ps1 "ParentFolder" "S:\Local_DevVms\abc.zip" "abc2.zip" $false
+    # .\UploadFileToAzureBlobStorage.ps1 "11.0" "D:\DevVmExport\RelativityDevVm-11.0.232.1.zip" "RelativityDevVm-11.0.232.1.zip" $false
   
     Write-Message-To-Screen "Finished running PowerShell script to Upload DevVM zip file to Azure DevVM Blob Storage"
     Write-Empty-Line-To-Screen
@@ -654,9 +662,17 @@ function Create-DevVm([string] $relativityVersionToCreate) {
         else {
           Write-Message-To-Screen "toggleSimulateDevVmCreation is set to False"
 
-          Copy-Relativity-Installer-And-Response-Files $relativityVersionToCreate
-          Copy-Invariant-Installer-And-Response-Files $global:invariantVersion
-          Copy-Relativity-And-Invariant-Version-Numbers-To-Text-File $relativityVersionToCreate $global:invariantVersion
+          # Copy Relativity and Invariant Installer and Respponse Files
+          if ($global:toggleSkipCopyingRelativityAndInvariantInstallerAndResponseFiles -eq $true) {
+            Write-Message-To-Screen "Skipped Copying Relativity and Invariant Installer and Response Files for Pre-Release DevVM [`$global:toggleSkipCopyingRelativityAndInvariantInstallerAndResponseFiles: $($global:toggleSkipCopyingRelativityAndInvariantInstallerAndResponseFiles)]....."
+          } 
+          else {
+            Copy-Relativity-Installer-And-Response-Files $relativityVersionToCreate
+            Copy-Invariant-Installer-And-Response-Files $global:invariantVersion
+            Copy-Relativity-And-Invariant-Version-Numbers-To-Text-File $relativityVersionToCreate $global:invariantVersion
+          }
+
+          # Create DevVM
           Run-DevVm-Creation-Script
           Write-Message-To-Screen "Created DevVm. [$($relativityVersionToCreate)]"
 
