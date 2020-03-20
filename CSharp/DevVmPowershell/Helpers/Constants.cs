@@ -1,6 +1,6 @@
-﻿using System;
-using Relativity.Imaging.Services.Interfaces;
+﻿using Relativity.Imaging.Services.Interfaces;
 using Relativity.Services.Agent;
+using System;
 
 namespace Helpers
 {
@@ -14,11 +14,11 @@ namespace Helpers
 
 			public class Sql
 			{
-				public const string ConnectionString_PersistSecurityInfo = "False";
-				public const string ConnectionString_PacketSize = "4096";
-				public const string ConnectionString_ConnectTimeoutDefault = "30";
-				public const string ConnectionString_ConnectTimeoutLong = "120";
-				public const string ConnectionString_DefaultDatabase = "EDDS";
+				public const int DEFAULT_SQL_RUNNER_TIMEOUT_IN_SECONDS = 120;
+				public const string CONNECTION_STRING_PERSIST_SECURITY_INFO = "False";
+				public const string CONNECTION_STRING_PACKET_SIZE = "4096";
+				public const string CONNECTION_STRING_CONNECT_TIMEOUT_DEFAULT = "120";
+				public const string EDDS_DATABASE = "EDDS";
 			}
 		}
 		public class Agents
@@ -176,9 +176,9 @@ END
 
 		public class EnvironmentVariables
 		{
-			public const string JavaPath = @"C:\Program Files\Java";
-			public const string KcuraJavaHome = "KCURA_JAVA_HOME";
-			public const string JavaHome = "JAVA_HOME";
+			public const string JAVA_INSTALL_PATH = @"C:\Program Files\Java";
+			public const string KCURA_JAVA_HOME = "KCURA_JAVA_HOME";
+			public const string JAVA_HOME = "JAVA_HOME";
 		}
 
 		public class Imaging
@@ -236,6 +236,10 @@ END
 
 		public class DisclaimerAcceptance
 		{
+			public class ApplicationGuids
+			{
+				public const string ApplicationGuid = "87E45C02-2D97-41A6-834C-E6AAA905EA85";
+			}
 			public class ObjectNames
 			{
 				public const string Disclaimer = "Disclaimer";
@@ -287,6 +291,12 @@ END
 			<li><span style='color: #ff0000;'><strong>Please note that these VM's should not be used&nbsp;to performance test your applications as system resources are not equivalent to suggested production configurations</strong></span></li>
 			</ul>
 			<p>(We usually configure our&nbsp;DevVms&nbsp;to 4 cores and 12GB of RAM and can generally develop/debug applications with minimal lag.)</p>
+			<h4>Disclaimer:&nbsp;</h4>
+			<ul>
+			<li>You are responsible for OS updates on the Dev VM&nbsp;</li>
+			<li>You should <strong>NOT</strong> put sensitive data on the Dev VM. We can provide a sample data set&nbsp;</li>
+			<li>The Dev VM is not to be shared with anyone outside of your organization&nbsp;</li>
+			</ul>
 			<h4>Unavailable Features:&nbsp;</h4>
 			<ul>
 			<li>Analytics&nbsp;</li>
@@ -321,6 +331,41 @@ END
 			</ul>
 			<p>For questions related to the&nbsp; RelativityDevVm, we recommend to please refer to the&nbsp;DevVm&nbsp;Category on&nbsp;DevHelp&nbsp;(<a href = 'https://devhelp.relativity.com/c/tools-testing-download-and-tutorials/devvm' > https://devhelp.relativity.com/c/tools-testing-download-and-tutorials/devvm</a>). If you can't find the answer to your question, please create a new post with your question. Someone from our Developer Support group will respond to your question within a few days.&nbsp;</p>
 			<p>For a more detailed documentation on how to use the&nbsp;RelativityDevVm, please refer to this link: <a href = 'https://github.com/relativitydev/relativity-dev-vm/blob/master/Documentation/PDF/Relativity%20Dev%20VM%20-%20Pre-built%20VM%20-%20Documentation.pdf' target= '_blank' rel= 'noopener noreferrer' > https://github.com/relativitydev/relativity-dev-vm/blob/master/Documentation/PDF/Relativity%20Dev%20VM%20-%20Pre-built%20VM%20-%20Documentation.pdf</a>&nbsp;</p>";
+		}
+
+		public class ErrorMessages
+		{
+			public class Sql
+			{
+				public const string SQL_ROLLBACK_ERROR = "An error occurred when doing a SQL rollback.";
+				public const string EXECUTE_SQL_STATEMENT_ERROR = "An error occurred when executing SQL statement.";
+				public const string EXECUTE_SQL_STATEMENT_AS_SCALAR_ERROR = "An error occurred when executing SQL statement as Scalar.";
+				public const string EXECUTE_SQL_STATEMENT_AS_DATATABLE_ERROR = "An error occurred when executing SQL statement as DataTable.";
+				public const string EXECUTE_SQL_STATEMENT_AS_DATASET_ERROR = "An error occurred when executing SQL statement as DataSet.";
+				public const string EXECUTE_NON_QUERY_SQL_STATEMENT_ERROR = "An error occurred when executing Non-query SQL statement.";
+				public const string QUERY_ALL_APPLICATION_QUERY_ERROR = "An error occurred when quering for all Applications.";
+				public const string QUERY_ALL_APPLICATION_VERSIONS_FOR_GIVEN_APPLICATION_IDS_ERROR = "An error occurred when querying for the ApplicationVersions for given ApplicationIds.";
+				public const string QUERY_APPLICATION_VERSION_NAME_FOR_GIVEN_APPLICATION_VERSION_ID_ERROR = "An error occurred when querying for the ApplicationVersion Name for given ApplicationVersion Id.";
+				public const string QUERY_ALL_RELATIVITY_VERSIONS_FOR_GIVEN_APPLICATION_VERSION_IDS_ERROR = "An error occurred when querying for the ApplicationVersions for given ApplicationIds.";
+
+			}
+		}
+
+		public class SmokeTest
+		{
+			public class Guids
+			{
+				public const string ApplicationGuid = "0125C8D4-8354-4D8F-B031-01E73C866C7C";
+				public const string TestObjectType = "71ED667F-EE38-4BC7-AB76-6645D8A5587F";
+
+				public class Fields
+				{
+					public const string Name_FixedLengthText = "9D9F70EF-0AB1-4912-849E-418976EA92CF";
+					public const string Status_FixedLengthText = "A057E0A2-73CE-44B1-AF8D-F8B896358446";
+					public const string Error_LongText = "D289FEAA-76F4-4E82-86D6-E2E522F42A71";
+					public const string ErrorDetails_LongText = "F615298C-EB1E-4892-B8AA-103CEE85888B";
+				}
+			}
 		}
 	}
 }

@@ -1,19 +1,19 @@
 Clear-Host
 
 function Write-Host-Custom ([string] $writeMessage) {
-  Write-Host $writeMessage -ForegroundColor Magenta
+  Write-Host "$($writeMessage)`n" -ForegroundColor Magenta
 }
 
 function Write-Host-Custom-Red ([string] $writeMessage) {
-  Write-Host $writeMessage -ForegroundColor Red
+  Write-Host "$($writeMessage)`n" -ForegroundColor Red
 }
 
 function Write-Host-Custom-Green ([string] $writeMessage) {
-  Write-Host $writeMessage -ForegroundColor Green
+  Write-Host "$($writeMessage)`n" -ForegroundColor Green
 }
 
 # Retrieve values from DevVm_Automation_Config.json file
-[string] $devVmAutomationConfigFilePath = "C:\DevVm_Automation_Config.json"
+[string] $devVmAutomationConfigFilePath = "D:\DevVm_Automation_Config.json"
 [string] $json = Get-Content -Path $devVmAutomationConfigFilePath
 $jsonContents = $json | ConvertFrom-Json
 
@@ -33,6 +33,8 @@ Write-Host "global:devVmInstallFolder = $($global:devVmInstallFolder)"
 Write-Host "global:devVmAutomationLogsFolder = $($global:devVmAutomationLogsFolder)"
 [string] $global:devVmNetworkStorageLocation = $jsonContents.devVmNetworkStorageLocation
 Write-Host "global:devVmNetworkStorageLocation = $($global:devVmNetworkStorageLocation)"
+[string] $global:devVmLocalDriveStorageLocation = "T:\DevVmImages"
+Write-Host "global:devVmLocalDriveStorageLocation = $($global:devVmLocalDriveStorageLocation)"
 
 # Display parsed Relativity and Invariant folder arrays
 Write-Host ""
@@ -50,16 +52,25 @@ $global:allRelativityVersionsReleased = New-Object System.Collections.ArrayList
 $global:devVmVersionsCreated = New-Object System.Collections.ArrayList
 $global:devVmVersionsToCreate = New-Object System.Collections.ArrayList
 [string] $global:vmName = "RelativityDevVm"
+[string] $global:vmNameAfterCreation = ""
 [string] $global:vmExportPath = "D:\DevVmExport"
 [Int32] $global:invariantVersionSqlRecordCount = 0
 [string] $global:devVmCreationResultFileName = "result_file.txt"
 [Boolean] $global:devVmCreationWasSuccess = $false
 [string] $global:compressedFileExtension = "zip"
 [string] $global:relativityInvariantVersionNumberFileName = "relativity_invariant_version.txt"
-[string] $global:testSingleRelativityVersion = "10.2.170.2" # Leave it blank when in Automated Production mode
-[string] $global:invariantVersion = "5.2.164.1" # Leave it blank when in Automated Production mode
+[string] $global:testSingleRelativityVersion = "11.0.232.1" # Leave it blank when in Automated Production mode
+[string] $global:invariantVersion = "6.0.226.2" # Leave it blank when in Automated Production mode
 [Boolean] $global:foundCompatibleInvariantVersion = $true # Set to $false when in Automated Production mode
-[Boolean] $global:sendSlackMessage = $true # Set to $false when you do not want to send a slack message
+
+# Define Toggle variables
+[Boolean] $global:toggleSimulateDevVmCreation = $false # Set to $true when you want to simulate the DevVm creation to test the other parts of the automation script
+[Boolean] $global:toggleSendSlackMessage = $true # Set to $false when you do not want to send a slack message
+[Boolean] $global:toggleCopyToLocalNetworkStorage = $true # Set to $false when you do not want to copy the DevVm to the network storage
+[Boolean] $global:toggleCopyToLocalDriveStorage = $true # Set to $false when you do not want to copy the DevVm to the local drive storage
+[Boolean] $global:toggleUploadToAzureDevVmBlobStorage = $true # Set to $false when you do not want to copy the DevVm to the network storage
+[Boolean] $global:toggleAddVersionToSolutionSnapshotDatabase = $true # Set to $false when you do not want to add the Relativity Version to the Solution Snapshot Database
+[Boolean] $global:toggleSkipCopyingRelativityAndInvariantInstallerAndResponseFiles = $false # Set to $true when you want to create DevVM with pre-release Relativity Versions. Remember to manually copy the Relativity and Invariant installer and response files to the network storage (\\kcura.corp\shares\Development\DevEx\DevVm\Production\DevVm_Install_Files)
  
 function Reset-Logs-Environment-Variable() {
   Write-Host-Custom-Green "Resetting Logs Environment variable."
@@ -414,75 +425,188 @@ function Copy-Relativity-And-Invariant-Version-Numbers-To-Text-File([string] $re
 function Run-DevVm-Creation-Script([string] $relativityVersionToCreate) {
   Write-Heading-Message-To-Screen "Running DevVm creation script."
 
-  # Make sure we are in the folder where the running script exists
+  # Make sure we are in the same folder where the current running script (AutomationScript.ps1) exists
   Write-Message-To-Screen "PSScriptroot: $($PSScriptroot)"
   Set-Location $PSScriptroot
   
-  # Run DevVm Script
+  # Run separate DevVm Creation PowerShell Script
   &"$PSScriptroot\CreateDevVm.ps1"
 
   Write-Message-To-Screen "Ran DevVm creation script."
   Write-Empty-Line-To-Screen
 }
 
-function Copy-DevVm-Zip-To-Network-Storage([string] $relativityVersionToCopy) {
-  Write-Heading-Message-To-Screen "Copying DevVm created [$($relativityVersionToCopy)] to Network storage."
+function Copy-DevVm-Zip-File-To-All-File-Storages([string] $relativityVersionToCopy) {
+  Write-Heading-Message-To-Screen "Copying DevVm created [$($relativityVersionToCopy)] to File storage(s)."
    
   [System.Version] $relativityVersion = [System.Version]::Parse($relativityVersionToCopy)
   [string] $majorRelativityVersion = "$($relativityVersion.Major).$($relativityVersion.Minor)"
-
-  [string] $sourceZipFilePath = "$($global:vmExportPath)\$($global:vmName).$($global:compressedFileExtension)"
-  [string] $destinationFilePath = "$($global:devVmNetworkStorageLocation)\$($majorRelativityVersion)\$($global:vmName).$($global:compressedFileExtension)"
   
+  # Copy to Network Storage
+  if ($global:toggleCopyToLocalNetworkStorage -eq $true) {
+    Write-Message-To-Screen "toggleCopyToLocalNetworkStorage is set to True"
+
+    [string] $destinationFileParentFolderPathForNetworkStorage = "$($global:devVmNetworkStorageLocation)\$($majorRelativityVersion)"
+    [string] $destinationFilePathForNetworkStorage = "$($destinationFileParentFolderPathForNetworkStorage)\$($global:vmNameAfterCreation).$($global:compressedFileExtension)"    
+    
+    # Create Parent folder if it doesn't already exist
+    If (!(test-path $destinationFileParentFolderPathForNetworkStorage)) {
+      New-Item -ItemType Directory -Force -Path $destinationFileParentFolderPathForNetworkStorage
+    }
+    Copy-DevVm-Zip-File $relativityVersionToCopy $destinationFilePathForNetworkStorage
+  }
+  else {
+    Write-Message-To-Screen "toggleCopyToLocalNetworkStorage is set to False"    
+  }
+
+  # Copy to Local Drive
+  if ($global:toggleCopyToLocalDriveStorage -eq $true) {
+    Write-Message-To-Screen "toggleCopyToLocalDriveStorage is set to True"
+
+    [string] $destinationFileParentFolderPathForLocalDriveStorage = "$($global:devVmLocalDriveStorageLocation)\$($majorRelativityVersion)"
+    [string] $destinationFilePathForLocalDriveStorage = "$($destinationFileParentFolderPathForLocalDriveStorage)\$($global:vmNameAfterCreation).$($global:compressedFileExtension)"    
+    
+    # Create Parent folder if it doesn't already exist
+    If (!(test-path $destinationFileParentFolderPathForLocalDriveStorage)) {
+      New-Item -ItemType Directory -Force -Path $destinationFileParentFolderPathForLocalDriveStorage
+    }
+    Copy-DevVm-Zip-File $relativityVersionToCopy $destinationFilePathForLocalDriveStorage
+  }
+  else {
+    Write-Message-To-Screen "toggleCopyToLocalDriveStorage is set to False"    
+  }
+  
+  Write-Message-To-Screen "Copied DevVm created [$($relativityVersionToCopy)] to All File storages."
+  Write-Empty-Line-To-Screen
+}
+
+function Copy-DevVm-Zip-File([string] $relativityVersionToCopy, [string] $destinationFilePath) {
+  Write-Heading-Message-To-Screen "Copying DevVm created [$($relativityVersionToCopy)] to storage [$($destinationFilePath)]" 
+  
+  [string] $sourceZipFilePath = "$($global:vmExportPath)\$($global:vmNameAfterCreation).$($global:compressedFileExtension)"
+        
   if (Test-Path $sourceZipFilePath) {
     Copy-File-Overwrite-If-It-Exists $sourceZipFilePath $destinationFilePath  
   }
   else {
-    Write-Message-To-Screen "File[$($sourceZipFilePath)] doesn't exist. Skipped copying to Network storage."
+    Write-Message-To-Screen "Source file[$($sourceZipFilePath)] doesn't exist. Skipped copying to storage [$($destinationFilePath)]"
   }  
-
-  Write-Message-To-Screen "Copied DevVm created [$($relativityVersionToCopy)] to Network storage."
-  Write-Empty-Line-To-Screen
+  
+  Write-Message-To-Screen "Copied DevVm created [$($relativityVersionToCopy)] to storage [$($destinationFilePath)]"
+  Write-Empty-Line-To-Screen  
 }
 
-function Send-Slack-Success-Message([string] $relativityVersionToCopy){
-  if($global:sendSlackMessage -eq $true){
+function Upload-DevVm-Zip-To-Azure-Blob-Storage([string] $relativityVersionToUpload) {
+  if ($global:toggleUploadToAzureDevVmBlobStorage -eq $true) {
+    Write-Message-To-Screen "toggleUploadToAzureDevVmBlobStorage is set to True"
+
+    Write-Heading-Message-To-Screen "Uploading DevVM zip file to Azure DevVM Blob Storage"
+
+    [System.Version] $relativityVersion = [System.Version]::Parse($relativityVersionToUpload)
+    [string] $majorRelativityVersion = "$($relativityVersion.Major).$($relativityVersion.Minor)"
+
+    [string] $sourceZipFilePath = "$($global:vmExportPath)\$($global:vmNameAfterCreation).$($global:compressedFileExtension)"
+
+    # Make sure we are in the same folder where the current running script (AutomationScript.ps1) exists
+    Write-Message-To-Screen "PSScriptroot: $($PSScriptroot)"
+    Set-Location $PSScriptroot
+    
+    # Run separate DevVM Azure Blob storage Upload PowerShell Script
+    &"$PSScriptroot\UploadFileToAzureBlobStorage.ps1" $majorRelativityVersion $sourceZipFilePath "$($global:vmNameAfterCreation).$($global:compressedFileExtension)" $false
+
+    # Example(s) for running the separate DevVM Azure Blob storage Upload PowerShell Script
+    # .\UploadFileToAzureBlobStorage.ps1 [parentFolderName] [sourceFileFullPath] [destinationFileName] [skipAzurePsModuleInstallation] # Showing Arguments
+    # .\UploadFileToAzureBlobStorage.ps1 "ParentFolder" "S:\Local_DevVms\abc.zip" "abc2.zip" $false
+    # .\UploadFileToAzureBlobStorage.ps1 "11.0" "D:\DevVmExport\RelativityDevVm-11.0.232.1.zip" "RelativityDevVm-11.0.232.1.zip" $false
+  
+    Write-Message-To-Screen "Finished running PowerShell script to Upload DevVM zip file to Azure DevVM Blob Storage"
+    Write-Empty-Line-To-Screen
+  }
+  else {
+    Write-Message-To-Screen "toggleUploadToAzureDevVmBlobStorage is set to False"
+  }
+}
+
+function Send-Slack-Success-Message([string] $relativityVersionToCopy) {
+  [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+  if ($global:toggleSendSlackMessage -eq $true) {
+    Write-Message-To-Screen "toggleSendSlackMessage is set to True"
+
     Write-Heading-Message-To-Screen "Sending Slack Success Message"
     [System.Version] $relativityVersion = [System.Version]::Parse($relativityVersionToCopy)
     [string] $majorRelativityVersion = "$($relativityVersion.Major).$($relativityVersion.Minor)"
-    [string] $destinationFilePath = "$($global:devVmNetworkStorageLocation)\$($majorRelativityVersion)\$($global:vmName).$($global:compressedFileExtension)"
+
+    [string] $destinationFilePathNetworkStorage = "$($global:devVmNetworkStorageLocation)\$($majorRelativityVersion)\$($global:vmNameAfterCreation).$($global:compressedFileExtension)"
+    [string] $destinationFilePathLocalDriveStorage = "\\P-DV-DSK-DEVEX\DevVmImages\$($majorRelativityVersion)\$($global:vmNameAfterCreation).$($global:compressedFileExtension)"
+
     $BodyJSON = @{
-      "text" = "New DevVm ($($relativityVersionToCreate)) is available at $($destinationFilePath)"
+      "text" = "New DevVm ($($relativityVersionToCreate)) is available at the following location(s) - [$($destinationFilePathNetworkStorage)] & [$($destinationFilePathLocalDriveStorage)]"
     } | ConvertTo-Json
 
-    Invoke-WebRequest -Method Post -Body "$BodyJSON" -Uri "https://hooks.slack.com/services/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" -ContentType application/json
+    Invoke-WebRequest -Method Post -Body "$BodyJSON" -Uri $Env:slack_devex_announcements_group_key -ContentType application/json
     Write-Message-To-Screen "Sent Slack Success Message"
+  }
+  else {
+    Write-Message-To-Screen "toggleSendSlackMessage is set to False"
   }
 }
 
-function Send-Slack-Success-Message-Follow-Up-Tasks([string] $relativityVersionToCopy){
-  if($global:sendSlackMessage -eq $true){
+function Send-Slack-Success-Message-Follow-Up-Tasks([string] $relativityVersionToCopy) {
+  [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+  if ($global:toggleSendSlackMessage -eq $true) {
+    Write-Message-To-Screen "toggleSendSlackMessage is set to True"
+
     Write-Heading-Message-To-Screen "Sending Slack Success Message - Follow Up Tasks"
     [System.Version] $relativityVersion = [System.Version]::Parse($relativityVersionToCopy)
     $BodyJSON = @{
-      "text" = "Add Relativity Version ($($relativityVersionToCreate)) to Solution Snapshot Database and inform DevCon team to update Compatibility info for the Applications."
+      "text" = "Follow this checklist (https://einstein.kcura.com/x/61e3C) for the new Relativity Version ($($relativityVersionToCreate))."
     } | ConvertTo-Json
 
-    Invoke-WebRequest -Method Post -Body "$BodyJSON" -Uri "https://hooks.slack.com/services/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" -ContentType application/json
+    Invoke-WebRequest -Method Post -Body "$BodyJSON" -Uri $Env:slack_devex_tools_group_key -ContentType application/json
     Write-Message-To-Screen "Sent Slack Success Message - Follow Up Tasks"
+  }
+  else {
+    Write-Message-To-Screen "toggleSendSlackMessage is set to False"
   }
 }
 
-function Send-Slack-Failure-Message([string] $relativityVersionToCopy){
-  if($global:sendSlackMessage -eq $true){
+function Send-Slack-Failure-Message([string] $relativityVersionToCopy) {
+  [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+  if ($global:toggleSendSlackMessage -eq $true) {
+    Write-Message-To-Screen "toggleSendSlackMessage is set to True"
+
     Write-Heading-Message-To-Screen "Sending Slack Failure Message"
     [System.Version] $relativityVersion = [System.Version]::Parse($relativityVersionToCopy)
     $BodyJSON = @{
       "text" = "Failed to create Relativity DevVm ($($relativityVersionToCreate))"
     } | ConvertTo-Json
 
-    Invoke-WebRequest -Method Post -Body "$BodyJSON" -Uri "https://hooks.slack.com/services/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" -ContentType application/json
+    Invoke-WebRequest -Method Post -Body "$BodyJSON" -Uri $Env:slack_devex_tools_group_key -ContentType application/json
     Write-Message-To-Screen "Sent Slack Failure Message"
+  }
+  else {
+    Write-Message-To-Screen "toggleSendSlackMessage is set to False"
+  }
+}
+
+function Add-Relativity-Version-To-Solution-Snapshot-Database([string] $relativityVersion) {
+  if ($global:toggleAddVersionToSolutionSnapshotDatabase -eq $true) {
+    Write-Message-To-Screen "toggleAddVersionToSolutionSnapshotDatabase is set to True"
+
+    Write-Heading-Message-To-Screen "Adding Relativity Version to the Solution Snapshot Database"
+
+    # Make sure we are in the same folder where the current running script (AutomationScript.ps1) exists
+    Write-Message-To-Screen "PSScriptroot: $($PSScriptroot)"
+    Set-Location $PSScriptroot
+    
+    # Run separate Solution Snapshot API Calls PowerShell Script
+    &"$PSScriptroot\AddRelativityVersionToSolutionSnapshotDatabase.ps1" "$Env:devvm_automation_salesforce_username" "$Env:devvm_automation_salesforce_password" "$relativityVersion" $global:sendSlackMessage
+  
+    Write-Message-To-Screen "Ran Add Relativity Version to Solution Snapshot Database script."
+    Write-Empty-Line-To-Screen
+  }
+  else {
+    Write-Message-To-Screen "toggleAddVersionToSolutionSnapshotDatabase is set to False"
   }
 }
 
@@ -514,6 +638,9 @@ function Check-DevVm-Result-Text-File-For-Success() {
 function Create-DevVm([string] $relativityVersionToCreate) {
   Write-Heading-Message-To-Screen "Creating DevVm. [$($relativityVersionToCreate)]"
 
+  # Set new VM name in a variable which will be used in the CreateDevVm.ps1 script to rename the VM once it's created
+  $global:vmNameAfterCreation = "$($global:vmName)-$($relativityVersionToCreate)"
+
   $global:devVmCreationWasSuccess = $false
   Write-Message-To-Screen "Total attempts: $($global:maxRetry)"
 
@@ -525,21 +652,48 @@ function Create-DevVm([string] $relativityVersionToCreate) {
       # Find-Invariant-Version $relativityVersionToCreate
 
       if ($global:foundCompatibleInvariantVersion) {
-        Copy-Relativity-Installer-And-Response-Files $relativityVersionToCreate
-        Copy-Invariant-Installer-And-Response-Files $global:invariantVersion
-        Copy-Relativity-And-Invariant-Version-Numbers-To-Text-File $relativityVersionToCreate $global:invariantVersion
-        Run-DevVm-Creation-Script
-        Write-Message-To-Screen "Created DevVm. [$($relativityVersionToCreate)]"
 
-        Check-DevVm-Result-Text-File-For-Success
+        if ($global:toggleSimulateDevVmCreation -eq $true) {
+          Write-Message-To-Screen "toggleSimulateDevVmCreation is set to True"
+
+          $global:devVmCreationWasSuccess = $true
+          Write-Message-To-Screen "Skipped DevVm creation! (In DevVM Creation Siumlation mode)"
+        }
+        else {
+          Write-Message-To-Screen "toggleSimulateDevVmCreation is set to False"
+
+          # Copy Relativity and Invariant Installer and Respponse Files
+          if ($global:toggleSkipCopyingRelativityAndInvariantInstallerAndResponseFiles -eq $true) {
+            Write-Message-To-Screen "Skipped Copying Relativity and Invariant Installer and Response Files for Pre-Release DevVM [`$global:toggleSkipCopyingRelativityAndInvariantInstallerAndResponseFiles: $($global:toggleSkipCopyingRelativityAndInvariantInstallerAndResponseFiles)]....."
+          } 
+          else {
+            Copy-Relativity-Installer-And-Response-Files $relativityVersionToCreate
+            Copy-Invariant-Installer-And-Response-Files $global:invariantVersion
+            Copy-Relativity-And-Invariant-Version-Numbers-To-Text-File $relativityVersionToCreate $global:invariantVersion
+          }
+
+          # Create DevVM
+          Run-DevVm-Creation-Script
+          Write-Message-To-Screen "Created DevVm. [$($relativityVersionToCreate)]"
+
+          Check-DevVm-Result-Text-File-For-Success
+        }        
        
         if ($global:devVmCreationWasSuccess -eq $true) {
-          # Copy Zip file to network drive with the version number in name
-          Copy-DevVm-Zip-To-Network-Storage $relativityVersionToCreate
-          # Send Slack Message that upload to the network storage succeeded
+          # Copy Zip file to all file storage locations with the version number in name
+          Copy-DevVm-Zip-File-To-All-File-Storages $relativityVersionToCreate
+
+          # Upload Zip file to Azure DevVM Blob storage with the version number in name
+          Upload-DevVm-Zip-To-Azure-Blob-Storage $relativityVersionToCreate
+          
+          # Send Slack Message that copying to all the local file storage(s) succeeded
           Send-Slack-Success-Message $relativityVersionToCreate
+          
           # Send Slack Message to the Tools Slack channel to remind about the follow up tasks
           Send-Slack-Success-Message-Follow-Up-Tasks $relativityVersionToCreate
+          
+          # Add Relativity Version to Solution Snapshot Database
+          Add-Relativity-Version-To-Solution-Snapshot-Database $relativityVersionToCreate
         }
         else {
           $global:count++
@@ -554,9 +708,6 @@ function Create-DevVm([string] $relativityVersionToCreate) {
       $global:count++
       Write-Message-To-Screen "Exception: $($_.Exception.GetType().FullName)"
       Write-Message-To-Screen "Exception Message: $($_.Exception.Message)"
-    }
-    finally {
-      Check-DevVm-Result-Text-File-For-Success
     }
     
     Write-Heading-Message-To-Screen "Retry variables:"

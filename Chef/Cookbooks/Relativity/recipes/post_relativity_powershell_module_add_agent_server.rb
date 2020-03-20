@@ -8,7 +8,7 @@ custom_log 'custom_log' do msg 'Adding Agent Server' end
 powershell_script 'add_agent_server' do
   code <<-EOH
     #{node['powershell_module']['import_module']}
-    Add-AgentServerToDefaultResourcePool -RelativityInstanceName #{node['windows']['new_computer_name']} -RelativityAdminUserName #{node['relativity']['admin']['login']} -RelativityAdminPassword #{node['relativity']['admin']['password']}
+    Add-AgentServerToDefaultResourcePool -RelativityInstanceName #{node['windows']['new_computer_name']} -RelativityAdminUserName #{node['relativity']['admin']['login']} -RelativityAdminPassword #{node['relativity']['admin']['password']} -SqlAdminUserName #{node['sql']['user']['eddsdbo']['login']} -SqlAdminPassword #{node['sql']['user']['eddsdbo']['password']}
     EOH
 end
 

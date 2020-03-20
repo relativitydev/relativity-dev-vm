@@ -1,13 +1,13 @@
 [Boolean] $global:exportVm = $true
 [string] $global:vmName = "RelativityDevVm"
-[string] $global:vmExportPath = "C:\DevVmExport"
+[string] $global:vmExportPath = "D:\DevVmExport"
 [string] $global:vmDocumentationOnline = "Relativity Dev VM documentation can be found at this link - https://github.com/relativitydev/relativity-dev-vm/blob/master/Documentation/PDF/Relativity%20Dev%20VM%20-%20Pre-built%20VM%20-%20Documentation.pdf"
 [string] $global:vmCheckpointName = "$($global:vmName) Created"
 [string] $global:devVmCreationResultFileName = "result_file.txt"
 [Boolean] $global:devVmCreationWasSuccess = $false
 [string] $global:compressedFileExtension = "zip"
 
-[string] $devVmAutomationConfigFilePath = "C:\DevVm_Automation_Config.json"
+[string] $devVmAutomationConfigFilePath = "D:\DevVm_Automation_Config.json"
 [string] $json = Get-Content -Path $devVmAutomationConfigFilePath
 $jsonContents = $json | ConvertFrom-Json
 [string] $global:devVmInstallFolder = $jsonContents.devVmInstallFolder
@@ -131,17 +131,15 @@ function Create-DevVm-Checkpoint() {
 }
 
 function Rename-DevVm() {
-  try{
+  try {
     Write-Heading-Message-To-Screen  "Renaming VM"
     $relativityAndInvariantVersions = Get-Content -Path "$($global:devVmInstallFolder)\Relativity\$($global:relativityInvariantVersionNumberFileName)"
     $indexOfComma = $relativityAndInvariantVersions.IndexOf(',')
     $indexOfColon = $relativityAndInvariantVersions.IndexOf(':')
-    $relativityVersion = $relativityAndInvariantVersions.Substring(($indexOfColon + 2), ($indexOfComma - ($indexOfColon +2)))
+    $relativityVersion = $relativityAndInvariantVersions.Substring(($indexOfColon + 2), ($indexOfComma - ($indexOfColon + 2)))
     $relativityVersion = $relativityVersion.Replace(" ", "")
-    [string] $newName = "$($global:vmName)-$($relativityVersion)"
-    Rename-Vm -Name $global:vmName -NewName $newName
-    $global:vmName = $newName
-    Write-Message-To-Screen  "Renamed VM"
+    Rename-Vm -Name $global:vmName -NewName $global:vmNameAfterCreation
+    Write-Message-To-Screen  "Renamed VM [$($global:vmNameAfterCreation)]"
   }
   Catch [Exception] {
     Write-Error-Message-To-Screen "An error occured when renaming the VM."
@@ -155,7 +153,7 @@ function Create-DevVm-Documentation-Text-File() {
   try {
     Write-Heading-Message-To-Screen  "Creating DevVM Documentation text file"
 
-    [string] $documentation_text_file_path = "$($global:vmExportPath)\$($global:vmName)\DevVm_Documentation.txt"
+    [string] $documentation_text_file_path = "$($global:vmExportPath)\$($global:vmNameAfterCreation)\DevVm_Documentation.txt"
 
     # Delete DevVM Documentation text file if it already exists
     Delete-File-If-It-Exists $documentation_text_file_path
@@ -175,7 +173,7 @@ function Create-DevVm-Documentation-Text-File() {
 }
 
 function Downgrade-DevVm-Resources() {
-  try{
+  try {
     Set-VMProcessor $global:vmName -Count $global:vmProcessorsOnExport
     Set-VMMemory $global:vmName -StartupBytes $global:vmMemoryOnExport
   }
@@ -195,7 +193,7 @@ function Export-DevVm() {
     Delete-Folder-If-It-Exists $global:vmExportPath  
 
     # Export VM
-    Export-VM -Name $global:vmName -Path $global:vmExportPath
+    Export-VM -Name $global:vmNameAfterCreation -Path $global:vmExportPath
 
     Write-Message-To-Screen  "Exported VM"
   }
@@ -211,8 +209,8 @@ function Compress-DevVm() {
   try {
     Write-Heading-Message-To-Screen  "Converting Exported VM to a Zip file"
     
-    [string] $folderToCompressPath = "$($global:vmExportPath)\$($global:vmName)"
-    [string] $zipFilePath = "$($global:vmExportPath)\$($global:vmName).$($global:compressedFileExtension)"
+    [string] $folderToCompressPath = "$($global:vmExportPath)\$($global:vmNameAfterCreation)"
+    [string] $zipFilePath = "$($global:vmExportPath)\$($global:vmNameAfterCreation).$($global:compressedFileExtension)"
 
     # Make sure we are in the folder where the running script exists
     Write-Message-To-Screen "PSScriptroot: $($PSScriptroot)"
@@ -252,8 +250,8 @@ function Start-DevVm() {
 function Delete-DevVm() {
   try {
     Write-Heading-Message-To-Screen  "Deleting VM"
-    Stop-VM -Name $global:vmName -Force
-    Remove-VM -Name $global:vmName -Force
+    Stop-VM -Name $global:vmNameAfterCreation -Force
+    Remove-VM -Name $global:vmNameAfterCreation -Force
     Write-Message-To-Screen  "Deleted VM"
   }
   Catch [Exception] {
@@ -339,7 +337,6 @@ function Delete-DevVm-If-It-Exists() {
     $devVmExists = Get-Vm -Name $global:vmName -ErrorAction SilentlyContinue  
     if ($devVmExists) {  
       Write-Message-To-Screen "Previous DevVM exists. Deleting it."
-      Start-DevVm
       Delete-DevVm 
       Write-Message-To-Screen "Previous DevVM deleted."
     }  
@@ -381,7 +378,7 @@ function New-DevVm() {
       if ($global:exportVm) {
         Stop-DevVm
         Downgrade-DevVm-Resources
-        Create-DevVm-Checkpoint
+        # Create-DevVm-Checkpoint # Decided to not create checkpoints for DevVM's (Chandra 10/24/2019)
         Rename-DevVm
         Export-DevVm
         Create-DevVm-Documentation-Text-File
