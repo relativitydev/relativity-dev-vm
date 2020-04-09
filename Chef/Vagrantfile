@@ -329,6 +329,7 @@ Vagrant.configure('2') do |config|
     chef.add_recipe('Relativity::post_relativity_powershell_module_rsmf_viewer_override')
     chef.add_recipe('Relativity::post_relativity_powershell_module_add_disclaimer_acceptance_log')
     chef.add_recipe('Relativity::post_relativity_update_relativity_logos')
+    # chef.add_recipe('Relativity::post_relativity_aero_ui_toggle') # Uncomment when building an Aero DevVm
     chef.add_recipe('Relativity::post_relativity_write_script_result_success')
     chef.add_recipe('Relativity::post_relativity_cleanup')
   end
