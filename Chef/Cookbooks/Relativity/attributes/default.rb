@@ -3,12 +3,12 @@ default['timeout']['default'] = 3600
 default['windows']['hostname'] = node['fqdn']
 default['windows']['new_computer_name'] = 'RelativityDevVm'
 default['windows']['user']['admin']['login'] = 'Administrator'
-default['windows']['user']['admin']['password'] = 'Password1!'
+default['windows']['user']['admin']['password'] = '<removed_password_contact_relativity_plex_team>'
 
 default['sql']['installer_iso_file_location'] = 'C:/Chef_Install/Sql/Sql.iso'
 default['sql']['user']['sa']['login'] = 'sa'
-default['sql']['user']['sa']['password'] = 'Password1!'
-default['sql']['user']['eddsdbo']['password'] = 'Password1!'
+default['sql']['user']['sa']['password'] = '<removed_password_contact_relativity_plex_team>'
+default['sql']['user']['eddsdbo']['password'] = '<removed_password_contact_relativity_plex_team>'
 default['sql']['instance_name'] = 'MSSQLSERVER'
 default['sql']['directories']['backup'] = 'c:\bak'
 default['sql']['directories']['logs'] = 'c:\ldf'
@@ -29,7 +29,7 @@ default['relativity']['install_directory'] = 'C:/Chef_Install/Relativity'
 default['relativity']['installer_file_location'] = 'C:/Chef_Install/Relativity/Relativity.exe'
 default['relativity']['response_file_location'] = 'C:/Chef_Install/Relativity/RelativityResponse.txt'
 default['relativity']['admin']['login'] = 'relativity.admin@kcura.com'
-default['relativity']['admin']['password'] = 'Test1234!'
+default['relativity']['admin']['password'] = '<removed_password_contact_relativity_plex_team>'
 default['relativity']['processing']['source']['location'] = "\\\\#{default['windows']['hostname']}\\ProcessingSourceLocation"
 
 default['invariant']['install_directory'] = 'C:/Chef_Install/Invariant'
