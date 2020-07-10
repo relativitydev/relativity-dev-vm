@@ -37,8 +37,8 @@ Vagrant.configure('2') do |config|
   # Hyperv configuration
   config.vm.provider :hyperv do |h|
     h.vmname = 'RelativityDevVm'
-    h.cpus = 6
-    h.memory = 32000
+    h.cpus = 4
+    h.memory = 16000
   end
 
   config.vm.synced_folder '.', '/vagrant',
@@ -244,110 +244,111 @@ Vagrant.configure('2') do |config|
       'smb_password' => network_share_smb_password,
     }
     chef.add_recipe('Relativity::default_start_services')
+    chef.add_recipe('Relativity::post_relativity_check_correct_relativity_version_is_installed') # NEW
     chef.add_recipe('Relativity::post_relativity_sqlserver_distributed_link_servers')
     chef.add_recipe('Relativity::post_relativity_sqlserver_distributed_relativity_install')
   end
 
-  config.vm.provision 'chef_zero' do |chef|
-    chef.cookbooks_path = 'Cookbooks'
-    chef.data_bags_path = 'DataBags'
-    chef.nodes_path = 'Nodes'
-    chef.roles_path = 'Roles'
-    chef.channel = 'stable'
-    chef.version = '13.8.5'
-    chef.json = {
-      'smb_domain' => network_share_smb_domain,
-      'smb_username' => network_share_smb_username,
-      'smb_password' => network_share_smb_password,
-    }
-    chef.add_recipe('Relativity::post_relativity_install_datagrid_presetup')
-    chef.add_recipe('Relativity::post_relativity_powershell_module_update_java_environment_variables')
-  end
+  # config.vm.provision 'chef_zero' do |chef|
+  #   chef.cookbooks_path = 'Cookbooks'
+  #   chef.data_bags_path = 'DataBags'
+  #   chef.nodes_path = 'Nodes'
+  #   chef.roles_path = 'Roles'
+  #   chef.channel = 'stable'
+  #   chef.version = '13.8.5'
+  #   chef.json = {
+  #     'smb_domain' => network_share_smb_domain,
+  #     'smb_username' => network_share_smb_username,
+  #     'smb_password' => network_share_smb_password,
+  #   }
+  #   chef.add_recipe('Relativity::post_relativity_install_datagrid_presetup')
+  #   chef.add_recipe('Relativity::post_relativity_powershell_module_update_java_environment_variables')
+  # end
 
-  config.vm.provision 'chef_zero' do |chef|
-    chef.cookbooks_path = 'Cookbooks'
-    chef.data_bags_path = 'DataBags'
-    chef.nodes_path = 'Nodes'
-    chef.roles_path = 'Roles'
-    chef.channel = 'stable'
-    chef.version = '13.8.5'
-    chef.json = {
-      'smb_domain' => network_share_smb_domain,
-      'smb_username' => network_share_smb_username,
-      'smb_password' => network_share_smb_password,
-    }
-    chef.add_recipe('Relativity::post_relativity_Install_datagrid')
-    chef.add_recipe('Relativity::post_relativity_powershell_module_update_datagrid_instance_settings')
-    chef.add_recipe('Relativity::post_relativity_powershell_module_update_elasticsearch_yml_file')
-  end
+  # config.vm.provision 'chef_zero' do |chef|
+  #   chef.cookbooks_path = 'Cookbooks'
+  #   chef.data_bags_path = 'DataBags'
+  #   chef.nodes_path = 'Nodes'
+  #   chef.roles_path = 'Roles'
+  #   chef.channel = 'stable'
+  #   chef.version = '13.8.5'
+  #   chef.json = {
+  #     'smb_domain' => network_share_smb_domain,
+  #     'smb_username' => network_share_smb_username,
+  #     'smb_password' => network_share_smb_password,
+  #   }
+  #   chef.add_recipe('Relativity::post_relativity_Install_datagrid')
+  #   chef.add_recipe('Relativity::post_relativity_powershell_module_update_datagrid_instance_settings')
+  #   chef.add_recipe('Relativity::post_relativity_powershell_module_update_elasticsearch_yml_file')
+  # end
 
-  config.vm.provision 'chef_zero' do |chef|
-    chef.cookbooks_path = 'Cookbooks'
-    chef.data_bags_path = 'DataBags'
-    chef.nodes_path = 'Nodes'
-    chef.roles_path = 'Roles'
-    chef.channel = 'stable'
-    chef.version = '13.8.5'
-    chef.json = {
-      'smb_domain' => network_share_smb_domain,
-      'smb_username' => network_share_smb_username,
-      'smb_password' => network_share_smb_password,
-    }
-    chef.add_recipe('Relativity::post_relativity_powershell_module_add_workspaces')
-    chef.add_recipe('Relativity::post_relativity_powershell_module_resize_databases')
-    chef.add_recipe('Relativity::post_relativity_powershell_module_add_data_to_workspaces')
-    chef.add_recipe('Relativity::post_relativity_powershell_module_full_processing_setup')
-    chef.add_recipe('Relativity::post_relativity_powershell_module_add_agent_server')
-    chef.add_recipe('Relativity::post_relativity_powershell_module_add_agents_by_name')
-    chef.add_recipe('Relativity::post_relativity_powershell_module_image_all_documents')
-  end
+  # config.vm.provision 'chef_zero' do |chef|
+  #   chef.cookbooks_path = 'Cookbooks'
+  #   chef.data_bags_path = 'DataBags'
+  #   chef.nodes_path = 'Nodes'
+  #   chef.roles_path = 'Roles'
+  #   chef.channel = 'stable'
+  #   chef.version = '13.8.5'
+  #   chef.json = {
+  #     'smb_domain' => network_share_smb_domain,
+  #     'smb_username' => network_share_smb_username,
+  #     'smb_password' => network_share_smb_password,
+  #   }
+  #   chef.add_recipe('Relativity::post_relativity_powershell_module_add_workspaces')
+  #   chef.add_recipe('Relativity::post_relativity_powershell_module_resize_databases')
+  #   chef.add_recipe('Relativity::post_relativity_powershell_module_add_data_to_workspaces')
+  #   chef.add_recipe('Relativity::post_relativity_powershell_module_full_processing_setup')
+  #   chef.add_recipe('Relativity::post_relativity_powershell_module_add_agent_server')
+  #   chef.add_recipe('Relativity::post_relativity_powershell_module_add_agents_by_name')
+  #   chef.add_recipe('Relativity::post_relativity_powershell_module_image_all_documents')
+  # end
 
-  # Restart VM
-  config.vm.provision :reload
+  # # Restart VM
+  # config.vm.provision :reload
 
-  config.vm.provision 'chef_zero' do |chef|
-    chef.cookbooks_path = 'Cookbooks'
-    chef.data_bags_path = 'DataBags'
-    chef.nodes_path = 'Nodes'
-    chef.roles_path = 'Roles'
-    chef.channel = 'stable'
-    chef.version = '13.8.5'
-    chef.json = {
-      'smb_domain' => network_share_smb_domain,
-      'smb_username' => network_share_smb_username,
-      'smb_password' => network_share_smb_password,
-    }
-    chef.add_recipe('Relativity::default_start_services')
-    chef.add_recipe('Relativity::post_relativity_instance_setting_update_developer_mode')
-    chef.add_recipe('Relativity::post_relativity_reset_iis')
-    chef.add_recipe('Relativity::post_relativity_update_kcura_services_startup_type')
-    chef.add_recipe('Relativity::post_relativity_powershell_module_install_smoke_test_rap')
-    chef.add_recipe('Relativity::post_relativity_powershell_module_delete_errors_from_errors_tab')
-    chef.add_recipe('Relativity::post_relativity_shutoff_windows_firewall')
-    chef.add_recipe('Relativity::post_relativity_clear_event_viewer')
-    chef.add_recipe('Relativity::post_relativity_powershell_module_update_agent_off_hour_end_time')
-    chef.add_recipe('Relativity::post_relativity_powershell_module_rsmf_viewer_override')
-    chef.add_recipe('Relativity::post_relativity_powershell_module_add_disclaimer_acceptance_log')
-    chef.add_recipe('Relativity::post_relativity_update_relativity_logos')
-    # chef.add_recipe('Relativity::post_relativity_aero_ui_toggle') # Uncomment when building an Aero DevVm
-    chef.add_recipe('Relativity::post_relativity_write_script_result_success')
-    chef.add_recipe('Relativity::post_relativity_cleanup')
-  end
+  # config.vm.provision 'chef_zero' do |chef|
+  #   chef.cookbooks_path = 'Cookbooks'
+  #   chef.data_bags_path = 'DataBags'
+  #   chef.nodes_path = 'Nodes'
+  #   chef.roles_path = 'Roles'
+  #   chef.channel = 'stable'
+  #   chef.version = '13.8.5'
+  #   chef.json = {
+  #     'smb_domain' => network_share_smb_domain,
+  #     'smb_username' => network_share_smb_username,
+  #     'smb_password' => network_share_smb_password,
+  #   }
+  #   chef.add_recipe('Relativity::default_start_services')
+  #   chef.add_recipe('Relativity::post_relativity_instance_setting_update_developer_mode')
+  #   chef.add_recipe('Relativity::post_relativity_reset_iis')
+  #   chef.add_recipe('Relativity::post_relativity_update_kcura_services_startup_type')
+  #   chef.add_recipe('Relativity::post_relativity_powershell_module_install_smoke_test_rap')
+  #   chef.add_recipe('Relativity::post_relativity_powershell_module_delete_errors_from_errors_tab')
+  #   chef.add_recipe('Relativity::post_relativity_shutoff_windows_firewall')
+  #   chef.add_recipe('Relativity::post_relativity_clear_event_viewer')
+  #   chef.add_recipe('Relativity::post_relativity_powershell_module_update_agent_off_hour_end_time')
+  #   chef.add_recipe('Relativity::post_relativity_powershell_module_rsmf_viewer_override')
+  #   chef.add_recipe('Relativity::post_relativity_powershell_module_add_disclaimer_acceptance_log')
+  #   chef.add_recipe('Relativity::post_relativity_update_relativity_logos')
+  #   # chef.add_recipe('Relativity::post_relativity_aero_ui_toggle') # Uncomment when building an Aero DevVm
+  #   chef.add_recipe('Relativity::post_relativity_write_script_result_success')
+  #   chef.add_recipe('Relativity::post_relativity_cleanup')
+  # end
 
-  # Remove any chef.json variables from the VM
-  # Note: Remember to add any chef.json variables to this last vagrant block to clear those values on the VM once its created
-  config.vm.provision 'chef_zero' do |chef|
-    chef.cookbooks_path = 'Cookbooks'
-    chef.data_bags_path = 'DataBags'
-    chef.nodes_path = 'Nodes'
-    chef.roles_path = 'Roles'
-    chef.channel = 'stable'
-    chef.version = '13.8.5'
-    chef.json = {
-      'smb_domain' => '',
-      'smb_username' => '',
-      'smb_password' => '',
-    }
-    chef.add_recipe('Relativity::post_relativity_clear_chef_data')
-  end
+  # # Remove any chef.json variables from the VM
+  # # Note: Remember to add any chef.json variables to this last vagrant block to clear those values on the VM once its created
+  # config.vm.provision 'chef_zero' do |chef|
+  #   chef.cookbooks_path = 'Cookbooks'
+  #   chef.data_bags_path = 'DataBags'
+  #   chef.nodes_path = 'Nodes'
+  #   chef.roles_path = 'Roles'
+  #   chef.channel = 'stable'
+  #   chef.version = '13.8.5'
+  #   chef.json = {
+  #     'smb_domain' => '',
+  #     'smb_username' => '',
+  #     'smb_password' => '',
+  #   }
+  #   chef.add_recipe('Relativity::post_relativity_clear_chef_data')
+  # end
 end

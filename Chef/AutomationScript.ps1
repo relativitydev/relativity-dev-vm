@@ -59,18 +59,21 @@ $global:devVmVersionsToCreate = New-Object System.Collections.ArrayList
 [Boolean] $global:devVmCreationWasSuccess = $false
 [string] $global:compressedFileExtension = "zip"
 [string] $global:relativityInvariantVersionNumberFileName = "relativity_invariant_version.txt"
-[string] $global:testSingleRelativityVersion = "11.0.232.1" # Leave it blank when in Automated Production mode
-[string] $global:invariantVersion = "6.0.226.2" # Leave it blank when in Automated Production mode
+# [string] $global:testSingleRelativityVersion = "11.0.232.1" # Leave it blank when in Automated Production mode
+# [string] $global:invariantVersion = "6.0.226.2" # Leave it blank when in Automated Production mode
+[string] $global:testSingleRelativityVersion = "11.2.172.14" # Leave it blank when in Automated Production mode
+[string] $global:invariantVersion = "6.2.165.5" # Leave it blank when in Automated Production mode
+[string] $global:releaseName = "Lanceleaf EAU" # Make sure to update this to the correct release name for the Relativity Version above, leave it blank when in Automated Production mode
 [Boolean] $global:foundCompatibleInvariantVersion = $true # Set to $false when in Automated Production mode
 
 # Define Toggle variables
 [Boolean] $global:toggleSimulateDevVmCreation = $false # Set to $true when you want to simulate the DevVm creation to test the other parts of the automation script
-[Boolean] $global:toggleSendSlackMessage = $true # Set to $false when you do not want to send a slack message
-[Boolean] $global:toggleCopyToLocalNetworkStorage = $true # Set to $false when you do not want to copy the DevVm to the network storage
-[Boolean] $global:toggleCopyToLocalDriveStorage = $true # Set to $false when you do not want to copy the DevVm to the local drive storage
-[Boolean] $global:toggleUploadToAzureDevVmBlobStorage = $true # Set to $false when you do not want to copy the DevVm to the network storage
-[Boolean] $global:toggleAddVersionToSolutionSnapshotDatabase = $true # Set to $false when you do not want to add the Relativity Version to the Solution Snapshot Database
-[Boolean] $global:toggleSkipCopyingRelativityAndInvariantInstallerAndResponseFiles = $false # Set to $true when you want to create DevVM with pre-release Relativity Versions. Remember to manually copy the Relativity and Invariant installer and response files to the network storage (\\kcura.corp\shares\Development\DevEx\DevVm\Production\DevVm_Install_Files)
+[Boolean] $global:toggleSendSlackMessage = $false # Set to $false when you do not want to send a slack message
+[Boolean] $global:toggleCopyToLocalNetworkStorage = $false # Set to $false when you do not want to copy the DevVm to the network storage
+[Boolean] $global:toggleCopyToLocalDriveStorage = $false # Set to $false when you do not want to copy the DevVm to the local drive storage
+[Boolean] $global:toggleUploadToAzureDevVmBlobStorage = $false # Set to $false when you do not want to copy the DevVm to the network storage
+[Boolean] $global:toggleAddVersionToSolutionSnapshotDatabase = $false # Set to $false when you do not want to add the Relativity Version to the Solution Snapshot Database
+[Boolean] $global:toggleSkipCopyingRelativityAndInvariantInstallerAndResponseFiles = $true # Set to $true when you want to create DevVM with pre-release Relativity Versions. Remember to manually copy the Relativity and Invariant installer and response files to the network storage (\\kcura.corp\shares\Development\DevEx\DevVm\Production\DevVm_Install_Files)
  
 function Reset-Logs-Environment-Variable() {
   Write-Host-Custom-Green "Resetting Logs Environment variable."
@@ -600,7 +603,7 @@ function Add-Relativity-Version-To-Solution-Snapshot-Database([string] $relativi
     Set-Location $PSScriptroot
     
     # Run separate Solution Snapshot API Calls PowerShell Script
-    &"$PSScriptroot\AddRelativityVersionToSolutionSnapshotDatabase.ps1" "$Env:devvm_automation_salesforce_username" "$Env:devvm_automation_salesforce_password" "$relativityVersion" $global:sendSlackMessage
+    &"$PSScriptroot\AddRelativityVersionToSolutionSnapshotDatabase.ps1" "$Env:devvm_automation_salesforce_username" "$Env:devvm_automation_salesforce_password" "$relativityVersion" $global:sendSlackMessage $global:releaseName
   
     Write-Message-To-Screen "Ran Add Relativity Version to Solution Snapshot Database script."
     Write-Empty-Line-To-Screen

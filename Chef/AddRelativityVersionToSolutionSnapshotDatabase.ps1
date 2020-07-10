@@ -4,7 +4,7 @@ Clear-Host
 [string] $salesforcePassword = $args[1]
 [string] $relativityVersion = $args[2]
 [Boolean] $sendSlackMessage =  $args[3]
-[string] $relativityVersionReleaseName = ''
+[string] $relativityVersionReleaseName = $args[4]
 
 $global:salesforceSessionObject = $null
 

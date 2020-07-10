@@ -164,6 +164,7 @@
     <Compile Include="Tests\EnvironmentVariableTests.cs" />
     <Compile Include="Tests\ImagingHelperTests.cs" />
     <Compile Include="Tests\RecycleBinTests.cs" />
+    <Compile Include="Tests\RelativityVersionHelperTests.cs" />
     <Compile Include="Tests\SmokeTestHelperTests.cs" />
     <Compile Include="Tests\WorkspaceHelperTests.cs" />
     <Compile Include="Tests\AgentHelperTests.cs" />
