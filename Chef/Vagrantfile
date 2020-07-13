@@ -244,6 +244,7 @@ Vagrant.configure('2') do |config|
       'smb_password' => network_share_smb_password,
     }
     chef.add_recipe('Relativity::default_start_services')
+    chef.add_recipe('Relativity::post_relativity_check_correct_relativity_version_is_installed')
     chef.add_recipe('Relativity::post_relativity_sqlserver_distributed_link_servers')
     chef.add_recipe('Relativity::post_relativity_sqlserver_distributed_relativity_install')
   end
