@@ -10,7 +10,7 @@ custom_log 'custom_log' do msg 'Starting Checking Correct Relativity Version is 
     powershell_script 'checking_correct_relativity_version_is_installed' do
       code <<-EOH
         #{node['powershell_module']['import_module']}
-        $relativityAndInvariantVersions = File.ReadAllText(#{node['relativity_and_invariant']['response_file']['version_file']})
+        $relativityAndInvariantVersions = [System.IO.File]::ReadAllText(#{node['relativity_and_invariant']['response_file']['version_file']})
         $indexOfComma = $relativityAndInvariantVersions.IndexOf(',')
         $indexOfColon = $relativityAndInvariantVersions.IndexOf(':')
         $installerRelativityVersion = $relativityAndInvariantVersions.Substring(($indexOfColon + 2), ($indexOfComma - ($indexOfColon + 2)))
