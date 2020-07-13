@@ -12,23 +12,23 @@ default['file']['result']['name'] = 'result_file.txt'
 default['file']['result']['destination_folder'] = 'C:\\vagrant'
 
 default['software']['jungum']['file_name'] = 'JungUm.msi'
-default['software']['jungum']['source'] = "\\\\kcura.corp\\shares\\Development\\DevEx\\DevVm\\Development\\Aaron\\DevVm_Install_Files\\Jungum\\#{default['software']['jungum']['file_name']}"
+default['software']['jungum']['source'] = "\\\\kcura.corp\\shares\\Development\\DevEx\\DevVm\\Production\\DevVm_Install_Files\\Jungum\\#{default['software']['jungum']['file_name']}"
 default['software']['jungum']['destination_folder'] = "#{default['file']['installers']['default_destination_folder']}\\JungUm"
 default['software']['jungum']['executable'] = 'c:/Program Files (x86)/Samsung/JungUmGlobal/JungUm Global Viewer/JUGW_V.exe'
 default['software']['lotus_notes']['file_name'] = 'LotusNotes.msi'
-default['software']['lotus_notes']['source'] = "\\\\kcura.corp\\shares\\Development\\DevEx\\DevVm\\Development\\Aaron\\DevVm_Install_Files\\LotusNotes\\#{default['software']['lotus_notes']['file_name']}"
+default['software']['lotus_notes']['source'] = "\\\\kcura.corp\\shares\\Development\\DevEx\\DevVm\\Production\\DevVm_Install_Files\\LotusNotes\\#{default['software']['lotus_notes']['file_name']}"
 default['software']['lotus_notes']['destination_folder'] = "#{default['file']['installers']['default_destination_folder']}\\LotusNotes"
 default['software']['lotus_notes']['executable'] = 'c:/Program Files (x86)/IBM/Lotus/Notes/notes.exe'
 default['software']['MSOffice']['file_name'] = 'SW_DVD5_Office_Professional_Plus_2010_W32_English_MLF_X16-52536.ISO'
-default['software']['MSOffice']['source'] = "\\\\kcura.corp\\shares\\Development\\DevEx\\DevVm\\Development\\Aaron\\DevVm_Install_Files\\MSOffice\\#{default['software']['MSOffice']['file_name']}"
+default['software']['MSOffice']['source'] = "\\\\kcura.corp\\shares\\Development\\DevEx\\DevVm\\Production\\DevVm_Install_Files\\MSOffice\\#{default['software']['MSOffice']['file_name']}"
 default['software']['MSOffice']['destination_folder'] = "#{default['file']['installers']['default_destination_folder']}\\MSOffice"
 default['software']['MSWorksConverter']['file_name'] = 'WorksConv.exe'
-default['software']['MSWorksConverter']['source'] = "\\\\kcura.corp\\shares\\Development\\DevEx\\DevVm\\Development\\Aaron\\DevVm_Install_Files\\MSWorksConverter\\#{default['software']['MSWorksConverter']['file_name']}"
+default['software']['MSWorksConverter']['source'] = "\\\\kcura.corp\\shares\\Development\\DevEx\\DevVm\\Production\\DevVm_Install_Files\\MSWorksConverter\\#{default['software']['MSWorksConverter']['file_name']}"
 default['software']['MSWorksConverter']['destination_folder'] = "#{default['file']['installers']['default_destination_folder']}\\MSWorksConverter"
 default['software']['MSWorksConverter']['executable'] = 'C:\Program Files (x86)\Common Files\Microsoft Shared\TextConv\WksConv\Wkconv.exe'
 default['software']['java_runtime']['home'] = "C:\\Program Files\\Java\\jre1.8.0_161"
 default['software']['elastic_search']['file_name'] = 'datagrid-2.3.3.79-install.zip'
-default['software']['elastic_search']['source'] = "\\\\kcura.corp\\shares\\Development\\DevEx\\DevVm\\Development\\Aaron\\DevVm_Install_Files\\ElasticSearch\\#{default['software']['elastic_search']['file_name']}"
+default['software']['elastic_search']['source'] = "\\\\kcura.corp\\shares\\Development\\DevEx\\DevVm\\Production\\DevVm_Install_Files\\ElasticSearch\\#{default['software']['elastic_search']['file_name']}"
 default['software']['elastic_search']['destination_folder'] = "#{default['file']['installers']['default_destination_folder']}\\ElasticSearch"
 default['software']['elastic_search']['config_file_location'] = "C:\\RelativityDataGrid\\elasticsearch-main\\config\\elasticsearch.yml"
 default['software']['elastic_search']['bin_folder'] = "C:\\RelativityDataGrid\\elasticsearch-main\\bin"
@@ -37,7 +37,7 @@ default['software']['elastic_search']['max_memory_mb'] = "512"
 default['software']['elastic_search']['number_of_chards'] = "2"
 default['software']['elastic_search']['number_of_replicas'] = "0"
 
-default['sql']['install']['source_folder'] = '\\\\kcura.corp\\shares\\Development\\DevEx\\DevVm\\Development\\Aaron\\DevVm_Install_Files\\SQL_Server_2016_Developer_Edition'
+default['sql']['install']['source_folder'] = '\\\\kcura.corp\\shares\\Development\\DevEx\\DevVm\\Production\\DevVm_Install_Files\\SQL_Server_2016_Developer_Edition'
 default['sql']['install']['destination_folder'] = "#{default['file']['installers']['default_destination_folder']}\\Sql"
 default['sql']['install']['file_name'] = 'Sql.iso'
 default['sql']['user']['sa']['login'] = 'sa'
@@ -52,7 +52,7 @@ default['sql']['directories']['logs'] = 'c:\ldf'
 default['sql']['directories']['data'] = 'c:\mdf'
 default['sql']['directories']['fulltext'] = 'c:\ndf'
 
-default['service_bus']['defect_windows_update']['install']['source_folder'] = '\\\\kcura.corp\\shares\\Development\\DevEx\\DevVm\\Development\\Aaron\\DevVm_Install_Files\\Service_Bus_Defect_Windows_Update'
+default['service_bus']['defect_windows_update']['install']['source_folder'] = '\\\\kcura.corp\\shares\\Development\\DevEx\\DevVm\\Production\\DevVm_Install_Files\\Service_Bus_Defect_Windows_Update'
 default['service_bus']['defect_windows_update']['install']['destination_folder'] = "#{default['file']['installers']['default_destination_folder']}\\Service_Bus_Defect_Windows_Update"
 default['service_bus']['defect_windows_update']['install']['file_name'] = 'AppServer-KB3086798-x64-EN.exe'
 default['service_bus']['run_as_account'] = default['windows']['user']['admin']['login']
@@ -63,7 +63,7 @@ default['service_bus']['services']['service_bus_resource_provider'] = 'Service B
 default['service_bus']['services']['service_bus_vss'] = 'Service Bus VSS'
 default['service_bus']['services']['service_bus_FabricHostSvc'] = 'FabricHostSvc'
 
-default['secret_store']['install']['source_folder'] = '\\\\kcura.corp\\shares\\Development\\DevEx\\DevVm\\Development\\Aaron\\DevVm_Install_Files\\SecretStore'
+default['secret_store']['install']['source_folder'] = '\\\\kcura.corp\\shares\\Development\\DevEx\\DevVm\\Production\\DevVm_Install_Files\\SecretStore'
 default['secret_store']['install']['destination_folder'] = "#{default['file']['installers']['default_destination_folder']}\\SecretStore"
 default['secret_store']['install']['file_name'] = 'Relativity.SecretStore.Installer.exe'
 default['secret_store']['install']['client']['location'] = 'C:\\\"Program Files\"\\\"Relativity Secret Store\"\\Client\\secretstore.exe'
@@ -74,7 +74,7 @@ default['secret_store']['unseal_key']['original_unseal_key'] = "C:\\Program File
 default['secret_store']['unseal_key']['save_to_local_file_destination_folder'] = "C:\\Relativity_Secret_Store_Unseal_Key"
 default['secret_store']['unseal_key']['save_to_local_file_destination_path'] = "#{default['secret_store']['unseal_key']['save_to_local_file_destination_folder']}\\relativity_secret_store_unseal_key.txt"
 
-default['relativity']['install']['source_folder'] = '\\\\kcura.corp\\shares\\Development\\DevEx\\DevVm\\Development\\Aaron\\DevVm_Install_Files\\Relativity'
+default['relativity']['install']['source_folder'] = '\\\\kcura.corp\\shares\\Development\\DevEx\\DevVm\\Production\\DevVm_Install_Files\\Relativity'
 default['relativity']['install']['destination_folder'] = "#{default['file']['installers']['default_destination_folder']}\\Relativity"
 default['relativity']['install']['file_name'] = 'Relativity.exe'
 default['relativity']['install']['response_file_destination_location'] = "#{default['relativity']['install']['destination_folder']}\\RelativityResponse.txt"
@@ -273,7 +273,7 @@ default['relativity']['response_file']['replacement_values'] =
     }
 ]
 
-default['invariant']['install']['source_folder'] = '\\\\kcura.corp\\shares\\Development\\DevEx\\DevVm\\Development\\Aaron\\DevVm_Install_Files\\Invariant'
+default['invariant']['install']['source_folder'] = '\\\\kcura.corp\\shares\\Development\\DevEx\\DevVm\\Production\\DevVm_Install_Files\\Invariant'
 default['invariant']['install']['destination_folder'] = "#{default['file']['installers']['default_destination_folder']}\\Invariant"
 default['invariant']['install']['file_name'] = 'Invariant.exe'
 default['invariant']['install']['response_file_destination_location'] = "#{default['invariant']['install']['destination_folder']}\\InvariantResponse.txt"
