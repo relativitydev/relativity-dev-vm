@@ -59,8 +59,11 @@ $global:devVmVersionsToCreate = New-Object System.Collections.ArrayList
 [Boolean] $global:devVmCreationWasSuccess = $false
 [string] $global:compressedFileExtension = "zip"
 [string] $global:relativityInvariantVersionNumberFileName = "relativity_invariant_version.txt"
-[string] $global:testSingleRelativityVersion = "11.0.232.1" # Leave it blank when in Automated Production mode
-[string] $global:invariantVersion = "6.0.226.2" # Leave it blank when in Automated Production mode
+# [string] $global:testSingleRelativityVersion = "11.0.232.1" # Leave it blank when in Automated Production mode
+# [string] $global:invariantVersion = "6.0.226.2" # Leave it blank when in Automated Production mode
+[string] $global:testSingleRelativityVersion = "11.2.172.14" # Leave it blank when in Automated Production mode
+[string] $global:invariantVersion = "6.2.165.5" # Leave it blank when in Automated Production mode
+[string] $global:releaseName = "Lanceleaf EAU" # Make sure to update this to the correct release name for the Relativity Version above, leave it blank when in Automated Production mode
 [Boolean] $global:foundCompatibleInvariantVersion = $true # Set to $false when in Automated Production mode
 
 # Define Toggle variables
@@ -600,7 +603,7 @@ function Add-Relativity-Version-To-Solution-Snapshot-Database([string] $relativi
     Set-Location $PSScriptroot
     
     # Run separate Solution Snapshot API Calls PowerShell Script
-    &"$PSScriptroot\AddRelativityVersionToSolutionSnapshotDatabase.ps1" "$Env:devvm_automation_salesforce_username" "$Env:devvm_automation_salesforce_password" "$relativityVersion" $global:sendSlackMessage
+    &"$PSScriptroot\AddRelativityVersionToSolutionSnapshotDatabase.ps1" "$Env:devvm_automation_salesforce_username" "$Env:devvm_automation_salesforce_password" "$relativityVersion" $global:sendSlackMessage $global:releaseName
   
     Write-Message-To-Screen "Ran Add Relativity Version to Solution Snapshot Database script."
     Write-Empty-Line-To-Screen

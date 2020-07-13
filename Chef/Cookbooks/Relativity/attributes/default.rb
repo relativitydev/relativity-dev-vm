@@ -411,6 +411,7 @@ default['relativity_and_invariant']['response_file']['source_files'] = [
     "C:\\Chef_Install\\Invariant\\InvariantResponse.txt",
     "C:\\Chef_Install\\Invariant\\InvariantResponse_Original.txt"
     ]
+default['relativity_and_invariant']['response_file']['version_file'] = "C:\\Chef_Install\\Relativity\\relativity_invariant_version.txt"
 
 # Sample Workspace
 default['sample_workspace_name'] = 'Sample Workspace'
