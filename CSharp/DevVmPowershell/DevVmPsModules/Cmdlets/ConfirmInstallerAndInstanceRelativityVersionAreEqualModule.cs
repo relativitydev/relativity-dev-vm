@@ -10,8 +10,8 @@ using Relativity.Services.Document;
 
 namespace DevVmPsModules.Cmdlets
 {
-	[Cmdlet(VerbsCommon.Show, "InstallerAndInstanceRelativityVersionAreEqual")]
-	public class ShowInstallerAndInstanceRelativityVersionAreEqualModule : BaseModule
+	[Cmdlet(VerbsLifecycle.Confirm, "InstallerAndInstanceRelativityVersionAreEqual")]
+	public class ConfirmInstallerAndInstanceRelativityVersionAreEqualModule : BaseModule
 	{
 		[Parameter(
 			Mandatory = true,
@@ -108,6 +108,12 @@ namespace DevVmPsModules.Cmdlets
 			if (string.IsNullOrWhiteSpace(InstallerRelativityVersion))
 			{
 				throw new ArgumentNullException(nameof(InstallerRelativityVersion), $"{nameof(InstallerRelativityVersion)} cannot be NULL or Empty.");
+			}
+
+			Version version;
+			if (!Version.TryParse(InstallerRelativityVersion, out version))
+			{
+				throw new ArgumentException(nameof(InstallerRelativityVersion), $"{nameof(InstallerRelativityVersion)} must be a valid version");
 			}
 		}
 	}
