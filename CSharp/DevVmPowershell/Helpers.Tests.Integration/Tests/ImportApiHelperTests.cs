@@ -42,17 +42,21 @@ namespace Helpers.Tests.Integration.Tests
 			//Arrange
 			string workspaceName = "ImportApi Test Workspace";
 			CleanupWorkspaceIfItExists(workspaceName);
-
 			int workspaceArtifactId = WorkspaceHelper.CreateSingleWorkspaceAsync(Constants.Workspace.DEFAULT_WORKSPACE_TEMPLATE_NAME, workspaceName, false).Result;
+			
+			try
+			{
+				//Act
+				int numberOfFilesImported = Sut.AddDocumentsToWorkspace(WorkspaceHelper.GetFirstWorkspaceArtifactIdQueryAsync(workspaceName).Result, fileType, numberOfFiles, "").Result;
 
-			//Act
-			int numberOfFilesImported = Sut.AddDocumentsToWorkspace(WorkspaceHelper.GetFirstWorkspaceArtifactIdQueryAsync(workspaceName).Result, fileType, numberOfFiles, "").Result;
-
-			//Assert
-			Assert.That(numberOfFilesImported, Is.EqualTo(numberOfFiles));
-
-			//Cleanup
-			WorkspaceHelper.DeleteSingleWorkspaceAsync(workspaceArtifactId);
+				//Assert
+				Assert.That(numberOfFilesImported, Is.EqualTo(numberOfFiles));
+			}
+			finally 
+			{
+				//Cleanup
+				WorkspaceHelper.DeleteSingleWorkspaceAsync(workspaceArtifactId);
+			}
 		}
 
 		private void CleanupWorkspaceIfItExists(string workspaceName)
