@@ -3,10 +3,10 @@ default['timeout']['default'] = 3600
 default['windows']['hostname'] = node['machinename']
 default['windows']['new_computer_name'] = 'RelativityDevVm'
 default['windows']['user']['admin']['login'] = 'Administrator'
-default['windows']['user']['admin']['password'] = ENV['devvm_default_password']
+default['windows']['user']['admin']['password'] = ENV['devvm_default_password'] # Environment Variable stored in DevVm Base Image
 
 default['file']['installers']['default_destination_folder'] = 'C:\\Chef_Install'
-default['file']['installers']['devvm_installer_files_path'] = ENV['devvm_installer_files_path']
+default['file']['installers']['devvm_installer_files_path'] = ENV['devvm_installer_files_path'] # Environment Variable stored in DevVm Base Image
 default['file']['log']['default_destination_folder'] = 'C:\\vagrant\\Logs'
 default['file']['log']['name'] = 'log.txt'
 default['file']['result']['name'] = 'result_file.txt'
