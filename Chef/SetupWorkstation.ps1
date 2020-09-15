@@ -63,5 +63,5 @@ vagrant plugin install vagrant-berkshelf
 
 # Add DevVm base machine as Vagrant box image
 Add-DevVm-Base-Machine-As-Vagrant-Box-Image# Add Vagrant box image
-vagrant box add "DevVmBaseImage" "\\kcura.corp\shares\Development\DevEx\DevVm_Install_Files\DevVmBase.box"
+vagrant box add "DevVmBaseImage" $Env:devvm_box_image_network_path # Environment Variable on the machine this script is running
   
