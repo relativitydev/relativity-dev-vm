@@ -83,7 +83,7 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\DLL\Relativity.Imaging.Services.Interfaces.dll</HintPath>
     </Reference>
-    <Reference Include="Relativity.Kepler, Version=2.10.2.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Relativity.Kepler, Version=2.7.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.ObjectManager.11.3.157.22\lib\net462\Relativity.Kepler.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.Logging, Version=2019.5.1.0, Culture=neutral, processorArchitecture=MSIL">
@@ -117,7 +117,7 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\DLL\Relativity.Services.Interfaces.Private.dll</HintPath>
     </Reference>
-    <Reference Include="Relativity.Services.ServiceProxy, Version=2.10.2.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Relativity.Services.ServiceProxy, Version=2.7.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.ObjectManager.11.3.157.22\lib\net462\Relativity.Services.ServiceProxy.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.Telemetry.APM, Version=9.4.164.2, Culture=neutral, processorArchitecture=MSIL">
