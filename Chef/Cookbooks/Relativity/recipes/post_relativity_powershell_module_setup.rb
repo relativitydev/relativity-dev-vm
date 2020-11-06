@@ -9,7 +9,6 @@ relativity_api_files_to_copy = [
   "Newtonsoft.Json.dll",
   "Relativity.dll",
   "Relativity.API.dll",
-  "Relativity.Kepler.dll",
   "Relativity.OAuth2Client.Interfaces.dll",
   "Relativity.Services.DataContracts.dll",
   "Relativity.Services.Interfaces.dll",
@@ -23,7 +22,8 @@ relativity_api_library_files_to_copy = [
   "oi.dll", # Required for Import API
   "Polly.dll", # Required for Import API
   "Relativity.Logging.dll", # Required for Import API
-  "Relativity.Logging.Interfaces.dll" # Required for Import API
+  "Relativity.Logging.Interfaces.dll", # Required for Import API
+  "Relativity.Kepler.dll"
 ]
 
 # Copy ServiceHost files
