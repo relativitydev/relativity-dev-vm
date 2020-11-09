@@ -83,7 +83,7 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\DLL\Relativity.Imaging.Services.Interfaces.dll</HintPath>
     </Reference>
-    <Reference Include="Relativity.Kepler, Version=2.10.2.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Relativity.Kepler, Version=2.9.2.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.ObjectManager.12.0.78.6\lib\net462\Relativity.Kepler.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.Logging, Version=2019.5.1.0, Culture=neutral, processorArchitecture=MSIL">
@@ -107,7 +107,7 @@
     <Reference Include="Relativity.OAuth2Client.Interfaces, Version=1.5.2.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.OAuth2.Client.1.5.2\lib\net462\Relativity.OAuth2Client.Interfaces.dll</HintPath>
     </Reference>
-    <Reference Include="Relativity.Services.DataContracts, Version=13.2.3.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Relativity.Services.DataContracts, Version=13.2.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.ObjectManager.12.0.78.6\lib\net462\Relativity.Services.DataContracts.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.Services.Interfaces, Version=13.2.0.0, Culture=neutral, processorArchitecture=MSIL">
@@ -117,7 +117,7 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\DLL\Relativity.Services.Interfaces.Private.dll</HintPath>
     </Reference>
-    <Reference Include="Relativity.Services.ServiceProxy, Version=2.10.2.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Relativity.Services.ServiceProxy, Version=2.9.2.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.ObjectManager.12.0.78.6\lib\net462\Relativity.Services.ServiceProxy.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.Telemetry.APM, Version=9.4.164.2, Culture=neutral, processorArchitecture=MSIL">
