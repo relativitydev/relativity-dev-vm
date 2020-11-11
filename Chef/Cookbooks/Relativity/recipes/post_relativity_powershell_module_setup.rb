@@ -22,8 +22,8 @@ relativity_api_library_files_to_copy = [
   "Polly.dll", # Required for Import API
   "Relativity.Logging.dll", # Required for Import API
   "Relativity.Logging.Interfaces.dll", # Required for Import API
-  "Relativity.Kepler.dll", # Required for Object Manager
-  "Relativity.Services.DataContracts.dll" # Required for Object Manager
+  "Relativity.Kepler.dll", # Required for Object Manager, Default 2.7.0.0
+  "Relativity.Services.DataContracts.dll" # Required for Object Manager, Default 13.2.0.0
 ]
 
 # Copy ServiceHost files
