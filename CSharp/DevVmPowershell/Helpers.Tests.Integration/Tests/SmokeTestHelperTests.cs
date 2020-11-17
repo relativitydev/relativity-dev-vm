@@ -34,7 +34,7 @@ namespace Helpers.Tests.Integration.Tests
 			SqlHelper = new SqlHelper(sqlRunner);
 			WorkspaceHelper = new WorkspaceHelper(connectionHelper, SqlHelper);
 			ApplicationInstallHelper = new ApplicationInstallHelper(connectionHelper);
-			AgentHelper = new AgentHelper(connectionHelper);
+			AgentHelper = new AgentHelper(connectionHelper, TestConstants.RELATIVITY_INSTANCE_NAME, TestConstants.RELATIVITY_ADMIN_USER_NAME, TestConstants.RELATIVITY_ADMIN_PASSWORD);
 			ImportApiHelper = new ImportApiHelper(connectionHelper);
 			Sut = new SmokeTestHelper(connectionHelper);
 		}
