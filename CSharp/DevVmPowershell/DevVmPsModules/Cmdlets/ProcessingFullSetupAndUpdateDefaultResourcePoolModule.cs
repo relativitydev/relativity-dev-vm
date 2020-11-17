@@ -59,7 +59,7 @@ namespace DevVmPsModules.Cmdlets
 				relativityAdminPassword: RelativityAdminPassword,
 				sqlAdminUserName: SqlAdminUserName,
 				sqlAdminPassword: SqlAdminPassword);
-			IProcessingHelper processingHelper = new ProcessingHelper(connectionHelper);
+			IProcessingHelper processingHelper = new ProcessingHelper(connectionHelper, RelativityInstanceName, RelativityAdminUserName, RelativityAdminPassword);
 
 			processingHelper.FullSetupAndUpdateDefaultResourcePoolAsync().Wait();
 		}

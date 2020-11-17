@@ -24,5 +24,6 @@ namespace Helpers.RequestModels
 	public class ObjectType
 	{
 		public string Name { get; set; }
+		public int ArtifactTypeID { get; set; }
 	}
 }

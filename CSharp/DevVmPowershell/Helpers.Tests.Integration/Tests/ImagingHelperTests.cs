@@ -26,7 +26,7 @@ namespace Helpers.Tests.Integration.Tests
 			ISqlHelper sqlHelper = new SqlHelper(sqlRunner);
 			WorkspaceHelper = new WorkspaceHelper(connectionHelper, sqlHelper);
 			Sut = new ImagingHelper(connectionHelper);
-			ImportApiHelper = new ImportApiHelper(connectionHelper);
+			ImportApiHelper = new ImportApiHelper(connectionHelper, TestConstants.RELATIVITY_INSTANCE_NAME, TestConstants.RELATIVITY_ADMIN_USER_NAME, TestConstants.RELATIVITY_ADMIN_PASSWORD);
 		}
 
 		[TearDown]
