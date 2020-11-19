@@ -6,6 +6,9 @@ using Relativity.Services.Objects.DataContracts;
 using Relativity.Services.ServiceProxy;
 using System;
 using System.Linq;
+using System.Net.Http;
+using Helpers.RequestModels;
+using Newtonsoft.Json;
 using ObjectType = kCura.Relativity.Client.DTOs.ObjectType;
 
 namespace Helpers.Implementations
@@ -15,12 +18,18 @@ namespace Helpers.Implementations
 		private IRSAPIClient RsapiClient { get; }
 		private IObjectManager ObjectManager { get; }
 		private ServiceFactory ServiceFactory { get; }
+		private string InstanceAddress { get; set; }
+		private string AdminUsername { get; set; }
+		private string AdminPassword { get; set; }
 
-		public DisclaimerAcceptanceHelper(IConnectionHelper connectionHelper)
+		public DisclaimerAcceptanceHelper(IConnectionHelper connectionHelper, string instanceAddress, string adminUsername, string adminPassword)
 		{
 			ServiceFactory = connectionHelper.GetServiceFactory();
 			RsapiClient = ServiceFactory.CreateProxy<IRSAPIClient>();
 			ObjectManager = ServiceFactory.CreateProxy<IObjectManager>();
+			InstanceAddress = instanceAddress;
+			AdminUsername = adminUsername;
+			AdminPassword = adminPassword;
 		}
 
 		public void AddDisclaimerConfiguration(string workspaceName)
@@ -81,108 +90,136 @@ namespace Helpers.Implementations
 
 		private void CreateDisclaimerConfigurationRDO(int objectTypeId, int layoutId, int workspaceId)
 		{
-			var createRequest = new CreateRequest();
-			createRequest.ObjectType = new ObjectTypeRef { ArtifactTypeID = objectTypeId };
-			createRequest.FieldValues = new FieldRefValuePair[]
+			HttpClient httpClient = RestHelper.GetHttpClient(InstanceAddress, AdminUsername, AdminPassword);
+			string url = $"Relativity.REST/api/Relativity.Objects/workspace/{workspaceId}/object/create";
+			ObjectManagerCreateRequestModel objectManagerCreateRequestModel = new ObjectManagerCreateRequestModel
 			{
-				new FieldRefValuePair
+				Request = new request
 				{
-					Field = new FieldRef
+					ObjectType = new objectType
 					{
-						Guid = new Guid(Constants.DisclaimerAcceptance.DisclaimerSolutionConfigurationFieldGuids.Name)
+						ArtifactTypeID = objectTypeId
 					},
-					Value = "Sample Configuration"
+					FieldValues = new object[]
+					{
+						new
+						{
+							Field = new
+							{
+								Guid = Constants.DisclaimerAcceptance.DisclaimerSolutionConfigurationFieldGuids.Name
+							},
+							Value = "Sample Configuration"
+						},
+						new
+						{
+							Field = new
+							{
+								Guid = Constants.DisclaimerAcceptance.DisclaimerSolutionConfigurationFieldGuids.Enabled
+							},
+							Value = true
+						},
+						new
+						{
+							Field = new
+							{
+								Guid = Constants.DisclaimerAcceptance.DisclaimerSolutionConfigurationFieldGuids.AllowAccessOnError
+							},
+							Value = true
+						}
+					}
 				},
-				new FieldRefValuePair
+				OperationOptions = new Helpers.RequestModels.OperationOptions
 				{
-					Field = new FieldRef
+					CallingContext = new Helpers.RequestModels.CallingContext
 					{
-						Guid = new Guid(Constants.DisclaimerAcceptance.DisclaimerSolutionConfigurationFieldGuids.Enabled)
-					},
-					Value = true
-				},
-				new FieldRefValuePair
-				{
-					Field = new FieldRef
-					{
-						Guid = new Guid(Constants.DisclaimerAcceptance.DisclaimerSolutionConfigurationFieldGuids.AllowAccessOnError)
-					},
-					Value = true
-				},
+						Layout = new Helpers.RequestModels.Layout
+						{
+							ArtifactID = layoutId
+						}
+					}
+				}
 			};
-
-			var callingContext = new CallingContext
+			string request = JsonConvert.SerializeObject(objectManagerCreateRequestModel);
+			HttpResponseMessage response = RestHelper.MakePost(httpClient, url, request);
+			if (!response.IsSuccessStatusCode)
 			{
-				Layout = new LayoutRef { ArtifactID = layoutId },
-				PageMode = PageMode.Edit
-			};
-			var createOptions = new OperationOptions
-			{
-				CallingContext = callingContext
-			};
-
-			CreateResult createResult = ObjectManager.CreateAsync(workspaceId, createRequest, createOptions).Result;
+				throw new Exception("Failed to Create for Disclaimer Configuration RDO.");
+			}
 		}
 
 		private void CreateDisclaimerRDO(int objectTypeId, int layoutId, int workspaceId)
 		{
-			var createRequest = new CreateRequest();
-			createRequest.ObjectType = new ObjectTypeRef { ArtifactTypeID = objectTypeId };
-			createRequest.FieldValues = new FieldRefValuePair[]
+			HttpClient httpClient = RestHelper.GetHttpClient(InstanceAddress, AdminUsername, AdminPassword);
+			string url = $"Relativity.REST/api/Relativity.Objects/workspace/{workspaceId}/object/create";
+			ObjectManagerCreateRequestModel objectManagerCreateRequestModel = new ObjectManagerCreateRequestModel
 			{
-				new FieldRefValuePair
+				Request = new request
 				{
-					Field = new FieldRef
+					ObjectType = new objectType
 					{
-						Guid = new Guid(Constants.DisclaimerAcceptance.DisclaimerFieldGuids.Title)
+						ArtifactTypeID = objectTypeId
 					},
-					Value = "DevVm Disclaimer"
+					FieldValues = new object[]
+					{
+						new
+						{
+							Field = new
+							{
+								Guid = Constants.DisclaimerAcceptance.DisclaimerFieldGuids.Title
+							},
+							Value = "DevVm Disclaimer"
+						},
+						new
+						{
+							Field = new
+							{
+								Guid = Constants.DisclaimerAcceptance.DisclaimerFieldGuids.Text
+							},
+							Value = Constants.DisclaimerAcceptance.DisclaimerValue
+						},
+						new
+						{
+							Field = new
+							{
+								Guid = Constants.DisclaimerAcceptance.DisclaimerFieldGuids.Order
+							},
+							Value = 10
+						},
+						new
+						{
+							Field = new
+							{
+								Guid = Constants.DisclaimerAcceptance.DisclaimerFieldGuids.Enabled
+							},
+							Value = true
+						},
+						new
+						{
+							Field = new
+							{
+								Guid = Constants.DisclaimerAcceptance.DisclaimerFieldGuids.AllUsers
+							},
+							Value = true
+						}
+					}
 				},
-				new FieldRefValuePair
+				OperationOptions = new Helpers.RequestModels.OperationOptions
 				{
-					Field = new FieldRef
+					CallingContext = new Helpers.RequestModels.CallingContext
 					{
-						Guid = new Guid(Constants.DisclaimerAcceptance.DisclaimerFieldGuids.Text)
-					},
-					Value = Constants.DisclaimerAcceptance.DisclaimerValue
-				},
-				new FieldRefValuePair
-				{
-					Field = new FieldRef
-					{
-						Guid = new Guid(Constants.DisclaimerAcceptance.DisclaimerFieldGuids.Order)
-					},
-					Value = 10
-				},
-				new FieldRefValuePair
-				{
-					Field = new FieldRef
-					{
-						Guid = new Guid(Constants.DisclaimerAcceptance.DisclaimerFieldGuids.Enabled)
-					},
-					Value = true
-				},
-				new FieldRefValuePair
-				{
-					Field = new FieldRef
-					{
-						Guid = new Guid(Constants.DisclaimerAcceptance.DisclaimerFieldGuids.AllUsers)
-					},
-					Value = true
-				},
+						Layout = new Helpers.RequestModels.Layout
+						{
+							ArtifactID = layoutId
+						}
+					}
+				}
 			};
-
-			var callingContext = new CallingContext
+			string request = JsonConvert.SerializeObject(objectManagerCreateRequestModel);
+			HttpResponseMessage response = RestHelper.MakePost(httpClient, url, request);
+			if (!response.IsSuccessStatusCode)
 			{
-				Layout = new LayoutRef { ArtifactID = layoutId },
-				PageMode = PageMode.Edit
-			};
-			var createOptions = new OperationOptions
-			{
-				CallingContext = callingContext
-			};
-
-			CreateResult createResult = ObjectManager.CreateAsync(workspaceId, createRequest, createOptions).Result;
+				throw new Exception("Failed to Create for Disclaimer Configuration RDO.");
+			}
 		}
 
 		private int GetDisclaimerObjectTypeId(int workspaceId)

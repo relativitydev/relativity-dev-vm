@@ -11,8 +11,13 @@ using Relativity.Services.WorkerStatus;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using Helpers.RequestModels;
+using kCura.Notification;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Choice = kCura.Relativity.Client.DTOs.Choice;
 using ChoiceRef = Relativity.Services.Choice.ChoiceRef;
 
@@ -21,9 +26,15 @@ namespace Helpers.Implementations
 	public class ProcessingHelper : IProcessingHelper
 	{
 		private ServiceFactory ServiceFactory { get; }
-		public ProcessingHelper(IConnectionHelper connectionHelper)
+		private string InstanceAddress { get; set; }
+		private string AdminUsername { get; set; }
+		private string AdminPassword { get; set; }
+		public ProcessingHelper(IConnectionHelper connectionHelper, string instanceAddress, string adminUsername, string adminPassword)
 		{
 			ServiceFactory = connectionHelper.GetServiceFactory();
+			InstanceAddress = instanceAddress;
+			AdminUsername = adminUsername;
+			AdminPassword = adminPassword;
 		}
 
 		/// <summary>
@@ -187,20 +198,29 @@ namespace Helpers.Implementations
 				Value = Constants.Processing.ChoiceName
 			};
 
-			Relativity.Services.Objects.DataContracts.QueryRequest queryChoice = new Relativity.Services.Objects.DataContracts.QueryRequest()
+			HttpClient httpClient = RestHelper.GetHttpClient(InstanceAddress, AdminUsername, AdminPassword);
+			string url = $"Relativity.REST/api/Relativity.Objects/workspace/{Constants.Processing.WorkspaceId}/object/query";
+			ObjectManagerQueryRequestModel objectManagerQueryRequestModel = new ObjectManagerQueryRequestModel
 			{
-				Condition = conditionChoice.ToQueryString().Replace(@"\", @"\\"),
-				ObjectType = new ObjectTypeRef() { ArtifactTypeID = Constants.Processing.ChoiceArtifactTypeId },
-				Fields = new List<FieldRef>
+				request = new Request
 				{
-					new FieldRef
+					objectType = new Helpers.RequestModels.ObjectType
 					{
-						Name = Constants.Processing.ChoiceFieldRef
-					}
-				}
+						ArtifactTypeID = Constants.Processing.ChoiceArtifactTypeId
+					},
+					fields = new object[]
+					{
+						new
+						{
+							Name = Constants.Processing.ChoiceFieldRef
+						}
+					},
+					condition = conditionChoice.ToQueryString().Replace(@"\", @"\\")
+				},
+				start = 1,
+				length = 10
 			};
 
-			using (IObjectManager objectManager = ServiceFactory.CreateProxy<IObjectManager>())
 			using (IResourcePoolManager resourcePoolManager = ServiceFactory.CreateProxy<IResourcePoolManager>())
 			{
 				// Check for Default Resource Pool
@@ -212,12 +232,19 @@ namespace Helpers.Implementations
 					ResourcePoolRef defaultResourcePoolRef = new ResourcePoolRef(resultPools.Results.Find(x => x.Artifact.Name.Equals(Constants.Processing.DefaultPool, StringComparison.OrdinalIgnoreCase)).Artifact.ArtifactID);
 
 					// Check if Processing Server Location already added to Default Resource Pool
-					Relativity.Services.Objects.DataContracts.QueryResult resultChoice = await objectManager.QueryAsync(Constants.Processing.WorkspaceId, queryChoice, 1, 10);
-
-					Console.WriteLine($"{nameof(AddProcessingSourceLocationChoiceToDefaultResourcePoolAsync)} - Checking if Processing Source Location Choice exists");
-					if (resultChoice.TotalCount > 0)
+					string choiceRequest = JsonConvert.SerializeObject(objectManagerQueryRequestModel);
+					HttpResponseMessage response = RestHelper.MakePost(httpClient, url, choiceRequest);
+					if (!response.IsSuccessStatusCode)
 					{
-						ChoiceRef choice = new ChoiceRef(resultChoice.Objects.First().ArtifactID);
+						throw new System.Exception("Failed to Query for Processing Source Location.");
+					}
+					string result = await response.Content.ReadAsStringAsync();
+					JObject jObject = JObject.Parse(result);
+					int totalCount = jObject["TotalCount"].Value<int>();
+					Console.WriteLine($"{nameof(AddProcessingSourceLocationChoiceToDefaultResourcePoolAsync)} - Checking if Processing Source Location Choice exists");
+					if (totalCount > 0)
+					{
+						ChoiceRef choice = new ChoiceRef(jObject["Objects"][0]["ArtifactID"].Value<int>());
 
 						List<ChoiceRef> resultProcessingSourceLocations = await resourcePoolManager.GetProcessingSourceLocationsAsync(defaultResourcePoolRef);
 

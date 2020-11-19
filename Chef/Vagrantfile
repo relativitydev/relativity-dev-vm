@@ -322,7 +322,7 @@ Vagrant.configure('2') do |config|
     chef.add_recipe('Relativity::post_relativity_instance_setting_update_developer_mode')
     chef.add_recipe('Relativity::post_relativity_reset_iis')
     chef.add_recipe('Relativity::post_relativity_update_kcura_services_startup_type')
-    chef.add_recipe('Relativity::post_relativity_powershell_module_install_smoke_test_rap')
+    # chef.add_recipe('Relativity::post_relativity_powershell_module_install_smoke_test_rap')
     chef.add_recipe('Relativity::post_relativity_powershell_module_delete_errors_from_errors_tab')
     chef.add_recipe('Relativity::post_relativity_shutoff_windows_firewall')
     chef.add_recipe('Relativity::post_relativity_clear_event_viewer')
