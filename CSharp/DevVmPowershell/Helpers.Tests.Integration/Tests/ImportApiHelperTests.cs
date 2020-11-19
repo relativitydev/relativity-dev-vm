@@ -22,7 +22,7 @@ namespace Helpers.Tests.Integration.Tests
 				sqlAdminUserName: TestConstants.SQL_USER_NAME,
 				sqlAdminPassword: TestConstants.SQL_PASSWORD);
 
-			Sut = new ImportApiHelper(connectionHelper);
+			Sut = new ImportApiHelper(connectionHelper, TestConstants.RELATIVITY_INSTANCE_NAME, TestConstants.RELATIVITY_ADMIN_USER_NAME, TestConstants.RELATIVITY_ADMIN_PASSWORD);
 			WorkspaceHelper = new WorkspaceHelper(connectionHelper, null);
 
 		}

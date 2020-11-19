@@ -92,7 +92,7 @@ namespace DevVmPsModules.Cmdlets
 				relativityAdminPassword: RelativityAdminPassword,
 				sqlAdminUserName: SqlAdminUserName,
 				sqlAdminPassword: SqlAdminPassword);
-			IImportApiHelper importApiHelper = new ImportApiHelper(connectionHelper);
+			IImportApiHelper importApiHelper = new ImportApiHelper(connectionHelper, RelativityInstanceName, RelativityAdminUserName, RelativityAdminPassword);
 			IWorkspaceHelper workspaceHelper = new WorkspaceHelper(connectionHelper, null);
 
 			// Get workspaceId
