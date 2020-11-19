@@ -198,6 +198,7 @@
     <Compile Include="Implementations\EnvironmentVariableHelper.cs" />
     <Compile Include="Implementations\ErrorMessageHelper.cs" />
     <Compile Include="Implementations\RelativityVersionHelper.cs" />
+    <Compile Include="Implementations\RestHelper.cs" />
     <Compile Include="Implementations\SmokeTestHelper.cs" />
     <Compile Include="Interfaces\IAgentHelper.cs" />
     <Compile Include="Interfaces\IAgentServerHelper.cs" />
@@ -228,6 +229,8 @@
     <Compile Include="Implementations\YmlFileHelper.cs" />
     <Compile Include="Implementations\WorkspaceHelper.cs" />
     <Compile Include="Implementations\ZipHelper.cs" />
+    <Compile Include="RequestModels\ObjectManagerCreateRequestModel.cs" />
+    <Compile Include="RequestModels\ObjectManagerQueryRequestModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
