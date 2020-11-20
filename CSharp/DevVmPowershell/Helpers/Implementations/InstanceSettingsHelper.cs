@@ -30,19 +30,35 @@ namespace Helpers.Implementations
 		{
 			try
 			{
-				using (IInstanceSettingManager instanceSettingManager = ServiceFactory.CreateProxy<IInstanceSettingManager>())
+				HttpClient httpClient = RestHelper.GetHttpClient(InstanceAddress, AdminUsername, AdminPassword);
+				string createUrl = $"Relativity.REST/api/Relativity.InstanceSettings/workspace/{Constants.EDDS_WORKSPACE_ARTIFACT_ID}/instancesettings/";
+				InstanceSettingManagerCreateRequest instanceSettingManagerUpdateRequest = new InstanceSettingManagerCreateRequest
 				{
-					Relativity.Services.InstanceSetting.InstanceSetting newInstanceSetting = new Relativity.Services.InstanceSetting.InstanceSetting
+					instanceSetting = new RequestModels.instanceSetting
 					{
-						Section = section,
 						Name = name,
-						Description = description,
+						Section = section,
+						Machine = "",
+						ValueType = "Text",
 						Value = value,
-					};
-					int instanceSettingArtifactId = instanceSettingManager.CreateSingleAsync(newInstanceSetting).Result;
-					Console.WriteLine("Successfully Created Instance Setting");
-					return instanceSettingArtifactId;
+						InitialValue = value,
+						Encrypted = false,
+						Description = description,
+						Keywords = "",
+						Notes = ""
+					}
+				};
+				string createRequest = JsonConvert.SerializeObject(instanceSettingManagerUpdateRequest);
+				HttpResponseMessage createResponse = RestHelper.MakePost(httpClient, createUrl, createRequest);
+				if (!createResponse.IsSuccessStatusCode)
+				{
+					throw new Exception("Failed to create Instance Setting");
 				}
+
+				Console.WriteLine("Successfully Created Instance Setting");
+				string result = createResponse.Content.ReadAsStringAsync().Result;
+				int instanceSettingArtifactId = int.Parse(result);
+				return instanceSettingArtifactId;
 			}
 			catch (Exception ex)
 			{
@@ -136,9 +152,12 @@ namespace Helpers.Implementations
 		{
 			try
 			{
-				using (IInstanceSettingManager instanceSettingManager = ServiceFactory.CreateProxy<IInstanceSettingManager>())
+				HttpClient httpClient = RestHelper.GetHttpClient(InstanceAddress, AdminUsername, AdminPassword);
+				string deleteUrl = $"Relativity.REST/api/Relativity.InstanceSettings/workspace/{Constants.EDDS_WORKSPACE_ARTIFACT_ID}/instancesettings/{instanceSettingArtifactId}";
+				HttpResponseMessage httpResponseMessage = RestHelper.MakeDelete(httpClient, deleteUrl);
+				if (!httpResponseMessage.IsSuccessStatusCode)
 				{
-					instanceSettingManager.DeleteSingleAsync(instanceSettingArtifactId).Wait();
+					throw new Exception("Failed to Delete Instance Setting");
 				}
 			}
 			catch (Exception ex)

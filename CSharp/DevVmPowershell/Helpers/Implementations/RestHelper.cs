@@ -42,5 +42,11 @@ namespace Helpers.Implementations
 			HttpResponseMessage response = httpClient.PutAsync(url, content).Result;
 			return response;
 		}
+
+		public static HttpResponseMessage MakeDelete(HttpClient httpClient, string url)
+		{
+			HttpResponseMessage response = httpClient.DeleteAsync(url).Result;
+			return response;
+		}
 	}
 }

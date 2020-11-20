@@ -205,6 +205,7 @@
     <Compile Include="Implementations\YmlFileHelper.cs" />
     <Compile Include="Implementations\WorkspaceHelper.cs" />
     <Compile Include="Implementations\ZipHelper.cs" />
+    <Compile Include="RequestModels\InstanceSettingManagerCreateRequest.cs" />
     <Compile Include="RequestModels\InstanceSettingManagerUpdateRequest.cs" />
     <Compile Include="RequestModels\ObjectManagerCreateRequestModel.cs" />
     <Compile Include="RequestModels\ObjectManagerQueryRequestModel.cs" />
