@@ -4,16 +4,26 @@ using Relativity.Services.InstanceSetting;
 using Relativity.Services.ServiceProxy;
 using System;
 using System.Linq;
+using System.Net.Http;
+using Helpers.RequestModels;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Helpers.Implementations
 {
 	public class InstanceSettingsHelper : IInstanceSettingsHelper
 	{
 		private ServiceFactory ServiceFactory { get; }
+		private string InstanceAddress { get; set; }
+		private string AdminUsername { get; set; }
+		private string AdminPassword { get; set; }
 
-		public InstanceSettingsHelper(IConnectionHelper connectionHelper)
+		public InstanceSettingsHelper(IConnectionHelper connectionHelper, string instanceAddress, string adminUsername, string adminPassword)
 		{
 			ServiceFactory = connectionHelper.GetServiceFactory();
+			InstanceAddress = instanceAddress;
+			AdminUsername = adminUsername;
+			AdminPassword = adminPassword;
 		}
 
 		public int CreateInstanceSetting(string name, string section, string description, string value)
@@ -22,7 +32,7 @@ namespace Helpers.Implementations
 			{
 				using (IInstanceSettingManager instanceSettingManager = ServiceFactory.CreateProxy<IInstanceSettingManager>())
 				{
-					InstanceSetting newInstanceSetting = new InstanceSetting
+					Relativity.Services.InstanceSetting.InstanceSetting newInstanceSetting = new Relativity.Services.InstanceSetting.InstanceSetting
 					{
 						Section = section,
 						Name = name,
@@ -48,33 +58,72 @@ namespace Helpers.Implementations
 				{
 					newValue = string.Empty;
 				}
-				using (IInstanceSettingManager instanceSettingManager = ServiceFactory.CreateProxy<IInstanceSettingManager>())
+
+				HttpClient httpClient = RestHelper.GetHttpClient(InstanceAddress, AdminUsername, AdminPassword);
+				string queryUrl = $"Relativity.REST/api/Relativity.Objects/workspace/{Constants.EDDS_WORKSPACE_ARTIFACT_ID}/object/query";
+				ObjectManagerQueryRequestModel objectManagerQueryRequestModel = new ObjectManagerQueryRequestModel
 				{
-					Query query = new Query();
-					query.Condition = $"'Section' == '{section}' AND 'Name' == '{name}'";
-					InstanceSettingQueryResultSet instanceSettingQueryResultSet = instanceSettingManager.QueryAsync(query).Result;
-					if (instanceSettingQueryResultSet.Success)
+					request = new Request
 					{
-						Relativity.Services.Result<InstanceSetting> result = instanceSettingQueryResultSet.Results.First();
-						if (result.Artifact != null)
+						objectType = new Helpers.RequestModels.ObjectType
 						{
-							Console.WriteLine("Successfully found the existing Instance Setting");
-							InstanceSetting instanceSetting = result.Artifact;
-							if (instanceSetting.Name == "ESIndexCreationSettings")
+							Name = Constants.InstanceSetting.INSTANCE_SETTING_OBJECT_TYPE
+						},
+						fields = new object[]
+						{
+							new
 							{
-								string previousValue = instanceSetting.Value;
-								newValue = previousValue.Replace("\"number_of_shards\": 12", "\"number_of_shards\": 2");
-								newValue = newValue.Replace("\"number_of_replicas\": 2", "\"number_of_replicas\": 0");
+								Name = "Name"
+							},
+							new
+							{
+								Name = "Value"
 							}
-							instanceSetting.Value = newValue;
-							instanceSettingManager.UpdateSingleAsync(instanceSetting).Wait();
-							Console.WriteLine("Successfully updated the Instance Setting");
-							return true;
-						}
+						},
+						condition = $"'Section' == '{section}' AND 'Name' == '{name}'"
+					},
+					start = 1,
+					length = 10
+				};
+
+				string queryRequest = JsonConvert.SerializeObject(objectManagerQueryRequestModel);
+				HttpResponseMessage queryResponse = RestHelper.MakePost(httpClient, queryUrl, queryRequest);
+				if (!queryResponse.IsSuccessStatusCode)
+				{
+					throw new Exception("Failed to Query for Agent Artifact Ids");
+				}
+				string result = queryResponse.Content.ReadAsStringAsync().Result;
+				JObject jObject = JObject.Parse(result);
+				int totalCount = jObject["TotalCount"].Value<int>();
+				if (totalCount > 0)
+				{
+					int instanceSettingArtifactId = jObject["Objects"][0]["ArtifactID"].Value<int>();
+					string instanceSettingName = jObject["Objects"][0]["FieldValues"][0]["Value"].Value<string>();
+					if (instanceSettingName == "ESIndexCreationSettings")
+					{
+						string instanceSettingValue = jObject["Objects"][0]["FieldValues"][1]["Value"].Value<string>();
+						newValue = instanceSettingValue.Replace("\"number_of_shards\": 12", "\"number_of_shards\": 2");
+						newValue = newValue.Replace("\"number_of_replicas\": 2", "\"number_of_replicas\": 0");
 					}
-					Console.WriteLine("Failed to find the existing Instance Setting");
+					string updateUrl = $"Relativity.REST/api/Relativity.InstanceSettings/workspace/{Constants.EDDS_WORKSPACE_ARTIFACT_ID}/instancesettings/";
+					InstanceSettingManagerUpdateRequest instanceSettingManagerUpdateRequest = new InstanceSettingManagerUpdateRequest
+					{
+						instanceSetting = new RequestModels.InstanceSetting
+						{
+							ArtifactId = instanceSettingArtifactId,
+							Value = newValue
+						}
+					};
+					string updateRequest = JsonConvert.SerializeObject(instanceSettingManagerUpdateRequest);
+					HttpResponseMessage updateResponse = RestHelper.MakePut(httpClient, updateUrl, updateRequest);
+					if (updateResponse.IsSuccessStatusCode)
+					{
+						Console.WriteLine("Successfully updated the Instance Setting");
+					}
+					return updateResponse.IsSuccessStatusCode;
 				}
 
+				Console.WriteLine("Failed to find the existing Instance Setting");
 				return false;
 			}
 			catch (Exception ex)
@@ -114,7 +163,7 @@ namespace Helpers.Implementations
 						{
 							return null;
 						}
-						Relativity.Services.Result<InstanceSetting> result = instanceSettingQueryResultSet.Results.First();
+						Relativity.Services.Result<Relativity.Services.InstanceSetting.InstanceSetting> result = instanceSettingQueryResultSet.Results.First();
 						if (result.Artifact != null)
 						{
 							retVal = result.Artifact.Value;
@@ -146,7 +195,7 @@ namespace Helpers.Implementations
 						{
 							return 0;
 						}
-						Relativity.Services.Result<InstanceSetting> result = instanceSettingQueryResultSet.Results.First();
+						Relativity.Services.Result<Relativity.Services.InstanceSetting.InstanceSetting> result = instanceSettingQueryResultSet.Results.First();
 						if (result.Artifact != null)
 						{
 							artifactId = result.Artifact.ArtifactID;

@@ -33,6 +33,11 @@ namespace Helpers
 			public const Agent.LoggingLevelEnum AGENT_LOGGING_LEVEL = Agent.LoggingLevelEnum.All;
 		}
 
+		public class InstanceSetting
+		{
+			public const string INSTANCE_SETTING_OBJECT_TYPE = "InstanceSetting";
+		}
+
 		public class Workspace
 		{
 			public const string DEFAULT_WORKSPACE_TEMPLATE_NAME = "New Case Template";

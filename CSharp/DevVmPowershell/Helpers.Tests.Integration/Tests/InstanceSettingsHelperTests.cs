@@ -21,7 +21,7 @@ namespace Helpers.Tests.Integration.Tests
 				sqlAdminUserName: TestConstants.SQL_USER_NAME,
 				sqlAdminPassword: TestConstants.SQL_PASSWORD);
 
-			Sut = new InstanceSettingsHelper(connectionHelper);
+			Sut = new InstanceSettingsHelper(connectionHelper, TestConstants.RELATIVITY_INSTANCE_NAME, TestConstants.RELATIVITY_ADMIN_USER_NAME, TestConstants.RELATIVITY_ADMIN_PASSWORD);
 		}
 
 		[TearDown]
