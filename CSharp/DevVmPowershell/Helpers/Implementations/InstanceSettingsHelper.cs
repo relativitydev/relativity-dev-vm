@@ -31,7 +31,6 @@ namespace Helpers.Implementations
 			try
 			{
 				HttpClient httpClient = RestHelper.GetHttpClient(InstanceAddress, AdminUsername, AdminPassword);
-				string createUrl = $"Relativity.REST/api/Relativity.InstanceSettings/workspace/{Constants.EDDS_WORKSPACE_ARTIFACT_ID}/instancesettings/";
 				InstanceSettingManagerCreateRequest instanceSettingManagerUpdateRequest = new InstanceSettingManagerCreateRequest
 				{
 					instanceSetting = new RequestModels.instanceSetting
@@ -49,7 +48,7 @@ namespace Helpers.Implementations
 					}
 				};
 				string createRequest = JsonConvert.SerializeObject(instanceSettingManagerUpdateRequest);
-				HttpResponseMessage createResponse = RestHelper.MakePost(httpClient, createUrl, createRequest);
+				HttpResponseMessage createResponse = RestHelper.MakePost(httpClient, Constants.Connection.RestUrlEndpoints.InstanceSettings.endpointUrl, createRequest);
 				if (!createResponse.IsSuccessStatusCode)
 				{
 					throw new Exception("Failed to create Instance Setting");
@@ -76,7 +75,6 @@ namespace Helpers.Implementations
 				}
 
 				HttpClient httpClient = RestHelper.GetHttpClient(InstanceAddress, AdminUsername, AdminPassword);
-				string queryUrl = $"Relativity.REST/api/Relativity.Objects/workspace/{Constants.EDDS_WORKSPACE_ARTIFACT_ID}/object/query";
 				ObjectManagerQueryRequestModel objectManagerQueryRequestModel = new ObjectManagerQueryRequestModel
 				{
 					request = new Request
@@ -103,7 +101,7 @@ namespace Helpers.Implementations
 				};
 
 				string queryRequest = JsonConvert.SerializeObject(objectManagerQueryRequestModel);
-				HttpResponseMessage queryResponse = RestHelper.MakePost(httpClient, queryUrl, queryRequest);
+				HttpResponseMessage queryResponse = RestHelper.MakePost(httpClient, Constants.Connection.RestUrlEndpoints.ObjectManager.queryUrl, queryRequest);
 				if (!queryResponse.IsSuccessStatusCode)
 				{
 					throw new Exception("Failed to Query for Agent Artifact Ids");
@@ -121,7 +119,6 @@ namespace Helpers.Implementations
 						newValue = instanceSettingValue.Replace("\"number_of_shards\": 12", "\"number_of_shards\": 2");
 						newValue = newValue.Replace("\"number_of_replicas\": 2", "\"number_of_replicas\": 0");
 					}
-					string updateUrl = $"Relativity.REST/api/Relativity.InstanceSettings/workspace/{Constants.EDDS_WORKSPACE_ARTIFACT_ID}/instancesettings/";
 					InstanceSettingManagerUpdateRequest instanceSettingManagerUpdateRequest = new InstanceSettingManagerUpdateRequest
 					{
 						instanceSetting = new RequestModels.InstanceSetting
@@ -131,10 +128,14 @@ namespace Helpers.Implementations
 						}
 					};
 					string updateRequest = JsonConvert.SerializeObject(instanceSettingManagerUpdateRequest);
-					HttpResponseMessage updateResponse = RestHelper.MakePut(httpClient, updateUrl, updateRequest);
+					HttpResponseMessage updateResponse = RestHelper.MakePut(httpClient, Constants.Connection.RestUrlEndpoints.InstanceSettings.endpointUrl, updateRequest);
 					if (updateResponse.IsSuccessStatusCode)
 					{
 						Console.WriteLine("Successfully updated the Instance Setting");
+					}
+					else
+					{
+						throw new Exception("Failed to Update Instance Setting.");
 					}
 					return updateResponse.IsSuccessStatusCode;
 				}
