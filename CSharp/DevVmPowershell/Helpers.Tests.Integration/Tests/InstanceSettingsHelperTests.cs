@@ -69,7 +69,15 @@ namespace Helpers.Tests.Integration.Tests
 			// Arrange
 			string section = "Relativity.DataGrid";
 			string name = "DataGridEndPoint";
+			string description = "";
+			string initialValue = "initial_value";
 			string value = "new_value";
+
+			var existingInstanceSettingId = Sut.GetInstanceSettingArtifactIdByName(name, section);
+			if (existingInstanceSettingId == 0)
+			{
+				Sut.CreateInstanceSetting(name, section, description, initialValue);
+			}
 
 			try
 			{
@@ -92,6 +100,15 @@ namespace Helpers.Tests.Integration.Tests
 			// Arrange
 			string section = "Relativity.DataGrid";
 			string name = "DataGridEndPoint";
+			string description = "";
+			string value = "value";
+
+			var existingInstanceSettingId = Sut.GetInstanceSettingArtifactIdByName(name, section);
+			if (existingInstanceSettingId == 0)
+			{
+				Sut.CreateInstanceSetting(name, section, description, value);
+			}
+
 
 			// Act
 			int instanceSettingId = Sut.GetInstanceSettingArtifactIdByName(name, section);
