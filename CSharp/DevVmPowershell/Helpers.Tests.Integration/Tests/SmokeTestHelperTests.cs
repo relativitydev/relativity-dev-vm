@@ -32,7 +32,7 @@ namespace Helpers.Tests.Integration.Tests
 				sqlAdminPassword: TestConstants.SQL_PASSWORD);
 			ISqlRunner sqlRunner = new SqlRunner(connectionHelper);
 			SqlHelper = new SqlHelper(sqlRunner);
-			WorkspaceHelper = new WorkspaceHelper(connectionHelper, SqlHelper);
+			WorkspaceHelper = new WorkspaceHelper(connectionHelper, SqlHelper, TestConstants.RELATIVITY_INSTANCE_NAME, TestConstants.RELATIVITY_ADMIN_USER_NAME, TestConstants.RELATIVITY_ADMIN_PASSWORD);
 			ApplicationInstallHelper = new ApplicationInstallHelper(connectionHelper);
 			AgentHelper = new AgentHelper(connectionHelper, TestConstants.RELATIVITY_INSTANCE_NAME, TestConstants.RELATIVITY_ADMIN_USER_NAME, TestConstants.RELATIVITY_ADMIN_PASSWORD);
 			ImportApiHelper = new ImportApiHelper(connectionHelper, TestConstants.RELATIVITY_INSTANCE_NAME, TestConstants.RELATIVITY_ADMIN_USER_NAME, TestConstants.RELATIVITY_ADMIN_PASSWORD);
@@ -65,7 +65,7 @@ namespace Helpers.Tests.Integration.Tests
 				{
 					foreach (int workspaceId in workspacesWhereApplicationIsInstalled)
 					{
-						WorkspaceHelper.DeleteSingleWorkspaceAsync(workspaceId).Wait();
+						WorkspaceHelper.DeleteSingleWorkspace(workspaceId);
 					}
 				}
 
@@ -117,7 +117,7 @@ namespace Helpers.Tests.Integration.Tests
 				AgentHelper.DeleteAgentsInRelativityApplicationAsync(applicationName).Wait();
 
 				//Delete Workspace
-				WorkspaceHelper.DeleteSingleWorkspaceAsync(workspaceArtifactId).Wait();
+				WorkspaceHelper.DeleteSingleWorkspace(workspaceArtifactId);
 			}
 		}
 	}

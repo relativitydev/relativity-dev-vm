@@ -28,7 +28,7 @@ namespace Helpers.Tests.Integration.Tests
 			Sut = new DisclaimerAcceptanceHelper(connectionHelper, TestConstants.RELATIVITY_INSTANCE_NAME, TestConstants.RELATIVITY_ADMIN_USER_NAME, TestConstants.RELATIVITY_ADMIN_PASSWORD);
 			SqlRunner = new SqlRunner(connectionHelper);
 			SqlHelper = new SqlHelper(SqlRunner);
-			WorkspaceHelper = new WorkspaceHelper(connectionHelper, SqlHelper);
+			WorkspaceHelper = new WorkspaceHelper(connectionHelper, SqlHelper, TestConstants.RELATIVITY_INSTANCE_NAME, TestConstants.RELATIVITY_ADMIN_USER_NAME, TestConstants.RELATIVITY_ADMIN_PASSWORD);
 			ApplicationInstallHelper = new ApplicationInstallHelper(connectionHelper);
 		}
 
@@ -50,7 +50,7 @@ namespace Helpers.Tests.Integration.Tests
 			{
 				foreach (int workspaceId in workspacesWhereApplicationIsInstalled)
 				{
-					WorkspaceHelper.DeleteSingleWorkspaceAsync(workspaceId).Wait();
+					WorkspaceHelper.DeleteSingleWorkspace(workspaceId);
 				}
 			}
 			//Create New Workspace
@@ -59,7 +59,7 @@ namespace Helpers.Tests.Integration.Tests
 			bool installationSuccess = ApplicationInstallHelper.InstallApplicationFromApplicationLibrary(workspaceName, Constants.DisclaimerAcceptance.ApplicationGuids.ApplicationGuid);
 			if (!installationSuccess)
 			{
-				WorkspaceHelper.DeleteSingleWorkspaceAsync(workspaceArtifactId);
+				WorkspaceHelper.DeleteSingleWorkspace(workspaceArtifactId);
 				throw new Exception("Failed to Install Disclaimer Acceptance Log Application in Workspace");
 			}
 
@@ -69,7 +69,7 @@ namespace Helpers.Tests.Integration.Tests
 
 
 			//Cleanup
-			WorkspaceHelper.DeleteSingleWorkspaceAsync(workspaceArtifactId);
+			WorkspaceHelper.DeleteSingleWorkspace(workspaceArtifactId);
 		}
 
 		[Test]
@@ -84,7 +84,7 @@ namespace Helpers.Tests.Integration.Tests
 			{
 				foreach (int workspaceId in workspacesWhereApplicationIsInstalled)
 				{
-					WorkspaceHelper.DeleteSingleWorkspaceAsync(workspaceId).Wait();
+					WorkspaceHelper.DeleteSingleWorkspace(workspaceId);
 				}
 			}
 			//Create New Workspace
@@ -93,7 +93,7 @@ namespace Helpers.Tests.Integration.Tests
 			bool installationSuccess = ApplicationInstallHelper.InstallApplicationFromApplicationLibrary(workspaceName, Constants.DisclaimerAcceptance.ApplicationGuids.ApplicationGuid);
 			if (!installationSuccess)
 			{
-				WorkspaceHelper.DeleteSingleWorkspaceAsync(workspaceArtifactId);
+				WorkspaceHelper.DeleteSingleWorkspace(workspaceArtifactId);
 				throw new Exception("Failed to Install Disclaimer Acceptance Log Application in Workspace");
 			}
 
@@ -104,7 +104,7 @@ namespace Helpers.Tests.Integration.Tests
 			Assert.IsTrue(Sut.CheckIfDisclaimerRDOExists(workspaceArtifactId));
 
 			//Cleanup
-			WorkspaceHelper.DeleteSingleWorkspaceAsync(workspaceArtifactId);
+			WorkspaceHelper.DeleteSingleWorkspace(workspaceArtifactId);
 		}
 	}
 }

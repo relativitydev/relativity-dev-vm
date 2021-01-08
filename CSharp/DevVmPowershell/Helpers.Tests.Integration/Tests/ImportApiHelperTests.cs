@@ -23,7 +23,7 @@ namespace Helpers.Tests.Integration.Tests
 				sqlAdminPassword: TestConstants.SQL_PASSWORD);
 
 			Sut = new ImportApiHelper(connectionHelper, TestConstants.RELATIVITY_INSTANCE_NAME, TestConstants.RELATIVITY_ADMIN_USER_NAME, TestConstants.RELATIVITY_ADMIN_PASSWORD);
-			WorkspaceHelper = new WorkspaceHelper(connectionHelper, null);
+			WorkspaceHelper = new WorkspaceHelper(connectionHelper, null, TestConstants.RELATIVITY_INSTANCE_NAME, TestConstants.RELATIVITY_ADMIN_USER_NAME, TestConstants.RELATIVITY_ADMIN_PASSWORD);
 
 		}
 
@@ -52,7 +52,7 @@ namespace Helpers.Tests.Integration.Tests
 			Assert.That(numberOfFilesImported, Is.EqualTo(numberOfFiles));
 
 			//Cleanup
-			WorkspaceHelper.DeleteSingleWorkspaceAsync(workspaceArtifactId);
+			WorkspaceHelper.DeleteSingleWorkspace(workspaceArtifactId);
 		}
 
 		private void CleanupWorkspaceIfItExists(string workspaceName)

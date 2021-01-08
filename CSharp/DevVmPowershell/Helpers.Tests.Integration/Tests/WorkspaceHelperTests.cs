@@ -21,7 +21,7 @@ namespace Helpers.Tests.Integration.Tests
 				sqlAdminPassword: TestConstants.SQL_PASSWORD);
 			ISqlRunner sqlRunner = new SqlRunner(connectionHelper);
 			ISqlHelper sqlHelper = new SqlHelper(sqlRunner);
-			Sut = new WorkspaceHelper(connectionHelper, sqlHelper);
+			Sut = new WorkspaceHelper(connectionHelper, sqlHelper, TestConstants.RELATIVITY_INSTANCE_NAME, TestConstants.RELATIVITY_ADMIN_USER_NAME, TestConstants.RELATIVITY_ADMIN_PASSWORD);
 		}
 
 		[TearDown]
@@ -65,7 +65,7 @@ namespace Helpers.Tests.Integration.Tests
 
 			//Assert
 			Assert.That(workspaceArtifactId, Is.GreaterThan(0));
-			await Sut.DeleteSingleWorkspaceAsync(workspaceArtifactId);
+			Sut.DeleteSingleWorkspace(workspaceArtifactId);
 
 			//Cleanup
 			await Sut.DeleteAllWorkspacesAsync(workspaceName);
@@ -102,7 +102,7 @@ namespace Helpers.Tests.Integration.Tests
 			int workspaceArtifactId = await Sut.CreateSingleWorkspaceAsync(Constants.Workspace.DEFAULT_WORKSPACE_TEMPLATE_NAME, workspaceName, enableDataGrid); //To Test this method, make sure the Template Workspace exists
 
 			//Act
-			await Sut.DeleteSingleWorkspaceAsync(workspaceArtifactId);
+			Sut.DeleteSingleWorkspace(workspaceArtifactId);
 
 			//Assert
 			int workspaceCount = await Sut.GetWorkspaceCountQueryAsync(workspaceName);
