@@ -10,6 +10,7 @@ using System.Net.Http;
 using Helpers.RequestModels;
 using Newtonsoft.Json;
 using ObjectType = kCura.Relativity.Client.DTOs.ObjectType;
+using System.Threading.Tasks;
 
 namespace Helpers.Implementations
 {
@@ -21,8 +22,9 @@ namespace Helpers.Implementations
 		private string InstanceAddress { get; set; }
 		private string AdminUsername { get; set; }
 		private string AdminPassword { get; set; }
+		private RestHelper RestHelper { get; set; }
 
-		public DisclaimerAcceptanceHelper(IConnectionHelper connectionHelper, string instanceAddress, string adminUsername, string adminPassword)
+		public DisclaimerAcceptanceHelper(IConnectionHelper connectionHelper, RestHelper restHelper, string instanceAddress, string adminUsername, string adminPassword)
 		{
 			ServiceFactory = connectionHelper.GetServiceFactory();
 			RsapiClient = ServiceFactory.CreateProxy<IRSAPIClient>();
@@ -30,16 +32,17 @@ namespace Helpers.Implementations
 			InstanceAddress = instanceAddress;
 			AdminUsername = adminUsername;
 			AdminPassword = adminPassword;
+			RestHelper = restHelper;
 		}
 
-		public void AddDisclaimerConfiguration(string workspaceName)
+		public async Task AddDisclaimerConfigurationAsync(string workspaceName)
 		{
 			try
 			{
 				int workspaceId = GetWorkspaceId(workspaceName);
 				int objectTypeId = GetDisclaimerSolutionConfigurationObjectTypeId(workspaceId);
 				int layoutId = GetDisclaimerSolutionConfigurationLayoutId();
-				CreateDisclaimerConfigurationRDO(objectTypeId, layoutId, workspaceId);
+				await CreateDisclaimerConfigurationRdoAsync(objectTypeId, layoutId, workspaceId);
 			}
 			catch (Exception ex)
 			{
@@ -47,7 +50,7 @@ namespace Helpers.Implementations
 			}
 		}
 
-		public bool CheckIfDisclaimerConfigurationRDOExists(int workspaceId)
+		public bool CheckIfDisclaimerConfigurationRdoExists(int workspaceId)
 		{
 			RsapiClient.APIOptions.WorkspaceID = workspaceId;
 			int objectTypeId = GetDisclaimerSolutionConfigurationObjectTypeId(workspaceId);
@@ -60,14 +63,14 @@ namespace Helpers.Implementations
 			return queryResultSet.TotalCount > 0;
 		}
 
-		public void AddDisclaimer(string workspaceName)
+		public async Task AddDisclaimerAsync(string workspaceName)
 		{
 			try
 			{
 				int workspaceId = GetWorkspaceId(workspaceName);
 				int objectTypeId = GetDisclaimerObjectTypeId(workspaceId);
 				int layoutId = GetDisclaimerLayoutId();
-				CreateDisclaimerRDO(objectTypeId, layoutId, workspaceId);
+				await CreateDisclaimerRdoAsync(objectTypeId, layoutId, workspaceId);
 			}
 			catch (Exception ex)
 			{
@@ -75,7 +78,7 @@ namespace Helpers.Implementations
 			}
 		}
 
-		public bool CheckIfDisclaimerRDOExists(int workspaceId)
+		public bool CheckIfDisclaimerRdoExists(int workspaceId)
 		{
 			RsapiClient.APIOptions.WorkspaceID = workspaceId;
 			int objectTypeId = GetDisclaimerObjectTypeId(workspaceId);
@@ -88,7 +91,7 @@ namespace Helpers.Implementations
 			return queryResultSet.TotalCount > 0;
 		}
 
-		private void CreateDisclaimerConfigurationRDO(int objectTypeId, int layoutId, int workspaceId)
+		private async Task CreateDisclaimerConfigurationRdoAsync(int objectTypeId, int layoutId, int workspaceId)
 		{
 			HttpClient httpClient = RestHelper.GetHttpClient(InstanceAddress, AdminUsername, AdminPassword);
 			string url = $"Relativity.REST/api/Relativity.Objects/workspace/{workspaceId}/object/create";
@@ -140,14 +143,14 @@ namespace Helpers.Implementations
 				}
 			};
 			string request = JsonConvert.SerializeObject(objectManagerCreateRequestModel);
-			HttpResponseMessage response = RestHelper.MakePostAsync(httpClient, url, request).Result;
+			HttpResponseMessage response = await RestHelper.MakePostAsync(httpClient, url, request);
 			if (!response.IsSuccessStatusCode)
 			{
 				throw new Exception("Failed to Create for Disclaimer Configuration RDO.");
 			}
 		}
 
-		private void CreateDisclaimerRDO(int objectTypeId, int layoutId, int workspaceId)
+		private async Task CreateDisclaimerRdoAsync(int objectTypeId, int layoutId, int workspaceId)
 		{
 			HttpClient httpClient = RestHelper.GetHttpClient(InstanceAddress, AdminUsername, AdminPassword);
 			string url = $"Relativity.REST/api/Relativity.Objects/workspace/{workspaceId}/object/create";
@@ -215,7 +218,7 @@ namespace Helpers.Implementations
 				}
 			};
 			string request = JsonConvert.SerializeObject(objectManagerCreateRequestModel);
-			HttpResponseMessage response = RestHelper.MakePostAsync(httpClient, url, request).Result;
+			HttpResponseMessage response = await RestHelper.MakePostAsync(httpClient, url, request);
 			if (!response.IsSuccessStatusCode)
 			{
 				throw new Exception("Failed to Create for Disclaimer Configuration RDO.");

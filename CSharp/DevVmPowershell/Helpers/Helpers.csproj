@@ -189,6 +189,7 @@
     <Compile Include="Interfaces\IRecycleBinHelper.cs" />
     <Compile Include="Interfaces\IRelativityVersionHelper.cs" />
     <Compile Include="Interfaces\IRetryLogicHelper.cs" />
+    <Compile Include="Interfaces\IRestHelper.cs" />
     <Compile Include="Interfaces\ISmokeTestHelper.cs" />
     <Compile Include="Interfaces\ISqlRunner.cs" />
     <Compile Include="Interfaces\IWorkspaceHelper.cs" />

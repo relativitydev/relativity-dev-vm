@@ -17,15 +17,17 @@ namespace Helpers.Implementations
 		private ServiceFactory ServiceFactory { get; }
 
 		private IWorkspaceHelper WorkspaceHelper { get; }
+		private IRestHelper RestHelper { get; }
 		private IRetryLogicHelper RetryLogicHelper { get; }
 
 		private string InstanceAddress { get; }
 		private string AdminUsername { get; }
 		private string AdminPassword { get; }
 
-		public ApplicationInstallHelper(IConnectionHelper connectionHelper, IWorkspaceHelper workspaceHelper, IRetryLogicHelper retryLogicHelper, string instanceAddress, string adminUsername, string adminPassword)
+		public ApplicationInstallHelper(IConnectionHelper connectionHelper, IRestHelper restHelper, IWorkspaceHelper workspaceHelper, IRetryLogicHelper retryLogicHelper, string instanceAddress, string adminUsername, string adminPassword)
 		{
 			ServiceFactory = connectionHelper.GetServiceFactory();
+			RestHelper = restHelper;
 			WorkspaceHelper = workspaceHelper;
 			RetryLogicHelper = retryLogicHelper;
 			InstanceAddress = instanceAddress;

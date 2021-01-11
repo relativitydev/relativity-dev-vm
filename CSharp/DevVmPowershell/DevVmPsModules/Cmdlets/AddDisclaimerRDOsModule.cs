@@ -67,13 +67,14 @@ namespace DevVmPsModules.Cmdlets
 				relativityAdminPassword: RelativityAdminPassword,
 				sqlAdminUserName: SqlAdminUserName,
 				sqlAdminPassword: SqlAdminPassword);
-			IDisclaimerAcceptanceHelper disclaimerAcceptanceHelper = new DisclaimerAcceptanceHelper(connectionHelper, RelativityInstanceName, RelativityAdminUserName, RelativityAdminPassword);
+			RestHelper restHelper = new RestHelper();
+			IDisclaimerAcceptanceHelper disclaimerAcceptanceHelper = new DisclaimerAcceptanceHelper(connectionHelper, restHelper, RelativityInstanceName, RelativityAdminUserName, RelativityAdminPassword);
 
 			// Add Disclaimer Configuration and Disclaimer
 			Thread.Sleep(15000);
-			disclaimerAcceptanceHelper.AddDisclaimerConfiguration(WorkspaceName);
+			disclaimerAcceptanceHelper.AddDisclaimerConfigurationAsync(WorkspaceName).Wait();
 			Thread.Sleep(15000);
-			disclaimerAcceptanceHelper.AddDisclaimer(WorkspaceName);
+			disclaimerAcceptanceHelper.AddDisclaimerAsync(WorkspaceName).Wait();
 		}
 
 		private void ValidateInputArguments()

@@ -5,6 +5,7 @@ using Relativity.Services.ServiceProxy;
 using System;
 using System.Linq;
 using System.Net.Http;
+using System.Threading.Tasks;
 using Helpers.RequestModels;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -17,16 +18,18 @@ namespace Helpers.Implementations
 		private string InstanceAddress { get; set; }
 		private string AdminUsername { get; set; }
 		private string AdminPassword { get; set; }
+		private RestHelper RestHelper { get; set; }
 
-		public InstanceSettingsHelper(IConnectionHelper connectionHelper, string instanceAddress, string adminUsername, string adminPassword)
+		public InstanceSettingsHelper(IConnectionHelper connectionHelper, RestHelper restHelper, string instanceAddress, string adminUsername, string adminPassword)
 		{
 			ServiceFactory = connectionHelper.GetServiceFactory();
 			InstanceAddress = instanceAddress;
 			AdminUsername = adminUsername;
 			AdminPassword = adminPassword;
+			RestHelper = restHelper;
 		}
 
-		public int CreateInstanceSetting(string name, string section, string description, string value)
+		public async Task<int> CreateInstanceSettingAsync(string name, string section, string description, string value)
 		{
 			try
 			{
@@ -48,7 +51,7 @@ namespace Helpers.Implementations
 					}
 				};
 				string createRequest = JsonConvert.SerializeObject(instanceSettingManagerUpdateRequest);
-				HttpResponseMessage createResponse = RestHelper.MakePostAsync(httpClient, Constants.Connection.RestUrlEndpoints.InstanceSettings.endpointUrl, createRequest).Result;
+				HttpResponseMessage createResponse = await RestHelper.MakePostAsync(httpClient, Constants.Connection.RestUrlEndpoints.InstanceSettings.endpointUrl, createRequest);
 				if (!createResponse.IsSuccessStatusCode)
 				{
 					throw new Exception("Failed to create Instance Setting");
@@ -65,7 +68,7 @@ namespace Helpers.Implementations
 			}
 		}
 
-		public bool UpdateInstanceSettingValue(string name, string section, string newValue)
+		public async Task<bool> UpdateInstanceSettingValueAsync(string name, string section, string newValue)
 		{
 			try
 			{
@@ -101,8 +104,8 @@ namespace Helpers.Implementations
 				};
 
 				string queryRequest = JsonConvert.SerializeObject(objectManagerQueryRequestModel);
-				HttpResponseMessage queryResponse = RestHelper.MakePostAsync(httpClient,
-					Constants.Connection.RestUrlEndpoints.ObjectManager.queryUrl, queryRequest).Result;
+				HttpResponseMessage queryResponse = await RestHelper.MakePostAsync(httpClient,
+					Constants.Connection.RestUrlEndpoints.ObjectManager.queryUrl, queryRequest);
 				if (!queryResponse.IsSuccessStatusCode)
 				{
 					throw new Exception("Failed to Query for Agent Artifact Ids");
@@ -129,7 +132,7 @@ namespace Helpers.Implementations
 						}
 					};
 					string updateRequest = JsonConvert.SerializeObject(instanceSettingManagerUpdateRequest);
-					HttpResponseMessage updateResponse = RestHelper.MakePutAsync(httpClient, Constants.Connection.RestUrlEndpoints.InstanceSettings.endpointUrl, updateRequest).Result;
+					HttpResponseMessage updateResponse = await RestHelper.MakePutAsync(httpClient, Constants.Connection.RestUrlEndpoints.InstanceSettings.endpointUrl, updateRequest);
 					if (updateResponse.IsSuccessStatusCode)
 					{
 						Console.WriteLine("Successfully updated the Instance Setting");
@@ -150,13 +153,13 @@ namespace Helpers.Implementations
 			}
 		}
 
-		public void DeleteInstanceSetting(int instanceSettingArtifactId)
+		public async Task DeleteInstanceSettingAsync(int instanceSettingArtifactId)
 		{
 			try
 			{
 				HttpClient httpClient = RestHelper.GetHttpClient(InstanceAddress, AdminUsername, AdminPassword);
 				string deleteUrl = $"Relativity.REST/api/Relativity.InstanceSettings/workspace/{Constants.EDDS_WORKSPACE_ARTIFACT_ID}/instancesettings/{instanceSettingArtifactId}";
-				HttpResponseMessage httpResponseMessage = RestHelper.MakeDeleteAsync(httpClient, deleteUrl).Result;
+				HttpResponseMessage httpResponseMessage = await RestHelper.MakeDeleteAsync(httpClient, deleteUrl);
 				if (!httpResponseMessage.IsSuccessStatusCode)
 				{
 					throw new Exception("Failed to Delete Instance Setting");

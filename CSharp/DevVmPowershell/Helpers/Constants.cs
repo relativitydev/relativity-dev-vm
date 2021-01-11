@@ -31,6 +31,12 @@ namespace Helpers
 				public class ObjectManager
 				{
 					public static string queryUrl = $"Relativity.REST/api/Relativity.Objects/workspace/{Constants.EDDS_WORKSPACE_ARTIFACT_ID}/object/query";
+					public static string querySlimUrl = $"Relativity.REST/api/Relativity.Objects/workspace/{Constants.EDDS_WORKSPACE_ARTIFACT_ID}/object/queryslim";
+				}
+
+				public class WorkspaceManager
+				{
+					public static string endpointUrl = "Relativity.REST/api/Relativity.Workspaces/workspace";
 				}
 
 				public class ApplicationInstall

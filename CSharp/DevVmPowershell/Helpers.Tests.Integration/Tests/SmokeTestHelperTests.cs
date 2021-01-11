@@ -28,10 +28,13 @@ namespace Helpers.Tests.Integration.Tests
 				sqlAdminPassword: TestConstants.SQL_PASSWORD);
 			ISqlRunner sqlRunner = new SqlRunner(connectionHelper);
 			SqlHelper = new SqlHelper(sqlRunner);
-			WorkspaceHelper = new WorkspaceHelper(connectionHelper, SqlHelper, TestConstants.RELATIVITY_INSTANCE_NAME, TestConstants.RELATIVITY_ADMIN_USER_NAME, TestConstants.RELATIVITY_ADMIN_PASSWORD);
+			RestHelper restHelper = new RestHelper();
 			RetryLogicHelper = new RetryLogicHelper();
-			ApplicationInstallHelper = new ApplicationInstallHelper(connectionHelper, WorkspaceHelper, RetryLogicHelper, TestConstants.RELATIVITY_INSTANCE_NAME, TestConstants.RELATIVITY_ADMIN_USER_NAME, TestConstants.RELATIVITY_ADMIN_PASSWORD);
-			AgentHelper = new AgentHelper(connectionHelper, TestConstants.RELATIVITY_INSTANCE_NAME, TestConstants.RELATIVITY_ADMIN_USER_NAME, TestConstants.RELATIVITY_ADMIN_PASSWORD);
+			WorkspaceHelper = new WorkspaceHelper(connectionHelper, restHelper, SqlHelper, TestConstants.RELATIVITY_INSTANCE_NAME, TestConstants.RELATIVITY_ADMIN_USER_NAME, TestConstants.RELATIVITY_ADMIN_PASSWORD);
+			ApplicationInstallHelper = new ApplicationInstallHelper(connectionHelper, restHelper, WorkspaceHelper, RetryLogicHelper, TestConstants.RELATIVITY_INSTANCE_NAME,
+				TestConstants.RELATIVITY_ADMIN_USER_NAME, TestConstants.RELATIVITY_ADMIN_PASSWORD);
+			AgentHelper = new AgentHelper(connectionHelper, restHelper, TestConstants.RELATIVITY_INSTANCE_NAME, TestConstants.RELATIVITY_ADMIN_USER_NAME, TestConstants.RELATIVITY_ADMIN_PASSWORD);
+
 			ImportApiHelper = new ImportApiHelper(connectionHelper, TestConstants.RELATIVITY_INSTANCE_NAME, TestConstants.RELATIVITY_ADMIN_USER_NAME, TestConstants.RELATIVITY_ADMIN_PASSWORD);
 			Sut = new SmokeTestHelper(connectionHelper);
 		}
@@ -62,7 +65,7 @@ namespace Helpers.Tests.Integration.Tests
 				{
 					foreach (int workspaceId in workspacesWhereApplicationIsInstalled)
 					{
-						WorkspaceHelper.DeleteSingleWorkspace(workspaceId);
+						WorkspaceHelper.DeleteSingleWorkspaceAsync(workspaceId).Wait();
 					}
 				}
 
@@ -112,7 +115,7 @@ namespace Helpers.Tests.Integration.Tests
 				AgentHelper.DeleteAgentsInRelativityApplicationAsync(applicationName).Wait();
 
 				//Delete Workspace
-				WorkspaceHelper.DeleteSingleWorkspace(workspaceArtifactId);
+				WorkspaceHelper.DeleteSingleWorkspaceAsync(workspaceArtifactId).Wait();
 			}
 		}
 	}
