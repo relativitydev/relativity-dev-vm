@@ -41,7 +41,7 @@ namespace Helpers.Implementations
 			HttpClient httpClient = RestHelper.GetHttpClient(InstanceAddress, AdminUsername, AdminPassword);
 
 			// Need to install to library before we install to a workspace
-			HttpResponseMessage updateResponseMessage = await UpdateLibraryApplication(httpClient, filePath);
+			HttpResponseMessage updateResponseMessage = await UploadLibraryApplicationAsync(httpClient, filePath);
 
 			if (updateResponseMessage.IsSuccessStatusCode)
 			{
@@ -61,10 +61,10 @@ namespace Helpers.Implementations
 			int applicationId = RetryLogicHelper
 				.RetryFunction<int>(Constants.Connection.RestUrlEndpoints.ApplicationInstall.retryCount,
 					Constants.Connection.RestUrlEndpoints.ApplicationInstall.retryDelay,
-					() => GetApplicationLibraryId(applicationGuid).Result);
+					() => GetApplicationLibraryIdAsync(applicationGuid).Result);
 
 			// Now install the application to the workspace
-			bool wasInstalledOnWorkspace = await InstallApplicationOnWorkspace(httpClient, workspaceName, applicationId);
+			bool wasInstalledOnWorkspace = await InstallApplicationOnWorkspaceAsync(httpClient, workspaceName, applicationId);
 			if (wasInstalledOnWorkspace)
 			{
 				Console.WriteLine("Successfully installed application into workspace.");
@@ -81,10 +81,10 @@ namespace Helpers.Implementations
 		{
 			HttpClient httpClient = RestHelper.GetHttpClient(InstanceAddress, AdminUsername, AdminPassword);
 
-			int applicationId = GetApplicationLibraryId(applicationGuid).Result;
+			int applicationId = GetApplicationLibraryIdAsync(applicationGuid).Result;
 
 			// Now install the application to the workspace
-			bool wasInstalledOnWorkspace = await InstallApplicationOnWorkspace(httpClient, workspaceName, applicationId);
+			bool wasInstalledOnWorkspace = await InstallApplicationOnWorkspaceAsync(httpClient, workspaceName, applicationId);
 			if (wasInstalledOnWorkspace)
 			{
 				Console.WriteLine("Successfully installed application into workspace.");
@@ -115,7 +115,7 @@ namespace Helpers.Implementations
 			return allApps.Exists(x => x.Guids.Contains(new Guid(applicationGuid)));
 		}
 
-		private async Task<int> GetApplicationLibraryId(string applicationGuid)
+		private async Task<int> GetApplicationLibraryIdAsync(string applicationGuid)
 		{
 			if (!await DoesLibraryApplicationExistAsync(applicationGuid))
 			{
@@ -126,7 +126,7 @@ namespace Helpers.Implementations
 			return allApps.Find(x => x.Guids.Contains(new Guid(applicationGuid))).ArtifactID;
 		}
 
-		private async Task<HttpResponseMessage> UpdateLibraryApplication(HttpClient httpClient, string filePath)
+		private async Task<HttpResponseMessage> UploadLibraryApplicationAsync(HttpClient httpClient, string filePath)
 		{
 			string fullFileName = Path.GetFileName(filePath);
 			FileStream fileStream = File.OpenRead(filePath);
@@ -148,7 +148,7 @@ namespace Helpers.Implementations
 			return updateResponse;
 		}
 
-		private async Task<bool> InstallApplicationOnWorkspace(HttpClient httpClient, string workspaceName, int applicationId)
+		private async Task<bool> InstallApplicationOnWorkspaceAsync(HttpClient httpClient, string workspaceName, int applicationId)
 		{
 			int workspaceId = WorkspaceHelper.GetFirstWorkspaceArtifactIdQueryAsync(workspaceName).Result;
 			var tempInstallJsonRequest = new

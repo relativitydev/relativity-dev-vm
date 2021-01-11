@@ -124,8 +124,8 @@ namespace Helpers.Implementations
 		/// <param name="operation"></param>
 		private void ValidateRetryParameters(int numberOfRetries, int delayInSeconds, object operation)
 		{
-			if (numberOfRetries < 0) throw new ArgumentException($"Parameter {nameof(numberOfRetries)} cannot be null or less than 0.");
-			if (delayInSeconds < 0) throw new ArgumentException($"Parameter {nameof(delayInSeconds)} cannot be null or less than 0.");
+			if (numberOfRetries < 0) throw new ArgumentException($"Parameter {nameof(numberOfRetries)} cannot be less than 0.");
+			if (delayInSeconds < 0) throw new ArgumentException($"Parameter {nameof(delayInSeconds)} cannot be less than 0.");
 			if (operation == null) throw new ArgumentException($"Parameter {nameof(operation)} cannot be null.");
 		}
 
