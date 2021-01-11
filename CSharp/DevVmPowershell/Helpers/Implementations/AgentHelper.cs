@@ -22,9 +22,9 @@ namespace Helpers.Implementations
 		private string InstanceAddress { get; }
 		private string AdminUsername { get; }
 		private string AdminPassword { get; }
-		private RestHelper RestHelper { get; set; }
+		private IRestHelper RestHelper { get; set; }
 
-		public AgentHelper(IConnectionHelper connectionHelper, RestHelper restHelper, string instanceAddress, string adminUsername, string adminPassword)
+		public AgentHelper(IConnectionHelper connectionHelper, IRestHelper restHelper, string instanceAddress, string adminUsername, string adminPassword)
 		{
 			ServiceFactory = connectionHelper.GetServiceFactory();
 			InstanceAddress = instanceAddress;

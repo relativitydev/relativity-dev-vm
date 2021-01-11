@@ -22,9 +22,9 @@ namespace Helpers.Implementations
 		private string InstanceAddress { get; }
 		private string AdminUsername { get; }
 		private string AdminPassword { get; }
-		private RestHelper RestHelper { get; set; }
+		private IRestHelper RestHelper { get; set; }
 
-		public WorkspaceHelper(IConnectionHelper connectionHelper, RestHelper restHelper, ISqlHelper sqlHelper, string instanceAddress, string adminUsername, string adminPassword)
+		public WorkspaceHelper(IConnectionHelper connectionHelper, IRestHelper restHelper, ISqlHelper sqlHelper, string instanceAddress, string adminUsername, string adminPassword)
 		{
 			ServiceFactory = connectionHelper.GetServiceFactory();
 			SqlHelper = sqlHelper;
@@ -74,7 +74,7 @@ namespace Helpers.Implementations
 
 			try
 			{
-				string url = $"{Constants.Connection.RestUrlEndpoints.WorkspaceManager.endpointUrl}/{workspaceArtifactId}";
+				string url = $"{Constants.Connection.RestUrlEndpoints.WorkspaceManager.EndpointUrl}/{workspaceArtifactId}";
 				HttpClient httpClient = RestHelper.GetHttpClient(InstanceAddress, AdminUsername, AdminPassword);
 				HttpResponseMessage response = await RestHelper.MakeDeleteAsync(httpClient, url);
 				if (!response.IsSuccessStatusCode)
@@ -145,7 +145,7 @@ namespace Helpers.Implementations
 			};
 
 			string createPayload = JsonConvert.SerializeObject(createPayloadObject);
-			HttpResponseMessage createResponse = await RestHelper.MakePostAsync(httpClient, $"{Constants.Connection.RestUrlEndpoints.WorkspaceManager.endpointUrl}/", createPayload);
+			HttpResponseMessage createResponse = await RestHelper.MakePostAsync(httpClient, $"{Constants.Connection.RestUrlEndpoints.WorkspaceManager.EndpointUrl}/", createPayload);
 			if (!createResponse.IsSuccessStatusCode)
 			{
 				throw new Exception("Failed to Create Workspace");
@@ -181,7 +181,7 @@ namespace Helpers.Implementations
 			};
 
 			string updatePayload = JsonConvert.SerializeObject(updatePayloadObject);
-			HttpResponseMessage updateResponse = await RestHelper.MakePostAsync(httpClient, $"{Constants.Connection.RestUrlEndpoints.WorkspaceManager.endpointUrl}/{workspaceArtifactId}", updatePayload);
+			HttpResponseMessage updateResponse = await RestHelper.MakePostAsync(httpClient, $"{Constants.Connection.RestUrlEndpoints.WorkspaceManager.EndpointUrl}/{workspaceArtifactId}", updatePayload);
 			if (!updateResponse.IsSuccessStatusCode)
 			{
 				throw new Exception("Failed to Update Workspace to Enable Data Grid");
@@ -216,7 +216,7 @@ namespace Helpers.Implementations
 				};
 
 				string queryPayload = JsonConvert.SerializeObject(queryPayloadObject);
-				HttpResponseMessage queryResponse = await RestHelper.MakePostAsync(httpClient, Constants.Connection.RestUrlEndpoints.ObjectManager.querySlimUrl, queryPayload);
+				HttpResponseMessage queryResponse = await RestHelper.MakePostAsync(httpClient, Constants.Connection.RestUrlEndpoints.ObjectManager.QuerySlimUrl, queryPayload);
 				if (!queryResponse.IsSuccessStatusCode)
 				{
 					throw new Exception("Failed to Query for Workspaces");
@@ -265,7 +265,7 @@ namespace Helpers.Implementations
 				};
 
 				string queryPayload = JsonConvert.SerializeObject(queryPayloadObject);
-				HttpResponseMessage queryResponse = await RestHelper.MakePostAsync(httpClient, Constants.Connection.RestUrlEndpoints.ObjectManager.querySlimUrl, queryPayload);
+				HttpResponseMessage queryResponse = await RestHelper.MakePostAsync(httpClient, Constants.Connection.RestUrlEndpoints.ObjectManager.QuerySlimUrl, queryPayload);
 				if (!queryResponse.IsSuccessStatusCode)
 				{
 					throw new Exception("Failed to Query for Workspaces");
@@ -307,7 +307,7 @@ namespace Helpers.Implementations
 				};
 
 				string queryPayload = JsonConvert.SerializeObject(queryPayloadObject);
-				HttpResponseMessage queryResponse = await RestHelper.MakePostAsync(httpClient, Constants.Connection.RestUrlEndpoints.ObjectManager.querySlimUrl, queryPayload);
+				HttpResponseMessage queryResponse = await RestHelper.MakePostAsync(httpClient, Constants.Connection.RestUrlEndpoints.ObjectManager.QuerySlimUrl, queryPayload);
 				if (!queryResponse.IsSuccessStatusCode)
 				{
 					throw new Exception("Failed to Query for Workspaces");
@@ -376,42 +376,42 @@ namespace Helpers.Implementations
 
 		public async Task<List<int>> GetEligibleStatusesAsync(HttpClient httpClient)
 		{
-			return await GetArtifactIDListAsync(httpClient, $"{Constants.Connection.RestUrlEndpoints.WorkspaceManager.endpointUrl}/eligible-statuses");
+			return await GetArtifactIDListAsync(httpClient, $"{Constants.Connection.RestUrlEndpoints.WorkspaceManager.EndpointUrl}/eligible-statuses");
 		}
 
 		public async Task<List<int>> GetEligibleResourcePoolsAsync(HttpClient httpClient)
 		{
-			return await GetArtifactIDListAsync(httpClient, $"{Constants.Connection.RestUrlEndpoints.WorkspaceManager.endpointUrl}/eligible-resource-pools");
+			return await GetArtifactIDListAsync(httpClient, $"{Constants.Connection.RestUrlEndpoints.WorkspaceManager.EndpointUrl}/eligible-resource-pools");
 		}
 
 		public async Task<List<int>> GetEligibleFileRepositoriesAsync(HttpClient httpClient, int resourcePoolID)
 		{
-			return await GetArtifactIDListAsync(httpClient, $"{Constants.Connection.RestUrlEndpoints.WorkspaceManager.endpointUrl}/eligible-resource-pools/{resourcePoolID}/eligible-file-repositories");
+			return await GetArtifactIDListAsync(httpClient, $"{Constants.Connection.RestUrlEndpoints.WorkspaceManager.EndpointUrl}/eligible-resource-pools/{resourcePoolID}/eligible-file-repositories");
 		}
 
 		public async Task<List<int>> GetEligibleCacheLocationsAsync(HttpClient httpClient, int resourcePoolID)
 		{
-			return await GetArtifactIDListAsync(httpClient, $"{Constants.Connection.RestUrlEndpoints.WorkspaceManager.endpointUrl}/eligible-resource-pools/{resourcePoolID}/eligible-cache-locations");
+			return await GetArtifactIDListAsync(httpClient, $"{Constants.Connection.RestUrlEndpoints.WorkspaceManager.EndpointUrl}/eligible-resource-pools/{resourcePoolID}/eligible-cache-locations");
 		}
 
 		public async Task<List<int>> GetEligibleSqlServersAsync(HttpClient httpClient, int resourcePoolID)
 		{
-			return await GetArtifactIDListAsync(httpClient, $"{Constants.Connection.RestUrlEndpoints.WorkspaceManager.endpointUrl}/eligible-resource-pools/{resourcePoolID}/eligible-sql-servers");
+			return await GetArtifactIDListAsync(httpClient, $"{Constants.Connection.RestUrlEndpoints.WorkspaceManager.EndpointUrl}/eligible-resource-pools/{resourcePoolID}/eligible-sql-servers");
 		}
 
 		public async Task<List<int>> QueryEligibleMattersAsync(HttpClient httpClient)
 		{
-			return await QueryArtifactIDListAsync(httpClient, $"{Constants.Connection.RestUrlEndpoints.WorkspaceManager.endpointUrl}/query-eligible-matters");
+			return await QueryArtifactIDListAsync(httpClient, $"{Constants.Connection.RestUrlEndpoints.WorkspaceManager.EndpointUrl}/query-eligible-matters");
 		}
 
 		public async Task<List<int>> QueryEligibleTemplatesAsync(HttpClient httpClient)
 		{
-			return await QueryArtifactIDListAsync(httpClient, $"{Constants.Connection.RestUrlEndpoints.WorkspaceManager.endpointUrl}/query-eligible-templates");
+			return await QueryArtifactIDListAsync(httpClient, $"{Constants.Connection.RestUrlEndpoints.WorkspaceManager.EndpointUrl}/query-eligible-templates");
 		}
 
 		public async Task<int> GetDefaultSqlFullTextLanguageAsync(HttpClient httpClient)
 		{
-			HttpResponseMessage response = await httpClient.GetAsync($"{Constants.Connection.RestUrlEndpoints.WorkspaceManager.endpointUrl}/eligible-sql-full-text-languages");
+			HttpResponseMessage response = await httpClient.GetAsync($"{Constants.Connection.RestUrlEndpoints.WorkspaceManager.EndpointUrl}/eligible-sql-full-text-languages");
 			string resultString = await response.Content.ReadAsStringAsync();
 			dynamic languages = JObject.Parse(resultString) as JObject;
 			int defaultLanguageId = languages.DefaultLanguageLcid;
@@ -420,7 +420,7 @@ namespace Helpers.Implementations
 
 		public async Task<string> GetDefaultDownloadHandlerUrlAsync(HttpClient httpClient)
 		{
-			HttpResponseMessage response = await httpClient.GetAsync($"{Constants.Connection.RestUrlEndpoints.WorkspaceManager.endpointUrl}/default-download-handler-url");
+			HttpResponseMessage response = await httpClient.GetAsync($"{Constants.Connection.RestUrlEndpoints.WorkspaceManager.EndpointUrl}/default-download-handler-url");
 			string result = await response.Content.ReadAsStringAsync();
 			return JsonConvert.DeserializeObject<string>(result);
 		}

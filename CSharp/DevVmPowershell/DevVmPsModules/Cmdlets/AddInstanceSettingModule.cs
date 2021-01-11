@@ -91,7 +91,7 @@ namespace DevVmPsModules.Cmdlets
 				relativityAdminPassword: RelativityAdminPassword,
 				sqlAdminUserName: SqlAdminUserName,
 				sqlAdminPassword: SqlAdminPassword);
-			RestHelper restHelper = new RestHelper();
+			IRestHelper restHelper = new RestHelper();
 			IInstanceSettingsHelper instanceSettingsHelper = new InstanceSettingsHelper(connectionHelper, restHelper, RelativityInstanceName, RelativityAdminUserName, RelativityAdminPassword);
 
 			// Create Instance Setting

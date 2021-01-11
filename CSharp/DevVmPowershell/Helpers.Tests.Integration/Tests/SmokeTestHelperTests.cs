@@ -28,7 +28,7 @@ namespace Helpers.Tests.Integration.Tests
 				sqlAdminPassword: TestConstants.SQL_PASSWORD);
 			ISqlRunner sqlRunner = new SqlRunner(connectionHelper);
 			SqlHelper = new SqlHelper(sqlRunner);
-			RestHelper restHelper = new RestHelper();
+			IRestHelper restHelper = new RestHelper();
 			RetryLogicHelper = new RetryLogicHelper();
 			WorkspaceHelper = new WorkspaceHelper(connectionHelper, restHelper, SqlHelper, TestConstants.RELATIVITY_INSTANCE_NAME, TestConstants.RELATIVITY_ADMIN_USER_NAME, TestConstants.RELATIVITY_ADMIN_PASSWORD);
 			ApplicationInstallHelper = new ApplicationInstallHelper(connectionHelper, restHelper, WorkspaceHelper, RetryLogicHelper, TestConstants.RELATIVITY_INSTANCE_NAME,
