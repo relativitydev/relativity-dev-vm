@@ -51,7 +51,7 @@ namespace Helpers.Implementations
 					}
 				};
 				string createRequest = JsonConvert.SerializeObject(instanceSettingManagerUpdateRequest);
-				HttpResponseMessage createResponse = await RestHelper.MakePostAsync(httpClient, Constants.Connection.RestUrlEndpoints.InstanceSettings.endpointUrl, createRequest);
+				HttpResponseMessage createResponse = await RestHelper.MakePostAsync(httpClient, Constants.Connection.RestUrlEndpoints.InstanceSettings.EndpointUrl, createRequest);
 				if (!createResponse.IsSuccessStatusCode)
 				{
 					throw new Exception("Failed to create Instance Setting");
@@ -105,10 +105,10 @@ namespace Helpers.Implementations
 
 				string queryRequest = JsonConvert.SerializeObject(objectManagerQueryRequestModel);
 				HttpResponseMessage queryResponse = await RestHelper.MakePostAsync(httpClient,
-					Constants.Connection.RestUrlEndpoints.ObjectManager.queryUrl, queryRequest);
+					Constants.Connection.RestUrlEndpoints.ObjectManager.QueryUrl, queryRequest);
 				if (!queryResponse.IsSuccessStatusCode)
 				{
-					throw new Exception("Failed to Query for Agent Artifact Ids");
+					throw new Exception("Failed to Query for Instance Setting");
 				}
 				string result = queryResponse.Content.ReadAsStringAsync().Result;
 				JObject jObject = JObject.Parse(result);
@@ -132,7 +132,7 @@ namespace Helpers.Implementations
 						}
 					};
 					string updateRequest = JsonConvert.SerializeObject(instanceSettingManagerUpdateRequest);
-					HttpResponseMessage updateResponse = await RestHelper.MakePutAsync(httpClient, Constants.Connection.RestUrlEndpoints.InstanceSettings.endpointUrl, updateRequest);
+					HttpResponseMessage updateResponse = await RestHelper.MakePutAsync(httpClient, Constants.Connection.RestUrlEndpoints.InstanceSettings.EndpointUrl, updateRequest);
 					if (updateResponse.IsSuccessStatusCode)
 					{
 						Console.WriteLine("Successfully updated the Instance Setting");
