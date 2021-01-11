@@ -9,6 +9,7 @@ using System.Linq;
 using System.Net.Http;
 using Helpers.RequestModels;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using ObjectType = kCura.Relativity.Client.DTOs.ObjectType;
 
 namespace Helpers.Implementations
@@ -49,15 +50,44 @@ namespace Helpers.Implementations
 
 		public bool CheckIfDisclaimerConfigurationRDOExists(int workspaceId)
 		{
-			RsapiClient.APIOptions.WorkspaceID = workspaceId;
+			//RsapiClient.APIOptions.WorkspaceID = workspaceId;
+			//int objectTypeId = GetDisclaimerSolutionConfigurationObjectTypeId(workspaceId);
+			//Query<RDO> query = new Query<RDO>
+			//{
+			//	ArtifactTypeID = objectTypeId
+			//};
+
+			//QueryResultSet<RDO> queryResultSet = RsapiClient.Repositories.RDO.Query(query);
+			//return queryResultSet.TotalCount > 0;
+
+			string url = $"Relativity.REST/api/Relativity.Objects/workspace/-1/object/queryslim";
+			HttpClient httpClient = RestHelper.GetHttpClient(InstanceAddress, AdminUsername, AdminPassword);
 			int objectTypeId = GetDisclaimerSolutionConfigurationObjectTypeId(workspaceId);
-			Query<RDO> query = new Query<RDO>
+			var queryPayloadObject = new
 			{
-				ArtifactTypeID = objectTypeId
+				request = new
+				{
+					objectType = new { artifactTypeId = objectTypeId },
+					fields = new[]
+					{
+						new { Name = "Name" },
+					},
+					Condition = "",
+				},
+				start = 1,
+				length = 25
 			};
 
-			QueryResultSet<RDO> queryResultSet = RsapiClient.Repositories.RDO.Query(query);
-			return queryResultSet.TotalCount > 0;
+			string queryPayload = JsonConvert.SerializeObject(queryPayloadObject);
+			HttpResponseMessage queryResponse = RestHelper.MakePostAsync(httpClient, url, queryPayload).Result;
+			if (!queryResponse.IsSuccessStatusCode)
+			{
+				throw new Exception("Failed to Query for Disclaimer Configuration RDO");
+			}
+			string resultString = queryResponse.Content.ReadAsStringAsync().Result;
+			dynamic result = JObject.Parse(resultString) as JObject;
+			int totalCount = result.TotalCount;
+			return totalCount > 0;
 		}
 
 		public void AddDisclaimer(string workspaceName)
@@ -77,15 +107,44 @@ namespace Helpers.Implementations
 
 		public bool CheckIfDisclaimerRDOExists(int workspaceId)
 		{
-			RsapiClient.APIOptions.WorkspaceID = workspaceId;
+			//RsapiClient.APIOptions.WorkspaceID = workspaceId;
+			//int objectTypeId = GetDisclaimerObjectTypeId(workspaceId);
+			//Query<RDO> query = new Query<RDO>
+			//{
+			//	ArtifactTypeID = objectTypeId
+			//};
+
+			//QueryResultSet<RDO> queryResultSet = RsapiClient.Repositories.RDO.Query(query);
+			//return queryResultSet.TotalCount > 0;
+
+			string url = $"Relativity.REST/api/Relativity.Objects/workspace/-1/object/queryslim";
+			HttpClient httpClient = RestHelper.GetHttpClient(InstanceAddress, AdminUsername, AdminPassword);
 			int objectTypeId = GetDisclaimerObjectTypeId(workspaceId);
-			Query<RDO> query = new Query<RDO>
+			var queryPayloadObject = new
 			{
-				ArtifactTypeID = objectTypeId
+				request = new
+				{
+					objectType = new { artifactTypeId = objectTypeId },
+					fields = new[]
+					{
+						new { Name = "Name" },
+					},
+					Condition = "",
+				},
+				start = 1,
+				length = 25
 			};
 
-			QueryResultSet<RDO> queryResultSet = RsapiClient.Repositories.RDO.Query(query);
-			return queryResultSet.TotalCount > 0;
+			string queryPayload = JsonConvert.SerializeObject(queryPayloadObject);
+			HttpResponseMessage queryResponse = RestHelper.MakePostAsync(httpClient, url, queryPayload).Result;
+			if (!queryResponse.IsSuccessStatusCode)
+			{
+				throw new Exception("Failed to Query for Disclaimer RDO");
+			}
+			string resultString = queryResponse.Content.ReadAsStringAsync().Result;
+			dynamic result = JObject.Parse(resultString) as JObject;
+			int totalCount = result.TotalCount;
+			return totalCount > 0;
 		}
 
 		private void CreateDisclaimerConfigurationRDO(int objectTypeId, int layoutId, int workspaceId)

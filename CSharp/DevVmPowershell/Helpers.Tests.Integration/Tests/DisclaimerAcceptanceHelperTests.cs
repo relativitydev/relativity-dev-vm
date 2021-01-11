@@ -67,7 +67,6 @@ namespace Helpers.Tests.Integration.Tests
 			Assert.DoesNotThrow(() => Sut.AddDisclaimerConfiguration(workspaceName));
 			Assert.IsTrue(Sut.CheckIfDisclaimerConfigurationRDOExists(workspaceArtifactId));
 
-
 			//Cleanup
 			WorkspaceHelper.DeleteSingleWorkspace(workspaceArtifactId);
 		}
