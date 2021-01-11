@@ -29,12 +29,14 @@ namespace Helpers.Implementations
 		private string InstanceAddress { get; set; }
 		private string AdminUsername { get; set; }
 		private string AdminPassword { get; set; }
-		public ProcessingHelper(IConnectionHelper connectionHelper, string instanceAddress, string adminUsername, string adminPassword)
+		private IRestHelper RestHelper { get; set; }
+		public ProcessingHelper(IConnectionHelper connectionHelper, IRestHelper restHelper, string instanceAddress, string adminUsername, string adminPassword)
 		{
 			ServiceFactory = connectionHelper.GetServiceFactory();
 			InstanceAddress = instanceAddress;
 			AdminUsername = adminUsername;
 			AdminPassword = adminPassword;
+			RestHelper = restHelper;
 		}
 
 		/// <summary>

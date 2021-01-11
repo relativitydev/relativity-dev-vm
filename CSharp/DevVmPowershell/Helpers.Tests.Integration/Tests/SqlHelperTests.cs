@@ -22,7 +22,8 @@ namespace Helpers.Tests.Integration.Tests
 				sqlAdminPassword: TestConstants.SQL_PASSWORD);
 			ISqlRunner sqlRunner = new SqlRunner(connectionHelper);
 			Sut = new SqlHelper(sqlRunner);
-			WorkspaceHelper = new WorkspaceHelper(connectionHelper, Sut, TestConstants.RELATIVITY_INSTANCE_NAME, TestConstants.RELATIVITY_ADMIN_USER_NAME, TestConstants.RELATIVITY_ADMIN_PASSWORD);
+			IRestHelper restHelper = new RestHelper();
+			WorkspaceHelper = new WorkspaceHelper(connectionHelper, restHelper, Sut, TestConstants.RELATIVITY_INSTANCE_NAME, TestConstants.RELATIVITY_ADMIN_USER_NAME, TestConstants.RELATIVITY_ADMIN_PASSWORD);
 		}
 
 		[TearDown]
@@ -68,7 +69,7 @@ namespace Helpers.Tests.Integration.Tests
 			}
 			finally
 			{
-				WorkspaceHelper.DeleteSingleWorkspace(workspaceId);
+				WorkspaceHelper.DeleteSingleWorkspaceAsync(workspaceId).Wait();
 			}
 
 		}

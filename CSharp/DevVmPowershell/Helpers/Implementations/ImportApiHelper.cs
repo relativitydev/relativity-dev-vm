@@ -129,7 +129,8 @@ namespace Helpers.Implementations
 
 		static async Task<int> GetNumberOfDocumentsAsync(int workspaceId, string fileType)
 		{
-			HttpClient httpClient = RestHelper.GetHttpClient(InstanceAddress, AdminUsername, AdminPassword);
+			RestHelper restHelper = new RestHelper();
+			HttpClient httpClient = restHelper.GetHttpClient(InstanceAddress, AdminUsername, AdminPassword);
 			string url = $"Relativity.REST/api/Relativity.Objects/workspace/{workspaceId}/object/query";
 
 			ObjectManagerQueryRequestModel objectManagerQueryRequestModel = new ObjectManagerQueryRequestModel
@@ -171,7 +172,7 @@ namespace Helpers.Implementations
 			}
 
 			string request = JsonConvert.SerializeObject(objectManagerQueryRequestModel);
-			HttpResponseMessage response = await RestHelper.MakePostAsync(httpClient, url, request);
+			HttpResponseMessage response = await restHelper.MakePostAsync(httpClient, url, request);
 			if (!response.IsSuccessStatusCode)
 			{
 				throw new Exception("Failed to Query for number of Documents");
