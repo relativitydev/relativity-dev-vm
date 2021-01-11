@@ -175,6 +175,7 @@
     <Compile Include="Implementations\ErrorMessageHelper.cs" />
     <Compile Include="Implementations\RelativityVersionHelper.cs" />
     <Compile Include="Implementations\RestHelper.cs" />
+    <Compile Include="Implementations\RetryLogicHelper.cs" />
     <Compile Include="Implementations\SmokeTestHelper.cs" />
     <Compile Include="Interfaces\IAgentHelper.cs" />
     <Compile Include="Interfaces\IAgentServerHelper.cs" />
@@ -187,6 +188,7 @@
     <Compile Include="Implementations\ImagingHelper.cs" />
     <Compile Include="Interfaces\IRecycleBinHelper.cs" />
     <Compile Include="Interfaces\IRelativityVersionHelper.cs" />
+    <Compile Include="Interfaces\IRetryLogicHelper.cs" />
     <Compile Include="Interfaces\ISmokeTestHelper.cs" />
     <Compile Include="Interfaces\ISqlRunner.cs" />
     <Compile Include="Interfaces\IWorkspaceHelper.cs" />

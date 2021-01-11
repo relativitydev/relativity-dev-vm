@@ -11,6 +11,7 @@ namespace Helpers.Tests.Integration.Tests
 	public class ApplicationInstallHelperTests
 	{
 		private IWorkspaceHelper WorkspaceHelper { get; set; }
+		private IRetryLogicHelper RetryLogicHelper { get; set; }
 		private IApplicationInstallHelper Sut { get; set; }
 
 		[SetUp]
@@ -25,7 +26,9 @@ namespace Helpers.Tests.Integration.Tests
 			ISqlRunner sqlRunner = new SqlRunner(connectionHelper);
 			ISqlHelper sqlHelper = new SqlHelper(sqlRunner);
 			WorkspaceHelper = new WorkspaceHelper(connectionHelper, sqlHelper);
-			Sut = new ApplicationInstallHelper(connectionHelper);
+			RetryLogicHelper = new RetryLogicHelper();
+			Sut = new ApplicationInstallHelper(connectionHelper, WorkspaceHelper, RetryLogicHelper, TestConstants.RELATIVITY_INSTANCE_NAME,
+				TestConstants.RELATIVITY_ADMIN_USER_NAME, TestConstants.RELATIVITY_ADMIN_PASSWORD);
 		}
 
 		[TearDown]
@@ -38,43 +41,76 @@ namespace Helpers.Tests.Integration.Tests
 		[Test]
 		public async Task InstallApplicationFromARapFileTest()
 		{
-			// Arrange
-			string binFolderPath = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
-			if (string.IsNullOrWhiteSpace(binFolderPath))
-			{
-				throw new Exception($"{nameof(binFolderPath)} is invalid.");
-			}
-			string rapLocation = Path.Combine(binFolderPath, TestConstants.SAMPLE_APPLICATION_FILE_PATH);
 			string workspaceName = $"{nameof(InstallApplicationFromARapFileTest)}";
 			const bool enableDataGrid = false;
 
-			//Cleanup
-			await WorkspaceHelper.DeleteAllWorkspacesAsync(workspaceName);
+			try
+			{
+				// Arrange
+				string binFolderPath = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+				if (string.IsNullOrWhiteSpace(binFolderPath))
+				{
+					throw new Exception($"{nameof(binFolderPath)} is invalid.");
+				}
+				string rapLocation = Path.Combine(binFolderPath, TestConstants.SAMPLE_APPLICATION_FILE_PATH);
 
-			//Create Workspace
-			await WorkspaceHelper.CreateSingleWorkspaceAsync(Constants.Workspace.DEFAULT_WORKSPACE_TEMPLATE_NAME, workspaceName, enableDataGrid); //To Test this method, make sure the Template Workspace exists
+				//Cleanup
+				await WorkspaceHelper.DeleteAllWorkspacesAsync(workspaceName);
 
-			// Act
-			bool installationResult = Sut.InstallApplicationFromRapFile(workspaceName, rapLocation);
+				//Create Workspace
+				await WorkspaceHelper.CreateSingleWorkspaceAsync(Constants.Workspace.DEFAULT_WORKSPACE_TEMPLATE_NAME, workspaceName, enableDataGrid); //To Test this method, make sure the Template Workspace exists
 
-			// Assert
-			Assert.That(installationResult, Is.True);
+				// Act
+				bool installationResult = Sut.InstallApplicationFromRapFile(workspaceName, rapLocation);
 
-			//Cleanup
-			await WorkspaceHelper.DeleteAllWorkspacesAsync(workspaceName);
+				// Assert
+				Assert.That(installationResult, Is.True);
+
+			}
+			catch (Exception ex)
+			{
+				Assert.Fail("InstallApplicationFromARapFileTest Failed");
+			}
+			finally
+			{
+				//Cleanup
+				await WorkspaceHelper.DeleteAllWorkspacesAsync(workspaceName);
+			}
 		}
 
 		[Test]
-		public void InstallApplicationFromTheApplicationLibraryTest()
+		public async Task InstallApplicationFromTheApplicationLibraryTest()
 		{
-			// Arrange
-			string applicationGuid = "0125C8D4-8354-4D8F-B031-01E73C866C7C"; // Guid of the Smoke Test Application
+			string workspaceName = $"{nameof(InstallApplicationFromTheApplicationLibraryTest)}";
+			const bool enableDataGrid = false;
 
-			// Act
-			bool installationResult = Sut.InstallApplicationFromApplicationLibrary(TestConstants.SAMPLE_DATA_GRID_WORKSPACE_NAME, applicationGuid);
+			try
+			{
+				// Arrange
+				string applicationGuid = Constants.ApplicationGuids.SimpleFileUploadGuid;
 
-			// Assert
-			Assert.That(installationResult, Is.True);
+				//Cleanup
+				await WorkspaceHelper.DeleteAllWorkspacesAsync(workspaceName);
+
+				//Create Workspace
+				await WorkspaceHelper.CreateSingleWorkspaceAsync(Constants.Workspace.DEFAULT_WORKSPACE_TEMPLATE_NAME, workspaceName, enableDataGrid); //To Test this method, make sure the Template Workspace exists
+
+				// Act
+				bool installationResult = Sut.InstallApplicationFromApplicationLibrary(workspaceName, applicationGuid);
+
+				// Assert
+				Assert.That(installationResult, Is.True);
+
+			}
+			catch (Exception ex)
+			{
+				Assert.Fail("InstallApplicationFromTheApplicationLibraryTest Failed");
+			}
+			finally
+			{
+				//Cleanup
+				await WorkspaceHelper.DeleteAllWorkspacesAsync(workspaceName);
+			}
 		}
 	}
 }

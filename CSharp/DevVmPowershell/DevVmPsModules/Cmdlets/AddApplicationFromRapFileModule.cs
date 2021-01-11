@@ -75,7 +75,11 @@ namespace DevVmPsModules.Cmdlets
 				relativityAdminPassword: RelativityAdminPassword,
 				sqlAdminUserName: SqlAdminUserName,
 				sqlAdminPassword: SqlAdminPassword);
-			IApplicationInstallHelper applicationInstallHelper = new ApplicationInstallHelper(connectionHelper);
+			ISqlRunner sqlRunner = new SqlRunner(connectionHelper);
+			ISqlHelper sqlHelper = new SqlHelper(sqlRunner);
+			IWorkspaceHelper workspaceHelper = new WorkspaceHelper(connectionHelper, sqlHelper);
+			IRetryLogicHelper retryLogicHelper = new RetryLogicHelper();
+			IApplicationInstallHelper applicationInstallHelper = new ApplicationInstallHelper(connectionHelper, workspaceHelper, retryLogicHelper, RelativityInstanceName, RelativityAdminUserName, RelativityAdminPassword);
 
 			// Install Application
 			applicationInstallHelper.InstallApplicationFromRapFile(WorkspaceName, FilePath);

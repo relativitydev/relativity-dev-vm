@@ -16,6 +16,7 @@ namespace Helpers.Tests.Integration.Tests
 	{
 		private ISqlHelper SqlHelper { get; set; }
 		private IWorkspaceHelper WorkspaceHelper { get; set; }
+		private IRetryLogicHelper RetryLogicHelper { get; set; }
 		private IApplicationInstallHelper ApplicationInstallHelper { get; set; }
 		private IAgentHelper AgentHelper { get; set; }
 		private IImportApiHelper ImportApiHelper { get; set; }
@@ -33,7 +34,8 @@ namespace Helpers.Tests.Integration.Tests
 			ISqlRunner sqlRunner = new SqlRunner(connectionHelper);
 			SqlHelper = new SqlHelper(sqlRunner);
 			WorkspaceHelper = new WorkspaceHelper(connectionHelper, SqlHelper);
-			ApplicationInstallHelper = new ApplicationInstallHelper(connectionHelper);
+			RetryLogicHelper = new RetryLogicHelper();
+			ApplicationInstallHelper = new ApplicationInstallHelper(connectionHelper, WorkspaceHelper, RetryLogicHelper, TestConstants.RELATIVITY_INSTANCE_NAME, TestConstants.RELATIVITY_ADMIN_USER_NAME, TestConstants.RELATIVITY_ADMIN_PASSWORD);
 			AgentHelper = new AgentHelper(connectionHelper, TestConstants.RELATIVITY_INSTANCE_NAME, TestConstants.RELATIVITY_ADMIN_USER_NAME, TestConstants.RELATIVITY_ADMIN_PASSWORD);
 			ImportApiHelper = new ImportApiHelper(connectionHelper, TestConstants.RELATIVITY_INSTANCE_NAME, TestConstants.RELATIVITY_ADMIN_USER_NAME, TestConstants.RELATIVITY_ADMIN_PASSWORD);
 			Sut = new SmokeTestHelper(connectionHelper);

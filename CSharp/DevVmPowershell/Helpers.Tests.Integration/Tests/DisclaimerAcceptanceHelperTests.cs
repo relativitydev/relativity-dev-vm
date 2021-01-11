@@ -1,8 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using Helpers.Implementations;
+﻿using Helpers.Implementations;
 using Helpers.Interfaces;
 using NUnit.Framework;
+using System;
+using System.Collections.Generic;
 
 namespace Helpers.Tests.Integration.Tests
 {
@@ -13,6 +13,7 @@ namespace Helpers.Tests.Integration.Tests
 		private ISqlRunner SqlRunner { get; set; }
 		private ISqlHelper SqlHelper { get; set; }
 		private IWorkspaceHelper WorkspaceHelper { get; set; }
+		private IRetryLogicHelper RetryLogicHelper { get; set; }
 		private IApplicationInstallHelper ApplicationInstallHelper { get; set; }
 
 		[SetUp]
@@ -29,7 +30,8 @@ namespace Helpers.Tests.Integration.Tests
 			SqlRunner = new SqlRunner(connectionHelper);
 			SqlHelper = new SqlHelper(SqlRunner);
 			WorkspaceHelper = new WorkspaceHelper(connectionHelper, SqlHelper);
-			ApplicationInstallHelper = new ApplicationInstallHelper(connectionHelper);
+			RetryLogicHelper = new RetryLogicHelper();
+			ApplicationInstallHelper = new ApplicationInstallHelper(connectionHelper, WorkspaceHelper, RetryLogicHelper, TestConstants.RELATIVITY_INSTANCE_NAME, TestConstants.RELATIVITY_ADMIN_USER_NAME, TestConstants.RELATIVITY_ADMIN_PASSWORD);
 		}
 
 		[TearDown]
