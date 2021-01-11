@@ -24,11 +24,11 @@ namespace Helpers.Tests.Integration.Tests
 				relativityAdminPassword: TestConstants.RELATIVITY_ADMIN_PASSWORD,
 				sqlAdminUserName: TestConstants.SQL_USER_NAME,
 				sqlAdminPassword: TestConstants.SQL_PASSWORD);
-
-			Sut = new DisclaimerAcceptanceHelper(connectionHelper, TestConstants.RELATIVITY_INSTANCE_NAME, TestConstants.RELATIVITY_ADMIN_USER_NAME, TestConstants.RELATIVITY_ADMIN_PASSWORD);
+			IRestHelper restHelper = new RestHelper();
+			Sut = new DisclaimerAcceptanceHelper(connectionHelper, restHelper, TestConstants.RELATIVITY_INSTANCE_NAME, TestConstants.RELATIVITY_ADMIN_USER_NAME, TestConstants.RELATIVITY_ADMIN_PASSWORD);
 			SqlRunner = new SqlRunner(connectionHelper);
 			SqlHelper = new SqlHelper(SqlRunner);
-			WorkspaceHelper = new WorkspaceHelper(connectionHelper, SqlHelper);
+			WorkspaceHelper = new WorkspaceHelper(connectionHelper, restHelper, SqlHelper, TestConstants.RELATIVITY_INSTANCE_NAME, TestConstants.RELATIVITY_ADMIN_USER_NAME, TestConstants.RELATIVITY_ADMIN_PASSWORD);
 			ApplicationInstallHelper = new ApplicationInstallHelper(connectionHelper);
 		}
 
@@ -59,17 +59,17 @@ namespace Helpers.Tests.Integration.Tests
 			bool installationSuccess = ApplicationInstallHelper.InstallApplicationFromApplicationLibrary(workspaceName, Constants.DisclaimerAcceptance.ApplicationGuids.ApplicationGuid);
 			if (!installationSuccess)
 			{
-				WorkspaceHelper.DeleteSingleWorkspaceAsync(workspaceArtifactId);
+				WorkspaceHelper.DeleteSingleWorkspaceAsync(workspaceArtifactId).Wait();
 				throw new Exception("Failed to Install Disclaimer Acceptance Log Application in Workspace");
 			}
 
 			// Act / Assert
-			Assert.DoesNotThrow(() => Sut.AddDisclaimerConfiguration(workspaceName));
-			Assert.IsTrue(Sut.CheckIfDisclaimerConfigurationRDOExists(workspaceArtifactId));
+			Assert.DoesNotThrow(() => Sut.AddDisclaimerConfigurationAsync(workspaceName).Wait());
+			Assert.IsTrue(Sut.CheckIfDisclaimerConfigurationRdoExists(workspaceArtifactId));
 
 
 			//Cleanup
-			WorkspaceHelper.DeleteSingleWorkspaceAsync(workspaceArtifactId);
+			WorkspaceHelper.DeleteSingleWorkspaceAsync(workspaceArtifactId).Wait();
 		}
 
 		[Test]
@@ -93,18 +93,18 @@ namespace Helpers.Tests.Integration.Tests
 			bool installationSuccess = ApplicationInstallHelper.InstallApplicationFromApplicationLibrary(workspaceName, Constants.DisclaimerAcceptance.ApplicationGuids.ApplicationGuid);
 			if (!installationSuccess)
 			{
-				WorkspaceHelper.DeleteSingleWorkspaceAsync(workspaceArtifactId);
+				WorkspaceHelper.DeleteSingleWorkspaceAsync(workspaceArtifactId).Wait();
 				throw new Exception("Failed to Install Disclaimer Acceptance Log Application in Workspace");
 			}
 
-			Sut.AddDisclaimerConfiguration(workspaceName);
+			Sut.AddDisclaimerConfigurationAsync(workspaceName).Wait();
 
 			// Act / Assert
-			Assert.DoesNotThrow(() => Sut.AddDisclaimer(workspaceName));
-			Assert.IsTrue(Sut.CheckIfDisclaimerRDOExists(workspaceArtifactId));
+			Assert.DoesNotThrow(() => Sut.AddDisclaimerAsync(workspaceName).Wait());
+			Assert.IsTrue(Sut.CheckIfDisclaimerRdoExists(workspaceArtifactId));
 
 			//Cleanup
-			WorkspaceHelper.DeleteSingleWorkspaceAsync(workspaceArtifactId);
+			WorkspaceHelper.DeleteSingleWorkspaceAsync(workspaceArtifactId).Wait();
 		}
 	}
 }
