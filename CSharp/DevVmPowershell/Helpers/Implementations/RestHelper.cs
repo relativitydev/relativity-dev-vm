@@ -5,10 +5,11 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
+using Helpers.Interfaces;
 
 namespace Helpers.Implementations
 {
-	public class RestHelper
+	public class RestHelper : IRestHelper
 	{
 		public HttpClient GetHttpClient(string instanceAddress, string adminUsername, string adminPassword)
 		{
@@ -35,7 +36,7 @@ namespace Helpers.Implementations
 			return response;
 		}
 
-		public static async Task<HttpResponseMessage> MakePutAsync(HttpClient httpClient, string url, string request)
+		public async Task<HttpResponseMessage> MakePutAsync(HttpClient httpClient, string url, string request)
 		{
 			StringContent content = new StringContent(request);
 			content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
