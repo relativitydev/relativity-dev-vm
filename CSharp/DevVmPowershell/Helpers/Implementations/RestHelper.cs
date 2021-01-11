@@ -10,7 +10,7 @@ namespace Helpers.Implementations
 {
 	public class RestHelper
 	{
-		public static HttpClient GetHttpClient(string instanceAddress, string adminUsername, string adminPassword)
+		public HttpClient GetHttpClient(string instanceAddress, string adminUsername, string adminPassword)
 		{
 			//Set up the client
 			HttpClient httpClient = new HttpClient
@@ -27,7 +27,7 @@ namespace Helpers.Implementations
 			return httpClient;
 		}
 
-		public static async Task<HttpResponseMessage> MakePostAsync(HttpClient httpClient, string url, string request)
+		public async Task<HttpResponseMessage> MakePostAsync(HttpClient httpClient, string url, string request)
 		{
 			StringContent content = new StringContent(request);
 			content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
@@ -43,7 +43,7 @@ namespace Helpers.Implementations
 			return response;
 		}
 
-		public static async Task<HttpResponseMessage> MakeDeleteAsync(HttpClient httpClient, string url)
+		public async Task<HttpResponseMessage> MakeDeleteAsync(HttpClient httpClient, string url)
 		{
 			HttpResponseMessage response = await httpClient.DeleteAsync(url);
 			return response;

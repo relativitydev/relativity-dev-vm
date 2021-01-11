@@ -22,9 +22,10 @@ namespace Helpers.Tests.Integration.Tests
 				relativityAdminPassword: TestConstants.RELATIVITY_ADMIN_PASSWORD,
 				sqlAdminUserName: TestConstants.SQL_USER_NAME,
 				sqlAdminPassword: TestConstants.SQL_PASSWORD);
+			RestHelper restHelper = new RestHelper();
 			ISqlRunner sqlRunner = new SqlRunner(connectionHelper);
 			ISqlHelper sqlHelper = new SqlHelper(sqlRunner);
-			WorkspaceHelper = new WorkspaceHelper(connectionHelper, sqlHelper, TestConstants.RELATIVITY_INSTANCE_NAME, TestConstants.RELATIVITY_ADMIN_USER_NAME, TestConstants.RELATIVITY_ADMIN_PASSWORD);
+			WorkspaceHelper = new WorkspaceHelper(connectionHelper, restHelper, sqlHelper, TestConstants.RELATIVITY_INSTANCE_NAME, TestConstants.RELATIVITY_ADMIN_USER_NAME, TestConstants.RELATIVITY_ADMIN_PASSWORD);
 			Sut = new ImagingHelper(connectionHelper);
 			ImportApiHelper = new ImportApiHelper(connectionHelper, TestConstants.RELATIVITY_INSTANCE_NAME, TestConstants.RELATIVITY_ADMIN_USER_NAME, TestConstants.RELATIVITY_ADMIN_PASSWORD);
 		}
@@ -49,7 +50,7 @@ namespace Helpers.Tests.Integration.Tests
 			int numberImported = ImportApiHelper.AddDocumentsToWorkspace(workspaceArtifactId, "document", 100, "").Result;
 			if (numberImported == 0)
 			{
-				WorkspaceHelper.DeleteSingleWorkspace(workspaceArtifactId);
+				await WorkspaceHelper.DeleteSingleWorkspaceAsync(workspaceArtifactId);
 				throw new Exception("Failed to Import Documents to the Workspace");
 			}
 
@@ -59,7 +60,7 @@ namespace Helpers.Tests.Integration.Tests
 			Assert.IsTrue(Sut.CheckThatAllDocumentsInWorkspaceAreImaged(workspaceArtifactId).Result);
 
 			//Cleanup
-			WorkspaceHelper.DeleteSingleWorkspace(workspaceArtifactId);
+			await WorkspaceHelper.DeleteSingleWorkspaceAsync(workspaceArtifactId);
 		}
 
 		private void CleanupWorkspaceIfItExists(string workspaceName)

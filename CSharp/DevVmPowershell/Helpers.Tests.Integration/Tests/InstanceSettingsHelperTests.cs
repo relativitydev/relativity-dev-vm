@@ -20,8 +20,8 @@ namespace Helpers.Tests.Integration.Tests
 				relativityAdminPassword: TestConstants.RELATIVITY_ADMIN_PASSWORD,
 				sqlAdminUserName: TestConstants.SQL_USER_NAME,
 				sqlAdminPassword: TestConstants.SQL_PASSWORD);
-
-			Sut = new InstanceSettingsHelper(connectionHelper, TestConstants.RELATIVITY_INSTANCE_NAME, TestConstants.RELATIVITY_ADMIN_USER_NAME, TestConstants.RELATIVITY_ADMIN_PASSWORD);
+			RestHelper restHelper = new RestHelper();
+			Sut = new InstanceSettingsHelper(connectionHelper, restHelper, TestConstants.RELATIVITY_INSTANCE_NAME, TestConstants.RELATIVITY_ADMIN_USER_NAME, TestConstants.RELATIVITY_ADMIN_PASSWORD);
 		}
 
 		[TearDown]
@@ -45,11 +45,11 @@ namespace Helpers.Tests.Integration.Tests
 				var existingInstanceSettingId = Sut.GetInstanceSettingArtifactIdByName(name, section);
 				if (existingInstanceSettingId != 0)
 				{
-					Sut.DeleteInstanceSetting(existingInstanceSettingId);
+					Sut.DeleteInstanceSettingAsync(existingInstanceSettingId).Wait();
 				}
 
 				// Act
-				_createdInstanceSettingId = Sut.CreateInstanceSetting(section, name, description, value);
+				_createdInstanceSettingId = Sut.CreateInstanceSettingAsync(section, name, description, value).Result;
 
 				// Assert
 				Assert.True(_createdInstanceSettingId != 0);
@@ -58,7 +58,7 @@ namespace Helpers.Tests.Integration.Tests
 			{
 				if (_createdInstanceSettingId != 0)
 				{
-					Sut.DeleteInstanceSetting(_createdInstanceSettingId);
+					Sut.DeleteInstanceSettingAsync(_createdInstanceSettingId).Wait();
 				}
 			}
 		}
@@ -76,13 +76,13 @@ namespace Helpers.Tests.Integration.Tests
 			var existingInstanceSettingId = Sut.GetInstanceSettingArtifactIdByName(name, section);
 			if (existingInstanceSettingId == 0)
 			{
-				Sut.CreateInstanceSetting(name, section, description, initialValue);
+				Sut.CreateInstanceSettingAsync(name, section, description, initialValue).Wait();
 			}
 
 			try
 			{
 				// Act
-				bool success = Sut.UpdateInstanceSettingValue(name, section, value);
+				bool success = Sut.UpdateInstanceSettingValueAsync(name, section, value).Result;
 				string instanceSettingValue = Sut.GetInstanceSettingValue(name, section);
 
 				// Assert
@@ -90,7 +90,7 @@ namespace Helpers.Tests.Integration.Tests
 			}
 			finally
 			{
-				Sut.UpdateInstanceSettingValue(name, section, "");
+				Sut.UpdateInstanceSettingValueAsync(name, section, "").Wait();
 			}
 		}
 
@@ -106,7 +106,7 @@ namespace Helpers.Tests.Integration.Tests
 			var existingInstanceSettingId = Sut.GetInstanceSettingArtifactIdByName(name, section);
 			if (existingInstanceSettingId == 0)
 			{
-				Sut.CreateInstanceSetting(name, section, description, value);
+				Sut.CreateInstanceSettingAsync(name, section, description, value).Wait();
 			}
 
 

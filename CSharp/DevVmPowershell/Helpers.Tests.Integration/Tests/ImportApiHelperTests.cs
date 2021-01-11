@@ -21,9 +21,9 @@ namespace Helpers.Tests.Integration.Tests
 				relativityAdminPassword: TestConstants.RELATIVITY_ADMIN_PASSWORD,
 				sqlAdminUserName: TestConstants.SQL_USER_NAME,
 				sqlAdminPassword: TestConstants.SQL_PASSWORD);
-
+			RestHelper restHelper = new RestHelper();
 			Sut = new ImportApiHelper(connectionHelper, TestConstants.RELATIVITY_INSTANCE_NAME, TestConstants.RELATIVITY_ADMIN_USER_NAME, TestConstants.RELATIVITY_ADMIN_PASSWORD);
-			WorkspaceHelper = new WorkspaceHelper(connectionHelper, null, TestConstants.RELATIVITY_INSTANCE_NAME, TestConstants.RELATIVITY_ADMIN_USER_NAME, TestConstants.RELATIVITY_ADMIN_PASSWORD);
+			WorkspaceHelper = new WorkspaceHelper(connectionHelper, restHelper, null, TestConstants.RELATIVITY_INSTANCE_NAME, TestConstants.RELATIVITY_ADMIN_USER_NAME, TestConstants.RELATIVITY_ADMIN_PASSWORD);
 
 		}
 
@@ -52,7 +52,7 @@ namespace Helpers.Tests.Integration.Tests
 			Assert.That(numberOfFilesImported, Is.EqualTo(numberOfFiles));
 
 			//Cleanup
-			WorkspaceHelper.DeleteSingleWorkspace(workspaceArtifactId);
+			WorkspaceHelper.DeleteSingleWorkspaceAsync(workspaceArtifactId).Wait();
 		}
 
 		private void CleanupWorkspaceIfItExists(string workspaceName)
