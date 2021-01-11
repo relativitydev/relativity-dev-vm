@@ -67,7 +67,7 @@ namespace DevVmPsModules.Cmdlets
 				relativityAdminPassword: RelativityAdminPassword,
 				sqlAdminUserName: SqlAdminUserName,
 				sqlAdminPassword: SqlAdminPassword);
-			RestHelper restHelper = new RestHelper();
+			IRestHelper restHelper = new RestHelper();
 			IDisclaimerAcceptanceHelper disclaimerAcceptanceHelper = new DisclaimerAcceptanceHelper(connectionHelper, restHelper, RelativityInstanceName, RelativityAdminUserName, RelativityAdminPassword);
 
 			// Add Disclaimer Configuration and Disclaimer

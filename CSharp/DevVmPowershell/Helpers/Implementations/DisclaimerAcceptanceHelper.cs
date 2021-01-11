@@ -22,9 +22,9 @@ namespace Helpers.Implementations
 		private string InstanceAddress { get; set; }
 		private string AdminUsername { get; set; }
 		private string AdminPassword { get; set; }
-		private RestHelper RestHelper { get; set; }
+		private IRestHelper RestHelper { get; set; }
 
-		public DisclaimerAcceptanceHelper(IConnectionHelper connectionHelper, RestHelper restHelper, string instanceAddress, string adminUsername, string adminPassword)
+		public DisclaimerAcceptanceHelper(IConnectionHelper connectionHelper, IRestHelper restHelper, string instanceAddress, string adminUsername, string adminPassword)
 		{
 			ServiceFactory = connectionHelper.GetServiceFactory();
 			RsapiClient = ServiceFactory.CreateProxy<IRSAPIClient>();

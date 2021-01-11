@@ -22,7 +22,7 @@ namespace Helpers.Tests.Integration.Tests
 				relativityAdminPassword: TestConstants.RELATIVITY_ADMIN_PASSWORD,
 				sqlAdminUserName: TestConstants.SQL_USER_NAME,
 				sqlAdminPassword: TestConstants.SQL_PASSWORD);
-			RestHelper restHelper = new RestHelper();
+			IRestHelper restHelper = new RestHelper();
 			ISqlRunner sqlRunner = new SqlRunner(connectionHelper);
 			ISqlHelper sqlHelper = new SqlHelper(sqlRunner);
 			WorkspaceHelper = new WorkspaceHelper(connectionHelper, restHelper, sqlHelper, TestConstants.RELATIVITY_INSTANCE_NAME, TestConstants.RELATIVITY_ADMIN_USER_NAME, TestConstants.RELATIVITY_ADMIN_PASSWORD);
