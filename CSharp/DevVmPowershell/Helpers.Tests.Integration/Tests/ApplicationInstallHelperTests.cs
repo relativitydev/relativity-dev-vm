@@ -25,7 +25,7 @@ namespace Helpers.Tests.Integration.Tests
 				sqlAdminPassword: TestConstants.SQL_PASSWORD);
 			ISqlRunner sqlRunner = new SqlRunner(connectionHelper);
 			ISqlHelper sqlHelper = new SqlHelper(sqlRunner);
-			WorkspaceHelper = new WorkspaceHelper(connectionHelper, sqlHelper);
+			WorkspaceHelper = new WorkspaceHelper(connectionHelper, sqlHelper, TestConstants.RELATIVITY_INSTANCE_NAME, TestConstants.RELATIVITY_ADMIN_USER_NAME, TestConstants.RELATIVITY_ADMIN_PASSWORD);
 			RetryLogicHelper = new RetryLogicHelper();
 			Sut = new ApplicationInstallHelper(connectionHelper, WorkspaceHelper, RetryLogicHelper, TestConstants.RELATIVITY_INSTANCE_NAME,
 				TestConstants.RELATIVITY_ADMIN_USER_NAME, TestConstants.RELATIVITY_ADMIN_PASSWORD);
@@ -61,7 +61,7 @@ namespace Helpers.Tests.Integration.Tests
 				await WorkspaceHelper.CreateSingleWorkspaceAsync(Constants.Workspace.DEFAULT_WORKSPACE_TEMPLATE_NAME, workspaceName, enableDataGrid); //To Test this method, make sure the Template Workspace exists
 
 				// Act
-				bool installationResult = Sut.InstallApplicationFromRapFile(workspaceName, rapLocation);
+				bool installationResult = await Sut.InstallApplicationFromRapFileAsync(workspaceName, rapLocation);
 
 				// Assert
 				Assert.That(installationResult, Is.True);
@@ -96,7 +96,7 @@ namespace Helpers.Tests.Integration.Tests
 				await WorkspaceHelper.CreateSingleWorkspaceAsync(Constants.Workspace.DEFAULT_WORKSPACE_TEMPLATE_NAME, workspaceName, enableDataGrid); //To Test this method, make sure the Template Workspace exists
 
 				// Act
-				bool installationResult = Sut.InstallApplicationFromApplicationLibrary(workspaceName, applicationGuid);
+				bool installationResult = await Sut.InstallApplicationFromApplicationLibraryAsync(workspaceName, applicationGuid);
 
 				// Assert
 				Assert.That(installationResult, Is.True);

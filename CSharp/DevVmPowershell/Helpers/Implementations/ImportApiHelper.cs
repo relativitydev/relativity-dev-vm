@@ -171,7 +171,7 @@ namespace Helpers.Implementations
 			}
 
 			string request = JsonConvert.SerializeObject(objectManagerQueryRequestModel);
-			HttpResponseMessage response = RestHelper.MakePost(httpClient, url, request);
+			HttpResponseMessage response = await RestHelper.MakePostAsync(httpClient, url, request);
 			if (!response.IsSuccessStatusCode)
 			{
 				throw new Exception("Failed to Query for number of Documents");

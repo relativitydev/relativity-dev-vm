@@ -3,7 +3,7 @@ using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
-using Helpers.RequestModels;
+using System.Threading.Tasks;
 
 namespace Helpers.Implementations
 {
@@ -26,37 +26,37 @@ namespace Helpers.Implementations
 			return httpClient;
 		}
 
-		public static HttpResponseMessage MakeGet(HttpClient httpClient, string url)
+		public static async Task<HttpResponseMessage> MakeGetAsync(HttpClient httpClient, string url)
 		{
-			HttpResponseMessage response = httpClient.GetAsync(url).Result;
+			HttpResponseMessage response = await httpClient.GetAsync(url);
 			return response;
 		}
 
-		public static HttpResponseMessage MakePost(HttpClient httpClient, string url, string request)
+		public static async Task<HttpResponseMessage> MakePostAsync(HttpClient httpClient, string url, string request)
 		{
 			StringContent content = new StringContent(request);
 			content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-			HttpResponseMessage response = httpClient.PostAsync(url, content).Result;
+			HttpResponseMessage response = await httpClient.PostAsync(url, content);
 			return response;
 		}
 
-		public static HttpResponseMessage MakePut(HttpClient httpClient, string url, string request)
+		public static async Task<HttpResponseMessage> MakePutAsync(HttpClient httpClient, string url, string request)
 		{
 			StringContent content = new StringContent(request);
 			content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-			HttpResponseMessage response = httpClient.PutAsync(url, content).Result;
+			HttpResponseMessage response = await httpClient.PutAsync(url, content);
 			return response;
 		}
 
-		public static HttpResponseMessage MakePut(HttpClient httpClient, string url, HttpContent content)
+		public static async Task<HttpResponseMessage> MakePutAsync(HttpClient httpClient, string url, HttpContent content)
 		{
-			HttpResponseMessage response = httpClient.PutAsync(url, content).Result;
+			HttpResponseMessage response = await httpClient.PutAsync(url, content);
 			return response;
 		}
 
-		public static HttpResponseMessage MakeDelete(HttpClient httpClient, string url)
+		public static async Task<HttpResponseMessage> MakeDeleteAsync(HttpClient httpClient, string url)
 		{
-			HttpResponseMessage response = httpClient.DeleteAsync(url).Result;
+			HttpResponseMessage response = await httpClient.DeleteAsync(url);
 			return response;
 		}
 

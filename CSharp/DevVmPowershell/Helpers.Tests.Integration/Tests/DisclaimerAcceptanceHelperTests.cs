@@ -3,6 +3,7 @@ using Helpers.Interfaces;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Helpers.Tests.Integration.Tests
 {
@@ -29,7 +30,7 @@ namespace Helpers.Tests.Integration.Tests
 			Sut = new DisclaimerAcceptanceHelper(connectionHelper, TestConstants.RELATIVITY_INSTANCE_NAME, TestConstants.RELATIVITY_ADMIN_USER_NAME, TestConstants.RELATIVITY_ADMIN_PASSWORD);
 			SqlRunner = new SqlRunner(connectionHelper);
 			SqlHelper = new SqlHelper(SqlRunner);
-			WorkspaceHelper = new WorkspaceHelper(connectionHelper, SqlHelper);
+			WorkspaceHelper = new WorkspaceHelper(connectionHelper, SqlHelper, TestConstants.RELATIVITY_INSTANCE_NAME, TestConstants.RELATIVITY_ADMIN_USER_NAME, TestConstants.RELATIVITY_ADMIN_PASSWORD);
 			RetryLogicHelper = new RetryLogicHelper();
 			ApplicationInstallHelper = new ApplicationInstallHelper(connectionHelper, WorkspaceHelper, RetryLogicHelper, TestConstants.RELATIVITY_INSTANCE_NAME, TestConstants.RELATIVITY_ADMIN_USER_NAME, TestConstants.RELATIVITY_ADMIN_PASSWORD);
 		}
@@ -41,7 +42,7 @@ namespace Helpers.Tests.Integration.Tests
 		}
 
 		[Test]
-		public void AddDisclaimerConfigurationTest()
+		public async Task AddDisclaimerConfigurationTest()
 		{
 			// Arrange
 			string workspaceName = "Disclaimer Test Workspace";
@@ -52,16 +53,16 @@ namespace Helpers.Tests.Integration.Tests
 			{
 				foreach (int workspaceId in workspacesWhereApplicationIsInstalled)
 				{
-					WorkspaceHelper.DeleteSingleWorkspaceAsync(workspaceId).Wait();
+					WorkspaceHelper.DeleteSingleWorkspace(workspaceId);
 				}
 			}
 			//Create New Workspace
 			int workspaceArtifactId = WorkspaceHelper.CreateSingleWorkspaceAsync(Constants.Workspace.DEFAULT_WORKSPACE_TEMPLATE_NAME, workspaceName, false).Result;
 			//Install Disclaimer Acceptance Log in Workspace
-			bool installationSuccess = ApplicationInstallHelper.InstallApplicationFromApplicationLibrary(workspaceName, Constants.DisclaimerAcceptance.ApplicationGuids.ApplicationGuid);
+			bool installationSuccess = await ApplicationInstallHelper.InstallApplicationFromApplicationLibraryAsync(workspaceName, Constants.DisclaimerAcceptance.ApplicationGuids.ApplicationGuid);
 			if (!installationSuccess)
 			{
-				WorkspaceHelper.DeleteSingleWorkspaceAsync(workspaceArtifactId);
+				WorkspaceHelper.DeleteSingleWorkspace(workspaceArtifactId);
 				throw new Exception("Failed to Install Disclaimer Acceptance Log Application in Workspace");
 			}
 
@@ -71,11 +72,11 @@ namespace Helpers.Tests.Integration.Tests
 
 
 			//Cleanup
-			WorkspaceHelper.DeleteSingleWorkspaceAsync(workspaceArtifactId);
+			WorkspaceHelper.DeleteSingleWorkspace(workspaceArtifactId);
 		}
 
 		[Test]
-		public void AddDisclaimerTest()
+		public async Task AddDisclaimerTest()
 		{
 			// Arrange
 			string workspaceName = "Disclaimer Test Workspace";
@@ -86,16 +87,16 @@ namespace Helpers.Tests.Integration.Tests
 			{
 				foreach (int workspaceId in workspacesWhereApplicationIsInstalled)
 				{
-					WorkspaceHelper.DeleteSingleWorkspaceAsync(workspaceId).Wait();
+					WorkspaceHelper.DeleteSingleWorkspace(workspaceId);
 				}
 			}
 			//Create New Workspace
 			int workspaceArtifactId = WorkspaceHelper.CreateSingleWorkspaceAsync(Constants.Workspace.DEFAULT_WORKSPACE_TEMPLATE_NAME, workspaceName, false).Result;
 			//Install Disclaimer Acceptance Log in Workspace
-			bool installationSuccess = ApplicationInstallHelper.InstallApplicationFromApplicationLibrary(workspaceName, Constants.DisclaimerAcceptance.ApplicationGuids.ApplicationGuid);
+			bool installationSuccess = await ApplicationInstallHelper.InstallApplicationFromApplicationLibraryAsync(workspaceName, Constants.DisclaimerAcceptance.ApplicationGuids.ApplicationGuid);
 			if (!installationSuccess)
 			{
-				WorkspaceHelper.DeleteSingleWorkspaceAsync(workspaceArtifactId);
+				WorkspaceHelper.DeleteSingleWorkspace(workspaceArtifactId);
 				throw new Exception("Failed to Install Disclaimer Acceptance Log Application in Workspace");
 			}
 
@@ -106,7 +107,7 @@ namespace Helpers.Tests.Integration.Tests
 			Assert.IsTrue(Sut.CheckIfDisclaimerRDOExists(workspaceArtifactId));
 
 			//Cleanup
-			WorkspaceHelper.DeleteSingleWorkspaceAsync(workspaceArtifactId);
+			WorkspaceHelper.DeleteSingleWorkspace(workspaceArtifactId);
 		}
 	}
 }

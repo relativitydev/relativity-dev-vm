@@ -93,7 +93,7 @@ namespace DevVmPsModules.Cmdlets
 				sqlAdminUserName: SqlAdminUserName,
 				sqlAdminPassword: SqlAdminPassword);
 			IImportApiHelper importApiHelper = new ImportApiHelper(connectionHelper, RelativityInstanceName, RelativityAdminUserName, RelativityAdminPassword);
-			IWorkspaceHelper workspaceHelper = new WorkspaceHelper(connectionHelper, null);
+			IWorkspaceHelper workspaceHelper = new WorkspaceHelper(connectionHelper, null, RelativityInstanceName, RelativityAdminUserName, RelativityAdminPassword);
 
 			// Get workspaceId
 			int workspaceId = workspaceHelper.GetFirstWorkspaceArtifactIdQueryAsync(WorkspaceName).Result;

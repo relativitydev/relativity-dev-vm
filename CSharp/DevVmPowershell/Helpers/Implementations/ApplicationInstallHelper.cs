@@ -34,12 +34,12 @@ namespace Helpers.Implementations
 		}
 
 
-		public bool InstallApplicationFromRapFile(string workspaceName, string filePath)
+		public async Task<bool> InstallApplicationFromRapFileAsync(string workspaceName, string filePath)
 		{
 			HttpClient httpClient = RestHelper.GetHttpClient(InstanceAddress, AdminUsername, AdminPassword);
 
 			// Need to install to library before we install to a workspace
-			HttpResponseMessage updateResponseMessage = UpdateLibraryApplication(httpClient, filePath);
+			HttpResponseMessage updateResponseMessage = await UpdateLibraryApplication(httpClient, filePath);
 
 			if (updateResponseMessage.IsSuccessStatusCode)
 			{
@@ -62,7 +62,7 @@ namespace Helpers.Implementations
 					() => GetApplicationLibraryId(applicationGuid).Result);
 
 			// Now install the application to the workspace
-			bool wasInstalledOnWorkspace = InstallApplicationOnWorkspace(httpClient, workspaceName, applicationId);
+			bool wasInstalledOnWorkspace = await InstallApplicationOnWorkspace(httpClient, workspaceName, applicationId);
 			if (wasInstalledOnWorkspace)
 			{
 				Console.WriteLine("Successfully installed application into workspace.");
@@ -75,14 +75,14 @@ namespace Helpers.Implementations
 			}
 		}
 
-		public bool InstallApplicationFromApplicationLibrary(string workspaceName, string applicationGuid)
+		public async Task<bool> InstallApplicationFromApplicationLibraryAsync(string workspaceName, string applicationGuid)
 		{
 			HttpClient httpClient = RestHelper.GetHttpClient(InstanceAddress, AdminUsername, AdminPassword);
 
 			int applicationId = GetApplicationLibraryId(applicationGuid).Result;
 
 			// Now install the application to the workspace
-			bool wasInstalledOnWorkspace = InstallApplicationOnWorkspace(httpClient, workspaceName, applicationId);
+			bool wasInstalledOnWorkspace = await InstallApplicationOnWorkspace(httpClient, workspaceName, applicationId);
 			if (wasInstalledOnWorkspace)
 			{
 				Console.WriteLine("Successfully installed application into workspace.");
@@ -98,7 +98,7 @@ namespace Helpers.Implementations
 		private async Task<List<LibraryApplicationResponse>> ReadAllLibraryApplicationAsync()
 		{
 			HttpClient httpClient = RestHelper.GetHttpClient(InstanceAddress, AdminUsername, AdminPassword);
-			HttpResponseMessage httpResponse = RestHelper.MakeGet(httpClient, Constants.Connection.RestUrlEndpoints.ApplicationInstall.readAllLibraryApplicationUrl);
+			HttpResponseMessage httpResponse = await RestHelper.MakeGetAsync(httpClient, Constants.Connection.RestUrlEndpoints.ApplicationInstall.readAllLibraryApplicationUrl);
 
 			string content = await httpResponse.Content.ReadAsStringAsync();
 			List<LibraryApplicationResponse> response = JsonConvert.DeserializeObject<List<LibraryApplicationResponse>>(content);
@@ -124,7 +124,7 @@ namespace Helpers.Implementations
 			return allApps.Find(x => x.Guids.Contains(new Guid(applicationGuid))).ArtifactID;
 		}
 
-		private HttpResponseMessage UpdateLibraryApplication(HttpClient httpClient, string filePath)
+		private async Task<HttpResponseMessage> UpdateLibraryApplication(HttpClient httpClient, string filePath)
 		{
 			string fullFileName = Path.GetFileName(filePath);
 			FileStream fileStream = File.OpenRead(filePath);
@@ -142,11 +142,11 @@ namespace Helpers.Implementations
 			form.Add(new StringContent(updateJsonRequest, Encoding.Unicode, "application/json"), "request");
 
 
-			HttpResponseMessage updateResponse = RestHelper.MakePut(httpClient, Constants.Connection.RestUrlEndpoints.ApplicationInstall.updateLibraryApplicationUrl, form);
+			HttpResponseMessage updateResponse = await RestHelper.MakePutAsync(httpClient, Constants.Connection.RestUrlEndpoints.ApplicationInstall.updateLibraryApplicationUrl, form);
 			return updateResponse;
 		}
 
-		private bool InstallApplicationOnWorkspace(HttpClient httpClient, string workspaceName, int applicationId)
+		private async Task<bool> InstallApplicationOnWorkspace(HttpClient httpClient, string workspaceName, int applicationId)
 		{
 			int workspaceId = WorkspaceHelper.GetFirstWorkspaceArtifactIdQueryAsync(workspaceName).Result;
 			var tempInstallJsonRequest = new
@@ -156,7 +156,7 @@ namespace Helpers.Implementations
 			string installJsonRequest = JsonConvert.SerializeObject(tempInstallJsonRequest);
 
 			string installEndPoint = string.Format(Constants.Connection.RestUrlEndpoints.ApplicationInstall.installWorkspaceApplicationUrl, applicationId);
-			HttpResponseMessage installResponse = RestHelper.MakePost(httpClient, installEndPoint, installJsonRequest);
+			HttpResponseMessage installResponse = await RestHelper.MakePostAsync(httpClient, installEndPoint, installJsonRequest);
 			return installResponse.IsSuccessStatusCode;
 		}
 	}

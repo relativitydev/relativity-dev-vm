@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using Helpers.Implementations;
+﻿using Helpers.Implementations;
 using Helpers.Interfaces;
 using NUnit.Framework;
-using Relativity.Services.Agent;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Helpers.Tests.Integration.Tests
 {
@@ -33,7 +28,7 @@ namespace Helpers.Tests.Integration.Tests
 				sqlAdminPassword: TestConstants.SQL_PASSWORD);
 			ISqlRunner sqlRunner = new SqlRunner(connectionHelper);
 			SqlHelper = new SqlHelper(sqlRunner);
-			WorkspaceHelper = new WorkspaceHelper(connectionHelper, SqlHelper);
+			WorkspaceHelper = new WorkspaceHelper(connectionHelper, SqlHelper, TestConstants.RELATIVITY_INSTANCE_NAME, TestConstants.RELATIVITY_ADMIN_USER_NAME, TestConstants.RELATIVITY_ADMIN_PASSWORD);
 			RetryLogicHelper = new RetryLogicHelper();
 			ApplicationInstallHelper = new ApplicationInstallHelper(connectionHelper, WorkspaceHelper, RetryLogicHelper, TestConstants.RELATIVITY_INSTANCE_NAME, TestConstants.RELATIVITY_ADMIN_USER_NAME, TestConstants.RELATIVITY_ADMIN_PASSWORD);
 			AgentHelper = new AgentHelper(connectionHelper, TestConstants.RELATIVITY_INSTANCE_NAME, TestConstants.RELATIVITY_ADMIN_USER_NAME, TestConstants.RELATIVITY_ADMIN_PASSWORD);
@@ -52,7 +47,7 @@ namespace Helpers.Tests.Integration.Tests
 		}
 
 		[Test]
-		public void WaitForSmokeTestToCompleteAsyncTest()
+		public async Task WaitForSmokeTestToCompleteAsyncTest()
 		{
 			int workspaceArtifactId = 0;
 			const string workspaceName = "Smoke Test Helper Workspace";
@@ -67,7 +62,7 @@ namespace Helpers.Tests.Integration.Tests
 				{
 					foreach (int workspaceId in workspacesWhereApplicationIsInstalled)
 					{
-						WorkspaceHelper.DeleteSingleWorkspaceAsync(workspaceId).Wait();
+						WorkspaceHelper.DeleteSingleWorkspace(workspaceId);
 					}
 				}
 
@@ -79,9 +74,7 @@ namespace Helpers.Tests.Integration.Tests
 					.CreateSingleWorkspaceAsync(Constants.Workspace.DEFAULT_WORKSPACE_TEMPLATE_NAME, workspaceName, true).Result;
 
 				//Install Smoke Test Application in Workspace
-				bool installationResult =
-					ApplicationInstallHelper.InstallApplicationFromApplicationLibrary(workspaceName,
-						Constants.SmokeTest.Guids.ApplicationGuid);
+				bool installationResult = await ApplicationInstallHelper.InstallApplicationFromApplicationLibraryAsync(workspaceName, Constants.SmokeTest.Guids.ApplicationGuid);
 				if (!installationResult)
 				{
 					throw new Exception("Smoke Test Application failed to Install");
@@ -119,7 +112,7 @@ namespace Helpers.Tests.Integration.Tests
 				AgentHelper.DeleteAgentsInRelativityApplicationAsync(applicationName).Wait();
 
 				//Delete Workspace
-				WorkspaceHelper.DeleteSingleWorkspaceAsync(workspaceArtifactId).Wait();
+				WorkspaceHelper.DeleteSingleWorkspace(workspaceArtifactId);
 			}
 		}
 	}
