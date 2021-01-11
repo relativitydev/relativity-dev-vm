@@ -41,13 +41,13 @@ namespace Helpers
 
 				public class ApplicationInstall
 				{
-					public static int retryCount = 6;
-					public static int retryDelay = 10;
-					public static string uploadFileKeyName = "rapStream";
+					public const int retryCount = 6;
+					public const int retryDelay = 10;
+					public const string uploadFileKeyName = "rapStream";
 
-					public static string updateLibraryApplicationUrl = "Relativity.REST/api/relativity-environment/v1/workspace/-1/libraryapplications";
-					public static string readAllLibraryApplicationUrl = "Relativity.REST/api/relativity-environment/v1/workspace/-1/libraryapplications";
-					public static string installWorkspaceApplicationUrl = "Relativity.REST/api/Relativity.LibraryApplications/workspace/-1/libraryapplications/{0}/install";
+					public const string updateLibraryApplicationUrl = "Relativity.REST/api/relativity-environment/v1/workspace/-1/libraryapplications";
+					public const string readAllLibraryApplicationUrl = "Relativity.REST/api/relativity-environment/v1/workspace/-1/libraryapplications";
+					public const string installWorkspaceApplicationUrl = "Relativity.REST/api/Relativity.LibraryApplications/workspace/-1/libraryapplications/{0}/install";
 				}
 			}
 		}
