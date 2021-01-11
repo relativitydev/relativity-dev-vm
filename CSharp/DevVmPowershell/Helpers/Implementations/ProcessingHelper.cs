@@ -233,7 +233,7 @@ namespace Helpers.Implementations
 
 					// Check if Processing Server Location already added to Default Resource Pool
 					string choiceRequest = JsonConvert.SerializeObject(objectManagerQueryRequestModel);
-					HttpResponseMessage response = RestHelper.MakePost(httpClient, url, choiceRequest);
+					HttpResponseMessage response = await RestHelper.MakePostAsync(httpClient, url, choiceRequest);
 					if (!response.IsSuccessStatusCode)
 					{
 						throw new System.Exception("Failed to Query for Processing Source Location.");

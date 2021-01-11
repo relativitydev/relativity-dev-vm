@@ -75,7 +75,7 @@ namespace Helpers.Implementations
 			{
 				string url = $"{Workspace_Rest_Url}/{workspaceArtifactId}";
 				HttpClient httpClient = RestHelper.GetHttpClient(InstanceAddress, AdminUsername, AdminPassword);
-				HttpResponseMessage response = RestHelper.MakeDelete(httpClient, url);
+				HttpResponseMessage response = RestHelper.MakeDeleteAsync(httpClient, url).Result;
 				if (!response.IsSuccessStatusCode)
 				{
 					throw new Exception("Failed to Delete Workspace");
@@ -143,9 +143,8 @@ namespace Helpers.Implementations
 				}
 			};
 
-			StringContent createPayload =
-				new StringContent(JsonConvert.SerializeObject(createPayloadObject), Encoding.UTF8, "application/json");
-			HttpResponseMessage createResponse = await httpClient.PostAsync($"{Workspace_Rest_Url}/", createPayload);
+			string createPayload = JsonConvert.SerializeObject(createPayloadObject);
+			HttpResponseMessage createResponse = await RestHelper.MakePostAsync(httpClient, $"{Workspace_Rest_Url}/", createPayload);
 			if (!createResponse.IsSuccessStatusCode)
 			{
 				throw new Exception("Failed to Create Workspace");
@@ -180,10 +179,8 @@ namespace Helpers.Implementations
 				}
 			};
 
-			StringContent updatePayload =
-				new StringContent(JsonConvert.SerializeObject(updatePayloadObject), Encoding.UTF8, "application/json");
-			HttpResponseMessage updateResponse =
-				await httpClient.PutAsync($"{Workspace_Rest_Url}/{workspaceArtifactId}", updatePayload);
+			string updatePayload = JsonConvert.SerializeObject(updatePayloadObject);
+			HttpResponseMessage updateResponse = await RestHelper.MakePostAsync(httpClient, $"{Workspace_Rest_Url}/{workspaceArtifactId}", updatePayload);
 			if (!updateResponse.IsSuccessStatusCode)
 			{
 				throw new Exception("Failed to Update Workspace to Enable Data Grid");

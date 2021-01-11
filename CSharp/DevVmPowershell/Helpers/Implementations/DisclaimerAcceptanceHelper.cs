@@ -140,7 +140,7 @@ namespace Helpers.Implementations
 				}
 			};
 			string request = JsonConvert.SerializeObject(objectManagerCreateRequestModel);
-			HttpResponseMessage response = RestHelper.MakePost(httpClient, url, request);
+			HttpResponseMessage response = RestHelper.MakePostAsync(httpClient, url, request).Result;
 			if (!response.IsSuccessStatusCode)
 			{
 				throw new Exception("Failed to Create for Disclaimer Configuration RDO.");
@@ -215,7 +215,7 @@ namespace Helpers.Implementations
 				}
 			};
 			string request = JsonConvert.SerializeObject(objectManagerCreateRequestModel);
-			HttpResponseMessage response = RestHelper.MakePost(httpClient, url, request);
+			HttpResponseMessage response = RestHelper.MakePostAsync(httpClient, url, request).Result;
 			if (!response.IsSuccessStatusCode)
 			{
 				throw new Exception("Failed to Create for Disclaimer Configuration RDO.");

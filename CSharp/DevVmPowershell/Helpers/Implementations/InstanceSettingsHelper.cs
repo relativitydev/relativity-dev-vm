@@ -48,7 +48,7 @@ namespace Helpers.Implementations
 					}
 				};
 				string createRequest = JsonConvert.SerializeObject(instanceSettingManagerUpdateRequest);
-				HttpResponseMessage createResponse = RestHelper.MakePost(httpClient, Constants.Connection.RestUrlEndpoints.InstanceSettings.endpointUrl, createRequest);
+				HttpResponseMessage createResponse = RestHelper.MakePostAsync(httpClient, Constants.Connection.RestUrlEndpoints.InstanceSettings.endpointUrl, createRequest).Result;
 				if (!createResponse.IsSuccessStatusCode)
 				{
 					throw new Exception("Failed to create Instance Setting");
@@ -101,7 +101,8 @@ namespace Helpers.Implementations
 				};
 
 				string queryRequest = JsonConvert.SerializeObject(objectManagerQueryRequestModel);
-				HttpResponseMessage queryResponse = RestHelper.MakePost(httpClient, Constants.Connection.RestUrlEndpoints.ObjectManager.queryUrl, queryRequest);
+				HttpResponseMessage queryResponse = RestHelper.MakePostAsync(httpClient,
+					Constants.Connection.RestUrlEndpoints.ObjectManager.queryUrl, queryRequest).Result;
 				if (!queryResponse.IsSuccessStatusCode)
 				{
 					throw new Exception("Failed to Query for Agent Artifact Ids");
@@ -128,7 +129,7 @@ namespace Helpers.Implementations
 						}
 					};
 					string updateRequest = JsonConvert.SerializeObject(instanceSettingManagerUpdateRequest);
-					HttpResponseMessage updateResponse = RestHelper.MakePut(httpClient, Constants.Connection.RestUrlEndpoints.InstanceSettings.endpointUrl, updateRequest);
+					HttpResponseMessage updateResponse = RestHelper.MakePutAsync(httpClient, Constants.Connection.RestUrlEndpoints.InstanceSettings.endpointUrl, updateRequest).Result;
 					if (updateResponse.IsSuccessStatusCode)
 					{
 						Console.WriteLine("Successfully updated the Instance Setting");
@@ -155,7 +156,7 @@ namespace Helpers.Implementations
 			{
 				HttpClient httpClient = RestHelper.GetHttpClient(InstanceAddress, AdminUsername, AdminPassword);
 				string deleteUrl = $"Relativity.REST/api/Relativity.InstanceSettings/workspace/{Constants.EDDS_WORKSPACE_ARTIFACT_ID}/instancesettings/{instanceSettingArtifactId}";
-				HttpResponseMessage httpResponseMessage = RestHelper.MakeDelete(httpClient, deleteUrl);
+				HttpResponseMessage httpResponseMessage = RestHelper.MakeDeleteAsync(httpClient, deleteUrl).Result;
 				if (!httpResponseMessage.IsSuccessStatusCode)
 				{
 					throw new Exception("Failed to Delete Instance Setting");

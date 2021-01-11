@@ -65,7 +65,7 @@ namespace Helpers.Implementations
 				length = 3
 			};
 			string request = JsonConvert.SerializeObject(objectManagerQueryRequestModel);
-			HttpResponseMessage response = RestHelper.MakePost(httpClient, url, request);
+			HttpResponseMessage response = RestHelper.MakePostAsync(httpClient, url, request).Result;
 			if (!response.IsSuccessStatusCode)
 			{
 				throw new Exception("Failed to Query for Agent Artifact Ids");
