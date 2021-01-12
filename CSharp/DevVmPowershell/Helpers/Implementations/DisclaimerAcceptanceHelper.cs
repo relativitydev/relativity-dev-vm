@@ -24,8 +24,9 @@ namespace Helpers.Implementations
 		private string AdminUsername { get; set; }
 		private string AdminPassword { get; set; }
 		private IRestHelper RestHelper { get; set; }
+		private IWorkspaceHelper WorkspaceHelper { get; set; }
 
-		public DisclaimerAcceptanceHelper(IConnectionHelper connectionHelper, IRestHelper restHelper, string instanceAddress, string adminUsername, string adminPassword)
+		public DisclaimerAcceptanceHelper(IConnectionHelper connectionHelper, IRestHelper restHelper, IWorkspaceHelper workspaceHelper, string instanceAddress, string adminUsername, string adminPassword)
 		{
 			ServiceFactory = connectionHelper.GetServiceFactory();
 			RsapiClient = ServiceFactory.CreateProxy<IRSAPIClient>();
@@ -34,13 +35,14 @@ namespace Helpers.Implementations
 			AdminUsername = adminUsername;
 			AdminPassword = adminPassword;
 			RestHelper = restHelper;
+			WorkspaceHelper = workspaceHelper;
 		}
 
 		public async Task AddDisclaimerConfigurationAsync(string workspaceName)
 		{
 			try
 			{
-				int workspaceId = await GetWorkspaceIdAsync(workspaceName);
+				int workspaceId = await WorkspaceHelper.GetFirstWorkspaceArtifactIdQueryAsync(workspaceName);
 				int objectTypeId = await GetDisclaimerSolutionConfigurationObjectTypeIdAsync(workspaceId);
 				int layoutId = await GetDisclaimerSolutionConfigurationLayoutIdAsync(workspaceId);
 				await CreateDisclaimerConfigurationRdoAsync(objectTypeId, layoutId, workspaceId);
@@ -87,7 +89,7 @@ namespace Helpers.Implementations
 		{
 			try
 			{
-				int workspaceId = await GetWorkspaceIdAsync(workspaceName);
+				int workspaceId = await WorkspaceHelper.GetFirstWorkspaceArtifactIdQueryAsync(workspaceName);
 				int objectTypeId = await GetDisclaimerObjectTypeIdAsync(workspaceId);
 				int layoutId = await GetDisclaimerLayoutIdAsync(workspaceId);
 				await CreateDisclaimerRdoAsync(objectTypeId, layoutId, workspaceId);
@@ -304,46 +306,6 @@ namespace Helpers.Implementations
 			}
 
 			return objectTypeId;
-		}
-
-		private async Task<int> GetWorkspaceIdAsync(string workspaceName)
-		{
-			int workspaceId;
-			try
-			{
-				HttpClient httpClient = RestHelper.GetHttpClient(InstanceAddress, AdminUsername, AdminPassword);
-				var queryPayloadObject = new
-				{
-					request = new
-					{
-						objectType = new { artifactTypeId = Constants.WORKSPACE_TYPE_ARTIFACT_ID },
-						fields = new[]
-						{
-							new { Name = "Name" },
-						},
-						Condition = $"'Name' == '{workspaceName}'",
-					},
-					start = 1,
-					length = 25
-				};
-
-				string queryPayload = JsonConvert.SerializeObject(queryPayloadObject);
-				HttpResponseMessage queryResponse = await RestHelper.MakePostAsync(httpClient, Constants.Connection.RestUrlEndpoints.ObjectManager.QuerySlimUrl, queryPayload);
-				if (!queryResponse.IsSuccessStatusCode)
-				{
-					throw new Exception("Failed to Query for Disclaimer Solution Configuration Object Type");
-				}
-
-				string resultString = await queryResponse.Content.ReadAsStringAsync();
-				dynamic result = JObject.Parse(resultString) as JObject;
-				workspaceId = result.Objects[0]["ArtifactID"];
-			}
-			catch (Exception ex)
-			{
-				throw new Exception($"Error finding workspace with name: {workspaceName}", ex);
-			}
-
-			return workspaceId;
 		}
 
 		private async Task<int> GetDisclaimerSolutionConfigurationObjectTypeIdAsync(int workspaceId)
