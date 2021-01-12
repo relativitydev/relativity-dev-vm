@@ -40,9 +40,9 @@ namespace Helpers.Implementations
 		{
 			try
 			{
-				int workspaceId = await GetWorkspaceId(workspaceName);
-				int objectTypeId = await GetDisclaimerSolutionConfigurationObjectTypeId(workspaceId);
-				int layoutId = await GetDisclaimerSolutionConfigurationLayoutId(workspaceId);
+				int workspaceId = await GetWorkspaceIdAsync(workspaceName);
+				int objectTypeId = await GetDisclaimerSolutionConfigurationObjectTypeIdAsync(workspaceId);
+				int layoutId = await GetDisclaimerSolutionConfigurationLayoutIdAsync(workspaceId);
 				await CreateDisclaimerConfigurationRdoAsync(objectTypeId, layoutId, workspaceId);
 			}
 			catch (Exception ex)
@@ -55,7 +55,7 @@ namespace Helpers.Implementations
 		{
 			string url = Constants.Connection.RestUrlEndpoints.ObjectManager.QuerySlimUrl.Replace("-1", workspaceId.ToString());
 			HttpClient httpClient = RestHelper.GetHttpClient(InstanceAddress, AdminUsername, AdminPassword);
-			int objectTypeId = await GetDisclaimerSolutionConfigurationObjectTypeId(workspaceId);
+			int objectTypeId = await GetDisclaimerSolutionConfigurationObjectTypeIdAsync(workspaceId);
 			var queryPayloadObject = new
 			{
 				request = new
@@ -87,9 +87,9 @@ namespace Helpers.Implementations
 		{
 			try
 			{
-				int workspaceId = await GetWorkspaceId(workspaceName);
-				int objectTypeId = await GetDisclaimerObjectTypeId(workspaceId);
-				int layoutId = await GetDisclaimerLayoutId(workspaceId);
+				int workspaceId = await GetWorkspaceIdAsync(workspaceName);
+				int objectTypeId = await GetDisclaimerObjectTypeIdAsync(workspaceId);
+				int layoutId = await GetDisclaimerLayoutIdAsync(workspaceId);
 				await CreateDisclaimerRdoAsync(objectTypeId, layoutId, workspaceId);
 			}
 			catch (Exception ex)
@@ -102,7 +102,7 @@ namespace Helpers.Implementations
 		{
 			string url = Constants.Connection.RestUrlEndpoints.ObjectManager.QuerySlimUrl.Replace("-1",workspaceId.ToString());
 			HttpClient httpClient = RestHelper.GetHttpClient(InstanceAddress, AdminUsername, AdminPassword);
-			int objectTypeId = await GetDisclaimerObjectTypeId(workspaceId);
+			int objectTypeId = await GetDisclaimerObjectTypeIdAsync(workspaceId);
 			var queryPayloadObject = new
 			{
 				request = new
@@ -264,7 +264,7 @@ namespace Helpers.Implementations
 			}
 		}
 
-		private async Task<int> GetDisclaimerObjectTypeId(int workspaceId)
+		private async Task<int> GetDisclaimerObjectTypeIdAsync(int workspaceId)
 		{
 			int objectTypeId;
 			try
@@ -306,7 +306,7 @@ namespace Helpers.Implementations
 			return objectTypeId;
 		}
 
-		private async Task<int> GetWorkspaceId(string workspaceName)
+		private async Task<int> GetWorkspaceIdAsync(string workspaceName)
 		{
 			int workspaceId;
 			try
@@ -346,7 +346,7 @@ namespace Helpers.Implementations
 			return workspaceId;
 		}
 
-		private async Task<int> GetDisclaimerSolutionConfigurationObjectTypeId(int workspaceId)
+		private async Task<int> GetDisclaimerSolutionConfigurationObjectTypeIdAsync(int workspaceId)
 		{
 			int objectTypeId;
 			try
@@ -389,7 +389,7 @@ namespace Helpers.Implementations
 			return objectTypeId;
 		}
 
-		private async Task<int> GetDisclaimerLayoutId(int workspaceId)
+		private async Task<int> GetDisclaimerLayoutIdAsync(int workspaceId)
 		{
 			int layoutId;
 			try
@@ -430,7 +430,7 @@ namespace Helpers.Implementations
 			return layoutId;
 		}
 
-		private async Task<int> GetDisclaimerSolutionConfigurationLayoutId(int workspaceId)
+		private async Task<int> GetDisclaimerSolutionConfigurationLayoutIdAsync(int workspaceId)
 		{
 			int layoutId;
 			try
