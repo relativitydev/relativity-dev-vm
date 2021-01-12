@@ -7,7 +7,8 @@
 - 1/12/2021
 	- REL-507447 - Replace WorkspaceHelper.cs RSAPI calls with REST implementation.
 	- REL-507460 - Replace DisclaimerAcceptanceHelper.cs RSAPI calls with REST implementation.
-
+	- REL-507459 - Replace ApplicationInstallHelper.cs RSAPI calls with REST implementation.
+	
 -------------------------
 
 - 11/18/2020
