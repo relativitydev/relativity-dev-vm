@@ -5,8 +5,8 @@ namespace Helpers.Interfaces
 	public interface IDisclaimerAcceptanceHelper
 	{
 		Task AddDisclaimerConfigurationAsync(string workspaceName);
-		bool CheckIfDisclaimerConfigurationRdoExists(int workspaceId);
+		Task<bool> CheckIfDisclaimerConfigurationRdoExistsAsync(int workspaceId);
 		Task AddDisclaimerAsync(string workspaceName);
-		bool CheckIfDisclaimerRdoExists(int workspaceId);
+		Task<bool> CheckIfDisclaimerRdoExistsAsync(int workspaceId);
 	}
 }

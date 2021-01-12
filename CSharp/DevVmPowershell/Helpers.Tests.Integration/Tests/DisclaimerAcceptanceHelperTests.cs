@@ -65,7 +65,7 @@ namespace Helpers.Tests.Integration.Tests
 
 			// Act / Assert
 			Assert.DoesNotThrow(() => Sut.AddDisclaimerConfigurationAsync(workspaceName).Wait());
-			Assert.IsTrue(Sut.CheckIfDisclaimerConfigurationRdoExists(workspaceArtifactId));
+			Assert.IsTrue(Sut.CheckIfDisclaimerConfigurationRdoExistsAsync(workspaceArtifactId).Result);
 
 			//Cleanup
 			WorkspaceHelper.DeleteSingleWorkspaceAsync(workspaceArtifactId).Wait();
@@ -100,7 +100,7 @@ namespace Helpers.Tests.Integration.Tests
 
 			// Act / Assert
 			Assert.DoesNotThrow(() => Sut.AddDisclaimerAsync(workspaceName).Wait());
-			Assert.IsTrue(Sut.CheckIfDisclaimerRdoExists(workspaceArtifactId));
+			Assert.IsTrue(Sut.CheckIfDisclaimerRdoExistsAsync(workspaceArtifactId).Result);
 
 			//Cleanup
 			WorkspaceHelper.DeleteSingleWorkspaceAsync(workspaceArtifactId).Wait();

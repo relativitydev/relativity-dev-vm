@@ -8,6 +8,9 @@ namespace Helpers
 	public class Constants
 	{
 		public const int EDDS_WORKSPACE_ARTIFACT_ID = -1;
+		public const int OBJECT_TYPE_TYPE_ARTIFACT_ID = 25;
+		public const int LAYOUT_TYPE_ARTIFACT_ID = 16;
+		public const int WORKSPACE_TYPE_ARTIFACT_ID = 8;
 
 		public class Connection
 		{
