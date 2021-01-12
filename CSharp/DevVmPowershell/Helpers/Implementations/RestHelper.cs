@@ -34,5 +34,19 @@ namespace Helpers.Implementations
 			HttpResponseMessage response = httpClient.PostAsync(url, content).Result;
 			return response;
 		}
+
+		public static HttpResponseMessage MakePut(HttpClient httpClient, string url, string request)
+		{
+			StringContent content = new StringContent(request);
+			content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+			HttpResponseMessage response = httpClient.PutAsync(url, content).Result;
+			return response;
+		}
+
+		public static HttpResponseMessage MakeDelete(HttpClient httpClient, string url)
+		{
+			HttpResponseMessage response = httpClient.DeleteAsync(url).Result;
+			return response;
+		}
 	}
 }

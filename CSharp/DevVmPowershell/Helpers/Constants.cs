@@ -1,6 +1,7 @@
 ﻿using Relativity.Imaging.Services.Interfaces;
 using Relativity.Services.Agent;
 using System;
+using kCura.WinEDDS;
 
 namespace Helpers
 {
@@ -20,6 +21,19 @@ namespace Helpers
 				public const string CONNECTION_STRING_CONNECT_TIMEOUT_DEFAULT = "120";
 				public const string EDDS_DATABASE = "EDDS";
 			}
+
+			public class RestUrlEndpoints
+			{
+				public class InstanceSettings
+				{
+					public static string endpointUrl = $"Relativity.REST/api/Relativity.InstanceSettings/workspace/{Constants.EDDS_WORKSPACE_ARTIFACT_ID}/instancesettings/";
+				}
+
+				public class ObjectManager
+				{
+					public static string queryUrl = $"Relativity.REST/api/Relativity.Objects/workspace/{Constants.EDDS_WORKSPACE_ARTIFACT_ID}/object/query";
+				}
+			}
 		}
 		public class Agents
 		{
@@ -31,6 +45,11 @@ namespace Helpers
 			public const bool ENABLE_AGENT = true;
 			public const int AGENT_INTERVAL = 20;
 			public const Agent.LoggingLevelEnum AGENT_LOGGING_LEVEL = Agent.LoggingLevelEnum.All;
+		}
+
+		public class InstanceSetting
+		{
+			public const string INSTANCE_SETTING_OBJECT_TYPE = "InstanceSetting";
 		}
 
 		public class Workspace
