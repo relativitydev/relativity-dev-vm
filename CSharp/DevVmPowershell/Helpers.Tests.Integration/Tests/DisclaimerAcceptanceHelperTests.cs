@@ -1,8 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using Helpers.Implementations;
+﻿using Helpers.Implementations;
 using Helpers.Interfaces;
 using NUnit.Framework;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Helpers.Tests.Integration.Tests
 {
@@ -13,6 +14,7 @@ namespace Helpers.Tests.Integration.Tests
 		private ISqlRunner SqlRunner { get; set; }
 		private ISqlHelper SqlHelper { get; set; }
 		private IWorkspaceHelper WorkspaceHelper { get; set; }
+		private IRetryLogicHelper RetryLogicHelper { get; set; }
 		private IApplicationInstallHelper ApplicationInstallHelper { get; set; }
 
 		[SetUp]
@@ -29,7 +31,8 @@ namespace Helpers.Tests.Integration.Tests
 			SqlRunner = new SqlRunner(connectionHelper);
 			SqlHelper = new SqlHelper(SqlRunner);
 			WorkspaceHelper = new WorkspaceHelper(connectionHelper, restHelper, SqlHelper, TestConstants.RELATIVITY_INSTANCE_NAME, TestConstants.RELATIVITY_ADMIN_USER_NAME, TestConstants.RELATIVITY_ADMIN_PASSWORD);
-			ApplicationInstallHelper = new ApplicationInstallHelper(connectionHelper);
+			RetryLogicHelper = new RetryLogicHelper();
+			ApplicationInstallHelper = new ApplicationInstallHelper(connectionHelper, restHelper, WorkspaceHelper, RetryLogicHelper, TestConstants.RELATIVITY_INSTANCE_NAME, TestConstants.RELATIVITY_ADMIN_USER_NAME, TestConstants.RELATIVITY_ADMIN_PASSWORD);
 		}
 
 		[TearDown]
@@ -39,7 +42,7 @@ namespace Helpers.Tests.Integration.Tests
 		}
 
 		[Test]
-		public void AddDisclaimerConfigurationTest()
+		public async Task AddDisclaimerConfigurationTest()
 		{
 			// Arrange
 			string workspaceName = "Disclaimer Test Workspace";
@@ -56,7 +59,7 @@ namespace Helpers.Tests.Integration.Tests
 			//Create New Workspace
 			int workspaceArtifactId = WorkspaceHelper.CreateSingleWorkspaceAsync(Constants.Workspace.DEFAULT_WORKSPACE_TEMPLATE_NAME, workspaceName, false).Result;
 			//Install Disclaimer Acceptance Log in Workspace
-			bool installationSuccess = ApplicationInstallHelper.InstallApplicationFromApplicationLibrary(workspaceName, Constants.DisclaimerAcceptance.ApplicationGuids.ApplicationGuid);
+			bool installationSuccess = await ApplicationInstallHelper.InstallApplicationFromApplicationLibraryAsync(workspaceName, Constants.DisclaimerAcceptance.ApplicationGuids.ApplicationGuid);
 			if (!installationSuccess)
 			{
 				WorkspaceHelper.DeleteSingleWorkspaceAsync(workspaceArtifactId).Wait();
@@ -73,7 +76,7 @@ namespace Helpers.Tests.Integration.Tests
 		}
 
 		[Test]
-		public void AddDisclaimerTest()
+		public async Task AddDisclaimerTest()
 		{
 			// Arrange
 			string workspaceName = "Disclaimer Test Workspace";
@@ -90,7 +93,7 @@ namespace Helpers.Tests.Integration.Tests
 			//Create New Workspace
 			int workspaceArtifactId = WorkspaceHelper.CreateSingleWorkspaceAsync(Constants.Workspace.DEFAULT_WORKSPACE_TEMPLATE_NAME, workspaceName, false).Result;
 			//Install Disclaimer Acceptance Log in Workspace
-			bool installationSuccess = ApplicationInstallHelper.InstallApplicationFromApplicationLibrary(workspaceName, Constants.DisclaimerAcceptance.ApplicationGuids.ApplicationGuid);
+			bool installationSuccess = await ApplicationInstallHelper.InstallApplicationFromApplicationLibraryAsync(workspaceName, Constants.DisclaimerAcceptance.ApplicationGuids.ApplicationGuid);
 			if (!installationSuccess)
 			{
 				WorkspaceHelper.DeleteSingleWorkspaceAsync(workspaceArtifactId).Wait();

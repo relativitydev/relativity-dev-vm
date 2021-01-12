@@ -1,7 +1,6 @@
 ﻿using Relativity.Imaging.Services.Interfaces;
 using Relativity.Services.Agent;
 using System;
-using kCura.WinEDDS;
 
 namespace Helpers
 {
@@ -38,6 +37,17 @@ namespace Helpers
 				public class WorkspaceManager
 				{
 					public const string EndpointUrl = "Relativity.REST/api/Relativity.Workspaces/workspace";
+				}
+
+				public class ApplicationInstall
+				{
+					public const int retryCount = 6;
+					public const int retryDelay = 10;
+					public const string uploadFileKeyName = "rapStream";
+
+					public const string updateLibraryApplicationUrl = "Relativity.REST/api/relativity-environment/v1/workspace/-1/libraryapplications";
+					public const string readAllLibraryApplicationUrl = "Relativity.REST/api/relativity-environment/v1/workspace/-1/libraryapplications";
+					public const string installWorkspaceApplicationUrl = "Relativity.REST/api/Relativity.LibraryApplications/workspace/-1/libraryapplications/{0}/install";
 				}
 			}
 		}
@@ -391,6 +401,11 @@ END
 					public const string ErrorDetails_LongText = "F615298C-EB1E-4892-B8AA-103CEE85888B";
 				}
 			}
+		}
+
+		public class ApplicationGuids
+		{
+			public const string SimpleFileUploadGuid = "1738CEB6-9546-44A7-8B9B-E64C88E47320";
 		}
 	}
 }
