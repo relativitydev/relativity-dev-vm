@@ -10,8 +10,11 @@ using Relativity.Services.User;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Helpers.Implementations
 {
@@ -23,8 +26,12 @@ namespace Helpers.Implementations
 		private IRSAPIClient RsapiClient { get; }
 		private IKeywordSearchManager KeywordSearchManager { get; }
 		private ServiceFactory ServiceFactory { get; }
+		private string InstanceAddress { get; }
+		private string AdminUsername { get; }
+		private string AdminPassword { get; }
+		private IRestHelper RestHelper { get; set; }
 
-		public ImagingHelper(IConnectionHelper connectionHelper)
+		public ImagingHelper(IConnectionHelper connectionHelper, IRestHelper restHelper, string instanceAddress, string adminUsername, string adminPassword)
 		{
 			ServiceFactory = connectionHelper.GetServiceFactory();
 			ImagingProfileManager = ServiceFactory.CreateProxy<IImagingProfileManager>();
@@ -32,6 +39,10 @@ namespace Helpers.Implementations
 			ImagingJobManager = ServiceFactory.CreateProxy<IImagingJobManager>();
 			RsapiClient = ServiceFactory.CreateProxy<IRSAPIClient>();
 			KeywordSearchManager = ServiceFactory.CreateProxy<IKeywordSearchManager>();
+			RestHelper = restHelper;
+			InstanceAddress = instanceAddress;
+			AdminUsername = adminUsername;
+			AdminPassword = adminPassword;
 		}
 
 		public async Task ImageAllDocumentsInWorkspaceAsync(int workspaceArtifactId)
@@ -79,7 +90,7 @@ namespace Helpers.Implementations
 			catch (ServiceException ex)
 			{
 				//The service throws an exception of type ServiceException, performs logging and rethrows the exception.
-				throw new Exception("An error occured when creating Imaging Profile", ex);
+				throw new Exception("An error occurred when creating Imaging Profile", ex);
 			}
 		}
 
@@ -110,7 +121,7 @@ namespace Helpers.Implementations
 			catch (ServiceException ex)
 			{
 				//The service throws an exception of type ServiceException, performs logging and rethrows the exception.
-				throw new Exception("An error occured when creating Imaging Set", ex);
+				throw new Exception("An error occurred when creating Imaging Set", ex);
 			}
 		}
 
@@ -135,13 +146,12 @@ namespace Helpers.Implementations
 			catch (ServiceException ex)
 			{
 				//The service throws an exception of type ServiceException, performs logging and rethrows the exception.
-				throw new Exception("An error occured when running Imaging Job", ex);
+				throw new Exception("An error occurred when running Imaging Job", ex);
 			}
 		}
 
 		public async Task WaitForImagingJobToCompleteAsync(int workspaceArtifactId, int imagingSetArtifactId)
 		{
-			RsapiClient.APIOptions.WorkspaceID = workspaceArtifactId;
 			Console.WriteLine("Waiting for Imaging Job to finish");
 			bool publishComplete = await JobCompletedSuccessfullyAsync(workspaceArtifactId, imagingSetArtifactId);
 			if (!publishComplete)
@@ -158,18 +168,37 @@ namespace Helpers.Implementations
 			const int sleepTimeInMilliSeconds = Constants.Waiting.SLEEP_TIME_IN_SECONDS * 1000;
 			int currentWaitTimeInMilliseconds = 0;
 
-			Guid fieldGuid = Constants.Guids.Fields.ImagingSet.Status;
-
 			try
 			{
 				while (currentWaitTimeInMilliseconds < maxTimeInMilliseconds && jobComplete == false)
 				{
-					Thread.Sleep(sleepTimeInMilliSeconds);
+					HttpClient httpClient = RestHelper.GetHttpClient(InstanceAddress, AdminUsername, AdminPassword);
+					string url = Constants.Connection.RestUrlEndpoints.ObjectManager.ReadUrl.Replace("-1", workspaceArtifactId.ToString());
+					var readPayloadObject = new
+					{
+						request = new
+						{
+							Object = new 
+							{
+								ArtifactID = imagingSetArtifactId
+							},
+							fields = new[]
+							{
+								new { Name = "Status"},
+							},
+						},
+					};
 
-					RDO job = await Task.Run(() => RsapiClient.Repositories.RDO.ReadSingle(imagingSetArtifactId));
-					jobComplete = job[fieldGuid].ValueAsFixedLengthText.Contains("Completed");
-
-					currentWaitTimeInMilliseconds += sleepTimeInMilliSeconds;
+					string readPayload = JsonConvert.SerializeObject(readPayloadObject);
+					HttpResponseMessage readResponse = await RestHelper.MakePostAsync(httpClient, url, readPayload);
+					if (!readResponse.IsSuccessStatusCode)
+					{
+						throw new Exception("Failed to Read Imaging Set RDO");
+					}
+					string resultString = await readResponse.Content.ReadAsStringAsync();
+					dynamic result = JObject.Parse(resultString) as JObject;
+					string status = result.Object["FieldValues"][0]["Value"].ToString();
+					jobComplete = status.Contains("Completed");
 				}
 
 				return jobComplete;
@@ -246,7 +275,7 @@ namespace Helpers.Implementations
 			}
 			catch (Exception ex)
 			{
-				throw new Exception("An error occured when creating Keyword Search", ex);
+				throw new Exception("An error occurred when creating Keyword Search", ex);
 			}
 		}
 
@@ -254,22 +283,37 @@ namespace Helpers.Implementations
 		{
 			try
 			{
-				RsapiClient.APIOptions.WorkspaceID = workspaceArtifactId;
-				Query<Document> query = new Query<Document>
+				HttpClient httpClient = RestHelper.GetHttpClient(InstanceAddress, AdminUsername, AdminPassword);
+				string url = Constants.Connection.RestUrlEndpoints.ObjectManager.QuerySlimUrl.Replace("-1", workspaceArtifactId.ToString());
+				var queryPayloadObject = new
 				{
-					Fields = new List<FieldValue> { new FieldValue("Has Images") }
+					request = new
+					{
+						objectType = new { artifactTypeId = 10 },
+						fields = new[]
+						{
+							new { Name = "Has Images" }
+						},
+						Condition = "",
+					},
+					start = 0,
+					length = 200
 				};
 
-				QueryResultSet<Document> queryResultSet = await Task.Run(() => RsapiClient.Repositories.Document.Query(query));
-				if (!queryResultSet.Success)
+				string queryPayload = JsonConvert.SerializeObject(queryPayloadObject);
+				HttpResponseMessage queryResponse = await RestHelper.MakePostAsync(httpClient, url, queryPayload);
+				if (!queryResponse.IsSuccessStatusCode)
 				{
-					throw new Exception("Failed to Query for all Documents in the Workspace");
+					throw new Exception("Failed to Query for Documents");
 				}
-
+				string resultString = await queryResponse.Content.ReadAsStringAsync();
+				dynamic result = JObject.Parse(resultString) as JObject;
+				int totalCount = result.TotalCount;
 				bool allDocumentsHaveImages = true;
-				foreach (Result<Document> result in queryResultSet.Results)
+				for (int i = 0; i < totalCount; i++)
 				{
-					if (result.Artifact.HasImages.Name.Equals("No"))
+					string hasImageValue = result.Objects[i]["Values"][0]["Name"];
+					if (hasImageValue.Equals("No"))
 					{
 						allDocumentsHaveImages = false;
 						break;
@@ -280,7 +324,7 @@ namespace Helpers.Implementations
 			}
 			catch (Exception ex)
 			{
-				throw new Exception("An error occured when Checking that all documents in the Workspace are Imaged", ex);
+				throw new Exception("An error occurred when Checking that all documents in the Workspace are Imaged", ex);
 			}
 		}
 	}

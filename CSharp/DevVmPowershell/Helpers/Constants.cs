@@ -9,7 +9,6 @@ namespace Helpers
 		public const int EDDS_WORKSPACE_ARTIFACT_ID = -1;
 		public const int OBJECT_TYPE_TYPE_ARTIFACT_ID = 25;
 		public const int LAYOUT_TYPE_ARTIFACT_ID = 16;
-		public const int WORKSPACE_TYPE_ARTIFACT_ID = 8;
 
 		public class Connection
 		{
@@ -35,6 +34,7 @@ namespace Helpers
 				{
 					public const string QueryUrl = "Relativity.REST/api/Relativity.Objects/workspace/-1/object/query";
 					public const string QuerySlimUrl = "Relativity.REST/api/Relativity.Objects/workspace/-1/object/queryslim";
+					public const string ReadUrl = "Relativity.REST/api/Relativity.Objects/workspace/-1/object/read";
 				}
 
 				public class WorkspaceManager
