@@ -62,7 +62,7 @@ namespace Helpers.Implementations
 				Console.WriteLine("Deleting all Workspaces");
 				foreach (int workspaceArtifactId in workspaceArtifactIds)
 				{
-					DeleteSingleWorkspaceAsync(workspaceArtifactId);
+					await DeleteSingleWorkspaceAsync(workspaceArtifactId);
 				}
 				Console.WriteLine("Deleted all Workspaces!");
 			}
@@ -181,7 +181,7 @@ namespace Helpers.Implementations
 			};
 
 			string updatePayload = JsonConvert.SerializeObject(updatePayloadObject);
-			HttpResponseMessage updateResponse = await RestHelper.MakePostAsync(httpClient, $"{Constants.Connection.RestUrlEndpoints.WorkspaceManager.EndpointUrl}/{workspaceArtifactId}", updatePayload);
+			HttpResponseMessage updateResponse = await RestHelper.MakePutAsync(httpClient, $"{Constants.Connection.RestUrlEndpoints.WorkspaceManager.EndpointUrl}/{workspaceArtifactId}", updatePayload);
 			if (!updateResponse.IsSuccessStatusCode)
 			{
 				throw new Exception("Failed to Update Workspace to Enable Data Grid");
