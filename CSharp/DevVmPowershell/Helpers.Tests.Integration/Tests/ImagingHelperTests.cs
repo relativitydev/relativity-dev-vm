@@ -25,8 +25,9 @@ namespace Helpers.Tests.Integration.Tests
 			IRestHelper restHelper = new RestHelper();
 			ISqlRunner sqlRunner = new SqlRunner(connectionHelper);
 			ISqlHelper sqlHelper = new SqlHelper(sqlRunner);
+			IRetryLogicHelper retryLogicHelper = new RetryLogicHelper();
 			WorkspaceHelper = new WorkspaceHelper(connectionHelper, restHelper, sqlHelper, TestConstants.RELATIVITY_INSTANCE_NAME, TestConstants.RELATIVITY_ADMIN_USER_NAME, TestConstants.RELATIVITY_ADMIN_PASSWORD);
-			Sut = new ImagingHelper(connectionHelper, restHelper, TestConstants.RELATIVITY_INSTANCE_NAME, TestConstants.RELATIVITY_ADMIN_USER_NAME, TestConstants.RELATIVITY_ADMIN_PASSWORD);
+			Sut = new ImagingHelper(connectionHelper, restHelper, retryLogicHelper, TestConstants.RELATIVITY_INSTANCE_NAME, TestConstants.RELATIVITY_ADMIN_USER_NAME, TestConstants.RELATIVITY_ADMIN_PASSWORD);
 			ImportApiHelper = new ImportApiHelper(connectionHelper, TestConstants.RELATIVITY_INSTANCE_NAME, TestConstants.RELATIVITY_ADMIN_USER_NAME, TestConstants.RELATIVITY_ADMIN_PASSWORD);
 		}
 
@@ -44,10 +45,10 @@ namespace Helpers.Tests.Integration.Tests
 			CleanupWorkspaceIfItExists(workspaceName);
 
 			//Create Workspace
-			int workspaceArtifactId = WorkspaceHelper.CreateSingleWorkspaceAsync(Constants.Workspace.DEFAULT_WORKSPACE_TEMPLATE_NAME, workspaceName, false).Result;
+			int workspaceArtifactId = await WorkspaceHelper.CreateSingleWorkspaceAsync(Constants.Workspace.DEFAULT_WORKSPACE_TEMPLATE_NAME, workspaceName, false);
 
 			//Import Documents
-			int numberImported = ImportApiHelper.AddDocumentsToWorkspace(workspaceArtifactId, "document", 100, "").Result;
+			int numberImported = await ImportApiHelper.AddDocumentsToWorkspace(workspaceArtifactId, "document", 100, "");
 			if (numberImported == 0)
 			{
 				await WorkspaceHelper.DeleteSingleWorkspaceAsync(workspaceArtifactId);

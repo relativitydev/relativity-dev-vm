@@ -23,23 +23,23 @@ namespace Helpers.Implementations
 		private IImagingProfileManager ImagingProfileManager { get; }
 		private IImagingSetManager ImagingSetManager { get; }
 		private IImagingJobManager ImagingJobManager { get; }
-		private IRSAPIClient RsapiClient { get; }
 		private IKeywordSearchManager KeywordSearchManager { get; }
 		private ServiceFactory ServiceFactory { get; }
 		private string InstanceAddress { get; }
 		private string AdminUsername { get; }
 		private string AdminPassword { get; }
 		private IRestHelper RestHelper { get; set; }
+		private IRetryLogicHelper RetryLogicHelper { get; set; }
 
-		public ImagingHelper(IConnectionHelper connectionHelper, IRestHelper restHelper, string instanceAddress, string adminUsername, string adminPassword)
+		public ImagingHelper(IConnectionHelper connectionHelper, IRestHelper restHelper, IRetryLogicHelper retryLogicHelper, string instanceAddress, string adminUsername, string adminPassword)
 		{
 			ServiceFactory = connectionHelper.GetServiceFactory();
 			ImagingProfileManager = ServiceFactory.CreateProxy<IImagingProfileManager>();
 			ImagingSetManager = ServiceFactory.CreateProxy<IImagingSetManager>();
 			ImagingJobManager = ServiceFactory.CreateProxy<IImagingJobManager>();
-			RsapiClient = ServiceFactory.CreateProxy<IRSAPIClient>();
 			KeywordSearchManager = ServiceFactory.CreateProxy<IKeywordSearchManager>();
 			RestHelper = restHelper;
+			RetryLogicHelper = retryLogicHelper;
 			InstanceAddress = instanceAddress;
 			AdminUsername = adminUsername;
 			AdminPassword = adminPassword;
@@ -164,15 +164,9 @@ namespace Helpers.Implementations
 		private async Task<bool> JobCompletedSuccessfullyAsync(int workspaceArtifactId, int imagingSetArtifactId)
 		{
 			bool jobComplete = false;
-			const int maxTimeInMilliseconds = (Constants.Waiting.MAX_WAIT_TIME_IN_MINUTES * 60 * 1000);
-			const int sleepTimeInMilliSeconds = Constants.Waiting.SLEEP_TIME_IN_SECONDS * 1000;
-			int currentWaitTimeInMilliseconds = 0;
-
 			try
 			{
-				while (currentWaitTimeInMilliseconds < maxTimeInMilliseconds && jobComplete == false)
-				{
-					HttpClient httpClient = RestHelper.GetHttpClient(InstanceAddress, AdminUsername, AdminPassword);
+				HttpClient httpClient = RestHelper.GetHttpClient(InstanceAddress, AdminUsername, AdminPassword);
 					string url = Constants.Connection.RestUrlEndpoints.ObjectManager.ReadUrl.Replace("-1", workspaceArtifactId.ToString());
 					var readPayloadObject = new
 					{
@@ -190,18 +184,34 @@ namespace Helpers.Implementations
 					};
 
 					string readPayload = JsonConvert.SerializeObject(readPayloadObject);
-					HttpResponseMessage readResponse = await RestHelper.MakePostAsync(httpClient, url, readPayload);
-					if (!readResponse.IsSuccessStatusCode)
+					
+					// Retry until we get the applicationId from the library
+					string jobStatus = await RetryLogicHelper
+					.RetryFunctionAsync<string>(Constants.Waiting.RETRY_COUNT,
+					Constants.Waiting.RETRY_DELAY,
+					async () => 
+					{
+						HttpResponseMessage readResponse = await RestHelper.MakePostAsync(httpClient, url, readPayload);
+						if (!readResponse.IsSuccessStatusCode)
+						{
+							return null;
+						}
+						string resultString = await readResponse.Content.ReadAsStringAsync();
+						dynamic result = JObject.Parse(resultString) as JObject;
+						string status = result.Object["FieldValues"][0]["Value"].ToString();
+						jobComplete = status.Contains("Completed");
+						if (!jobComplete)
+						{
+							throw new Exception("Job not yet complete");
+						}
+						return status;
+					});
+					if (jobStatus == null)
 					{
 						throw new Exception("Failed to Read Imaging Set RDO");
 					}
-					string resultString = await readResponse.Content.ReadAsStringAsync();
-					dynamic result = JObject.Parse(resultString) as JObject;
-					string status = result.Object["FieldValues"][0]["Value"].ToString();
-					jobComplete = status.Contains("Completed");
-				}
 
-				return jobComplete;
+					return jobComplete;
 			}
 			catch (Exception ex)
 			{
