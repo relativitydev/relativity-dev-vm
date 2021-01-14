@@ -187,8 +187,8 @@ namespace Helpers.Implementations
 					
 					// Retry until we get the applicationId from the library
 					string jobStatus = await RetryLogicHelper
-					.RetryFunctionAsync<string>(Constants.Waiting.RETRY_COUNT,
-					Constants.Waiting.RETRY_DELAY,
+					.RetryFunctionAsync<string>(Constants.Waiting.IMAGING_HELPER_RETRY_COUNT,
+					Constants.Waiting.IMAGING_HELPER_RETRY_DELAY,
 					async () => 
 					{
 						HttpResponseMessage readResponse = await RestHelper.MakePostAsync(httpClient, url, readPayload);
