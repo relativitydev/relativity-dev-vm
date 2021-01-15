@@ -103,7 +103,7 @@ namespace Helpers.Tests.Integration.Tests
 				}
 
 				//Act
-				bool result = await Sut.WaitForSmokeTestToCompleteAsync(workspaceName, 10);
+				bool result = await Sut.WaitForSmokeTestToCompleteAsync(workspaceName, Constants.Waiting.SMOKE_TEST_HELPER_MAX_WAIT_TIME_IN_MINUTES);
 
 				//Assert
 				Assert.IsTrue(result);

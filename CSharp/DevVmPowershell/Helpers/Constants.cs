@@ -78,8 +78,9 @@ namespace Helpers
 
 		public class Waiting
 		{
-			public const int MAX_WAIT_TIME_IN_MINUTES = 10;
-			public const int SLEEP_TIME_IN_SECONDS = 15;
+			public const int SMOKE_TEST_HELPER_MAX_WAIT_TIME_IN_MINUTES = 10;
+			public const int SMOKE_TEST_HELPER_SLEEP_TIME_IN_SECONDS = 10;
+			public const int SMOKE_TEST_HELPER_RETRY_COUNT = 10;
 			public const int IMAGING_HELPER_RETRY_COUNT = 60;
 			public const int IMAGING_HELPER_RETRY_DELAY = 10;
 		}

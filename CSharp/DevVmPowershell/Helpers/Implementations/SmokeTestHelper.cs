@@ -33,10 +33,10 @@ namespace Helpers.Implementations
 			try
 			{
 				int workspaceId = await WorkspaceHelper.GetFirstWorkspaceArtifactIdQueryAsync(workspaceName);
-				int smokeTestObjectTypeId = await RetryLogicHelper.RetryFunctionAsync<int>(2, 30,
+				int smokeTestObjectTypeId = await RetryLogicHelper.RetryFunctionAsync<int>(Constants.Waiting.SMOKE_TEST_HELPER_RETRY_COUNT, Constants.Waiting.SMOKE_TEST_HELPER_SLEEP_TIME_IN_SECONDS,
 					async () => await GetSmokeTestObjectTypeIdAsync(workspaceId));
 
-				bool didTestsComplete = await RetryLogicHelper.RetryFunctionAsync<bool>(10, timeoutValueInMinutes * 60,
+				bool didTestsComplete = await RetryLogicHelper.RetryFunctionAsync<bool>(Constants.Waiting.SMOKE_TEST_HELPER_RETRY_COUNT, timeoutValueInMinutes * 60,
 					async () =>
 					{
 						HttpResponseMessage queryResponse = await QueryForSmokeTestRdosAsync(workspaceId, smokeTestObjectTypeId);
@@ -121,9 +121,7 @@ namespace Helpers.Implementations
 				}
 
 				string resultString = await queryResponse.Content.ReadAsStringAsync();
-				//dynamic result = JObject.Parse(resultString) as JObject;
 				dynamic queryResult = JsonConvert.DeserializeObject<dynamic>(resultString);
-				//objectTypeId = result.Objects[0]["ArtifactID"];
 				objectTypeId = queryResult.Objects.First.ArtifactID;
 			}
 			catch (Exception ex)
