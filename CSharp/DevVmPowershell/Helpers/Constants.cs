@@ -391,6 +391,11 @@ END
 
 		public class SmokeTest
 		{
+			public class ObjectNames
+			{
+				public const string SmokeTestApplicationName = "Smoke Test";
+				public const string SmokeTestApplicationObjectTypeName = "Test";
+			}
 			public class Guids
 			{
 				public const string ApplicationGuid = "0125C8D4-8354-4D8F-B031-01E73C866C7C";

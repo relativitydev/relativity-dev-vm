@@ -36,7 +36,8 @@ namespace Helpers.Tests.Integration.Tests
 			AgentHelper = new AgentHelper(connectionHelper, restHelper, TestConstants.RELATIVITY_INSTANCE_NAME, TestConstants.RELATIVITY_ADMIN_USER_NAME, TestConstants.RELATIVITY_ADMIN_PASSWORD);
 
 			ImportApiHelper = new ImportApiHelper(connectionHelper, TestConstants.RELATIVITY_INSTANCE_NAME, TestConstants.RELATIVITY_ADMIN_USER_NAME, TestConstants.RELATIVITY_ADMIN_PASSWORD);
-			Sut = new SmokeTestHelper(connectionHelper);
+			Sut = new SmokeTestHelper(connectionHelper, restHelper, RetryLogicHelper, WorkspaceHelper, TestConstants.RELATIVITY_INSTANCE_NAME,
+				TestConstants.RELATIVITY_ADMIN_USER_NAME, TestConstants.RELATIVITY_ADMIN_PASSWORD);
 		}
 
 		[TearDown]
@@ -102,7 +103,7 @@ namespace Helpers.Tests.Integration.Tests
 				}
 
 				//Act
-				bool result = Sut.WaitForSmokeTestToComplete(workspaceName, 10);
+				bool result = await Sut.WaitForSmokeTestToCompleteAsync(workspaceName, 10);
 
 				//Assert
 				Assert.IsTrue(result);
