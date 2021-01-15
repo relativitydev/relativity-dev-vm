@@ -60,7 +60,7 @@ namespace Helpers.Tests.Integration.Tests
 			{
 				//Arrange
 
-				//Delete Workspace with Disclaimer Acceptance Installed
+				//Delete Workspace with Smoke Test Installed
 				List<int> workspacesWhereApplicationIsInstalled = SqlHelper.RetrieveWorkspacesWhereApplicationIsInstalled(new Guid(Constants.SmokeTest.Guids.ApplicationGuid));
 				if (workspacesWhereApplicationIsInstalled.Count > 0)
 				{
