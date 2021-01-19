@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using Helpers.Implementations;
+﻿using Helpers.Implementations;
 using Helpers.Interfaces;
 using NUnit.Framework;
-using Relativity.Services.Agent;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Helpers.Tests.Integration.Tests
 {
@@ -16,6 +11,7 @@ namespace Helpers.Tests.Integration.Tests
 	{
 		private ISqlHelper SqlHelper { get; set; }
 		private IWorkspaceHelper WorkspaceHelper { get; set; }
+		private IRetryLogicHelper RetryLogicHelper { get; set; }
 		private IApplicationInstallHelper ApplicationInstallHelper { get; set; }
 		private IAgentHelper AgentHelper { get; set; }
 		private IImportApiHelper ImportApiHelper { get; set; }
@@ -32,9 +28,13 @@ namespace Helpers.Tests.Integration.Tests
 				sqlAdminPassword: TestConstants.SQL_PASSWORD);
 			ISqlRunner sqlRunner = new SqlRunner(connectionHelper);
 			SqlHelper = new SqlHelper(sqlRunner);
-			WorkspaceHelper = new WorkspaceHelper(connectionHelper, SqlHelper);
-			ApplicationInstallHelper = new ApplicationInstallHelper(connectionHelper);
-			AgentHelper = new AgentHelper(connectionHelper, TestConstants.RELATIVITY_INSTANCE_NAME, TestConstants.RELATIVITY_ADMIN_USER_NAME, TestConstants.RELATIVITY_ADMIN_PASSWORD);
+			IRestHelper restHelper = new RestHelper();
+			RetryLogicHelper = new RetryLogicHelper();
+			WorkspaceHelper = new WorkspaceHelper(connectionHelper, restHelper, SqlHelper, TestConstants.RELATIVITY_INSTANCE_NAME, TestConstants.RELATIVITY_ADMIN_USER_NAME, TestConstants.RELATIVITY_ADMIN_PASSWORD);
+			ApplicationInstallHelper = new ApplicationInstallHelper(connectionHelper, restHelper, WorkspaceHelper, RetryLogicHelper, TestConstants.RELATIVITY_INSTANCE_NAME,
+				TestConstants.RELATIVITY_ADMIN_USER_NAME, TestConstants.RELATIVITY_ADMIN_PASSWORD);
+			AgentHelper = new AgentHelper(connectionHelper, restHelper, TestConstants.RELATIVITY_INSTANCE_NAME, TestConstants.RELATIVITY_ADMIN_USER_NAME, TestConstants.RELATIVITY_ADMIN_PASSWORD);
+
 			ImportApiHelper = new ImportApiHelper(connectionHelper, TestConstants.RELATIVITY_INSTANCE_NAME, TestConstants.RELATIVITY_ADMIN_USER_NAME, TestConstants.RELATIVITY_ADMIN_PASSWORD);
 			Sut = new SmokeTestHelper(connectionHelper);
 		}
@@ -50,7 +50,7 @@ namespace Helpers.Tests.Integration.Tests
 		}
 
 		[Test]
-		public void WaitForSmokeTestToCompleteAsyncTest()
+		public async Task WaitForSmokeTestToCompleteAsyncTest()
 		{
 			int workspaceArtifactId = 0;
 			const string workspaceName = "Smoke Test Helper Workspace";
@@ -77,9 +77,7 @@ namespace Helpers.Tests.Integration.Tests
 					.CreateSingleWorkspaceAsync(Constants.Workspace.DEFAULT_WORKSPACE_TEMPLATE_NAME, workspaceName, true).Result;
 
 				//Install Smoke Test Application in Workspace
-				bool installationResult =
-					ApplicationInstallHelper.InstallApplicationFromApplicationLibrary(workspaceName,
-						Constants.SmokeTest.Guids.ApplicationGuid);
+				bool installationResult = await ApplicationInstallHelper.InstallApplicationFromApplicationLibraryAsync(workspaceName, Constants.SmokeTest.Guids.ApplicationGuid);
 				if (!installationResult)
 				{
 					throw new Exception("Smoke Test Application failed to Install");

@@ -1,13 +1,14 @@
 ﻿using Relativity.Imaging.Services.Interfaces;
 using Relativity.Services.Agent;
 using System;
-using kCura.WinEDDS;
 
 namespace Helpers
 {
 	public class Constants
 	{
 		public const int EDDS_WORKSPACE_ARTIFACT_ID = -1;
+		public const int OBJECT_TYPE_TYPE_ARTIFACT_ID = 25;
+		public const int LAYOUT_TYPE_ARTIFACT_ID = 16;
 
 		public class Connection
 		{
@@ -26,12 +27,30 @@ namespace Helpers
 			{
 				public class InstanceSettings
 				{
-					public static string endpointUrl = $"Relativity.REST/api/Relativity.InstanceSettings/workspace/{Constants.EDDS_WORKSPACE_ARTIFACT_ID}/instancesettings/";
+					public const string EndpointUrl = "Relativity.REST/api/Relativity.InstanceSettings/workspace/-1/instancesettings/";
 				}
 
 				public class ObjectManager
 				{
-					public static string queryUrl = $"Relativity.REST/api/Relativity.Objects/workspace/{Constants.EDDS_WORKSPACE_ARTIFACT_ID}/object/query";
+					public const string QueryUrl = "Relativity.REST/api/Relativity.Objects/workspace/-1/object/query";
+					public const string QuerySlimUrl = "Relativity.REST/api/Relativity.Objects/workspace/-1/object/queryslim";
+					public const string ReadUrl = "Relativity.REST/api/Relativity.Objects/workspace/-1/object/read";
+				}
+
+				public class WorkspaceManager
+				{
+					public const string EndpointUrl = "Relativity.REST/api/Relativity.Workspaces/workspace";
+				}
+
+				public class ApplicationInstall
+				{
+					public const int retryCount = 6;
+					public const int retryDelay = 10;
+					public const string uploadFileKeyName = "rapStream";
+
+					public const string updateLibraryApplicationUrl = "Relativity.REST/api/relativity-environment/v1/workspace/-1/libraryapplications";
+					public const string readAllLibraryApplicationUrl = "Relativity.REST/api/relativity-environment/v1/workspace/-1/libraryapplications";
+					public const string installWorkspaceApplicationUrl = "Relativity.REST/api/Relativity.LibraryApplications/workspace/-1/libraryapplications/{0}/install";
 				}
 			}
 		}
@@ -61,6 +80,8 @@ namespace Helpers
 		{
 			public const int MAX_WAIT_TIME_IN_MINUTES = 10;
 			public const int SLEEP_TIME_IN_SECONDS = 15;
+			public const int IMAGING_HELPER_RETRY_COUNT = 60;
+			public const int IMAGING_HELPER_RETRY_DELAY = 10;
 		}
 
 		public class DocumentCommonFields
@@ -385,6 +406,11 @@ END
 					public const string ErrorDetails_LongText = "F615298C-EB1E-4892-B8AA-103CEE85888B";
 				}
 			}
+		}
+
+		public class ApplicationGuids
+		{
+			public const string SimpleFileUploadGuid = "1738CEB6-9546-44A7-8B9B-E64C88E47320";
 		}
 	}
 }
