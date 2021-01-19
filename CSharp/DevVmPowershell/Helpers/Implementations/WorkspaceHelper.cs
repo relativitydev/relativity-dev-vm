@@ -5,8 +5,13 @@ using Relativity.Services.ServiceProxy;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Helpers.RequestModels;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Helpers.Implementations
 {
@@ -14,11 +19,19 @@ namespace Helpers.Implementations
 	{
 		private ServiceFactory ServiceFactory { get; }
 		public ISqlHelper SqlHelper { get; set; }
+		private string InstanceAddress { get; }
+		private string AdminUsername { get; }
+		private string AdminPassword { get; }
+		private IRestHelper RestHelper { get; set; }
 
-		public WorkspaceHelper(IConnectionHelper connectionHelper, ISqlHelper sqlHelper)
+		public WorkspaceHelper(IConnectionHelper connectionHelper, IRestHelper restHelper, ISqlHelper sqlHelper, string instanceAddress, string adminUsername, string adminPassword)
 		{
 			ServiceFactory = connectionHelper.GetServiceFactory();
 			SqlHelper = sqlHelper;
+			InstanceAddress = instanceAddress;
+			AdminUsername = adminUsername;
+			AdminPassword = adminPassword;
+			RestHelper = restHelper;
 		}
 
 		public async Task<int> CreateSingleWorkspaceAsync(string workspaceTemplateName, string workspaceName, bool enableDataGrid)
@@ -61,97 +74,120 @@ namespace Helpers.Implementations
 
 			try
 			{
-				using (IRSAPIClient rsapiClient = ServiceFactory.CreateProxy<IRSAPIClient>())
+				string url = $"{Constants.Connection.RestUrlEndpoints.WorkspaceManager.EndpointUrl}/{workspaceArtifactId}";
+				HttpClient httpClient = RestHelper.GetHttpClient(InstanceAddress, AdminUsername, AdminPassword);
+				HttpResponseMessage response = await RestHelper.MakeDeleteAsync(httpClient, url);
+				if (!response.IsSuccessStatusCode)
 				{
-					await Task.Run(() => rsapiClient.Repositories.Workspace.DeleteSingle(workspaceArtifactId));
-
-					Console.WriteLine("Deleted Workspace!");
+					throw new Exception("Failed to Delete Workspace");
 				}
 			}
 			catch (Exception ex)
 			{
-				throw new Exception("An error occured when deleting Workspace", ex);
+				throw new Exception("An error occurred when Deleting Workspace", ex);
 			}
 		}
 
 		private async Task<int> CreateWorkspaceAsync(int templateWorkspaceArtifactId, string workspaceName, bool enableDataGrid)
 		{
 			Console.WriteLine("Creating new Workspace");
-
 			try
 			{
-				const string workspaceCreationFailErrorMessage = "Failed to create new workspace";
+				HttpClient httpClient = RestHelper.GetHttpClient(InstanceAddress, AdminUsername, AdminPassword);
+				int statusID = (await GetEligibleStatusesAsync(httpClient)).First();
+				int matterID = (await QueryEligibleMattersAsync(httpClient)).First();
+				string defaultDownloadHandlerUrl = await GetDefaultDownloadHandlerUrlAsync(httpClient);
+				int resourcePoolID = (await GetEligibleResourcePoolsAsync(httpClient)).First();
+				int fileRepositoryID = (await GetEligibleFileRepositoriesAsync(httpClient, resourcePoolID)).First();
+				int cacheLocationID = (await GetEligibleCacheLocationsAsync(httpClient, resourcePoolID)).First();
+				int sqlServerID = (await GetEligibleSqlServersAsync(httpClient, resourcePoolID)).First();
+				int sqlFullTextLanguage = await GetDefaultSqlFullTextLanguageAsync(httpClient);
+				int templateID = (await QueryEligibleTemplatesAsync(httpClient)).First();
 
-				using (IRSAPIClient rsapiClient = ServiceFactory.CreateProxy<IRSAPIClient>())
+				var workspaceArtifactId = await ExecuteCreateWorkspaceAsync(workspaceName, statusID, matterID, defaultDownloadHandlerUrl, resourcePoolID, fileRepositoryID, cacheLocationID, sqlServerID, sqlFullTextLanguage, templateID, httpClient);
+
+				Console.WriteLine($"Workspace ArtifactId: {workspaceArtifactId}");
+				Console.WriteLine("Created new Workspace!");
+
+				if (enableDataGrid)
 				{
-					rsapiClient.APIOptions.WorkspaceID = Constants.EDDS_WORKSPACE_ARTIFACT_ID;
-
-					//Create the workspace object and apply any desired properties.		
-					Workspace newWorkspace = CreateWorkspaceDto(workspaceName);
-
-					ProcessOperationResult processOperationResult = await Task.Run(() => rsapiClient.Repositories.Workspace.CreateAsync(templateWorkspaceArtifactId, newWorkspace));
-
-					if (!processOperationResult.Success)
-					{
-						throw new Exception(workspaceCreationFailErrorMessage);
-					}
-
-					ProcessInformation processInformation = await Task.Run(() => rsapiClient.GetProcessState(rsapiClient.APIOptions, processOperationResult.ProcessID));
-
-					const int maxTimeInMilliseconds = Constants.Waiting.MAX_WAIT_TIME_IN_MINUTES * 60 * 1000;
-					const int sleepTimeInMilliSeconds = Constants.Waiting.SLEEP_TIME_IN_SECONDS * 1000;
-					int currentWaitTimeInMilliseconds = 0;
-
-					while ((currentWaitTimeInMilliseconds < maxTimeInMilliseconds) && (processInformation.State != ProcessStateValue.Completed))
-					{
-						Thread.Sleep(sleepTimeInMilliSeconds);
-
-						processInformation = await Task.Run(() => rsapiClient.GetProcessState(rsapiClient.APIOptions, processOperationResult.ProcessID));
-
-						currentWaitTimeInMilliseconds += sleepTimeInMilliSeconds;
-					}
-
-					int? workspaceArtifactId = processInformation.OperationArtifactIDs.FirstOrDefault();
-					if (workspaceArtifactId == null)
-					{
-						throw new Exception(workspaceCreationFailErrorMessage);
-					}
-
-					Console.WriteLine($"Workspace ArtifactId: {workspaceArtifactId.Value}");
-					Console.WriteLine("Created new Workspace!");
-
-					if (enableDataGrid)
-					{
-						Console.WriteLine("Updating workspace to be Data Grid Enabled");
-
-						//Update Workspace to be Data Grid Enabled
-						Workspace workspace = rsapiClient.Repositories.Workspace.ReadSingle(workspaceArtifactId.Value);
-						workspace.EnableDataGrid = true;
-						rsapiClient.Repositories.Workspace.UpdateSingle(workspace);
-
-						//Enable Data Grid on Extracted Text field
-						SqlHelper.EnableDataGridOnExtractedText(Constants.Connection.Sql.EDDS_DATABASE, workspaceName);
-
-						Console.WriteLine("Workspace updated to be Data Grid Enabled");
-					}
-
-					return workspaceArtifactId.Value;
+					await EnableDataGridOnWorkspaceAsync(workspaceName, statusID, matterID, defaultDownloadHandlerUrl, resourcePoolID, fileRepositoryID, cacheLocationID, sqlServerID, sqlFullTextLanguage, httpClient, workspaceArtifactId);
 				}
+
+				return workspaceArtifactId;
 			}
 			catch (Exception ex)
 			{
-				throw new Exception("An error occured when creating Workspace", ex);
+				throw new Exception("An error occurred when creating Workspace", ex);
 			}
 		}
 
-		private static Workspace CreateWorkspaceDto(string workspaceName)
+		private async Task<int> ExecuteCreateWorkspaceAsync(string workspaceName, int statusID, int matterID,
+			string defaultDownloadHandlerUrl, int resourcePoolID, int fileRepositoryID, int cacheLocationID, int sqlServerID,
+			int sqlFullTextLanguage, int templateID, HttpClient httpClient)
 		{
-			Workspace newWorkspace = new Workspace
+			var createPayloadObject = new
 			{
-				Name = workspaceName,
-				Accessible = true
+				workspaceRequest = new
+				{
+					Name = workspaceName,
+					Status = new {ArtifactID = statusID},
+					Matter = new {Secured = false, Value = new {ArtifactID = matterID}},
+					DownloadHandlerUrl = defaultDownloadHandlerUrl,
+					EnableDataGrid = false,
+					ResourcePool = new {Secured = false, Value = new {ArtifactID = resourcePoolID}},
+					DefaultFileRepository = new {Secured = false, Value = new {ArtifactID = fileRepositoryID}},
+					DefaultCacheLocation = new {Secured = false, Value = new {ArtifactID = cacheLocationID}},
+					SqlServer = new {Secured = false, Value = new {ArtifactID = sqlServerID}},
+					SqlFullTextLanguage = sqlFullTextLanguage,
+					Template = new {Secured = false, Value = new {ArtifactID = templateID}},
+				}
 			};
-			return newWorkspace;
+
+			string createPayload = JsonConvert.SerializeObject(createPayloadObject);
+			HttpResponseMessage createResponse = await RestHelper.MakePostAsync(httpClient, $"{Constants.Connection.RestUrlEndpoints.WorkspaceManager.EndpointUrl}/", createPayload);
+			if (!createResponse.IsSuccessStatusCode)
+			{
+				throw new Exception("Failed to Create Workspace");
+			}
+
+			string resultString = await createResponse.Content.ReadAsStringAsync();
+			dynamic result = JObject.Parse(resultString) as JObject;
+			int workspaceArtifactId = result.ArtifactID;
+			return workspaceArtifactId;
+		}
+
+		private async Task EnableDataGridOnWorkspaceAsync(string workspaceName, int statusID, int matterID,
+			string defaultDownloadHandlerUrl, int resourcePoolID, int fileRepositoryID, int cacheLocationID, int sqlServerID,
+			int sqlFullTextLanguage, HttpClient httpClient, int workspaceArtifactId)
+		{
+			Console.WriteLine("Updating workspace to be Data Grid Enabled");
+
+			var updatePayloadObject = new
+			{
+				workspaceRequest = new
+				{
+					Name = workspaceName,
+					Status = new {ArtifactID = statusID},
+					Matter = new {Secured = false, Value = new {ArtifactID = matterID}},
+					DownloadHandlerUrl = defaultDownloadHandlerUrl,
+					EnableDataGrid = true,
+					ResourcePool = new {Secured = false, Value = new {ArtifactID = resourcePoolID}},
+					DefaultFileRepository = new {Secured = false, Value = new {ArtifactID = fileRepositoryID}},
+					DefaultCacheLocation = new {Secured = false, Value = new {ArtifactID = cacheLocationID}},
+					SqlServer = new {Secured = false, Value = new {ArtifactID = sqlServerID}},
+					SqlFullTextLanguage = sqlFullTextLanguage,
+				}
+			};
+
+			string updatePayload = JsonConvert.SerializeObject(updatePayloadObject);
+			HttpResponseMessage updateResponse = await RestHelper.MakePutAsync(httpClient, $"{Constants.Connection.RestUrlEndpoints.WorkspaceManager.EndpointUrl}/{workspaceArtifactId}", updatePayload);
+			if (!updateResponse.IsSuccessStatusCode)
+			{
+				throw new Exception("Failed to Update Workspace to Enable Data Grid");
+			}
+
+			Console.WriteLine("Updated workspace to be Data Grid Enabled");
 		}
 
 		private async Task<List<int>> WorkspaceQueryAsync(string workspaceName)
@@ -160,34 +196,46 @@ namespace Helpers.Implementations
 
 			try
 			{
-				using (IRSAPIClient rsapiClient = ServiceFactory.CreateProxy<IRSAPIClient>())
+				HttpClient httpClient = RestHelper.GetHttpClient(InstanceAddress, AdminUsername, AdminPassword);
+
+				var queryPayloadObject = new
 				{
-					rsapiClient.APIOptions.WorkspaceID = Constants.EDDS_WORKSPACE_ARTIFACT_ID;
-
-					TextCondition textCondition = new TextCondition(WorkspaceFieldNames.Name, TextConditionEnum.EqualTo, workspaceName);
-					Query<Workspace> workspaceQuery = new Query<Workspace>
+					request = new
 					{
-						Fields = FieldValue.AllFields,
-						Condition = textCondition
-					};
+						objectType = new { artifactTypeId = 8 },
+						fields = new []
+						{
+							new { Name = "Case Artifact ID"},
+							new { Name = "Name" },
+							new { Name = "Keywords" }
+						},
+						Condition = $"'Name' == '{workspaceName}'",
+					},
+					start = 1,
+					length = 25
+				};
 
-					QueryResultSet<Workspace> workspaceQueryResultSet = await Task.Run(() => rsapiClient.Repositories.Workspace.Query(workspaceQuery));
-
-					if (!workspaceQueryResultSet.Success || workspaceQueryResultSet.Results == null)
-					{
-						throw new Exception("Failed to query Workspaces");
-					}
-
-					List<int> workspaceArtifactIds = workspaceQueryResultSet.Results.Select(x => x.Artifact.ArtifactID).ToList();
-
-					Console.WriteLine($"Queried for Workspaces! [Count: {workspaceArtifactIds.Count}]");
-
-					return workspaceArtifactIds;
+				string queryPayload = JsonConvert.SerializeObject(queryPayloadObject);
+				HttpResponseMessage queryResponse = await RestHelper.MakePostAsync(httpClient, Constants.Connection.RestUrlEndpoints.ObjectManager.QuerySlimUrl, queryPayload);
+				if (!queryResponse.IsSuccessStatusCode)
+				{
+					throw new Exception("Failed to Query for Workspaces");
 				}
+				string resultString = await queryResponse.Content.ReadAsStringAsync();
+				dynamic result = JObject.Parse(resultString) as JObject;
+				int totalCount = result.TotalCount;
+
+				List<int> workspaceIds = new List<int>();
+				for (int i = 0; i < totalCount; i++)
+				{
+					int workspaceId = result.Objects[i]["ArtifactID"];
+					workspaceIds.Add(workspaceId);
+				}
+				return workspaceIds;
 			}
 			catch (Exception ex)
 			{
-				throw new Exception("An error occured when querying Workspaces", ex);
+				throw new Exception("An error occurred when querying Workspaces", ex);
 			}
 		}
 
@@ -197,35 +245,39 @@ namespace Helpers.Implementations
 
 			try
 			{
-				using (IRSAPIClient rsapiClient = ServiceFactory.CreateProxy<IRSAPIClient>())
+				HttpClient httpClient = RestHelper.GetHttpClient(InstanceAddress, AdminUsername, AdminPassword);
+
+				var queryPayloadObject = new
 				{
-					rsapiClient.APIOptions.WorkspaceID = Constants.EDDS_WORKSPACE_ARTIFACT_ID;
-
-					TextCondition textCondition = new TextCondition(WorkspaceFieldNames.Name, TextConditionEnum.EqualTo, workspaceName);
-					Query<Workspace> workspaceQuery = new Query<Workspace>
+					request = new
 					{
-						Fields = FieldValue.NoFields,
-						Condition = textCondition
-					};
+						objectType = new { artifactTypeId = 8 },
+						fields = new[]
+						{
+							new { Name = "Case Artifact ID"},
+							new { Name = "Name" },
+							new { Name = "Keywords" }
+						},
+						Condition = $"'Name' == '{workspaceName}'",
+					},
+					start = 1,
+					length = 25
+				};
 
-					QueryResultSet<Workspace> workspaceQueryResultSet = await Task.Run(() => rsapiClient.Repositories.Workspace.Query(workspaceQuery));
-
-					if (!workspaceQueryResultSet.Success || workspaceQueryResultSet.Results == null)
-					{
-						throw new Exception("Failed to query Workspaces");
-					}
-
-					List<int> workspaceArtifactIds = workspaceQueryResultSet.Results.Select(x => x.Artifact.ArtifactID).ToList();
-
-					int workspaceCount = workspaceArtifactIds.Count;
-					Console.WriteLine($"Queried for Workspaces! [Count: {workspaceCount}]");
-
-					return workspaceCount;
+				string queryPayload = JsonConvert.SerializeObject(queryPayloadObject);
+				HttpResponseMessage queryResponse = await RestHelper.MakePostAsync(httpClient, Constants.Connection.RestUrlEndpoints.ObjectManager.QuerySlimUrl, queryPayload);
+				if (!queryResponse.IsSuccessStatusCode)
+				{
+					throw new Exception("Failed to Query for Workspaces");
 				}
+				string resultString = await queryResponse.Content.ReadAsStringAsync();
+				dynamic result = JObject.Parse(resultString) as JObject;
+				int totalCount = result.TotalCount;
+				return totalCount;
 			}
 			catch (Exception ex)
 			{
-				throw new Exception("An error occured when querying for Workspace count", ex);
+				throw new Exception("An error occurred when querying for Workspace count", ex);
 			}
 		}
 
@@ -235,41 +287,144 @@ namespace Helpers.Implementations
 
 			try
 			{
-				using (IRSAPIClient rsapiClient = ServiceFactory.CreateProxy<IRSAPIClient>())
+				HttpClient httpClient = RestHelper.GetHttpClient(InstanceAddress, AdminUsername, AdminPassword);
+
+				var queryPayloadObject = new
 				{
-					rsapiClient.APIOptions.WorkspaceID = Constants.EDDS_WORKSPACE_ARTIFACT_ID;
-
-					TextCondition textCondition = new TextCondition(WorkspaceFieldNames.Name, TextConditionEnum.EqualTo, workspaceName);
-					Query<Workspace> workspaceQuery = new Query<Workspace>
+					request = new
 					{
-						Fields = FieldValue.NoFields,
-						Condition = textCondition
-					};
+						objectType = new { artifactTypeId = 8 },
+						fields = new[]
+						{
+							new { Name = "Case Artifact ID"},
+							new { Name = "Name" },
+							new { Name = "Keywords" }
+						},
+						Condition = $"'Name' == '{workspaceName}'",
+					},
+					start = 1,
+					length = 25
+				};
 
-					QueryResultSet<Workspace> workspaceQueryResultSet = await Task.Run(() => rsapiClient.Repositories.Workspace.Query(workspaceQuery));
-
-					if (!workspaceQueryResultSet.Success || workspaceQueryResultSet.Results == null)
-					{
-						throw new Exception("Failed to query Workspaces");
-					}
-
-					List<int> workspaceArtifactIds = workspaceQueryResultSet.Results.Select(x => x.Artifact.ArtifactID).ToList();
-
-					Console.WriteLine($"Queried for Workspaces! [Count: {workspaceArtifactIds.Count}]");
-
-					if (workspaceArtifactIds.Count == 0)
-					{
-						throw new Exception($"No workspace exists! [{nameof(workspaceName)}: {workspaceName}]");
-					}
-
-					int firstWorkspaceArtifactId = workspaceArtifactIds.FirstOrDefault();
-					return firstWorkspaceArtifactId;
+				string queryPayload = JsonConvert.SerializeObject(queryPayloadObject);
+				HttpResponseMessage queryResponse = await RestHelper.MakePostAsync(httpClient, Constants.Connection.RestUrlEndpoints.ObjectManager.QuerySlimUrl, queryPayload);
+				if (!queryResponse.IsSuccessStatusCode)
+				{
+					throw new Exception("Failed to Query for Workspaces");
 				}
+				string resultString = await queryResponse.Content.ReadAsStringAsync();
+				dynamic result = JObject.Parse(resultString) as JObject;
+				int workspaceId = result.Objects[0]["ArtifactID"];
+				return workspaceId;
 			}
 			catch (Exception ex)
 			{
 				throw new Exception("An error occured when querying Workspaces", ex);
 			}
 		}
+
+		#region Workspace Rest Helpers
+
+		private async Task<List<int>> GetArtifactIDListAsync(HttpClient httpClient, string url)
+		{
+			HttpResponseMessage response = await httpClient.GetAsync(url);
+			string resultString = await response.Content.ReadAsStringAsync();
+
+			var artifactIDs = new List<int>();
+
+			dynamic objects = JArray.Parse(resultString) as JArray;
+			foreach (var obj in objects)
+			{
+				int artifactID = obj.ArtifactID;
+				artifactIDs.Add(artifactID);
+			}
+
+			return artifactIDs;
+		}
+
+		private async Task<List<int>> QueryArtifactIDListAsync(HttpClient httpClient, string url)
+		{
+			var queryRequest = new
+			{
+				request = new
+				{
+					Fields = new[]
+					{
+						new { Name = "*" }
+					},
+					Condition = ""
+				},
+				start = 1,
+				length = 1000
+			};
+
+			StringContent payload = new StringContent(JsonConvert.SerializeObject(queryRequest), Encoding.UTF8, "application/json");
+			HttpResponseMessage response = await httpClient.PostAsync(url, payload);
+			string resultString = await response.Content.ReadAsStringAsync();
+
+			var artifactIDs = new List<int>();
+
+			dynamic result = JObject.Parse(resultString) as JObject;
+			foreach (var obj in result.Objects)
+			{
+				int artifactID = obj.ArtifactID;
+				artifactIDs.Add(artifactID);
+			}
+
+			return artifactIDs;
+		}
+
+		public async Task<List<int>> GetEligibleStatusesAsync(HttpClient httpClient)
+		{
+			return await GetArtifactIDListAsync(httpClient, $"{Constants.Connection.RestUrlEndpoints.WorkspaceManager.EndpointUrl}/eligible-statuses");
+		}
+
+		public async Task<List<int>> GetEligibleResourcePoolsAsync(HttpClient httpClient)
+		{
+			return await GetArtifactIDListAsync(httpClient, $"{Constants.Connection.RestUrlEndpoints.WorkspaceManager.EndpointUrl}/eligible-resource-pools");
+		}
+
+		public async Task<List<int>> GetEligibleFileRepositoriesAsync(HttpClient httpClient, int resourcePoolID)
+		{
+			return await GetArtifactIDListAsync(httpClient, $"{Constants.Connection.RestUrlEndpoints.WorkspaceManager.EndpointUrl}/eligible-resource-pools/{resourcePoolID}/eligible-file-repositories");
+		}
+
+		public async Task<List<int>> GetEligibleCacheLocationsAsync(HttpClient httpClient, int resourcePoolID)
+		{
+			return await GetArtifactIDListAsync(httpClient, $"{Constants.Connection.RestUrlEndpoints.WorkspaceManager.EndpointUrl}/eligible-resource-pools/{resourcePoolID}/eligible-cache-locations");
+		}
+
+		public async Task<List<int>> GetEligibleSqlServersAsync(HttpClient httpClient, int resourcePoolID)
+		{
+			return await GetArtifactIDListAsync(httpClient, $"{Constants.Connection.RestUrlEndpoints.WorkspaceManager.EndpointUrl}/eligible-resource-pools/{resourcePoolID}/eligible-sql-servers");
+		}
+
+		public async Task<List<int>> QueryEligibleMattersAsync(HttpClient httpClient)
+		{
+			return await QueryArtifactIDListAsync(httpClient, $"{Constants.Connection.RestUrlEndpoints.WorkspaceManager.EndpointUrl}/query-eligible-matters");
+		}
+
+		public async Task<List<int>> QueryEligibleTemplatesAsync(HttpClient httpClient)
+		{
+			return await QueryArtifactIDListAsync(httpClient, $"{Constants.Connection.RestUrlEndpoints.WorkspaceManager.EndpointUrl}/query-eligible-templates");
+		}
+
+		public async Task<int> GetDefaultSqlFullTextLanguageAsync(HttpClient httpClient)
+		{
+			HttpResponseMessage response = await httpClient.GetAsync($"{Constants.Connection.RestUrlEndpoints.WorkspaceManager.EndpointUrl}/eligible-sql-full-text-languages");
+			string resultString = await response.Content.ReadAsStringAsync();
+			dynamic languages = JObject.Parse(resultString) as JObject;
+			int defaultLanguageId = languages.DefaultLanguageLcid;
+			return defaultLanguageId;
+		}
+
+		public async Task<string> GetDefaultDownloadHandlerUrlAsync(HttpClient httpClient)
+		{
+			HttpResponseMessage response = await httpClient.GetAsync($"{Constants.Connection.RestUrlEndpoints.WorkspaceManager.EndpointUrl}/default-download-handler-url");
+			string result = await response.Content.ReadAsStringAsync();
+			return JsonConvert.DeserializeObject<string>(result);
+		}
+
+		#endregion
 	}
 }

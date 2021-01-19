@@ -4,8 +4,20 @@
 
 -------------------------
 
-- 2021-01-06
+- 2021-01-19
 	- REL-509154 - Removed unused scripts.  Changed DataGrid Instance Settings Create/Update to utilize our current C# PowerShell Modules
+
+-------------------------
+
+- 2021-01-13
+	- REL-507462 - Replace ImagingHelper.cs RSAPI calls with REST implementation.
+
+-------------------------
+
+- 2021-01-12
+	- REL-507447 - Replace WorkspaceHelper.cs RSAPI calls with REST implementation.
+	- REL-507460 - Replace DisclaimerAcceptanceHelper.cs RSAPI calls with REST implementation.
+	- REL-507459 - Replace ApplicationInstallHelper.cs RSAPI calls with REST implementation.
 
 -------------------------
 

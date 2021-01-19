@@ -5,6 +5,7 @@ using Relativity.Services.ServiceProxy;
 using System;
 using System.Linq;
 using System.Net.Http;
+using System.Threading.Tasks;
 using Helpers.RequestModels;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -17,16 +18,18 @@ namespace Helpers.Implementations
 		private string InstanceAddress { get; set; }
 		private string AdminUsername { get; set; }
 		private string AdminPassword { get; set; }
+		private IRestHelper RestHelper { get; set; }
 
-		public InstanceSettingsHelper(IConnectionHelper connectionHelper, string instanceAddress, string adminUsername, string adminPassword)
+		public InstanceSettingsHelper(IConnectionHelper connectionHelper, IRestHelper restHelper, string instanceAddress, string adminUsername, string adminPassword)
 		{
 			ServiceFactory = connectionHelper.GetServiceFactory();
 			InstanceAddress = instanceAddress;
 			AdminUsername = adminUsername;
 			AdminPassword = adminPassword;
+			RestHelper = restHelper;
 		}
 
-		public int CreateInstanceSetting(string name, string section, string description, string value)
+		public async Task<int> CreateInstanceSettingAsync(string name, string section, string description, string value)
 		{
 			try
 			{
@@ -48,7 +51,7 @@ namespace Helpers.Implementations
 					}
 				};
 				string createRequest = JsonConvert.SerializeObject(instanceSettingManagerUpdateRequest);
-				HttpResponseMessage createResponse = RestHelper.MakePost(httpClient, Constants.Connection.RestUrlEndpoints.InstanceSettings.endpointUrl, createRequest);
+				HttpResponseMessage createResponse = await RestHelper.MakePostAsync(httpClient, Constants.Connection.RestUrlEndpoints.InstanceSettings.EndpointUrl, createRequest);
 				if (!createResponse.IsSuccessStatusCode)
 				{
 					throw new Exception("Failed to create Instance Setting");
@@ -65,7 +68,7 @@ namespace Helpers.Implementations
 			}
 		}
 
-		public bool UpdateInstanceSettingValue(string name, string section, string newValue)
+		public async Task<bool> UpdateInstanceSettingValueAsync(string name, string section, string newValue)
 		{
 			try
 			{
@@ -101,10 +104,11 @@ namespace Helpers.Implementations
 				};
 
 				string queryRequest = JsonConvert.SerializeObject(objectManagerQueryRequestModel);
-				HttpResponseMessage queryResponse = RestHelper.MakePost(httpClient, Constants.Connection.RestUrlEndpoints.ObjectManager.queryUrl, queryRequest);
+				HttpResponseMessage queryResponse = await RestHelper.MakePostAsync(httpClient,
+					Constants.Connection.RestUrlEndpoints.ObjectManager.QueryUrl, queryRequest);
 				if (!queryResponse.IsSuccessStatusCode)
 				{
-					throw new Exception("Failed to Query for Agent Artifact Ids");
+					throw new Exception("Failed to Query for Instance Setting");
 				}
 				string result = queryResponse.Content.ReadAsStringAsync().Result;
 				JObject jObject = JObject.Parse(result);
@@ -128,7 +132,7 @@ namespace Helpers.Implementations
 						}
 					};
 					string updateRequest = JsonConvert.SerializeObject(instanceSettingManagerUpdateRequest);
-					HttpResponseMessage updateResponse = RestHelper.MakePut(httpClient, Constants.Connection.RestUrlEndpoints.InstanceSettings.endpointUrl, updateRequest);
+					HttpResponseMessage updateResponse = await RestHelper.MakePutAsync(httpClient, Constants.Connection.RestUrlEndpoints.InstanceSettings.EndpointUrl, updateRequest);
 					if (updateResponse.IsSuccessStatusCode)
 					{
 						Console.WriteLine("Successfully updated the Instance Setting");
@@ -149,13 +153,13 @@ namespace Helpers.Implementations
 			}
 		}
 
-		public void DeleteInstanceSetting(int instanceSettingArtifactId)
+		public async Task DeleteInstanceSettingAsync(int instanceSettingArtifactId)
 		{
 			try
 			{
 				HttpClient httpClient = RestHelper.GetHttpClient(InstanceAddress, AdminUsername, AdminPassword);
 				string deleteUrl = $"Relativity.REST/api/Relativity.InstanceSettings/workspace/{Constants.EDDS_WORKSPACE_ARTIFACT_ID}/instancesettings/{instanceSettingArtifactId}";
-				HttpResponseMessage httpResponseMessage = RestHelper.MakeDelete(httpClient, deleteUrl);
+				HttpResponseMessage httpResponseMessage = await RestHelper.MakeDeleteAsync(httpClient, deleteUrl);
 				if (!httpResponseMessage.IsSuccessStatusCode)
 				{
 					throw new Exception("Failed to Delete Instance Setting");
