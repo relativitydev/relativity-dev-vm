@@ -93,7 +93,7 @@ powershell_script 'update_datagrid_instance_settings' do
         # Try to create the instance setting, if that fails, that means it already exists and we just need to update it
         try
         {
-            Add-InstanceSetting -RelativityInstanceName #{node['windows']['new_computer_name']} -RelativityAdminUserName #{node['relativity']['admin']['login']} -RelativityAdminPassword #{node['relativity']['admin']['password']} -SqlAdminUserName #{node['sql']['user']['eddsdbo']['login']} -SqlAdminPassword #{node['sql']['user']['sa']['password']} -Name $instanceSettingName -Section $instanceSettingSection -Description $description -Value $value
+            Add-InstanceSetting -RelativityInstanceName #{node['windows']['new_computer_name']} -RelativityAdminUserName #{node['relativity']['admin']['login']} -RelativityAdminPassword #{node['relativity']['admin']['password']} -SqlAdminUserName #{node['sql']['user']['eddsdbo']['login']} -SqlAdminPassword #{node['sql']['user']['sa']['password']} -Name $instanceSettingName -Section $instanceSettingSection -Description $description -Value $value -ErrorAction Stop
         }
         catch
         {
