@@ -125,6 +125,7 @@ namespace Helpers
 			public const string DefaultPool = "Default";
 			public const string WorkerManagerServer = "Worker Manager Server";
 			public const string WorkerServer = "Worker";
+			public const string Guid = "ED0E23F9-DA60-4298-AF9A-AE6A9B6A9319";
 		}
 
 		public class AgentServer

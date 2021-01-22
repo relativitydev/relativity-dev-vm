@@ -111,7 +111,11 @@ namespace Helpers.Implementations
 
 				if (enableDataGrid)
 				{
+					//Update Workspace to be Data Grid Enabled
 					await EnableDataGridOnWorkspaceAsync(workspaceName, statusID, matterID, defaultDownloadHandlerUrl, resourcePoolID, fileRepositoryID, cacheLocationID, sqlServerID, sqlFullTextLanguage, httpClient, workspaceArtifactId);
+
+					//Enable Data Grid on Extracted Text field
+					SqlHelper.EnableDataGridOnExtractedText(Constants.Connection.Sql.EDDS_DATABASE, workspaceName);
 				}
 
 				return workspaceArtifactId;
