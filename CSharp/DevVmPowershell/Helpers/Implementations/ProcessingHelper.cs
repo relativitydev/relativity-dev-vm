@@ -124,6 +124,9 @@ namespace Helpers.Implementations
 				Order = 1
 			};
 
+			string url = Constants.Connection.RestUrlEndpoints.ObjectManager.ProcessingSourceCreateUrl;
+			HttpClient httpClient = RestHelper.GetHttpClient(InstanceAddress, AdminUsername, AdminPassword);
+
 			kCura.Relativity.Client.TextCondition cond = new kCura.Relativity.Client.TextCondition()
 			{
 				Field = Constants.Processing.NameField,
@@ -131,40 +134,19 @@ namespace Helpers.Implementations
 				Value = Constants.Processing.ChoiceName
 			};
 
-			using (IRSAPIClient rsapiClient = ServiceFactory.CreateProxy<IRSAPIClient>())
-			{
-				rsapiClient.APIOptions = new APIOptions(-1);
 
-				kCura.Relativity.Client.DTOs.QueryResultSet<Choice> choiceQuery = rsapiClient.Repositories.Choice.Query(new Query<Choice>() { Condition = cond });
 
-				if (choiceQuery.Success && choiceQuery.TotalCount > 0)
-				{
-					Console.WriteLine($"{nameof(CreateProcessingSourceLocationChoice)} - Failed to create Processing Source Location Choice ({Constants.Processing.ChoiceName}) as it already exists");
-					wasChoiceCreated = true;
-					return wasChoiceCreated;
-				}
-
-				WriteResultSet<Choice> result = rsapiClient.Repositories.Choice.Create(choice);
+			WriteResultSet<Choice> result = null;
 
 				if (result.Success)
 				{
-					choiceQuery = rsapiClient.Repositories.Choice.Query(new Query<Choice>() { Condition = cond });
-					if (choiceQuery.Success && choiceQuery.TotalCount > 0)
-					{
-						wasChoiceCreated = true;
-						Console.WriteLine($"{nameof(CreateProcessingSourceLocationChoice)} - Successfully created Processing Source Location Choice ({Constants.Processing.ChoiceName})");
-					}
-					else
-					{
-						Console.WriteLine($"{nameof(CreateProcessingSourceLocationChoice)} - Failed to create Processing Source Location Choice ({Constants.Processing.ChoiceName})");
-					}
 
 				}
 				else
 				{
 					Console.WriteLine($"{nameof(CreateProcessingSourceLocationChoice)} - Failed to create Processing Source Location Choice ({Constants.Processing.ChoiceName})");
 				}
-			}
+			
 
 			return wasChoiceCreated;
 		}

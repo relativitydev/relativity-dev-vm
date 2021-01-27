@@ -35,6 +35,8 @@ namespace Helpers
 					public const string QueryUrl = "Relativity.REST/api/Relativity.Objects/workspace/-1/object/query";
 					public const string QuerySlimUrl = "Relativity.REST/api/Relativity.Objects/workspace/-1/object/queryslim";
 					public const string ReadUrl = "Relativity.REST/api/Relativity.Objects/workspace/-1/object/read";
+
+					public const string ProcessingSourceCreateUrl = "Relativity.REST/api/relativity-object-model/v1/workspaces/-1/choices/";
 				}
 
 				public class WorkspaceManager
