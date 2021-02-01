@@ -135,7 +135,7 @@ namespace Helpers.Implementations
 
 				choiceRequest = new
 				{
-					Field = new {ArtifactID = 1016582 },
+					Field = new {ArtifactID = processingSourceFieldId },
 					Name = Constants.Processing.ChoiceName,
 					Order = 100,
 					Keywords = "DevVM Processing Source Location",
@@ -920,13 +920,15 @@ namespace Helpers.Implementations
 
 			var queryRequest = new QueryRequest()
 			{
-				Condition = conditionChoice.ToQueryString().Replace(@"\", @"\\"), //query condition syntax is used to build query condtion.  See Relativity's developer documentation for more details
+				//Condition = conditionChoice.ToQueryString().Replace(@"\", @"\\"), //query condition syntax is used to build query condtion.  
+				Condition = "('Object Type' == 'Choice') AND ('Field' == 'Processing Source Location') AND ('Name' == '\\\\RELATIVITYDEVVM\\ProcessingSourceLocation')",
 				Fields = new List<global::Relativity.Services.Objects.DataContracts.FieldRef>() //array of fields to return.  ArtifactId will always be returned.
 
             {
 				new global::Relativity.Services.Objects.DataContracts.FieldRef { Name = Constants.Processing.NameField },
 			},
-				ObjectType = new ObjectTypeRef { ArtifactTypeID = Constants.FIELD_TYPE_ARTIFACT_ID }
+				//ObjectType = new ObjectTypeRef { ArtifactTypeID = Constants.FIELD_TYPE_ARTIFACT_ID }
+				ObjectType = new ObjectTypeRef { ArtifactTypeID = 7 }
 			};
 
 			using (IObjectManager objectManager =  ServiceFactory.CreateProxy<IObjectManager>())
