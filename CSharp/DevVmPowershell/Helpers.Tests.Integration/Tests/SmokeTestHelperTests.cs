@@ -88,14 +88,14 @@ namespace Helpers.Tests.Integration.Tests
 				bool installationResult = await ApplicationInstallHelper.InstallApplicationFromRapFileAsync(workspaceName, rapLocation);
 				if (!installationResult)
 				{
-					throw new Exception("Smoke Test Application failed to Install");
+					throw new Exception($"Smoke Test Application failed to Install in a workspace ({workspaceName})");
 				}
 
 				//Install Processing Application in Workspace
 				bool processingInstallationResult = await ApplicationInstallHelper.InstallApplicationFromApplicationLibraryAsync(workspaceName, Constants.Processing.Guid);
 				if (!processingInstallationResult)
 				{
-					throw new Exception("Processing Application failed to Install");
+					throw new Exception($"Processing Application failed to Install in a workspace ({workspaceName})");
 				}
 
 				//Create Smoke Test Agents
