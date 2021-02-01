@@ -1,6 +1,7 @@
 ﻿using Relativity.Imaging.Services.Interfaces;
 using Relativity.Services.Agent;
 using System;
+using kCura.Vendor.Castle.DynamicProxy.Generators.Emitters.SimpleAST;
 
 namespace Helpers
 {
@@ -9,6 +10,7 @@ namespace Helpers
 		public const int EDDS_WORKSPACE_ARTIFACT_ID = -1;
 		public const int OBJECT_TYPE_TYPE_ARTIFACT_ID = 25;
 		public const int LAYOUT_TYPE_ARTIFACT_ID = 16;
+		public const int FIELD_TYPE_ARTIFACT_ID = 14;
 
 		public class Connection
 		{
@@ -35,7 +37,10 @@ namespace Helpers
 					public const string QueryUrl = "Relativity.REST/api/Relativity.Objects/workspace/-1/object/query";
 					public const string QuerySlimUrl = "Relativity.REST/api/Relativity.Objects/workspace/-1/object/queryslim";
 					public const string ReadUrl = "Relativity.REST/api/Relativity.Objects/workspace/-1/object/read";
+				}
 
+				public class ProcessingManager
+				{
 					public const string ProcessingSourceCreateUrl = "Relativity.REST/api/relativity-object-model/v1/workspaces/-1/choices/";
 				}
 
@@ -127,6 +132,7 @@ namespace Helpers
 			public const string DefaultPool = "Default";
 			public const string WorkerManagerServer = "Worker Manager Server";
 			public const string WorkerServer = "Worker";
+			public const string ProcessingSourceLocationField = "Processing Source Location";
 		}
 
 		public class AgentServer

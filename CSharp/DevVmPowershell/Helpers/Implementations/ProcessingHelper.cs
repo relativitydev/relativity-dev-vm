@@ -18,8 +18,10 @@ using Helpers.RequestModels;
 using kCura.Notification;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Relativity.Services.Interfaces.Choice.Models;
 using Choice = kCura.Relativity.Client.DTOs.Choice;
 using ChoiceRef = Relativity.Services.Choice.ChoiceRef;
+using QueryResult = Relativity.Services.Objects.DataContracts.QueryResult;
 
 namespace Helpers.Implementations
 {
@@ -47,9 +49,9 @@ namespace Helpers.Implementations
 		{
 			bool wasSetupComplete = false;
 
-			Console.WriteLine($"{nameof(FullSetupAndUpdateDefaultResourcePoolAsync)} - Starting ({nameof(CreateProcessingSourceLocationChoice)})");
-			wasSetupComplete = CreateProcessingSourceLocationChoice();
-			Console.WriteLine($"{nameof(FullSetupAndUpdateDefaultResourcePoolAsync)} - Finished ({nameof(CreateProcessingSourceLocationChoice)}) Result: {wasSetupComplete}");
+			Console.WriteLine($"{nameof(FullSetupAndUpdateDefaultResourcePoolAsync)} - Starting ({nameof(CreateProcessingSourceLocationChoiceAsync)})");
+			wasSetupComplete = await CreateProcessingSourceLocationChoiceAsync();
+			Console.WriteLine($"{nameof(FullSetupAndUpdateDefaultResourcePoolAsync)} - Finished ({nameof(CreateProcessingSourceLocationChoiceAsync)}) Result: {wasSetupComplete}");
 
 			Console.WriteLine($"{nameof(FullSetupAndUpdateDefaultResourcePoolAsync)} - Starting ({nameof(AddProcessingSourceLocationChoiceToDefaultResourcePoolAsync)})");
 			wasSetupComplete = await AddProcessingSourceLocationChoiceToDefaultResourcePoolAsync();
@@ -111,42 +113,58 @@ namespace Helpers.Implementations
 		/// Creates a Processing Source Location Choice and makes sure it doesn't already exist.
 		/// </summary>
 		/// <returns></returns>
-		public bool CreateProcessingSourceLocationChoice()
+		public async Task<bool> CreateProcessingSourceLocationChoiceAsync()
 		{
 			bool wasChoiceCreated = false;
+			int processingSourceFieldId = await GetProcessingSourceFieldArtifactId();
 
-			Console.WriteLine($"{nameof(CreateProcessingSourceLocationChoice)} - Creating Processing Source Location Choice ({Constants.Processing.ChoiceName})");
+			Console.WriteLine($"{nameof(CreateProcessingSourceLocationChoiceAsync)} - Creating Processing Source Location Choice ({Constants.Processing.ChoiceName})");
 
-			Choice choice = new Choice
-			{
-				Name = Constants.Processing.ChoiceName,
-				ChoiceTypeID = Constants.Processing.ChoiceTypeID,
-				Order = 1
-			};
+			//Choice choice = new Choice
+			//{
+			//	Name = Constants.Processing.ChoiceName,
+			//	ChoiceTypeID = Constants.Processing.ChoiceTypeID,
+			//	Order = 1
+			//};
 
-			string url = Constants.Connection.RestUrlEndpoints.ObjectManager.ProcessingSourceCreateUrl;
+			string url = Constants.Connection.RestUrlEndpoints.ProcessingManager.ProcessingSourceCreateUrl;
 			HttpClient httpClient = RestHelper.GetHttpClient(InstanceAddress, AdminUsername, AdminPassword);
 
-			kCura.Relativity.Client.TextCondition cond = new kCura.Relativity.Client.TextCondition()
+			var createPayloadObject = new
 			{
-				Field = Constants.Processing.NameField,
-				Operator = kCura.Relativity.Client.TextConditionEnum.EqualTo,
-				Value = Constants.Processing.ChoiceName
+
+				choiceRequest = new
+				{
+					Field = new {ArtifactID = 1016582 },
+					Name = Constants.Processing.ChoiceName,
+					Order = 100,
+					Keywords = "DevVM Processing Source Location",
+					Notes = "",
+					RelativityApplications = new string[] { },
+			}
 			};
 
+		    string createPayload = JsonConvert.SerializeObject(createPayloadObject);
+		    HttpResponseMessage createResponse = await RestHelper.MakePostAsync(httpClient, $"{Constants.Connection.RestUrlEndpoints.ProcessingManager.ProcessingSourceCreateUrl}/", createPayload);
+		    
+		    if (!createResponse.IsSuccessStatusCode)
+		    {
+			    throw new System.Exception("Failed to Create Processing Source Location");
+		    }
 
+			string resultString = await createResponse.Content.ReadAsStringAsync();
 
-			WriteResultSet<Choice> result = null;
+			int processingChoiceId = Int32.Parse(resultString);
 
-				if (result.Success)
-				{
-
-				}
-				else
-				{
-					Console.WriteLine($"{nameof(CreateProcessingSourceLocationChoice)} - Failed to create Processing Source Location Choice ({Constants.Processing.ChoiceName})");
-				}
-			
+			if (processingChoiceId == null || processingChoiceId < 0)
+			{
+				wasChoiceCreated = false;
+				Console.WriteLine($"{nameof(CreateProcessingSourceLocationChoiceAsync)} - Failed to create Processing Source Location Choice ({Constants.Processing.ChoiceName})");
+			}
+			else
+			{
+				wasChoiceCreated = true;
+			}
 
 			return wasChoiceCreated;
 		}
@@ -886,6 +904,38 @@ namespace Helpers.Implementations
 
 
 			return wasRemoved;
+		}
+
+		public async Task<int> GetProcessingSourceFieldArtifactId()
+		{
+			int processingsourceArtifactId;
+			
+			// Setup for checking Resource Pools
+			Relativity.Services.TextCondition conditionChoice = new Relativity.Services.TextCondition()
+			{
+				Field = Constants.Processing.NameField,
+				Operator = Relativity.Services.TextConditionEnum.StartsWith,
+				Value = Constants.Processing.ProcessingSourceLocationField
+			};
+
+			var queryRequest = new QueryRequest()
+			{
+				Condition = conditionChoice.ToQueryString().Replace(@"\", @"\\"), //query condition syntax is used to build query condtion.  See Relativity's developer documentation for more details
+				Fields = new List<global::Relativity.Services.Objects.DataContracts.FieldRef>() //array of fields to return.  ArtifactId will always be returned.
+
+            {
+				new global::Relativity.Services.Objects.DataContracts.FieldRef { Name = Constants.Processing.NameField },
+			},
+				ObjectType = new ObjectTypeRef { ArtifactTypeID = Constants.FIELD_TYPE_ARTIFACT_ID }
+			};
+
+			using (IObjectManager objectManager =  ServiceFactory.CreateProxy<IObjectManager>())
+			{
+				QueryResult queryresult = await objectManager.QueryAsync(Constants.Processing.WorkspaceId, queryRequest, 1, 10);
+				processingsourceArtifactId = queryresult.Objects[0].ArtifactID;
+			}
+
+			return processingsourceArtifactId;
 		}
 
 	} // End of class

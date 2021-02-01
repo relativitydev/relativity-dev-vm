@@ -4,7 +4,7 @@ namespace Helpers.Interfaces
 {
 	public interface IProcessingHelper
 	{
-		bool CreateProcessingSourceLocationChoice();
+		Task<bool> CreateProcessingSourceLocationChoiceAsync();
 		Task<bool> AddProcessingSourceLocationChoiceToDefaultResourcePoolAsync();
 		Task<bool> CreateWorkerManagerServerAsync();
 		Task<bool> DeleteWorkerManagerServerAsync();
@@ -15,5 +15,6 @@ namespace Helpers.Interfaces
 		Task<bool> RemoveWorkerServerFromDefaultResourcePoolAsync();
 		Task<bool> FullSetupAndUpdateDefaultResourcePoolAsync();
 		Task<bool> FullResetAsync();
+		Task<int> GetProcessingSourceFieldArtifactId();
 	}
 }
