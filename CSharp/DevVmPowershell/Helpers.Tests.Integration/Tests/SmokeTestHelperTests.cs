@@ -3,6 +3,7 @@ using Helpers.Interfaces;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 
 namespace Helpers.Tests.Integration.Tests
@@ -78,10 +79,23 @@ namespace Helpers.Tests.Integration.Tests
 					.CreateSingleWorkspaceAsync(Constants.Workspace.DEFAULT_WORKSPACE_TEMPLATE_NAME, workspaceName, true).Result;
 
 				//Install Smoke Test Application in Workspace
-				bool installationResult = await ApplicationInstallHelper.InstallApplicationFromApplicationLibraryAsync(workspaceName, Constants.SmokeTest.Guids.ApplicationGuid);
+				string binFolderPath = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+				if (string.IsNullOrWhiteSpace(binFolderPath))
+				{
+					throw new Exception($"{nameof(binFolderPath)} is invalid.");
+				}
+				string rapLocation = Path.Combine(binFolderPath, TestConstants.SMOKE_TEST_APP_FILE_PATH);
+				bool installationResult = await ApplicationInstallHelper.InstallApplicationFromRapFileAsync(workspaceName, rapLocation);
 				if (!installationResult)
 				{
-					throw new Exception("Smoke Test Application failed to Install");
+					throw new Exception($"Smoke Test Application failed to Install in a workspace ({workspaceName})");
+				}
+
+				//Install Processing Application in Workspace
+				bool processingInstallationResult = await ApplicationInstallHelper.InstallApplicationFromApplicationLibraryAsync(workspaceName, Constants.Processing.Guid);
+				if (!processingInstallationResult)
+				{
+					throw new Exception($"Processing Application failed to Install in a workspace ({workspaceName})");
 				}
 
 				//Create Smoke Test Agents

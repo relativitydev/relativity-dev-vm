@@ -9,6 +9,7 @@
 		public const string RELATIVITY_ADMIN_USER_NAME = "relativity.admin@relativity.com";
 		public const string RELATIVITY_ADMIN_PASSWORD = "<password_removed_contact_relativity_plex_team>";
 		public const string SAMPLE_APPLICATION_FILE_PATH = @"TestFiles\RAP\Single-Object_Single-Field_Application_1.0.0.0.rap";
+		public const string SMOKE_TEST_APP_FILE_PATH = @"TestFiles\RAP\RA_Smoke_Test_2.2.2.2.rap";
 		public const string AGENT_NAME = "Data Grid Audit Manager";
 		public const string SQL_USER_NAME = "eddsdbo";
 		public const string SQL_PASSWORD = "<password_removed_contact_relativity_plex_team>";
