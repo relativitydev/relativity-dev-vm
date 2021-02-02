@@ -1,7 +1,6 @@
 ﻿using Relativity.Imaging.Services.Interfaces;
 using Relativity.Services.Agent;
 using System;
-using kCura.Vendor.Castle.DynamicProxy.Generators.Emitters.SimpleAST;
 
 namespace Helpers
 {
@@ -10,7 +9,6 @@ namespace Helpers
 		public const int EDDS_WORKSPACE_ARTIFACT_ID = -1;
 		public const int OBJECT_TYPE_TYPE_ARTIFACT_ID = 25;
 		public const int LAYOUT_TYPE_ARTIFACT_ID = 16;
-		public const int FIELD_TYPE_ARTIFACT_ID = 14;
 
 		public class Connection
 		{

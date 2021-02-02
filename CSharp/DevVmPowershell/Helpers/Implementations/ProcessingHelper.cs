@@ -148,7 +148,7 @@ namespace Helpers.Implementations
 
 			int processingChoiceId = Int32.Parse(resultString);
 
-			if (processingChoiceId == null || processingChoiceId < 0)
+			if (processingChoiceId < 0)
 			{
 				wasChoiceCreated = false;
 				Console.WriteLine($"{nameof(CreateProcessingSourceLocationChoiceAsync)} - Failed to create Processing Source Location Choice ({Constants.Processing.ChoiceName})");

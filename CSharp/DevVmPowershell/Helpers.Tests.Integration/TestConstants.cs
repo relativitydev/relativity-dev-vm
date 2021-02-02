@@ -4,7 +4,7 @@
 	{
 		public const string TEST_APPLICATION_NAME = "Production";
 		public const string RELATIVITY_INSTANCE_NAME = "172.17.208.218";
-		public const string SAMPLE_DATA_GRID_WORKSPACE_NAME = "Sample Workspace";
+		public const string SAMPLE_DATA_GRID_WORKSPACE_NAME = "Sample Data Grid Workspace";
 		public const string RELATIVITY_INSTANCE_WEB_SERVICE_URL = "http://" + RELATIVITY_INSTANCE_NAME + "/relativitywebapi/";
 		public const string RELATIVITY_ADMIN_USER_NAME = "relativity.admin@relativity.com";
 		public const string RELATIVITY_ADMIN_PASSWORD = "<password_removed_contact_relativity_plex_team>";
