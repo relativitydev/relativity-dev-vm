@@ -18,6 +18,6 @@
 		public const string ENVIRONMENT_VARIABLE_KCURA_JAVA_HOME = "KCURA_JAVA_HOME";
 		public const string ENVIRONMENT_VARIABLE_JAVA_HOME = "JAVA_HOME";
 		public const string JAVA_INSTALL_PATH = @"C:\Program Files\Java";
-		public const string INSTANCE_RELATIVITY_VERSION = "172.17.208.218";
+		public const string INSTANCE_RELATIVITY_VERSION = "11.2.127.49";
 	}
 }
