@@ -116,16 +116,8 @@ namespace Helpers.Implementations
 		public async Task<bool> CreateProcessingSourceLocationChoiceAsync()
 		{
 			bool wasChoiceCreated = false;
-			int processingSourceFieldId = await GetProcessingSourceFieldArtifactId();
 
 			Console.WriteLine($"{nameof(CreateProcessingSourceLocationChoiceAsync)} - Creating Processing Source Location Choice ({Constants.Processing.ChoiceName})");
-
-			//Choice choice = new Choice
-			//{
-			//	Name = Constants.Processing.ChoiceName,
-			//	ChoiceTypeID = Constants.Processing.ChoiceTypeID,
-			//	Order = 1
-			//};
 
 			string url = Constants.Connection.RestUrlEndpoints.ProcessingManager.ProcessingSourceCreateUrl;
 			HttpClient httpClient = RestHelper.GetHttpClient(InstanceAddress, AdminUsername, AdminPassword);
@@ -135,7 +127,7 @@ namespace Helpers.Implementations
 
 				choiceRequest = new
 				{
-					Field = new {ArtifactID = processingSourceFieldId },
+					Field = new { Guids = new List<Guid>{Guid.Parse(Constants.Processing.ProcessingSourceLocationFieldGuid)}},
 					Name = Constants.Processing.ChoiceName,
 					Order = 100,
 					Keywords = "DevVM Processing Source Location",
@@ -904,40 +896,6 @@ namespace Helpers.Implementations
 
 
 			return wasRemoved;
-		}
-
-		public async Task<int> GetProcessingSourceFieldArtifactId()
-		{
-			int processingsourceArtifactId;
-			
-			// Setup for checking Resource Pools
-			Relativity.Services.TextCondition conditionChoice = new Relativity.Services.TextCondition()
-			{
-				Field = Constants.Processing.NameField,
-				Operator = Relativity.Services.TextConditionEnum.StartsWith,
-				Value = Constants.Processing.ProcessingSourceLocationField
-			};
-
-			var queryRequest = new QueryRequest()
-			{
-				//Condition = conditionChoice.ToQueryString().Replace(@"\", @"\\"), //query condition syntax is used to build query condtion.  
-				Condition = "('Object Type' == 'Choice') AND ('Field' == 'Processing Source Location') AND ('Name' == '\\\\RELATIVITYDEVVM\\ProcessingSourceLocation')",
-				Fields = new List<global::Relativity.Services.Objects.DataContracts.FieldRef>() //array of fields to return.  ArtifactId will always be returned.
-
-            {
-				new global::Relativity.Services.Objects.DataContracts.FieldRef { Name = Constants.Processing.NameField },
-			},
-				//ObjectType = new ObjectTypeRef { ArtifactTypeID = Constants.FIELD_TYPE_ARTIFACT_ID }
-				ObjectType = new ObjectTypeRef { ArtifactTypeID = 7 }
-			};
-
-			using (IObjectManager objectManager =  ServiceFactory.CreateProxy<IObjectManager>())
-			{
-				QueryResult queryresult = await objectManager.QueryAsync(Constants.Processing.WorkspaceId, queryRequest, 1, 10);
-				processingsourceArtifactId = queryresult.Objects[0].ArtifactID;
-			}
-
-			return processingsourceArtifactId;
 		}
 
 	} // End of class

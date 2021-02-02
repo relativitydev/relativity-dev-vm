@@ -132,7 +132,7 @@ namespace Helpers
 			public const string DefaultPool = "Default";
 			public const string WorkerManagerServer = "Worker Manager Server";
 			public const string WorkerServer = "Worker";
-			public const string ProcessingSourceLocationField = "Processing Source Location";
+			public const string ProcessingSourceLocationFieldGuid = "A18E6EF9-2684-4CB5-9FBD-F4AC9524A8AF";
 		}
 
 		public class AgentServer
