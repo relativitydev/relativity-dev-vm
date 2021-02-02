@@ -22,8 +22,6 @@ relativity_api_library_files_to_copy = [
   "Polly.dll", # Required for Import API
   "Relativity.Logging.dll", # Required for Import API
   "Relativity.Logging.Interfaces.dll", # Required for Import API
-  "Relativity.Kepler.dll", # Required for Object Manager, Default 2.7.0.0
-  "Relativity.Services.DataContracts.dll" # Required for Object Manager, Default 13.2.0.0
 ]
 
 # Copy ServiceHost files
@@ -79,7 +77,9 @@ powershell_module_related_files_to_copy = [
   'Relativity.Transfer.Client.Core.dll', # Required for Import API
   'Relativity.Transfer.Client.Aspera.dll', # Required for Import API
   'Relativity.Transfer.Client.FileShare.dll', # Required for Import API
-  'Relativity.Transfer.Client.Http.dll' # Required for Import API
+  'Relativity.Transfer.Client.Http.dll', # Required for Import API
+  "Relativity.Kepler.dll", # Required for Object Manager, Default 2.7.0.0
+  "Relativity.Services.DataContracts.dll" # Required for Object Manager, Default 13.2.0.0
 ]
 
 powershell_module_related_files_to_copy.each do |source_file_name|

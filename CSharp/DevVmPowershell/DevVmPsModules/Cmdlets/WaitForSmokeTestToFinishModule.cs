@@ -79,10 +79,15 @@ namespace DevVmPsModules.Cmdlets
 				relativityAdminPassword: RelativityAdminPassword,
 				sqlAdminUserName: SqlAdminUserName,
 				sqlAdminPassword: SqlAdminPassword);
-			ISmokeTestHelper smokeTestHelper = new SmokeTestHelper(connectionHelper);
+			ISqlRunner sqlRunner = new SqlRunner(connectionHelper);
+			ISqlHelper sqlHelper = new SqlHelper(sqlRunner);
+			IRestHelper restHelper = new RestHelper();
+			IWorkspaceHelper workspaceHelper = new WorkspaceHelper(connectionHelper, restHelper, sqlHelper, RelativityInstanceName, RelativityAdminUserName, RelativityAdminPassword);
+			IRetryLogicHelper retryLogicHelper = new RetryLogicHelper();
+			ISmokeTestHelper smokeTestHelper = new SmokeTestHelper(connectionHelper, restHelper, retryLogicHelper, workspaceHelper, RelativityInstanceName, RelativityAdminUserName, RelativityAdminPassword);
 
 			int timeoutValueInMinutes = int.Parse(TimeoutValueInMinutes);
-			bool testsCompleted = smokeTestHelper.WaitForSmokeTestToComplete(WorkspaceName, timeoutValueInMinutes);
+			bool testsCompleted = smokeTestHelper.WaitForSmokeTestToCompleteAsync(WorkspaceName, timeoutValueInMinutes).Result;
 			if (!testsCompleted)
 			{
 				throw new Exception("Tests did not all complete successfully");

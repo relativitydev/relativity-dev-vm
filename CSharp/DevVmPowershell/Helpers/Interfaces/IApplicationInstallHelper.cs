@@ -1,8 +1,10 @@
-﻿namespace Helpers.Interfaces
+﻿using System.Threading.Tasks;
+
+namespace Helpers.Interfaces
 {
 	public interface IApplicationInstallHelper
 	{
-		bool InstallApplicationFromRapFile(string workspaceName, string filePath);
-		bool InstallApplicationFromApplicationLibrary(string workspaceName, string applicationGuid);
+		Task<bool> InstallApplicationFromRapFileAsync(string workspaceName, string filePath);
+		Task<bool> InstallApplicationFromApplicationLibraryAsync(string workspaceName, string applicationGuid);
 	}
 }

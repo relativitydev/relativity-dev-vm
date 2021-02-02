@@ -225,6 +225,9 @@
     <None Include="TestFiles\DataGrid\elasticsearch.yml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="TestFiles\RAP\RA_Smoke_Test_2.2.2.2.rap">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="TestFiles\RAP\Single-Object_Single-Field_Application_1.0.0.0.rap">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

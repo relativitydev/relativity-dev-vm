@@ -7,6 +7,8 @@ namespace Helpers
 	public class Constants
 	{
 		public const int EDDS_WORKSPACE_ARTIFACT_ID = -1;
+		public const int OBJECT_TYPE_TYPE_ARTIFACT_ID = 25;
+		public const int LAYOUT_TYPE_ARTIFACT_ID = 16;
 
 		public class Connection
 		{
@@ -19,6 +21,42 @@ namespace Helpers
 				public const string CONNECTION_STRING_PACKET_SIZE = "4096";
 				public const string CONNECTION_STRING_CONNECT_TIMEOUT_DEFAULT = "120";
 				public const string EDDS_DATABASE = "EDDS";
+			}
+
+			public class RestUrlEndpoints
+			{
+				public class InstanceSettings
+				{
+					public const string EndpointUrl = "Relativity.REST/api/Relativity.InstanceSettings/workspace/-1/instancesettings/";
+				}
+
+				public class ObjectManager
+				{
+					public const string QueryUrl = "Relativity.REST/api/Relativity.Objects/workspace/-1/object/query";
+					public const string QuerySlimUrl = "Relativity.REST/api/Relativity.Objects/workspace/-1/object/queryslim";
+					public const string ReadUrl = "Relativity.REST/api/Relativity.Objects/workspace/-1/object/read";
+				}
+
+				public class ProcessingManager
+				{
+					public const string ProcessingSourceCreateUrl = "Relativity.REST/api/relativity-object-model/v1/workspaces/-1/choices/";
+				}
+
+				public class WorkspaceManager
+				{
+					public const string EndpointUrl = "Relativity.REST/api/Relativity.Workspaces/workspace";
+				}
+
+				public class ApplicationInstall
+				{
+					public const int retryCount = 6;
+					public const int retryDelay = 10;
+					public const string uploadFileKeyName = "rapStream";
+
+					public const string updateLibraryApplicationUrl = "Relativity.REST/api/relativity-environment/v1/workspace/-1/libraryapplications";
+					public const string readAllLibraryApplicationUrl = "Relativity.REST/api/relativity-environment/v1/workspace/-1/libraryapplications";
+					public const string installWorkspaceApplicationUrl = "Relativity.REST/api/Relativity.LibraryApplications/workspace/-1/libraryapplications/{0}/install";
+				}
 			}
 		}
 		public class Agents
@@ -33,6 +71,11 @@ namespace Helpers
 			public const Agent.LoggingLevelEnum AGENT_LOGGING_LEVEL = Agent.LoggingLevelEnum.All;
 		}
 
+		public class InstanceSetting
+		{
+			public const string INSTANCE_SETTING_OBJECT_TYPE = "InstanceSetting";
+		}
+
 		public class Workspace
 		{
 			public const string DEFAULT_WORKSPACE_TEMPLATE_NAME = "New Case Template";
@@ -40,8 +83,11 @@ namespace Helpers
 
 		public class Waiting
 		{
-			public const int MAX_WAIT_TIME_IN_MINUTES = 10;
-			public const int SLEEP_TIME_IN_SECONDS = 15;
+			public const int SMOKE_TEST_HELPER_MAX_WAIT_TIME_IN_MINUTES = 10;
+			public const int SMOKE_TEST_HELPER_SLEEP_TIME_IN_SECONDS = 10;
+			public const int SMOKE_TEST_HELPER_RETRY_COUNT = 10;
+			public const int IMAGING_HELPER_RETRY_COUNT = 60;
+			public const int IMAGING_HELPER_RETRY_DELAY = 10;
 		}
 
 		public class DocumentCommonFields
@@ -84,6 +130,8 @@ namespace Helpers
 			public const string DefaultPool = "Default";
 			public const string WorkerManagerServer = "Worker Manager Server";
 			public const string WorkerServer = "Worker";
+			public const string ProcessingSourceLocationFieldGuid = "A18E6EF9-2684-4CB5-9FBD-F4AC9524A8AF";
+			public const string Guid = "ED0E23F9-DA60-4298-AF9A-AE6A9B6A9319";
 		}
 
 		public class AgentServer
@@ -353,6 +401,11 @@ END
 
 		public class SmokeTest
 		{
+			public class ObjectNames
+			{
+				public const string SmokeTestApplicationName = "Smoke Test";
+				public const string SmokeTestApplicationObjectTypeName = "Test";
+			}
 			public class Guids
 			{
 				public const string ApplicationGuid = "0125C8D4-8354-4D8F-B031-01E73C866C7C";
@@ -366,6 +419,11 @@ END
 					public const string ErrorDetails_LongText = "F615298C-EB1E-4892-B8AA-103CEE85888B";
 				}
 			}
+		}
+
+		public class ApplicationGuids
+		{
+			public const string SimpleFileUploadGuid = "1738CEB6-9546-44A7-8B9B-E64C88E47320";
 		}
 	}
 }

@@ -11,19 +11,34 @@ using Relativity.Services.WorkerStatus;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using Helpers.RequestModels;
+using kCura.Notification;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using Relativity.Services.Interfaces.Choice.Models;
 using Choice = kCura.Relativity.Client.DTOs.Choice;
 using ChoiceRef = Relativity.Services.Choice.ChoiceRef;
+using QueryResult = Relativity.Services.Objects.DataContracts.QueryResult;
 
 namespace Helpers.Implementations
 {
 	public class ProcessingHelper : IProcessingHelper
 	{
 		private ServiceFactory ServiceFactory { get; }
-		public ProcessingHelper(IConnectionHelper connectionHelper)
+		private string InstanceAddress { get; set; }
+		private string AdminUsername { get; set; }
+		private string AdminPassword { get; set; }
+		private IRestHelper RestHelper { get; set; }
+		public ProcessingHelper(IConnectionHelper connectionHelper, IRestHelper restHelper, string instanceAddress, string adminUsername, string adminPassword)
 		{
 			ServiceFactory = connectionHelper.GetServiceFactory();
+			InstanceAddress = instanceAddress;
+			AdminUsername = adminUsername;
+			AdminPassword = adminPassword;
+			RestHelper = restHelper;
 		}
 
 		/// <summary>
@@ -34,9 +49,9 @@ namespace Helpers.Implementations
 		{
 			bool wasSetupComplete = false;
 
-			Console.WriteLine($"{nameof(FullSetupAndUpdateDefaultResourcePoolAsync)} - Starting ({nameof(CreateProcessingSourceLocationChoice)})");
-			wasSetupComplete = CreateProcessingSourceLocationChoice();
-			Console.WriteLine($"{nameof(FullSetupAndUpdateDefaultResourcePoolAsync)} - Finished ({nameof(CreateProcessingSourceLocationChoice)}) Result: {wasSetupComplete}");
+			Console.WriteLine($"{nameof(FullSetupAndUpdateDefaultResourcePoolAsync)} - Starting ({nameof(CreateProcessingSourceLocationChoiceAsync)})");
+			wasSetupComplete = await CreateProcessingSourceLocationChoiceAsync();
+			Console.WriteLine($"{nameof(FullSetupAndUpdateDefaultResourcePoolAsync)} - Finished ({nameof(CreateProcessingSourceLocationChoiceAsync)}) Result: {wasSetupComplete}");
 
 			Console.WriteLine($"{nameof(FullSetupAndUpdateDefaultResourcePoolAsync)} - Starting ({nameof(AddProcessingSourceLocationChoiceToDefaultResourcePoolAsync)})");
 			wasSetupComplete = await AddProcessingSourceLocationChoiceToDefaultResourcePoolAsync();
@@ -98,59 +113,49 @@ namespace Helpers.Implementations
 		/// Creates a Processing Source Location Choice and makes sure it doesn't already exist.
 		/// </summary>
 		/// <returns></returns>
-		public bool CreateProcessingSourceLocationChoice()
+		public async Task<bool> CreateProcessingSourceLocationChoiceAsync()
 		{
 			bool wasChoiceCreated = false;
 
-			Console.WriteLine($"{nameof(CreateProcessingSourceLocationChoice)} - Creating Processing Source Location Choice ({Constants.Processing.ChoiceName})");
+			Console.WriteLine($"{nameof(CreateProcessingSourceLocationChoiceAsync)} - Creating Processing Source Location Choice ({Constants.Processing.ChoiceName})");
 
-			Choice choice = new Choice
+			string url = Constants.Connection.RestUrlEndpoints.ProcessingManager.ProcessingSourceCreateUrl;
+			HttpClient httpClient = RestHelper.GetHttpClient(InstanceAddress, AdminUsername, AdminPassword);
+
+			var createPayloadObject = new
 			{
-				Name = Constants.Processing.ChoiceName,
-				ChoiceTypeID = Constants.Processing.ChoiceTypeID,
-				Order = 1
+
+				choiceRequest = new
+				{
+					Field = new { Guids = new List<Guid>{Guid.Parse(Constants.Processing.ProcessingSourceLocationFieldGuid)}},
+					Name = Constants.Processing.ChoiceName,
+					Order = 100,
+					Keywords = "DevVM Processing Source Location",
+					Notes = "",
+					RelativityApplications = new string[] { },
+			}
 			};
 
-			kCura.Relativity.Client.TextCondition cond = new kCura.Relativity.Client.TextCondition()
+		    string createPayload = JsonConvert.SerializeObject(createPayloadObject);
+		    HttpResponseMessage createResponse = await RestHelper.MakePostAsync(httpClient, $"{Constants.Connection.RestUrlEndpoints.ProcessingManager.ProcessingSourceCreateUrl}/", createPayload);
+		    
+		    if (!createResponse.IsSuccessStatusCode)
+		    {
+			    throw new System.Exception("Failed to Create Processing Source Location");
+		    }
+
+			string resultString = await createResponse.Content.ReadAsStringAsync();
+
+			int processingChoiceId = Int32.Parse(resultString);
+
+			if (processingChoiceId < 0)
 			{
-				Field = Constants.Processing.NameField,
-				Operator = kCura.Relativity.Client.TextConditionEnum.EqualTo,
-				Value = Constants.Processing.ChoiceName
-			};
-
-			using (IRSAPIClient rsapiClient = ServiceFactory.CreateProxy<IRSAPIClient>())
+				wasChoiceCreated = false;
+				Console.WriteLine($"{nameof(CreateProcessingSourceLocationChoiceAsync)} - Failed to create Processing Source Location Choice ({Constants.Processing.ChoiceName})");
+			}
+			else
 			{
-				rsapiClient.APIOptions = new APIOptions(-1);
-
-				kCura.Relativity.Client.DTOs.QueryResultSet<Choice> choiceQuery = rsapiClient.Repositories.Choice.Query(new Query<Choice>() { Condition = cond });
-
-				if (choiceQuery.Success && choiceQuery.TotalCount > 0)
-				{
-					Console.WriteLine($"{nameof(CreateProcessingSourceLocationChoice)} - Failed to create Processing Source Location Choice ({Constants.Processing.ChoiceName}) as it already exists");
-					wasChoiceCreated = true;
-					return wasChoiceCreated;
-				}
-
-				WriteResultSet<Choice> result = rsapiClient.Repositories.Choice.Create(choice);
-
-				if (result.Success)
-				{
-					choiceQuery = rsapiClient.Repositories.Choice.Query(new Query<Choice>() { Condition = cond });
-					if (choiceQuery.Success && choiceQuery.TotalCount > 0)
-					{
-						wasChoiceCreated = true;
-						Console.WriteLine($"{nameof(CreateProcessingSourceLocationChoice)} - Successfully created Processing Source Location Choice ({Constants.Processing.ChoiceName})");
-					}
-					else
-					{
-						Console.WriteLine($"{nameof(CreateProcessingSourceLocationChoice)} - Failed to create Processing Source Location Choice ({Constants.Processing.ChoiceName})");
-					}
-
-				}
-				else
-				{
-					Console.WriteLine($"{nameof(CreateProcessingSourceLocationChoice)} - Failed to create Processing Source Location Choice ({Constants.Processing.ChoiceName})");
-				}
+				wasChoiceCreated = true;
 			}
 
 			return wasChoiceCreated;
@@ -187,20 +192,29 @@ namespace Helpers.Implementations
 				Value = Constants.Processing.ChoiceName
 			};
 
-			Relativity.Services.Objects.DataContracts.QueryRequest queryChoice = new Relativity.Services.Objects.DataContracts.QueryRequest()
+			HttpClient httpClient = RestHelper.GetHttpClient(InstanceAddress, AdminUsername, AdminPassword);
+			string url = $"Relativity.REST/api/Relativity.Objects/workspace/{Constants.Processing.WorkspaceId}/object/query";
+			ObjectManagerQueryRequestModel objectManagerQueryRequestModel = new ObjectManagerQueryRequestModel
 			{
-				Condition = conditionChoice.ToQueryString().Replace(@"\", @"\\"),
-				ObjectType = new ObjectTypeRef() { ArtifactTypeID = Constants.Processing.ChoiceArtifactTypeId },
-				Fields = new List<FieldRef>
+				request = new Request
 				{
-					new FieldRef
+					objectType = new Helpers.RequestModels.ObjectType
 					{
-						Name = Constants.Processing.ChoiceFieldRef
-					}
-				}
+						ArtifactTypeID = Constants.Processing.ChoiceArtifactTypeId
+					},
+					fields = new object[]
+					{
+						new
+						{
+							Name = Constants.Processing.ChoiceFieldRef
+						}
+					},
+					condition = conditionChoice.ToQueryString().Replace(@"\", @"\\")
+				},
+				start = 1,
+				length = 10
 			};
 
-			using (IObjectManager objectManager = ServiceFactory.CreateProxy<IObjectManager>())
 			using (IResourcePoolManager resourcePoolManager = ServiceFactory.CreateProxy<IResourcePoolManager>())
 			{
 				// Check for Default Resource Pool
@@ -212,12 +226,19 @@ namespace Helpers.Implementations
 					ResourcePoolRef defaultResourcePoolRef = new ResourcePoolRef(resultPools.Results.Find(x => x.Artifact.Name.Equals(Constants.Processing.DefaultPool, StringComparison.OrdinalIgnoreCase)).Artifact.ArtifactID);
 
 					// Check if Processing Server Location already added to Default Resource Pool
-					Relativity.Services.Objects.DataContracts.QueryResult resultChoice = await objectManager.QueryAsync(Constants.Processing.WorkspaceId, queryChoice, 1, 10);
-
-					Console.WriteLine($"{nameof(AddProcessingSourceLocationChoiceToDefaultResourcePoolAsync)} - Checking if Processing Source Location Choice exists");
-					if (resultChoice.TotalCount > 0)
+					string choiceRequest = JsonConvert.SerializeObject(objectManagerQueryRequestModel);
+					HttpResponseMessage response = await RestHelper.MakePostAsync(httpClient, url, choiceRequest);
+					if (!response.IsSuccessStatusCode)
 					{
-						ChoiceRef choice = new ChoiceRef(resultChoice.Objects.First().ArtifactID);
+						throw new System.Exception("Failed to Query for Processing Source Location.");
+					}
+					string result = await response.Content.ReadAsStringAsync();
+					JObject jObject = JObject.Parse(result);
+					int totalCount = jObject["TotalCount"].Value<int>();
+					Console.WriteLine($"{nameof(AddProcessingSourceLocationChoiceToDefaultResourcePoolAsync)} - Checking if Processing Source Location Choice exists");
+					if (totalCount > 0)
+					{
+						ChoiceRef choice = new ChoiceRef(jObject["Objects"][0]["ArtifactID"].Value<int>());
 
 						List<ChoiceRef> resultProcessingSourceLocations = await resourcePoolManager.GetProcessingSourceLocationsAsync(defaultResourcePoolRef);
 

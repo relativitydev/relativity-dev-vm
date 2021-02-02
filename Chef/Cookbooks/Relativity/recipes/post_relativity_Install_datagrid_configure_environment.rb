@@ -80,48 +80,29 @@ powershell_script 'update_instance_setting - RelativityWebAPI' do
     EOH
 end
 
-# Add/Update the DataGrid Enabled Instance Setting
-powershell_functions_script_path = win_friendly_path(File.join(Chef::Config[:file_cache_path], 'powershell_functions.ps1'))
-
-# Copy the powershell functions file from the cookbook to the Chef cache
-cookbook_file powershell_functions_script_path do
-  source 'powershell_functions.ps1'
-end
-
 # Update Data Grid Instance Settings
 custom_log 'custom_log' do msg 'Updating RelativityWebAPI Instance Setting.' end
-powershell_script 'update_instance_setting - RelativityWebAPI' do
+powershell_script 'update_datagrid_instance_settings' do
     code <<-EOH
-    #############################INCLUDE SECTION##############################
-    Import-Module "#{powershell_functions_script_path}" -force
-    Add-Type -Path "C:\\Program Files\\kCura Corporation\\Relativity\\Library\\kCura.Relativity.Client.dll"
-    Add-Type -Path "C:\\Program Files\\kCura Corporation\\Relativity\\Library\\Relativity.API.dll"
-    Add-Type -Path "C:\\Program Files\\kCura Corporation\\Relativity\\Library\\Relativity.Services.Interfaces.Private.dll"
-    Add-Type -Path "C:\\Program Files\\kCura Corporation\\Relativity\\Library\\Relativity.Services.ServiceProxy.dll"
-    ##########################################################################
+        #{node['powershell_module']['import_module']}
+        $instanceSettingSection = "Relativity.DataGrid"
+        $instanceSettingName = "DataGridEnabled"
+        $description = "DataGrid flag"
+        $value = "True"
 
-    $serverName = "#{node['windows']['hostname']}"
-    $username = "#{node['sample_data_population']['relativity_admin_account']['login']}"
-    $password = "#{node['sample_data_population']['relativity_admin_account']['password']}"
-    $instanceSettingSection = "Relativity.DataGrid"
-    $instanceSettingName = "DataGridEnabled"
-
-    # Find the datagridenabled instance setting
-    $dataGridInstanceSettingQueryResults = QueryInstanceSetting $serverName $username  $password #instanceSettingSection $instanceSettingName
-    
-    if($dataGridInstanceSettingQueryResults.Success -eq $TRUE -and $instanceSettingResults.Results.Count -gt 0){
-        # instance setting exists, make sure it's true
-        UpdateInstanceSettingValue $serverName $username  $password #instanceSettingSection $instanceSettingName "True"
-    }else{
-        # Create instance setting
-        CreateInstanceSetting $serverName $username $password $instanceSettingSection $instanceSettingName TrueFalse "True"
-    }
-
-        EOH
-    end
+        # Try to create the instance setting, if that fails, that means it already exists and we just need to update it
+        try
+        {
+            Add-InstanceSetting -RelativityInstanceName #{node['windows']['new_computer_name']} -RelativityAdminUserName #{node['relativity']['admin']['login']} -RelativityAdminPassword #{node['relativity']['admin']['password']} -SqlAdminUserName #{node['sql']['user']['eddsdbo']['login']} -SqlAdminPassword #{node['sql']['user']['sa']['password']} -Name $instanceSettingName -Section $instanceSettingSection -Description $description -Value $value -ErrorAction Stop
+        }
+        catch
+        {
+            Reset-InstanceSettingValue -RelativityInstanceName #{node['windows']['new_computer_name']} -RelativityAdminUserName #{node['relativity']['admin']['login']} -RelativityAdminPassword #{node['relativity']['admin']['password']} -SqlAdminUserName #{node['sql']['user']['eddsdbo']['login']} -SqlAdminPassword #{node['sql']['user']['eddsdbo']['password']} -Name $instanceSettingName -Section $instanceSettingSection -NewValue $value
+        }
+    EOH
+end
 
 end_time = DateTime.now
 custom_log 'custom_log' do msg "recipe_end_Time(#{recipe_name}): #{end_time}" end
 custom_log 'custom_log' do msg "recipe_duration(#{recipe_name}): #{end_time.to_time - start_time.to_time} seconds" end
 custom_log 'custom_log' do msg "Finished Install Data Grid Configure Environment\n\n\n" end
-    
