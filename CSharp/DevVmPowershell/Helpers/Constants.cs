@@ -133,6 +133,7 @@ namespace Helpers
 			public const string WorkerManagerServer = "Worker Manager Server";
 			public const string WorkerServer = "Worker";
 			public const string ProcessingSourceLocationFieldGuid = "A18E6EF9-2684-4CB5-9FBD-F4AC9524A8AF";
+			public const string Guid = "ED0E23F9-DA60-4298-AF9A-AE6A9B6A9319";
 		}
 
 		public class AgentServer
