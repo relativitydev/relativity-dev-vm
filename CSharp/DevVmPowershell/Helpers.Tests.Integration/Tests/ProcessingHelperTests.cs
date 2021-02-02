@@ -33,13 +33,10 @@ namespace Helpers.Tests.Integration.Tests
 
 		[Test, Order(10)]
 		[TestCase(true)]
-		public void CreateProcessingSourceLocationChoiceTest(bool expectedResult)
+		public async Task CreateProcessingSourceLocationChoiceTestAsync(bool expectedResult)
 		{
 			//Arrange
-			// No API exists yet to remove Processing Source Locations.  You'll have to manually delete it from the Default Resource Pool and from the Choice List
-
-			//Act
-			bool result = Sut.CreateProcessingSourceLocationChoice();
+			bool result = await Sut.CreateProcessingSourceLocationChoiceAsync();
 
 			//Assert
 			Assert.That(result, Is.EqualTo(expectedResult));
