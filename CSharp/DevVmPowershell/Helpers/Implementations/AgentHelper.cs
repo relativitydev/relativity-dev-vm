@@ -8,17 +8,29 @@ using Relativity.Services.ServiceProxy;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
+using Helpers.RequestModels;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Helpers.Implementations
 {
 	public class AgentHelper : IAgentHelper
 	{
 		private ServiceFactory ServiceFactory { get; }
+		private string InstanceAddress { get; }
+		private string AdminUsername { get; }
+		private string AdminPassword { get; }
+		private IRestHelper RestHelper { get; set; }
 
-		public AgentHelper(IConnectionHelper connectionHelper)
+		public AgentHelper(IConnectionHelper connectionHelper, IRestHelper restHelper, string instanceAddress, string adminUsername, string adminPassword)
 		{
 			ServiceFactory = connectionHelper.GetServiceFactory();
+			InstanceAddress = instanceAddress;
+			AdminUsername = adminUsername;
+			AdminPassword = adminPassword;
+			RestHelper = restHelper;
 		}
 
 		private async Task<bool> CheckIfAtLeastSingleInstanceOfAgentExistsAsync(string agentName)
@@ -32,33 +44,42 @@ namespace Helpers.Implementations
 		private async Task<List<int>> GetAgentArtifactIdsAsync(string agentName)
 		{
 			List<int> agentArtifactIds = new List<int>();
-
-			QueryRequest agentQueryRequest = new QueryRequest
+			HttpClient httpClient = RestHelper.GetHttpClient(InstanceAddress, AdminUsername, AdminPassword);
+			string url = $"Relativity.REST/api/Relativity.Objects/workspace/{Constants.EDDS_WORKSPACE_ARTIFACT_ID}/object/query";
+			ObjectManagerQueryRequestModel objectManagerQueryRequestModel = new ObjectManagerQueryRequestModel
 			{
-				ObjectType = new ObjectTypeRef
+				request = new Request
 				{
-					Name = Constants.Agents.AGENT_OBJECT_TYPE
-				},
-				Fields = new List<FieldRef>
-				{
-					new FieldRef
+					objectType = new Helpers.RequestModels.ObjectType
 					{
-						Name = Constants.Agents.AGENT_FIELD_NAME
-					}
+						Name = Constants.Agents.AGENT_OBJECT_TYPE
+					},
+					fields = new object[]
+					{
+						new
+						{
+							Name = Constants.Agents.AGENT_FIELD_NAME
+						}
+					},
+					condition = $"(('{Constants.Agents.AGENT_FIELD_NAME}' LIKE '{agentName}'))"
 				},
-				Condition = $"(('{Constants.Agents.AGENT_FIELD_NAME}' LIKE '{agentName}'))"
+				start = 1,
+				length = 3
 			};
-			using (IObjectManager objectManager = ServiceFactory.CreateProxy<IObjectManager>())
+			string request = JsonConvert.SerializeObject(objectManagerQueryRequestModel);
+			HttpResponseMessage response = await RestHelper.MakePostAsync(httpClient, url, request);
+			if (!response.IsSuccessStatusCode)
 			{
-				QueryResult agentQueryResult = await objectManager.QueryAsync(
-					Constants.EDDS_WORKSPACE_ARTIFACT_ID,
-					agentQueryRequest,
-					1,
-					3);
-
-				if (agentQueryResult.Objects.Count > 0)
+				throw new Exception("Failed to Query for Agent Artifact Ids");
+			}
+			string result = await response.Content.ReadAsStringAsync();
+			JObject jObject = JObject.Parse(result);
+			int totalCount = jObject["TotalCount"].Value<int>();
+			if (totalCount > 0)
+			{
+				foreach(var agent in jObject["Objects"])
 				{
-					agentArtifactIds.AddRange(agentQueryResult.Objects.Select(x => x.ArtifactID).ToList());
+					agentArtifactIds.Add(agent["ArtifactID"].Value<int>());
 				}
 			}
 
