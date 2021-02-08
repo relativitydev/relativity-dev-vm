@@ -1,16 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
+using Helpers.Interfaces;
 
 namespace Helpers.Implementations
 {
-	public class RestHelper
+	public class RestHelper : IRestHelper
 	{
-		public static HttpClient GetHttpClient(string instanceAddress, string adminUsername, string adminPassword)
+		public HttpClient GetHttpClient(string instanceAddress, string adminUsername, string adminPassword)
 		{
 			//Set up the client
 			HttpClient httpClient = new HttpClient
@@ -27,12 +27,50 @@ namespace Helpers.Implementations
 			return httpClient;
 		}
 
-		public static HttpResponseMessage MakePost(HttpClient httpClient, string url, string request)
+		public async Task<HttpResponseMessage> MakeGetAsync(HttpClient httpClient, string url)
+		{
+			HttpResponseMessage response = await httpClient.GetAsync(url);
+			return response;
+		}
+
+		public async Task<HttpResponseMessage> MakePostAsync(HttpClient httpClient, string url, string request)
 		{
 			StringContent content = new StringContent(request);
 			content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-			HttpResponseMessage response = httpClient.PostAsync(url, content).Result;
+			HttpResponseMessage response = await httpClient.PostAsync(url, content);
 			return response;
+		}
+
+		public async Task<HttpResponseMessage> MakePutAsync(HttpClient httpClient, string url, string request)
+		{
+			StringContent content = new StringContent(request);
+			content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+			HttpResponseMessage response = await httpClient.PutAsync(url, content);
+			return response;
+		}
+
+		public async Task<HttpResponseMessage> MakePutAsync(HttpClient httpClient, string url, HttpContent content)
+		{
+			HttpResponseMessage response = await httpClient.PutAsync(url, content);
+			return response;
+		}
+
+		public async Task<HttpResponseMessage> MakeDeleteAsync(HttpClient httpClient, string url)
+		{
+			HttpResponseMessage response = await httpClient.DeleteAsync(url);
+			return response;
+		}
+
+		public StreamContent CreateFileContent(Stream stream, string fileName, string contentType)
+		{
+			var fileContent = new StreamContent(stream);
+			fileContent.Headers.ContentDisposition = new ContentDispositionHeaderValue("form-data")
+			{
+				Name = "\"" + Constants.Connection.RestUrlEndpoints.ApplicationInstall.uploadFileKeyName + "\"",
+				FileName = "\"" + fileName + "\""
+			}; // the extra quotes are key here
+			fileContent.Headers.ContentType = new MediaTypeHeaderValue(contentType);
+			return fileContent;
 		}
 	}
 }

@@ -67,8 +67,10 @@ namespace DevVmPsModules.Cmdlets
 				relativityAdminPassword: RelativityAdminPassword,
 				sqlAdminUserName: SqlAdminUserName,
 				sqlAdminPassword: SqlAdminPassword);
-			IImagingHelper imagingHelper = new ImagingHelper(connectionHelper);
-			IWorkspaceHelper workspaceHelper = new WorkspaceHelper(connectionHelper, null);
+			IRestHelper restHelper = new RestHelper();
+			IRetryLogicHelper retryLogicHelper = new RetryLogicHelper();
+			IImagingHelper imagingHelper = new ImagingHelper(connectionHelper, restHelper, retryLogicHelper, RelativityInstanceName, RelativityAdminUserName, RelativityAdminPassword);
+			IWorkspaceHelper workspaceHelper = new WorkspaceHelper(connectionHelper, restHelper, null, RelativityInstanceName, RelativityAdminUserName, RelativityAdminPassword);
 
 			// Run Imaging Job
 			int workspaceArtifactId = workspaceHelper.GetFirstWorkspaceArtifactIdQueryAsync(WorkspaceName).Result;
