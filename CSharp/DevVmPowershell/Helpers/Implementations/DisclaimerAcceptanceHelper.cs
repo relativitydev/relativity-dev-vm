@@ -9,7 +9,9 @@ using System.Linq;
 using System.Net.Http;
 using Helpers.RequestModels;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using ObjectType = kCura.Relativity.Client.DTOs.ObjectType;
+using System.Threading.Tasks;
 
 namespace Helpers.Implementations
 {
@@ -21,8 +23,10 @@ namespace Helpers.Implementations
 		private string InstanceAddress { get; set; }
 		private string AdminUsername { get; set; }
 		private string AdminPassword { get; set; }
+		private IRestHelper RestHelper { get; set; }
+		private IWorkspaceHelper WorkspaceHelper { get; set; }
 
-		public DisclaimerAcceptanceHelper(IConnectionHelper connectionHelper, string instanceAddress, string adminUsername, string adminPassword)
+		public DisclaimerAcceptanceHelper(IConnectionHelper connectionHelper, IRestHelper restHelper, IWorkspaceHelper workspaceHelper, string instanceAddress, string adminUsername, string adminPassword)
 		{
 			ServiceFactory = connectionHelper.GetServiceFactory();
 			RsapiClient = ServiceFactory.CreateProxy<IRSAPIClient>();
@@ -30,16 +34,18 @@ namespace Helpers.Implementations
 			InstanceAddress = instanceAddress;
 			AdminUsername = adminUsername;
 			AdminPassword = adminPassword;
+			RestHelper = restHelper;
+			WorkspaceHelper = workspaceHelper;
 		}
 
-		public void AddDisclaimerConfiguration(string workspaceName)
+		public async Task AddDisclaimerConfigurationAsync(string workspaceName)
 		{
 			try
 			{
-				int workspaceId = GetWorkspaceId(workspaceName);
-				int objectTypeId = GetDisclaimerSolutionConfigurationObjectTypeId(workspaceId);
-				int layoutId = GetDisclaimerSolutionConfigurationLayoutId();
-				CreateDisclaimerConfigurationRDO(objectTypeId, layoutId, workspaceId);
+				int workspaceId = await WorkspaceHelper.GetFirstWorkspaceArtifactIdQueryAsync(workspaceName);
+				int objectTypeId = await GetDisclaimerSolutionConfigurationObjectTypeIdAsync(workspaceId);
+				int layoutId = await GetDisclaimerSolutionConfigurationLayoutIdAsync(workspaceId);
+				await CreateDisclaimerConfigurationRdoAsync(objectTypeId, layoutId, workspaceId);
 			}
 			catch (Exception ex)
 			{
@@ -47,27 +53,46 @@ namespace Helpers.Implementations
 			}
 		}
 
-		public bool CheckIfDisclaimerConfigurationRDOExists(int workspaceId)
+		public async Task<bool> CheckIfDisclaimerConfigurationRdoExistsAsync(int workspaceId)
 		{
-			RsapiClient.APIOptions.WorkspaceID = workspaceId;
-			int objectTypeId = GetDisclaimerSolutionConfigurationObjectTypeId(workspaceId);
-			Query<RDO> query = new Query<RDO>
+			string url = Constants.Connection.RestUrlEndpoints.ObjectManager.QuerySlimUrl.Replace("-1", workspaceId.ToString());
+			HttpClient httpClient = RestHelper.GetHttpClient(InstanceAddress, AdminUsername, AdminPassword);
+			int objectTypeId = await GetDisclaimerSolutionConfigurationObjectTypeIdAsync(workspaceId);
+			var queryPayloadObject = new
 			{
-				ArtifactTypeID = objectTypeId
+				request = new
+				{
+					objectType = new { artifactTypeId = objectTypeId },
+					fields = new[]
+					{
+						new { Name = "Name" },
+					},
+					Condition = "",
+				},
+				start = 1,
+				length = 25
 			};
 
-			QueryResultSet<RDO> queryResultSet = RsapiClient.Repositories.RDO.Query(query);
-			return queryResultSet.TotalCount > 0;
+			string queryPayload = JsonConvert.SerializeObject(queryPayloadObject);
+			HttpResponseMessage queryResponse = await RestHelper.MakePostAsync(httpClient, url, queryPayload);
+			if (!queryResponse.IsSuccessStatusCode)
+			{
+				throw new Exception("Failed to Query for Disclaimer Configuration RDO");
+			}
+			string resultString = await queryResponse.Content.ReadAsStringAsync();
+			dynamic result = JObject.Parse(resultString) as JObject;
+			int totalCount = result.TotalCount;
+			return totalCount > 0;
 		}
 
-		public void AddDisclaimer(string workspaceName)
+		public async Task AddDisclaimerAsync(string workspaceName)
 		{
 			try
 			{
-				int workspaceId = GetWorkspaceId(workspaceName);
-				int objectTypeId = GetDisclaimerObjectTypeId(workspaceId);
-				int layoutId = GetDisclaimerLayoutId();
-				CreateDisclaimerRDO(objectTypeId, layoutId, workspaceId);
+				int workspaceId = await WorkspaceHelper.GetFirstWorkspaceArtifactIdQueryAsync(workspaceName);
+				int objectTypeId = await GetDisclaimerObjectTypeIdAsync(workspaceId);
+				int layoutId = await GetDisclaimerLayoutIdAsync(workspaceId);
+				await CreateDisclaimerRdoAsync(objectTypeId, layoutId, workspaceId);
 			}
 			catch (Exception ex)
 			{
@@ -75,20 +100,39 @@ namespace Helpers.Implementations
 			}
 		}
 
-		public bool CheckIfDisclaimerRDOExists(int workspaceId)
+		public async Task<bool> CheckIfDisclaimerRdoExistsAsync(int workspaceId)
 		{
-			RsapiClient.APIOptions.WorkspaceID = workspaceId;
-			int objectTypeId = GetDisclaimerObjectTypeId(workspaceId);
-			Query<RDO> query = new Query<RDO>
+			string url = Constants.Connection.RestUrlEndpoints.ObjectManager.QuerySlimUrl.Replace("-1",workspaceId.ToString());
+			HttpClient httpClient = RestHelper.GetHttpClient(InstanceAddress, AdminUsername, AdminPassword);
+			int objectTypeId = await GetDisclaimerObjectTypeIdAsync(workspaceId);
+			var queryPayloadObject = new
 			{
-				ArtifactTypeID = objectTypeId
+				request = new
+				{
+					objectType = new { artifactTypeId = objectTypeId },
+					fields = new[]
+					{
+						new { Name = "Name" },
+					},
+					Condition = "",
+				},
+				start = 1,
+				length = 25
 			};
 
-			QueryResultSet<RDO> queryResultSet = RsapiClient.Repositories.RDO.Query(query);
-			return queryResultSet.TotalCount > 0;
+			string queryPayload = JsonConvert.SerializeObject(queryPayloadObject);
+			HttpResponseMessage queryResponse = await RestHelper.MakePostAsync(httpClient, url, queryPayload);
+			if (!queryResponse.IsSuccessStatusCode)
+			{
+				throw new Exception("Failed to Query for Disclaimer RDO");
+			}
+			string resultString = await queryResponse.Content.ReadAsStringAsync();
+			dynamic result = JObject.Parse(resultString) as JObject;
+			int totalCount = result.TotalCount;
+			return totalCount > 0;
 		}
 
-		private void CreateDisclaimerConfigurationRDO(int objectTypeId, int layoutId, int workspaceId)
+		private async Task CreateDisclaimerConfigurationRdoAsync(int objectTypeId, int layoutId, int workspaceId)
 		{
 			HttpClient httpClient = RestHelper.GetHttpClient(InstanceAddress, AdminUsername, AdminPassword);
 			string url = $"Relativity.REST/api/Relativity.Objects/workspace/{workspaceId}/object/create";
@@ -140,14 +184,14 @@ namespace Helpers.Implementations
 				}
 			};
 			string request = JsonConvert.SerializeObject(objectManagerCreateRequestModel);
-			HttpResponseMessage response = RestHelper.MakePost(httpClient, url, request);
+			HttpResponseMessage response = await RestHelper.MakePostAsync(httpClient, url, request);
 			if (!response.IsSuccessStatusCode)
 			{
 				throw new Exception("Failed to Create for Disclaimer Configuration RDO.");
 			}
 		}
 
-		private void CreateDisclaimerRDO(int objectTypeId, int layoutId, int workspaceId)
+		private async Task CreateDisclaimerRdoAsync(int objectTypeId, int layoutId, int workspaceId)
 		{
 			HttpClient httpClient = RestHelper.GetHttpClient(InstanceAddress, AdminUsername, AdminPassword);
 			string url = $"Relativity.REST/api/Relativity.Objects/workspace/{workspaceId}/object/create";
@@ -215,31 +259,46 @@ namespace Helpers.Implementations
 				}
 			};
 			string request = JsonConvert.SerializeObject(objectManagerCreateRequestModel);
-			HttpResponseMessage response = RestHelper.MakePost(httpClient, url, request);
+			HttpResponseMessage response = await RestHelper.MakePostAsync(httpClient, url, request);
 			if (!response.IsSuccessStatusCode)
 			{
 				throw new Exception("Failed to Create for Disclaimer Configuration RDO.");
 			}
 		}
 
-		private int GetDisclaimerObjectTypeId(int workspaceId)
+		private async Task<int> GetDisclaimerObjectTypeIdAsync(int workspaceId)
 		{
 			int objectTypeId;
-			RsapiClient.APIOptions.WorkspaceID = workspaceId;
 			try
 			{
-				ResultSet<ObjectType> results = RsapiClient.Repositories.ObjectType.Read(
-					new ObjectType(new Guid(Constants.DisclaimerAcceptance.ObjectGuids.Disclaimer))
-					{
-						Fields = { new FieldValue(ObjectTypeFieldNames.DescriptorArtifactTypeID) }
-					});
-				if (!results.Success)
+				string url = Constants.Connection.RestUrlEndpoints.ObjectManager.QuerySlimUrl.Replace("-1", workspaceId.ToString());
+				HttpClient httpClient = RestHelper.GetHttpClient(InstanceAddress, AdminUsername, AdminPassword);
+				var queryPayloadObject = new
 				{
-					throw new Exception(
-						$"Reading {Constants.DisclaimerAcceptance.ObjectNames.Disclaimer} ObjectType was not successful");
+					request = new
+					{
+						objectType = new { artifactTypeId = Constants.OBJECT_TYPE_TYPE_ARTIFACT_ID },
+						fields = new[]
+						{
+							new { Name = "Name" },
+							new { Name = "Artifact Type ID" },
+						},
+						Condition = $"'Name' == '{Constants.DisclaimerAcceptance.ObjectNames.Disclaimer}'",
+					},
+					start = 1,
+					length = 25
+				};
+
+				string queryPayload = JsonConvert.SerializeObject(queryPayloadObject);
+				HttpResponseMessage queryResponse = await RestHelper.MakePostAsync(httpClient, url, queryPayload);
+				if (!queryResponse.IsSuccessStatusCode)
+				{
+					throw new Exception("Failed to Query for Disclaimer Object Type");
 				}
 
-				objectTypeId = results.Results.First().Artifact.DescriptorArtifactTypeID.Value;
+				string resultString = queryResponse.Content.ReadAsStringAsync().Result;
+				dynamic result = JObject.Parse(resultString) as JObject;
+				objectTypeId = result.Objects[0]["Values"][1];
 			}
 			catch (Exception ex)
 			{
@@ -249,53 +308,39 @@ namespace Helpers.Implementations
 			return objectTypeId;
 		}
 
-		private int GetWorkspaceId(string workspaceName)
-		{
-			int workspaceId;
-			RsapiClient.APIOptions.WorkspaceID = -1;
-			Query<Workspace> query = new Query<Workspace>();
-			query.Condition = new kCura.Relativity.Client.TextCondition(WorkspaceFieldNames.Name,
-				kCura.Relativity.Client.TextConditionEnum.EqualTo, workspaceName);
-			query.Fields = FieldValue.NoFields;
-			try
-			{
-				kCura.Relativity.Client.DTOs.QueryResultSet<Workspace> resultSet =
-					RsapiClient.Repositories.Workspace.Query(query, 0);
-				if (resultSet.Success && resultSet.Results.Count > 0)
-				{
-					workspaceId = resultSet.Results.First().Artifact.ArtifactID;
-				}
-				else
-				{
-					throw new Exception($"Unable to find workspace with the name: {workspaceName}");
-				}
-			}
-			catch (Exception ex)
-			{
-				throw new Exception($"Error finding workspace with name: {workspaceName}", ex);
-			}
-
-			return workspaceId;
-		}
-
-		private int GetDisclaimerSolutionConfigurationObjectTypeId(int workspaceId)
+		private async Task<int> GetDisclaimerSolutionConfigurationObjectTypeIdAsync(int workspaceId)
 		{
 			int objectTypeId;
-			RsapiClient.APIOptions.WorkspaceID = workspaceId;
 			try
 			{
-				ResultSet<ObjectType> results = RsapiClient.Repositories.ObjectType.Read(
-					new ObjectType(new Guid(Constants.DisclaimerAcceptance.ObjectGuids.DisclaimerSolutionConfiguration))
-					{
-						Fields = { new FieldValue(ObjectTypeFieldNames.DescriptorArtifactTypeID) }
-					});
-				if (!results.Success)
+				string url = Constants.Connection.RestUrlEndpoints.ObjectManager.QuerySlimUrl.Replace("-1", workspaceId.ToString());
+				HttpClient httpClient = RestHelper.GetHttpClient(InstanceAddress, AdminUsername, AdminPassword);
+				var queryPayloadObject = new
 				{
-					throw new Exception(
-						$"Reading {Constants.DisclaimerAcceptance.ObjectNames.DisclaimerSolutionConfiguration} ObjectType was not successful");
+					request = new
+					{
+						objectType = new { artifactTypeId = Constants.OBJECT_TYPE_TYPE_ARTIFACT_ID },
+						fields = new[]
+						{
+							new { Name = "Name" },
+							new { Name = "Artifact Type ID" },
+						},
+						Condition = $"'Name' == '{Constants.DisclaimerAcceptance.ObjectNames.DisclaimerSolutionConfiguration}'",
+					},
+					start = 1,
+					length = 25
+				};
+
+				string queryPayload = JsonConvert.SerializeObject(queryPayloadObject);
+				HttpResponseMessage queryResponse = await RestHelper.MakePostAsync(httpClient, url, queryPayload);
+				if (!queryResponse.IsSuccessStatusCode)
+				{
+					throw new Exception("Failed to Query for Disclaimer Solution Configuration Object Type");
 				}
 
-				objectTypeId = results.Results.First().Artifact.DescriptorArtifactTypeID.Value;
+				string resultString = await queryResponse.Content.ReadAsStringAsync();
+				dynamic result = JObject.Parse(resultString) as JObject;
+				objectTypeId = result.Objects[0]["Values"][1];
 			}
 			catch (Exception ex)
 			{
@@ -306,20 +351,38 @@ namespace Helpers.Implementations
 			return objectTypeId;
 		}
 
-		private int GetDisclaimerLayoutId()
+		private async Task<int> GetDisclaimerLayoutIdAsync(int workspaceId)
 		{
 			int layoutId;
-			TextCondition queryCondition =
-				new TextCondition(LayoutFieldNames.Name, TextConditionEnum.EqualTo, Constants.DisclaimerAcceptance.LayoutNames.DisclaimerLayout);
-			Query<kCura.Relativity.Client.DTOs.Layout> layoutQuery = new Query<kCura.Relativity.Client.DTOs.Layout>();
-			layoutQuery.Condition = queryCondition;
-			layoutQuery.Fields = FieldValue.NoFields;
-			ResultSet<kCura.Relativity.Client.DTOs.Layout> layoutQueryResultSet =
-				new ResultSet<kCura.Relativity.Client.DTOs.Layout>();
 			try
 			{
-				layoutQueryResultSet = RsapiClient.Repositories.Layout.Query(layoutQuery);
-				layoutId = layoutQueryResultSet.Results.First().Artifact.ArtifactID;
+				string url = Constants.Connection.RestUrlEndpoints.ObjectManager.QuerySlimUrl.Replace("-1", workspaceId.ToString());
+				HttpClient httpClient = RestHelper.GetHttpClient(InstanceAddress, AdminUsername, AdminPassword);
+				var queryPayloadObject = new
+				{
+					request = new
+					{
+						objectType = new { artifactTypeId = Constants.LAYOUT_TYPE_ARTIFACT_ID },
+						fields = new[]
+						{
+							new { Name = "Name" },
+						},
+						Condition = $"'Name' == '{Constants.DisclaimerAcceptance.LayoutNames.DisclaimerLayout}'",
+					},
+					start = 1,
+					length = 25
+				};
+
+				string queryPayload = JsonConvert.SerializeObject(queryPayloadObject);
+				HttpResponseMessage queryResponse = await RestHelper.MakePostAsync(httpClient, url, queryPayload);
+				if (!queryResponse.IsSuccessStatusCode)
+				{
+					throw new Exception("Failed to Query for Disclaimer Layout");
+				}
+
+				string resultString = await queryResponse.Content.ReadAsStringAsync();
+				dynamic result = JObject.Parse(resultString) as JObject;
+				layoutId = result.Objects[0]["ArtifactID"];
 			}
 			catch (Exception ex)
 			{
@@ -329,20 +392,38 @@ namespace Helpers.Implementations
 			return layoutId;
 		}
 
-		private int GetDisclaimerSolutionConfigurationLayoutId()
+		private async Task<int> GetDisclaimerSolutionConfigurationLayoutIdAsync(int workspaceId)
 		{
 			int layoutId;
-			TextCondition queryCondition =
-				new TextCondition(LayoutFieldNames.Name, TextConditionEnum.EqualTo, Constants.DisclaimerAcceptance.LayoutNames.DisclaimerSolutionConfigurationLayout);
-			Query<kCura.Relativity.Client.DTOs.Layout> layoutQuery = new Query<kCura.Relativity.Client.DTOs.Layout>();
-			layoutQuery.Condition = queryCondition;
-			layoutQuery.Fields = FieldValue.NoFields;
-			ResultSet<kCura.Relativity.Client.DTOs.Layout> layoutQueryResultSet =
-				new ResultSet<kCura.Relativity.Client.DTOs.Layout>();
 			try
 			{
-				layoutQueryResultSet = RsapiClient.Repositories.Layout.Query(layoutQuery);
-				layoutId = layoutQueryResultSet.Results.First().Artifact.ArtifactID;
+				string url = Constants.Connection.RestUrlEndpoints.ObjectManager.QuerySlimUrl.Replace("-1", workspaceId.ToString());
+				HttpClient httpClient = RestHelper.GetHttpClient(InstanceAddress, AdminUsername, AdminPassword);
+				var queryPayloadObject = new
+				{
+					request = new
+					{
+						objectType = new { artifactTypeId = Constants.LAYOUT_TYPE_ARTIFACT_ID },
+						fields = new[]
+						{
+							new { Name = "Name" },
+						},
+						Condition = $"'Name' == '{Constants.DisclaimerAcceptance.LayoutNames.DisclaimerSolutionConfigurationLayout}'",
+					},
+					start = 1,
+					length = 25
+				};
+
+				string queryPayload = JsonConvert.SerializeObject(queryPayloadObject);
+				HttpResponseMessage queryResponse = await RestHelper.MakePostAsync(httpClient, url, queryPayload);
+				if (!queryResponse.IsSuccessStatusCode)
+				{
+					throw new Exception("Failed to Query for Disclaimer Configuration Layout");
+				}
+
+				string resultString = await queryResponse.Content.ReadAsStringAsync();
+				dynamic result = JObject.Parse(resultString) as JObject;
+				layoutId = result.Objects[0]["ArtifactID"];
 			}
 			catch (Exception ex)
 			{
