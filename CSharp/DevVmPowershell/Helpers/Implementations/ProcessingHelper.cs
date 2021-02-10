@@ -18,8 +18,10 @@ using Helpers.RequestModels;
 using kCura.Notification;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Relativity.Services.Interfaces.Choice.Models;
 using Choice = kCura.Relativity.Client.DTOs.Choice;
 using ChoiceRef = Relativity.Services.Choice.ChoiceRef;
+using QueryResult = Relativity.Services.Objects.DataContracts.QueryResult;
 
 namespace Helpers.Implementations
 {
@@ -29,12 +31,14 @@ namespace Helpers.Implementations
 		private string InstanceAddress { get; set; }
 		private string AdminUsername { get; set; }
 		private string AdminPassword { get; set; }
-		public ProcessingHelper(IConnectionHelper connectionHelper, string instanceAddress, string adminUsername, string adminPassword)
+		private IRestHelper RestHelper { get; set; }
+		public ProcessingHelper(IConnectionHelper connectionHelper, IRestHelper restHelper, string instanceAddress, string adminUsername, string adminPassword)
 		{
 			ServiceFactory = connectionHelper.GetServiceFactory();
 			InstanceAddress = instanceAddress;
 			AdminUsername = adminUsername;
 			AdminPassword = adminPassword;
+			RestHelper = restHelper;
 		}
 
 		/// <summary>
@@ -233,7 +237,7 @@ namespace Helpers.Implementations
 
 					// Check if Processing Server Location already added to Default Resource Pool
 					string choiceRequest = JsonConvert.SerializeObject(objectManagerQueryRequestModel);
-					HttpResponseMessage response = RestHelper.MakePost(httpClient, url, choiceRequest);
+					HttpResponseMessage response = await RestHelper.MakePostAsync(httpClient, url, choiceRequest);
 					if (!response.IsSuccessStatusCode)
 					{
 						throw new System.Exception("Failed to Query for Processing Source Location.");
