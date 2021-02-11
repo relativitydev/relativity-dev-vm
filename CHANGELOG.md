@@ -5,6 +5,12 @@
 
 -------------------------
 
+## 2021-02-11
+
+- [REL-522350](https://jira.kcura.com/browse/REL-522350) - Updated the AgentHelper.cs class to use REST APIs instead of C# APIs.
+
+-------------------------
+
 ## 2021-02-02
 
 - [REL-508653](https://jira.kcura.com/browse/REL-508653) - Updated Processing Source Location code to use Kepler services REST endpoints.
