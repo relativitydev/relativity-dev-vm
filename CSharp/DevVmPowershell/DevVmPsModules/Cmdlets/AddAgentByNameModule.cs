@@ -61,14 +61,8 @@ namespace DevVmPsModules.Cmdlets
 			//Validate Input arguments
 			ValidateInputArguments();
 
-			IConnectionHelper connectionHelper = new ConnectionHelper(
-				relativityInstanceName: RelativityInstanceName,
-				relativityAdminUserName: RelativityAdminUserName,
-				relativityAdminPassword: RelativityAdminPassword,
-				sqlAdminUserName: SqlAdminUserName,
-				sqlAdminPassword: SqlAdminPassword);
 			IRestHelper restHelper = new RestHelper();
-			IAgentHelper agentHelper = new AgentHelper(connectionHelper, restHelper, RelativityInstanceName, RelativityAdminUserName, RelativityAdminPassword);
+			IAgentHelper agentHelper = new AgentHelper(restHelper, RelativityInstanceName, RelativityAdminUserName, RelativityAdminPassword);
 
 			//Create Agents for all Applications
 			foreach (string agentName in AgentNames)
