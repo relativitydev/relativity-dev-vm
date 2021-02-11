@@ -17,14 +17,8 @@ namespace Helpers.Tests.Integration.Tests
 		[SetUp]
 		public void SetUp()
 		{
-			IConnectionHelper connectionHelper = new ConnectionHelper(
-				relativityInstanceName: TestConstants.RELATIVITY_INSTANCE_NAME,
-				relativityAdminUserName: TestConstants.RELATIVITY_ADMIN_USER_NAME,
-				relativityAdminPassword: TestConstants.RELATIVITY_ADMIN_PASSWORD,
-				sqlAdminUserName: TestConstants.SQL_USER_NAME,
-				sqlAdminPassword: TestConstants.SQL_PASSWORD);
-
-			Sut = new RelativityVersionHelper(connectionHelper);
+			IRestHelper restHelper = new RestHelper();
+			Sut = new RelativityVersionHelper(restHelper, TestConstants.RELATIVITY_INSTANCE_NAME, TestConstants.RELATIVITY_ADMIN_USER_NAME, TestConstants.RELATIVITY_ADMIN_PASSWORD);
 		}
 
 		[TearDown]
