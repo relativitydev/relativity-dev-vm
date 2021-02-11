@@ -33,10 +33,10 @@ namespace Helpers.Tests.Integration.Tests
 
 		[Test, Order(10)]
 		[TestCase(true)]
-		public async Task CreateProcessingSourceLocationChoiceTestAsync(bool expectedResult)
+		public void CreateProcessingSourceLocationChoiceTestAsync(bool expectedResult)
 		{
 			//Arrange
-			bool result = await Sut.CreateProcessingSourceLocationChoiceAsync();
+			bool result = Sut.CreateProcessingSourceLocationChoice();
 
 			//Assert
 			Assert.That(result, Is.EqualTo(expectedResult));
