@@ -62,6 +62,18 @@ namespace Helpers
 				{
 					public const string EndpointUrl = "Relativity.REST/api/Relativity.Services.InstanceDetails.IInstanceDetailsModule/InstanceDetailsService/GetRelativityVersionAsync";
 				}
+
+				public class AgentType
+				{
+					public const string EndpointUrl = "Relativity.rest/api/relativity.agents/workspace/-1/agenttypes/";
+					public const string GetAgentServersForAgentTypeEndpointUrl = "Relativity.rest/api/relativity.agents/workspace/-1/agenttypes/{agentTypeArtifactId}/availableagentservers";
+				}
+
+				public class Agent
+				{
+					public const string EndpointUrl = "Relativity.rest/api/relativity.agents/workspace/-1/agents/";
+					public const string DeleteEndpointUrl = "Relativity.rest/api/relativity.agents/workspace/-1/agents/{agentArtifactId}";
+				}
 			}
 		}
 		public class Agents

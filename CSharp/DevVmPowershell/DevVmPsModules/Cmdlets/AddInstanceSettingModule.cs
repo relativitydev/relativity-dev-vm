@@ -92,7 +92,7 @@ namespace DevVmPsModules.Cmdlets
 				sqlAdminUserName: SqlAdminUserName,
 				sqlAdminPassword: SqlAdminPassword);
 			IRestHelper restHelper = new RestHelper();
-			IInstanceSettingsHelper instanceSettingsHelper = new InstanceSettingsHelper(connectionHelper, restHelper, RelativityInstanceName, RelativityAdminUserName, RelativityAdminPassword);
+			IInstanceSettingsHelper instanceSettingsHelper = new InstanceSettingsHelper(connectionHelper, restHelper);
 
 			// Create Instance Setting
 			instanceSettingsHelper.CreateInstanceSettingAsync(Name, Section, Description, Value).Wait();

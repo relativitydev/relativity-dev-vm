@@ -66,8 +66,14 @@ namespace DevVmPsModules.Cmdlets
 			//Validate Input arguments
 			ValidateInputArguments();
 
+			IConnectionHelper connectionHelper = new ConnectionHelper(
+				relativityInstanceName: RelativityInstanceName,
+				relativityAdminUserName: RelativityAdminUserName,
+				relativityAdminPassword: RelativityAdminPassword,
+				sqlAdminUserName: SqlAdminUserName,
+				sqlAdminPassword: SqlAdminPassword);
 			IRestHelper restHelper = new RestHelper();
-			IRelativityVersionHelper relativityVersionHelper = new RelativityVersionHelper(restHelper, RelativityInstanceName, RelativityAdminUserName, RelativityAdminPassword);
+			IRelativityVersionHelper relativityVersionHelper = new RelativityVersionHelper(connectionHelper, restHelper);
 
 			// Confirm Installer and Instance Relativity Version Are Equal
 			relativityVersionHelper.ConfirmInstallerAndInstanceRelativityVersionAreEqual(InstallerRelativityVersion);

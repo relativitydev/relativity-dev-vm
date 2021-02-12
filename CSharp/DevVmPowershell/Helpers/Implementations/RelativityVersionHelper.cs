@@ -12,22 +12,18 @@ namespace Helpers.Implementations
 {
 	public class RelativityVersionHelper : IRelativityVersionHelper
 	{
-		private string InstanceAddress { get; }
-		private string AdminUsername { get; }
-		private string AdminPassword { get; }
+		private IConnectionHelper ConnectionHelper { get; }
 		private IRestHelper RestHelper { get; set; }
 
-		public RelativityVersionHelper(IRestHelper restHelper, string instanceAddress, string adminUsername, string adminPassword)
+		public RelativityVersionHelper(IConnectionHelper connectionHelper, IRestHelper restHelper)
 		{
-			InstanceAddress = instanceAddress;
-			AdminUsername = adminUsername;
-			AdminPassword = adminPassword;
+			ConnectionHelper = connectionHelper;
 			RestHelper = restHelper;
 		}
 
 		public async Task ConfirmInstallerAndInstanceRelativityVersionAreEqual(string installerRelativityVersion)
 		{
-			HttpClient httpClient = RestHelper.GetHttpClient(InstanceAddress, AdminUsername, AdminPassword);
+			HttpClient httpClient = RestHelper.GetHttpClient(ConnectionHelper.RelativityInstanceName, ConnectionHelper.RelativityAdminUserName, ConnectionHelper.RelativityAdminPassword);
 			HttpResponseMessage response = await RestHelper.MakePostAsync(httpClient, Constants.Connection.RestUrlEndpoints.InstanceDetailsService.EndpointUrl, "");
 			if (!response.IsSuccessStatusCode)
 			{
