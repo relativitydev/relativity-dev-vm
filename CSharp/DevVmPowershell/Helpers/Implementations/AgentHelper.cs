@@ -20,16 +20,12 @@ namespace Helpers.Implementations
 {
 	public class AgentHelper : IAgentHelper
 	{
-		private string InstanceAddress { get; }
-		private string AdminUsername { get; }
-		private string AdminPassword { get; }
+		private IConnectionHelper ConnectionHelper { get; set; }
 		private IRestHelper RestHelper { get; set; }
 
-		public AgentHelper(IRestHelper restHelper, string instanceAddress, string adminUsername, string adminPassword)
+		public AgentHelper(IConnectionHelper connectionHelper, IRestHelper restHelper)
 		{
-			InstanceAddress = instanceAddress;
-			AdminUsername = adminUsername;
-			AdminPassword = adminPassword;
+			ConnectionHelper = connectionHelper;
 			RestHelper = restHelper;
 		}
 
@@ -44,7 +40,7 @@ namespace Helpers.Implementations
 		private async Task<List<int>> GetAgentArtifactIdsAsync(string agentName)
 		{
 			List<int> agentArtifactIds = new List<int>();
-			HttpClient httpClient = RestHelper.GetHttpClient(InstanceAddress, AdminUsername, AdminPassword);
+			HttpClient httpClient = RestHelper.GetHttpClient(ConnectionHelper.RelativityInstanceName, ConnectionHelper.RelativityAdminUserName, ConnectionHelper.RelativityAdminPassword);
 			string url = $"Relativity.REST/api/Relativity.Objects/workspace/{Constants.EDDS_WORKSPACE_ARTIFACT_ID}/object/query";
 			ObjectManagerQueryRequestModel objectManagerQueryRequestModel = new ObjectManagerQueryRequestModel
 			{
@@ -88,7 +84,7 @@ namespace Helpers.Implementations
 
 		private async Task<List<AgentTypeResponseModel>> GetAgentTypesInInstanceAsync()
 		{
-			HttpClient httpClient = RestHelper.GetHttpClient(InstanceAddress, AdminUsername, AdminPassword);
+			HttpClient httpClient = RestHelper.GetHttpClient(ConnectionHelper.RelativityInstanceName, ConnectionHelper.RelativityAdminUserName, ConnectionHelper.RelativityAdminPassword);
 			HttpResponseMessage response = await RestHelper.MakeGetAsync(httpClient, Constants.Connection.RestUrlEndpoints.AgentType.EndpointUrl);
 			if (!response.IsSuccessStatusCode)
 			{
@@ -115,8 +111,10 @@ namespace Helpers.Implementations
 
 		private async Task<List<AgentServerResponseModel>> GetAgentServersForAgentTypeAsync(int agentTypeArtifactId)
 		{
-			string url = $"Relativity.rest/api/relativity.agents/workspace/-1/agenttypes/{agentTypeArtifactId}/availableagentservers";
-			HttpClient httpClient = RestHelper.GetHttpClient(InstanceAddress, AdminUsername, AdminPassword);
+			string url =
+				Constants.Connection.RestUrlEndpoints.AgentType.GetAgentServersForAgentTypeEndpointUrl.Replace(
+					"{agentTypeArtifactId}", agentTypeArtifactId.ToString());
+			HttpClient httpClient = RestHelper.GetHttpClient(ConnectionHelper.RelativityInstanceName, ConnectionHelper.RelativityAdminUserName, ConnectionHelper.RelativityAdminPassword);
 			HttpResponseMessage response = await RestHelper.MakeGetAsync(httpClient, url);
 			if (!response.IsSuccessStatusCode)
 			{
@@ -169,7 +167,7 @@ namespace Helpers.Implementations
 			};
 
 			string createPayload = JsonConvert.SerializeObject(agentCreateRequestModel);
-			HttpClient httpClient = RestHelper.GetHttpClient(InstanceAddress, AdminUsername, AdminPassword);
+			HttpClient httpClient = RestHelper.GetHttpClient(ConnectionHelper.RelativityInstanceName, ConnectionHelper.RelativityAdminUserName, ConnectionHelper.RelativityAdminPassword);
 			HttpResponseMessage response = await RestHelper.MakePostAsync(httpClient, Constants.Connection.RestUrlEndpoints.Agent.EndpointUrl, createPayload);
 			if (!response.IsSuccessStatusCode)
 			{
@@ -179,8 +177,10 @@ namespace Helpers.Implementations
 
 		private async Task DeleteAgentAsync(int agentArtifactId)
 		{
-			string url = $"Relativity.rest/api/relativity.agents/workspace/-1/agents/{agentArtifactId}";
-			HttpClient httpClient = RestHelper.GetHttpClient(InstanceAddress, AdminUsername, AdminPassword);
+			string url =
+				Constants.Connection.RestUrlEndpoints.Agent.DeleteEndpointUrl.Replace("{agentArtifactId}",
+					agentArtifactId.ToString());
+			HttpClient httpClient = RestHelper.GetHttpClient(ConnectionHelper.RelativityInstanceName, ConnectionHelper.RelativityAdminUserName, ConnectionHelper.RelativityAdminPassword);
 			HttpResponseMessage response = await RestHelper.MakeDeleteAsync(httpClient, url);
 			if (!response.IsSuccessStatusCode)
 			{

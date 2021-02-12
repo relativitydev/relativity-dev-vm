@@ -20,19 +20,18 @@ namespace Helpers.Implementations
 {
 	public class ImagingHelper : IImagingHelper
 	{
+		private IConnectionHelper ConnectionHelper { get; }
 		private IImagingProfileManager ImagingProfileManager { get; }
 		private IImagingSetManager ImagingSetManager { get; }
 		private IImagingJobManager ImagingJobManager { get; }
 		private IKeywordSearchManager KeywordSearchManager { get; }
 		private ServiceFactory ServiceFactory { get; }
-		private string InstanceAddress { get; }
-		private string AdminUsername { get; }
-		private string AdminPassword { get; }
 		private IRestHelper RestHelper { get; set; }
 		private IRetryLogicHelper RetryLogicHelper { get; set; }
 
-		public ImagingHelper(IConnectionHelper connectionHelper, IRestHelper restHelper, IRetryLogicHelper retryLogicHelper, string instanceAddress, string adminUsername, string adminPassword)
+		public ImagingHelper(IConnectionHelper connectionHelper, IRestHelper restHelper, IRetryLogicHelper retryLogicHelper)
 		{
+			ConnectionHelper = connectionHelper;
 			ServiceFactory = connectionHelper.GetServiceFactory();
 			ImagingProfileManager = ServiceFactory.CreateProxy<IImagingProfileManager>();
 			ImagingSetManager = ServiceFactory.CreateProxy<IImagingSetManager>();
@@ -40,9 +39,6 @@ namespace Helpers.Implementations
 			KeywordSearchManager = ServiceFactory.CreateProxy<IKeywordSearchManager>();
 			RestHelper = restHelper;
 			RetryLogicHelper = retryLogicHelper;
-			InstanceAddress = instanceAddress;
-			AdminUsername = adminUsername;
-			AdminPassword = adminPassword;
 		}
 
 		public async Task ImageAllDocumentsInWorkspaceAsync(int workspaceArtifactId)
@@ -166,7 +162,7 @@ namespace Helpers.Implementations
 			bool jobComplete = false;
 			try
 			{
-				HttpClient httpClient = RestHelper.GetHttpClient(InstanceAddress, AdminUsername, AdminPassword);
+				HttpClient httpClient = RestHelper.GetHttpClient(ConnectionHelper.RelativityInstanceName, ConnectionHelper.RelativityAdminUserName, ConnectionHelper.RelativityAdminPassword);
 					string url = Constants.Connection.RestUrlEndpoints.ObjectManager.ReadUrl.Replace("-1", workspaceArtifactId.ToString());
 					var readPayloadObject = new
 					{
@@ -293,7 +289,7 @@ namespace Helpers.Implementations
 		{
 			try
 			{
-				HttpClient httpClient = RestHelper.GetHttpClient(InstanceAddress, AdminUsername, AdminPassword);
+				HttpClient httpClient = RestHelper.GetHttpClient(ConnectionHelper.RelativityInstanceName, ConnectionHelper.RelativityAdminUserName, ConnectionHelper.RelativityAdminPassword);
 				string url = Constants.Connection.RestUrlEndpoints.ObjectManager.QuerySlimUrl.Replace("-1", workspaceArtifactId.ToString());
 				var queryPayloadObject = new
 				{

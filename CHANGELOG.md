@@ -8,6 +8,7 @@
 ## 2021-02-11
 
 - [REL-522350](https://jira.kcura.com/browse/REL-522350) - Updated the AgentHelper.cs class to use REST APIs instead of C# APIs.
+- [REL-522350](https://jira.kcura.com/browse/REL-522350) - Updated Constructors to take ConnectionHelper instead of InstanceName, AdminUsername, AdminPassword
 
 -------------------------
 
