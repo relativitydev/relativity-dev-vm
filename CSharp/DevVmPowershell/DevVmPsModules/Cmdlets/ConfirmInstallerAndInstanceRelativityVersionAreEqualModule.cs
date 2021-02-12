@@ -76,7 +76,7 @@ namespace DevVmPsModules.Cmdlets
 			IRelativityVersionHelper relativityVersionHelper = new RelativityVersionHelper(connectionHelper, restHelper);
 
 			// Confirm Installer and Instance Relativity Version Are Equal
-			relativityVersionHelper.ConfirmInstallerAndInstanceRelativityVersionAreEqual(InstallerRelativityVersion);
+			relativityVersionHelper.ConfirmInstallerAndInstanceRelativityVersionAreEqualAsync(InstallerRelativityVersion).Wait();
 		}
 
 		private void ValidateInputArguments()

@@ -8,6 +8,6 @@ namespace Helpers.Interfaces
 {
 	public interface IRelativityVersionHelper
 	{
-		Task ConfirmInstallerAndInstanceRelativityVersionAreEqual(string installerRelativityVersion);
+		Task ConfirmInstallerAndInstanceRelativityVersionAreEqualAsync(string installerRelativityVersion);
 	}
 }

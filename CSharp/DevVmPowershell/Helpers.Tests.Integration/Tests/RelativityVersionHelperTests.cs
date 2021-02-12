@@ -42,7 +42,7 @@ namespace Helpers.Tests.Integration.Tests
 			// Act / Assert
 			Assert.DoesNotThrow(() =>
 			{
-				Sut.ConfirmInstallerAndInstanceRelativityVersionAreEqual(installerRelativityVersion);
+				Sut.ConfirmInstallerAndInstanceRelativityVersionAreEqualAsync(installerRelativityVersion).Wait();
 			});
 		}
 	}

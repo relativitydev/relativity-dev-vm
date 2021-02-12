@@ -21,7 +21,7 @@ namespace Helpers.Implementations
 			RestHelper = restHelper;
 		}
 
-		public async Task ConfirmInstallerAndInstanceRelativityVersionAreEqual(string installerRelativityVersion)
+		public async Task ConfirmInstallerAndInstanceRelativityVersionAreEqualAsync(string installerRelativityVersion)
 		{
 			HttpClient httpClient = RestHelper.GetHttpClient(ConnectionHelper.RelativityInstanceName, ConnectionHelper.RelativityAdminUserName, ConnectionHelper.RelativityAdminPassword);
 			HttpResponseMessage response = await RestHelper.MakePostAsync(httpClient, Constants.Connection.RestUrlEndpoints.InstanceDetailsService.EndpointUrl, "");
