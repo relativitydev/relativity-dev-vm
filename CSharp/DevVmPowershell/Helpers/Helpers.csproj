@@ -199,6 +199,7 @@
     <Compile Include="Implementations\ErrorMessageHelper.cs" />
     <Compile Include="Implementations\RelativityVersionHelper.cs" />
     <Compile Include="Implementations\RestHelper.cs" />
+    <Compile Include="Implementations\RetryLogicHelper.cs" />
     <Compile Include="Implementations\SmokeTestHelper.cs" />
     <Compile Include="Interfaces\IAgentHelper.cs" />
     <Compile Include="Interfaces\IAgentServerHelper.cs" />
@@ -211,6 +212,8 @@
     <Compile Include="Implementations\ImagingHelper.cs" />
     <Compile Include="Interfaces\IRecycleBinHelper.cs" />
     <Compile Include="Interfaces\IRelativityVersionHelper.cs" />
+    <Compile Include="Interfaces\IRetryLogicHelper.cs" />
+    <Compile Include="Interfaces\IRestHelper.cs" />
     <Compile Include="Interfaces\ISmokeTestHelper.cs" />
     <Compile Include="Interfaces\ISqlRunner.cs" />
     <Compile Include="Interfaces\IWorkspaceHelper.cs" />
@@ -229,6 +232,8 @@
     <Compile Include="Implementations\YmlFileHelper.cs" />
     <Compile Include="Implementations\WorkspaceHelper.cs" />
     <Compile Include="Implementations\ZipHelper.cs" />
+    <Compile Include="RequestModels\InstanceSettingManagerCreateRequest.cs" />
+    <Compile Include="RequestModels\InstanceSettingManagerUpdateRequest.cs" />
     <Compile Include="RequestModels\ObjectManagerCreateRequestModel.cs" />
     <Compile Include="RequestModels\ObjectManagerQueryRequestModel.cs" />
   </ItemGroup>

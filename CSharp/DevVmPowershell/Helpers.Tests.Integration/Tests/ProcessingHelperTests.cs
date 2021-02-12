@@ -21,8 +21,8 @@ namespace Helpers.Tests.Integration.Tests
 				relativityAdminPassword: TestConstants.RELATIVITY_ADMIN_PASSWORD,
 				sqlAdminUserName: TestConstants.SQL_USER_NAME,
 				sqlAdminPassword: TestConstants.SQL_PASSWORD);
-
-			Sut = new ProcessingHelper(connectionHelper, TestConstants.RELATIVITY_INSTANCE_NAME, TestConstants.RELATIVITY_ADMIN_USER_NAME, TestConstants.RELATIVITY_ADMIN_PASSWORD);
+			IRestHelper restHelper = new RestHelper();
+			Sut = new ProcessingHelper(connectionHelper, restHelper, TestConstants.RELATIVITY_INSTANCE_NAME, TestConstants.RELATIVITY_ADMIN_USER_NAME, TestConstants.RELATIVITY_ADMIN_PASSWORD);
 		}
 
 		[TearDown]
@@ -33,12 +33,9 @@ namespace Helpers.Tests.Integration.Tests
 
 		[Test, Order(10)]
 		[TestCase(true)]
-		public void CreateProcessingSourceLocationChoiceTest(bool expectedResult)
+		public void CreateProcessingSourceLocationChoiceTestAsync(bool expectedResult)
 		{
 			//Arrange
-			// No API exists yet to remove Processing Source Locations.  You'll have to manually delete it from the Default Resource Pool and from the Choice List
-
-			//Act
 			bool result = Sut.CreateProcessingSourceLocationChoice();
 
 			//Assert
