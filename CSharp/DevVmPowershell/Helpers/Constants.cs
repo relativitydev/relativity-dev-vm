@@ -57,6 +57,18 @@ namespace Helpers
 					public const string readAllLibraryApplicationUrl = "Relativity.REST/api/relativity-environment/v1/workspace/-1/libraryapplications";
 					public const string installWorkspaceApplicationUrl = "Relativity.REST/api/Relativity.LibraryApplications/workspace/-1/libraryapplications/{0}/install";
 				}
+
+				public class AgentType
+				{
+					public const string EndpointUrl = "Relativity.rest/api/relativity.agents/workspace/-1/agenttypes/";
+					public const string GetAgentServersForAgentTypeEndpointUrl = "Relativity.rest/api/relativity.agents/workspace/-1/agenttypes/{agentTypeArtifactId}/availableagentservers";
+				}
+
+				public class Agent
+				{
+					public const string EndpointUrl = "Relativity.rest/api/relativity.agents/workspace/-1/agents/";
+					public const string DeleteEndpointUrl = "Relativity.rest/api/relativity.agents/workspace/-1/agents/{agentArtifactId}";
+				}
 			}
 		}
 		public class Agents

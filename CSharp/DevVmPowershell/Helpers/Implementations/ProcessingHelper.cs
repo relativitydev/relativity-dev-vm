@@ -27,17 +27,13 @@ namespace Helpers.Implementations
 {
 	public class ProcessingHelper : IProcessingHelper
 	{
+		private IConnectionHelper ConnectionHelper { get; }
 		private ServiceFactory ServiceFactory { get; }
-		private string InstanceAddress { get; set; }
-		private string AdminUsername { get; set; }
-		private string AdminPassword { get; set; }
 		private IRestHelper RestHelper { get; set; }
-		public ProcessingHelper(IConnectionHelper connectionHelper, IRestHelper restHelper, string instanceAddress, string adminUsername, string adminPassword)
+		public ProcessingHelper(IConnectionHelper connectionHelper, IRestHelper restHelper)
 		{
+			ConnectionHelper = connectionHelper;
 			ServiceFactory = connectionHelper.GetServiceFactory();
-			InstanceAddress = instanceAddress;
-			AdminUsername = adminUsername;
-			AdminPassword = adminPassword;
 			RestHelper = restHelper;
 		}
 
@@ -120,7 +116,7 @@ namespace Helpers.Implementations
 			Console.WriteLine($"{nameof(CreateProcessingSourceLocationChoiceAsync)} - Creating Processing Source Location Choice ({Constants.Processing.ChoiceName})");
 
 			string url = Constants.Connection.RestUrlEndpoints.ProcessingManager.ProcessingSourceCreateUrl;
-			HttpClient httpClient = RestHelper.GetHttpClient(InstanceAddress, AdminUsername, AdminPassword);
+			HttpClient httpClient = RestHelper.GetHttpClient(ConnectionHelper.RelativityInstanceName, ConnectionHelper.RelativityAdminUserName, ConnectionHelper.RelativityAdminPassword);
 
 			var createPayloadObject = new
 			{
@@ -192,7 +188,7 @@ namespace Helpers.Implementations
 				Value = Constants.Processing.ChoiceName
 			};
 
-			HttpClient httpClient = RestHelper.GetHttpClient(InstanceAddress, AdminUsername, AdminPassword);
+			HttpClient httpClient = RestHelper.GetHttpClient(ConnectionHelper.RelativityInstanceName, ConnectionHelper.RelativityAdminUserName, ConnectionHelper.RelativityAdminPassword);
 			string url = $"Relativity.REST/api/Relativity.Objects/workspace/{Constants.Processing.WorkspaceId}/object/query";
 			ObjectManagerQueryRequestModel objectManagerQueryRequestModel = new ObjectManagerQueryRequestModel
 			{

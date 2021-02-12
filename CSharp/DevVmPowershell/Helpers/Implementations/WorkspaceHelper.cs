@@ -17,20 +17,16 @@ namespace Helpers.Implementations
 {
 	public class WorkspaceHelper : IWorkspaceHelper
 	{
+		private IConnectionHelper ConnectionHelper { get; }
 		private ServiceFactory ServiceFactory { get; }
 		public ISqlHelper SqlHelper { get; set; }
-		private string InstanceAddress { get; }
-		private string AdminUsername { get; }
-		private string AdminPassword { get; }
 		private IRestHelper RestHelper { get; set; }
 
-		public WorkspaceHelper(IConnectionHelper connectionHelper, IRestHelper restHelper, ISqlHelper sqlHelper, string instanceAddress, string adminUsername, string adminPassword)
+		public WorkspaceHelper(IConnectionHelper connectionHelper, IRestHelper restHelper, ISqlHelper sqlHelper)
 		{
+			ConnectionHelper = connectionHelper;
 			ServiceFactory = connectionHelper.GetServiceFactory();
 			SqlHelper = sqlHelper;
-			InstanceAddress = instanceAddress;
-			AdminUsername = adminUsername;
-			AdminPassword = adminPassword;
 			RestHelper = restHelper;
 		}
 
@@ -75,7 +71,7 @@ namespace Helpers.Implementations
 			try
 			{
 				string url = $"{Constants.Connection.RestUrlEndpoints.WorkspaceManager.EndpointUrl}/{workspaceArtifactId}";
-				HttpClient httpClient = RestHelper.GetHttpClient(InstanceAddress, AdminUsername, AdminPassword);
+				HttpClient httpClient = RestHelper.GetHttpClient(ConnectionHelper.RelativityInstanceName, ConnectionHelper.RelativityAdminUserName, ConnectionHelper.RelativityAdminPassword);
 				HttpResponseMessage response = await RestHelper.MakeDeleteAsync(httpClient, url);
 				if (!response.IsSuccessStatusCode)
 				{
@@ -93,7 +89,7 @@ namespace Helpers.Implementations
 			Console.WriteLine("Creating new Workspace");
 			try
 			{
-				HttpClient httpClient = RestHelper.GetHttpClient(InstanceAddress, AdminUsername, AdminPassword);
+				HttpClient httpClient = RestHelper.GetHttpClient(ConnectionHelper.RelativityInstanceName, ConnectionHelper.RelativityAdminUserName, ConnectionHelper.RelativityAdminPassword);
 				int statusID = (await GetEligibleStatusesAsync(httpClient)).First();
 				int matterID = (await QueryEligibleMattersAsync(httpClient)).First();
 				string defaultDownloadHandlerUrl = await GetDefaultDownloadHandlerUrlAsync(httpClient);
@@ -200,7 +196,7 @@ namespace Helpers.Implementations
 
 			try
 			{
-				HttpClient httpClient = RestHelper.GetHttpClient(InstanceAddress, AdminUsername, AdminPassword);
+				HttpClient httpClient = RestHelper.GetHttpClient(ConnectionHelper.RelativityInstanceName, ConnectionHelper.RelativityAdminUserName, ConnectionHelper.RelativityAdminPassword);
 
 				var queryPayloadObject = new
 				{
@@ -249,7 +245,7 @@ namespace Helpers.Implementations
 
 			try
 			{
-				HttpClient httpClient = RestHelper.GetHttpClient(InstanceAddress, AdminUsername, AdminPassword);
+				HttpClient httpClient = RestHelper.GetHttpClient(ConnectionHelper.RelativityInstanceName, ConnectionHelper.RelativityAdminUserName, ConnectionHelper.RelativityAdminPassword);
 
 				var queryPayloadObject = new
 				{
@@ -291,7 +287,7 @@ namespace Helpers.Implementations
 
 			try
 			{
-				HttpClient httpClient = RestHelper.GetHttpClient(InstanceAddress, AdminUsername, AdminPassword);
+				HttpClient httpClient = RestHelper.GetHttpClient(ConnectionHelper.RelativityInstanceName, ConnectionHelper.RelativityAdminUserName, ConnectionHelper.RelativityAdminPassword);
 
 				var queryPayloadObject = new
 				{

@@ -23,7 +23,7 @@ namespace Helpers.Tests.Integration.Tests
 			ISqlRunner sqlRunner = new SqlRunner(connectionHelper);
 			Sut = new SqlHelper(sqlRunner);
 			IRestHelper restHelper = new RestHelper();
-			WorkspaceHelper = new WorkspaceHelper(connectionHelper, restHelper, Sut, TestConstants.RELATIVITY_INSTANCE_NAME, TestConstants.RELATIVITY_ADMIN_USER_NAME, TestConstants.RELATIVITY_ADMIN_PASSWORD);
+			WorkspaceHelper = new WorkspaceHelper(connectionHelper, restHelper, Sut);
 		}
 
 		[TearDown]
