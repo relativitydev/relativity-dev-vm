@@ -5,10 +5,17 @@
 
 -------------------------
 
+## 2021-02-12
+- [REL-522364](https://jira.kcura.com/browse/REL-522364) - Updated the RelativityVersionHelper.cs class to use REST APIs instead of C# APIs.
+
+
+-------------------------
+
 ## 2021-02-11
 
-- [REL-522350](https://jira.kcura.com/browse/REL-522350) - Updated the AgentHelper.cs class to use REST APIs instead of C# APIs.
-- [REL-522350](https://jira.kcura.com/browse/REL-522350) - Updated Constructors to take ConnectionHelper instead of InstanceName, AdminUsername, AdminPassword
+- [REL-522350](https://jira.kcura.com/browse/REL-522350) 
+	- Updated the AgentHelper.cs class to use REST APIs instead of C# APIs.
+	- Updated Constructors to take ConnectionHelper instead of InstanceName, AdminUsername, AdminPassword
 
 -------------------------
 
