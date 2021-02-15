@@ -80,6 +80,8 @@ namespace Helpers
 					public const string QueryEndpointUrl = "Relativity.Rest/api/Relativity.Services.ResourcePool.IResourcePoolModule/Resource%20Pool%20Service/QueryAsync";
 					public const string AddServerEndpointUrl = "Relativity.Rest/api/Relativity.Services.ResourcePool.IResourcePoolModule/Resource%20Pool%20Service/AddServerAsync";
 					public const string RemoveServerUrl = "Relativity.Rest/API/Relativity.Services.ResourcePool.IResourcePoolModule/Resource%20Pool%20Service/RemoveServerAsync";
+					public const string GetProcessingSourceLocationsUrl = "Relativity.Rest/api/Relativity.Services.ResourcePool.IResourcePoolModule/Resource%20Pool%20Service/GetProcessingSourceLocationsAsync";
+					public const string AddProcessingSourceLocationUrl = "Relativity.Rest/api/Relativity.Services.ResourcePool.IResourcePoolModule/Resource%20Pool%20Service/AddProcessingSourceLocationAsync";
 				}
 
 				public class AgentServer
@@ -106,6 +108,11 @@ namespace Helpers
 				public class KeywordSearch
 				{
 					public const string CreateEndpointUrl = "Relativity.REST/api/Relativity.Services.Search.ISearchModule/Keyword%20Search%20Manager/CreateSingleAsync";
+				}
+
+				public class Choice
+				{
+					public const string QueryEndpointUrl = "Relativity.REST/Relativity/Choice/QueryResult";
 				}
 			}
 		}

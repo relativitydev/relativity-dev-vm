@@ -167,109 +167,37 @@ namespace Helpers.Implementations
 
 			Console.WriteLine($"{nameof(AddProcessingSourceLocationChoiceToDefaultResourcePoolAsync)} - Adding Processing Source Location Choice to Default Resource Pool");
 
-			// Setup for checking Resource Pools
-			Relativity.Services.TextCondition conditionPool = new Relativity.Services.TextCondition()
-			{
-				Field = Constants.Processing.NameField,
-				Operator = Relativity.Services.TextConditionEnum.StartsWith,
-				Value = Constants.Processing.DefaultPool
-			};
-
-			Relativity.Services.Query queryPool = new Relativity.Services.Query()
-			{
-				Condition = conditionPool.ToQueryString(),
-			};
-
-			// Setup for checking choice
-			Relativity.Services.TextCondition conditionChoice = new Relativity.Services.TextCondition()
-			{
-				Field = Constants.Processing.NameField,
-				Operator = Relativity.Services.TextConditionEnum.EqualTo,
-				Value = Constants.Processing.ChoiceName
-			};
-
 			HttpClient httpClient = RestHelper.GetHttpClient(ConnectionHelper.RelativityInstanceName, ConnectionHelper.RelativityAdminUserName, ConnectionHelper.RelativityAdminPassword);
-			string url = $"Relativity.REST/api/Relativity.Objects/workspace/{Constants.Processing.WorkspaceId}/object/query";
-			ObjectManagerQueryRequestModel objectManagerQueryRequestModel = new ObjectManagerQueryRequestModel
+			// Get Default Resource Pool Artifact Id
+			int defaultResourcePoolArtifactId = await GetDefaultResourcePoolArtifactIdAsync(httpClient);
+			if (defaultResourcePoolArtifactId != -1)
 			{
-				request = new Request
+				// Get Processing Choice Location Id
+				int processingChoiceId = await GetProcessingSourceLocationArtifactIdAsync(httpClient);
+				if (processingChoiceId != -1)
 				{
-					objectType = new Helpers.RequestModels.ObjectType
+					// Check if Processing Source Location Already Exists in Default Resource Pool
+					if (!(await DoesProcessingSourceLocationAlreadyExistForDefaultResourcePoolAsync(httpClient,
+						defaultResourcePoolArtifactId, processingChoiceId)))
 					{
-						ArtifactTypeID = Constants.Processing.ChoiceArtifactTypeId
-					},
-					fields = new object[]
-					{
-						new
-						{
-							Name = Constants.Processing.ChoiceFieldRef
-						}
-					},
-					condition = conditionChoice.ToQueryString().Replace(@"\", @"\\")
-				},
-				start = 1,
-				length = 10
-			};
-
-			using (IResourcePoolManager resourcePoolManager = ServiceFactory.CreateProxy<IResourcePoolManager>())
-			{
-				// Check for Default Resource Pool
-				ResourcePoolQueryResultSet resultPools = await resourcePoolManager.QueryAsync(queryPool);
-
-				Console.WriteLine($"{nameof(AddProcessingSourceLocationChoiceToDefaultResourcePoolAsync)} - Checking if Default Resource Pool exists");
-				if (resultPools.Success && resultPools.TotalCount > 0)
-				{
-					ResourcePoolRef defaultResourcePoolRef = new ResourcePoolRef(resultPools.Results.Find(x => x.Artifact.Name.Equals(Constants.Processing.DefaultPool, StringComparison.OrdinalIgnoreCase)).Artifact.ArtifactID);
-
-					// Check if Processing Server Location already added to Default Resource Pool
-					string choiceRequest = JsonConvert.SerializeObject(objectManagerQueryRequestModel);
-					HttpResponseMessage response = await RestHelper.MakePostAsync(httpClient, url, choiceRequest);
-					if (!response.IsSuccessStatusCode)
-					{
-						throw new System.Exception("Failed to Query for Processing Source Location.");
-					}
-					string result = await response.Content.ReadAsStringAsync();
-					JObject jObject = JObject.Parse(result);
-					int totalCount = jObject["TotalCount"].Value<int>();
-					Console.WriteLine($"{nameof(AddProcessingSourceLocationChoiceToDefaultResourcePoolAsync)} - Checking if Processing Source Location Choice exists");
-					if (totalCount > 0)
-					{
-						ChoiceRef choice = new ChoiceRef(jObject["Objects"][0]["ArtifactID"].Value<int>());
-
-						List<ChoiceRef> resultProcessingSourceLocations = await resourcePoolManager.GetProcessingSourceLocationsAsync(defaultResourcePoolRef);
-
-						// Check if Processing Source Location was not already added
-						if (!resultProcessingSourceLocations.Exists(x => x.ArtifactID == choice.ArtifactID))
-						{
-							await resourcePoolManager.AddProcessingSourceLocationAsync(choice, defaultResourcePoolRef);
-
-							resultProcessingSourceLocations = await resourcePoolManager.GetProcessingSourceLocationsAsync(defaultResourcePoolRef);
-
-							// Confirm if it was added
-							if (resultProcessingSourceLocations.Exists(x => x.ArtifactID == choice.ArtifactID))
-							{
-								wasChoiceAddedToPool = true;
-								Console.WriteLine($"{nameof(AddProcessingSourceLocationChoiceToDefaultResourcePoolAsync)} - Added Processing Source Location Choice to Default Resource Pool");
-							}
-						}
-						else
-						{
-							Console.WriteLine($"{nameof(AddProcessingSourceLocationChoiceToDefaultResourcePoolAsync)} - Failed to add Processing Source Location Choice to Default Resource Pool as it already exists within the pool");
-							wasChoiceAddedToPool = true;
-							return wasChoiceAddedToPool;
-						}
+						// Add Processing Source Location to Default Resource Pool
+						await CallAddProcessingSourceLocationToDefaultResourcePoolAsync(httpClient, defaultResourcePoolArtifactId, processingChoiceId);
+						Console.WriteLine($"{nameof(AddProcessingSourceLocationChoiceToDefaultResourcePoolAsync)} - Added Processing Source Location Choice to Default Resource Pool");
 					}
 					else
 					{
-						Console.WriteLine($"{nameof(AddProcessingSourceLocationChoiceToDefaultResourcePoolAsync)} - Processing Source Location Choice does not exist");
-						wasChoiceAddedToPool = true;
+						Console.WriteLine($"{nameof(AddProcessingSourceLocationChoiceToDefaultResourcePoolAsync)} - Failed to add Processing Source Location Choice to Default Resource Pool as it already exists within the pool");
 					}
-
+					wasChoiceAddedToPool = true;
 				}
 				else
 				{
-					Console.WriteLine($"{nameof(AddProcessingSourceLocationChoiceToDefaultResourcePoolAsync)} - Default Resource Pool does not exist");
+					Console.WriteLine($"{nameof(AddProcessingSourceLocationChoiceToDefaultResourcePoolAsync)} - Processing Source Location Choice does not exist");
 				}
+			}
+			else
+			{
+				Console.WriteLine($"{nameof(AddProcessingSourceLocationChoiceToDefaultResourcePoolAsync)} - Default Resource Pool does not exist");
 			}
 
 			return wasChoiceAddedToPool;
@@ -893,6 +821,119 @@ namespace Helpers.Implementations
 
 			return wasRemoved;
 		}
+
+		#region Private Helpers
+
+		private async Task<int> GetDefaultResourcePoolArtifactIdAsync(HttpClient httpClient)
+		{
+			// Query for Default Resource Pool
+			var resourcePoolQueryPayload = new
+			{
+				Query = new
+				{
+					Condition = "'Name' STARTSWITH 'Default'"
+				}
+			};
+			string poolQuery = JsonConvert.SerializeObject(resourcePoolQueryPayload);
+			HttpResponseMessage queryPoolResponse = await RestHelper.MakePostAsync(httpClient, Constants.Connection.RestUrlEndpoints.ResourcePool.QueryEndpointUrl, poolQuery);
+			if (!queryPoolResponse.IsSuccessStatusCode)
+			{
+				throw new System.Exception("Failed to query for Default Resource Pool");
+			}
+			string queryPoolResultString = await queryPoolResponse.Content.ReadAsStringAsync();
+			dynamic queryPoolResult = JObject.Parse(queryPoolResultString) as JObject;
+			if (Convert.ToInt32(queryPoolResult.TotalCount) > 0)
+			{
+				return Convert.ToInt32(queryPoolResult.Results[0]["Artifact"]["ArtifactID"].ToString());
+			}
+			else
+			{
+				return -1;
+			}
+		}
+
+		private async Task<int> GetProcessingSourceLocationArtifactIdAsync(HttpClient httpClient)
+		{
+			var processingChoiceQuery = new
+			{
+				condition = "'Choice Type ID' == 1000017",
+				fields = new object[]
+				{
+					"*"
+				}
+			};
+			string request = JsonConvert.SerializeObject(processingChoiceQuery);
+			HttpResponseMessage response = await RestHelper.MakePostAsync(httpClient, Constants.Connection.RestUrlEndpoints.Choice.QueryEndpointUrl, request);
+			if (!response.IsSuccessStatusCode)
+			{
+				throw new System.Exception("Failed to Query for Processing Choice Location");
+			}
+			string resultString = await response.Content.ReadAsStringAsync();
+			dynamic result = JObject.Parse(resultString) as JObject;
+			if (Convert.ToInt32(result.ResultCount) > 0)
+			{
+				return Convert.ToInt32(result.Results[0]["Artifact ID"].ToString());
+			}
+			else
+			{
+				return -1;
+			}
+		}
+
+		private async Task<bool> DoesProcessingSourceLocationAlreadyExistForDefaultResourcePoolAsync(HttpClient httpClient,
+			int defaultResourcePoolId, int processingChoiceId)
+		{
+			var getProcessingSourceLocations = new
+			{
+				resourcePool = new
+				{
+					ArtifactID = defaultResourcePoolId
+				}
+			};
+			string request = JsonConvert.SerializeObject(getProcessingSourceLocations);
+			HttpResponseMessage response = await RestHelper.MakePostAsync(httpClient, Constants.Connection.RestUrlEndpoints.ResourcePool.GetProcessingSourceLocationsUrl, request);
+			if (!response.IsSuccessStatusCode)
+			{
+				throw new System.Exception("Failed to Get Processing Choice Locations for Resource Pool");
+			}
+			string resultString = await response.Content.ReadAsStringAsync();
+		  dynamic result = JsonConvert.DeserializeObject<dynamic>(resultString);
+		  bool doesProcessingChoiceExist = false;
+		  foreach (dynamic obj in result)
+		  {
+			  if (processingChoiceId == Convert.ToInt32(obj["ArtifactID"]))
+			  {
+				  doesProcessingChoiceExist = true;
+				  break;
+			  }
+		  }
+
+		  return doesProcessingChoiceExist;
+		}
+
+		private async Task CallAddProcessingSourceLocationToDefaultResourcePoolAsync(HttpClient httpClient, int defaultResourcePoolId, int processingSourceId)
+		{
+			var addProcessingSource = new
+			{
+				resourcePool = new
+				{
+					ArtifactID = defaultResourcePoolId
+				},
+				ProcessingSourceLocation = new
+				{
+					ArtifactID = processingSourceId
+				}
+			};
+			string request = JsonConvert.SerializeObject(addProcessingSource);
+			HttpResponseMessage response = await RestHelper.MakePostAsync(httpClient, Constants.Connection.RestUrlEndpoints.ResourcePool.AddProcessingSourceLocationUrl, request);
+			if (!response.IsSuccessStatusCode)
+			{
+				throw new System.Exception("Failed to Add Processing Choice Location to Default Resource Pool");
+			}
+		}
+
+
+		#endregion
 
 	} // End of class
 }
