@@ -82,12 +82,16 @@ namespace Helpers
 					public const string RemoveServerUrl = "Relativity.Rest/API/Relativity.Services.ResourcePool.IResourcePoolModule/Resource%20Pool%20Service/RemoveServerAsync";
 					public const string GetProcessingSourceLocationsUrl = "Relativity.Rest/api/Relativity.Services.ResourcePool.IResourcePoolModule/Resource%20Pool%20Service/GetProcessingSourceLocationsAsync";
 					public const string AddProcessingSourceLocationUrl = "Relativity.Rest/api/Relativity.Services.ResourcePool.IResourcePoolModule/Resource%20Pool%20Service/AddProcessingSourceLocationAsync";
+					public const string ResourceServerTypeQueryEndpointUrl = "Relativity.Rest/api/Relativity.Services.ResourcePool.IResourcePoolModule/Resource%20Pool%20Service/GetResourceServerTypeChoicesAsync";
 				}
 
-				public class AgentServer
+				public class ResourceServer
 				{
-					public const string TypeQueryEndpointUrl = "Relativity.Rest/api/Relativity.Services.ResourcePool.IResourcePoolModule/Resource%20Pool%20Service/GetResourceServerTypeChoicesAsync";
 					public const string QueryEndpointUrl = "Relativity.Rest/api/Relativity.Services.ResourceServer.IResourceServerModule/Resource%20Server%20Manager/QueryAsync";
+					public const string WorkerManagerCreateEndpointUrl = "Relativity.Rest/api/Relativity.Services.ResourceServer.IResourceServerModule/Worker%20Manager%20Resource%20Server%20Manager/CreateSingleAsync";
+					public const string WorkerManagerDeleteEndpointUrl = "Relativity.Rest/api/Relativity.Services.ResourceServer.IResourceServerModule/Worker%20Manager%20Resource%20Server%20Manager/DeleteSingleAsync";
+					public const string EnableProcessingOnWorkerEndpointUrl = "Relativity.Rest/api/Relativity.Services.WorkerStatus.IWorkerStatusModule/WorkerStatus/EnableProcessingOnWorkerAsync";
+					public const string UpdateCategoriesOnWorkerEndpointUrl = "Relativity.Rest/api/Relativity.Services.WorkerStatus.IWorkerStatusModule/WorkerStatus/UpdateCategoriesOnWorkerAsync";
 				}
 
 				public class ImagingProfile

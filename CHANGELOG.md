@@ -7,6 +7,7 @@
 
 ## 2021-02-15
 - [REL-522356](https://jira.kcura.com/browse/REL-522356) - Updated the ImagingHelper.cs class to use REST APIs instead of C# APIs.
+- [REL-522362](https://jira.kcura.com/browse/REL-522362) - Updated the ProcessingHelper.cs class to use REST APIs instead of C# APIs.
 
 -------------------------
 
