@@ -87,6 +87,26 @@ namespace Helpers
 					public const string TypeQueryEndpointUrl = "Relativity.Rest/api/Relativity.Services.ResourcePool.IResourcePoolModule/Resource%20Pool%20Service/GetResourceServerTypeChoicesAsync";
 					public const string QueryEndpointUrl = "Relativity.Rest/api/Relativity.Services.ResourceServer.IResourceServerModule/Resource%20Server%20Manager/QueryAsync";
 				}
+
+				public class ImagingProfile
+				{
+					public const string CreateEndpointUrl = "Relativity.REST/api/Relativity.Imaging.Services.Interfaces.IImagingModule/Imaging Profile Service/SaveAsync";
+				}
+
+				public class ImagingSet
+				{
+					public const string CreateEndpointUrl = "Relativity.REST/api/Relativity.Imaging.Services.Interfaces.IImagingModule/Imaging Set Service/SaveAsync";
+				}
+
+				public class ImagingJob
+				{
+					public const string RunImagingSetEndpointUrl = "Relativity.REST/api/Relativity.Imaging.Services.Interfaces.IImagingModule/Imaging Job Service/RunImagingSetAsync";
+				}
+
+				public class KeywordSearch
+				{
+					public const string CreateEndpointUrl = "Relativity.REST/api/Relativity.Services.Search.ISearchModule/Keyword%20Search%20Manager/CreateSingleAsync";
+				}
 			}
 		}
 		public class Agents
@@ -264,10 +284,10 @@ END
 			public class Profile
 			{
 				public const string NAME = "Sample Imaging Profile";
-				public const int IMAGE_OUTPUT_DPI = 100;
-				public const ImageFormat BASIC_IMAGE_FORMAT = ImageFormat.Jpeg;
-				public const ImageSize IMAGE_SIZE = ImageSize.A4;
-				public const ImagingMethod IMAGING_METHOD = ImagingMethod.Basic;
+				public const string IMAGE_OUTPUT_DPI = "100";
+				public const string BASIC_IMAGE_FORMAT = "Jpeg";
+				public const string IMAGE_SIZE = "A4";
+				public const string IMAGING_METHOD = "Basic";
 			}
 
 			public class Set

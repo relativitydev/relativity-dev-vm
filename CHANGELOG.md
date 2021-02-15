@@ -5,6 +5,11 @@
 
 -------------------------
 
+## 2021-02-15
+- [REL-522356](https://jira.kcura.com/browse/REL-522356) - Updated the ImagingHelper.cs class to use REST APIs instead of C# APIs.
+
+-------------------------
+
 ## 2021-02-12
 - [REL-522364](https://jira.kcura.com/browse/REL-522364) - Updated the RelativityVersionHelper.cs class to use REST APIs instead of C# APIs.
 [REL-522353](https://jira.kcura.com/browse/REL-522353) - Updated the AgentServerHelper.cs class to use REST APIs instead of C# APIs.
