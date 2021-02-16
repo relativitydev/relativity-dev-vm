@@ -219,7 +219,6 @@ namespace Helpers.Implementations
 			else
 			{
 				Console.WriteLine($"{nameof(CreateWorkerManagerServerAsync)} - Failed to create Worker Manager Server ({Constants.Processing.ResourceServerName}) as it already exists");
-				wasWorkerManagerServerCreated = true;
 			}
 
 			return wasWorkerManagerServerCreated;
@@ -248,7 +247,6 @@ namespace Helpers.Implementations
 			else
 			{
 				Console.WriteLine($"{nameof(DeleteWorkerManagerServerAsync)} - Failed to delete Worker Manager Server ({Constants.Processing.ResourceServerName}) as it doesn't exist");
-				wasDeleted = true;
 			}
 
 			return wasDeleted;
@@ -479,11 +477,11 @@ namespace Helpers.Implementations
 			};
 			string poolQuery = JsonConvert.SerializeObject(resourcePoolQueryPayload);
 			HttpResponseMessage queryPoolResponse = await RestHelper.MakePostAsync(httpClient, Constants.Connection.RestUrlEndpoints.ResourcePool.QueryEndpointUrl, poolQuery);
+			string queryPoolResultString = await queryPoolResponse.Content.ReadAsStringAsync();
 			if (!queryPoolResponse.IsSuccessStatusCode)
 			{
-				throw new System.Exception("Failed to query for Default Resource Pool");
+				throw new System.Exception($"Failed to query for Default Resource Pool : {queryPoolResultString}");
 			}
-			string queryPoolResultString = await queryPoolResponse.Content.ReadAsStringAsync();
 			dynamic queryPoolResult = JObject.Parse(queryPoolResultString) as JObject;
 			if (Convert.ToInt32(queryPoolResult.TotalCount) > 0)
 			{
@@ -507,11 +505,11 @@ namespace Helpers.Implementations
 			};
 			string request = JsonConvert.SerializeObject(processingChoiceQuery);
 			HttpResponseMessage response = await RestHelper.MakePostAsync(httpClient, Constants.Connection.RestUrlEndpoints.Choice.QueryEndpointUrl, request);
+			string resultString = await response.Content.ReadAsStringAsync();
 			if (!response.IsSuccessStatusCode)
 			{
-				throw new System.Exception("Failed to Query for Processing Choice Location");
+				throw new System.Exception($"Failed to Query for Processing Choice Location : {resultString}");
 			}
-			string resultString = await response.Content.ReadAsStringAsync();
 			dynamic result = JObject.Parse(resultString) as JObject;
 			if (Convert.ToInt32(result.ResultCount) > 0)
 			{
@@ -535,12 +533,12 @@ namespace Helpers.Implementations
 			};
 			string request = JsonConvert.SerializeObject(getProcessingSourceLocations);
 			HttpResponseMessage response = await RestHelper.MakePostAsync(httpClient, Constants.Connection.RestUrlEndpoints.ResourcePool.GetProcessingSourceLocationsUrl, request);
+			string resultString = await response.Content.ReadAsStringAsync();
 			if (!response.IsSuccessStatusCode)
 			{
-				throw new System.Exception("Failed to Get Processing Choice Locations for Resource Pool");
+				throw new System.Exception($"Failed to Get Processing Choice Locations for Resource Pool : {resultString}");
 			}
-			string resultString = await response.Content.ReadAsStringAsync();
-		  dynamic result = JsonConvert.DeserializeObject<dynamic>(resultString);
+			dynamic result = JsonConvert.DeserializeObject<dynamic>(resultString);
 		  bool doesProcessingChoiceExist = false;
 		  foreach (dynamic obj in result)
 		  {
@@ -569,9 +567,10 @@ namespace Helpers.Implementations
 			};
 			string request = JsonConvert.SerializeObject(addProcessingSource);
 			HttpResponseMessage response = await RestHelper.MakePostAsync(httpClient, Constants.Connection.RestUrlEndpoints.ResourcePool.AddProcessingSourceLocationUrl, request);
+			string responseString = await response.Content.ReadAsStringAsync();
 			if (!response.IsSuccessStatusCode)
 			{
-				throw new System.Exception("Failed to Add Processing Choice Location to Default Resource Pool");
+				throw new System.Exception($"Failed to Add Processing Choice Location to Default Resource Pool : {responseString}");
 			}
 		}
 
@@ -587,11 +586,11 @@ namespace Helpers.Implementations
 			};
 			string request = JsonConvert.SerializeObject(workerManagerQuery);
 			HttpResponseMessage response = await RestHelper.MakePostAsync(httpClient, Constants.Connection.RestUrlEndpoints.ResourceServer.QueryEndpointUrl, request);
+			string resultString = await response.Content.ReadAsStringAsync();
 			if (!response.IsSuccessStatusCode)
 			{
-				throw new System.Exception("Failed to Query for Worker Manager Server");
+				throw new System.Exception($"Failed to Query for Worker Manager Server: {resultString}");
 			}
-			string resultString = await response.Content.ReadAsStringAsync();
 			dynamic result = JObject.Parse(resultString) as JObject;
 			if (Convert.ToInt32(result.TotalCount) > 0)
 			{
@@ -623,9 +622,10 @@ namespace Helpers.Implementations
 			};
 			string request = JsonConvert.SerializeObject(workerManagerServerCreate);
 			HttpResponseMessage response = await RestHelper.MakePostAsync(httpClient, Constants.Connection.RestUrlEndpoints.ResourceServer.WorkerManagerCreateEndpointUrl, request);
+			string responseString = await response.Content.ReadAsStringAsync();
 			if (!response.IsSuccessStatusCode)
 			{
-				throw new System.Exception("Failed to Create Worker Manager Server");
+				throw new System.Exception($"Failed to Create Worker Manager Server : {responseString}");
 			}
 		}
 
@@ -637,9 +637,10 @@ namespace Helpers.Implementations
 			};
 			string request = JsonConvert.SerializeObject(workerManagerServerDelete);
 			HttpResponseMessage response = await RestHelper.MakePostAsync(httpClient, Constants.Connection.RestUrlEndpoints.ResourceServer.WorkerManagerDeleteEndpointUrl, request);
+			string responseString = await response.Content.ReadAsStringAsync();
 			if (!response.IsSuccessStatusCode)
 			{
-				throw new System.Exception("Failed to Delete Worker Manager Server");
+				throw new System.Exception($"Failed to Delete Worker Manager Server : {responseString}");
 			}
 		}
 
@@ -655,11 +656,11 @@ namespace Helpers.Implementations
 			};
 			string serverQuery = JsonConvert.SerializeObject(resourceServerQueryPayload);
 			HttpResponseMessage queryServerResponse = await RestHelper.MakePostAsync(httpClient, Constants.Connection.RestUrlEndpoints.ResourceServer.QueryEndpointUrl, serverQuery);
+			string queryServerResultString = await queryServerResponse.Content.ReadAsStringAsync();
 			if (!queryServerResponse.IsSuccessStatusCode)
 			{
-				throw new System.Exception("Failed to query for Worker Resource Server");
+				throw new System.Exception($"Failed to query for Worker Resource Server : {queryServerResultString}");
 			}
-			string queryServerResultString = await queryServerResponse.Content.ReadAsStringAsync();
 			dynamic queryServerResult = JObject.Parse(queryServerResultString) as JObject;
 			if (Convert.ToInt32(queryServerResult.TotalCount) > 0)
 			{
@@ -684,9 +685,10 @@ namespace Helpers.Implementations
 			};
 			string request = JsonConvert.SerializeObject(enableProcessingOnWorker);
 			HttpResponseMessage response = await RestHelper.MakePostAsync(httpClient, Constants.Connection.RestUrlEndpoints.ResourceServer.EnableProcessingOnWorkerEndpointUrl, request);
+			string responseString = await response.Content.ReadAsStringAsync();
 			if (!response.IsSuccessStatusCode)
 			{
-				throw new System.Exception("Failed to Enable Processing on Worker Server");
+				throw new System.Exception($"Failed to Enable Processing on Worker Server : {responseString}");
 			}
 		}
 
@@ -705,9 +707,10 @@ namespace Helpers.Implementations
 			};
 			string request = JsonConvert.SerializeObject(updateCategories);
 			HttpResponseMessage response = await RestHelper.MakePostAsync(httpClient, Constants.Connection.RestUrlEndpoints.ResourceServer.UpdateCategoriesOnWorkerEndpointUrl, request);
+			string responseString = await response.Content.ReadAsStringAsync();
 			if (!response.IsSuccessStatusCode)
 			{
-				throw new System.Exception("Failed to Update Categories on Worker Server");
+				throw new System.Exception($"Failed to Update Categories on Worker Server : {responseString}");
 			}
 		}
 
@@ -715,11 +718,11 @@ namespace Helpers.Implementations
 		{
 			int workerManagerServerTypeArtifactId = -1;
 			HttpResponseMessage serverTypeQueryResponse = await RestHelper.MakePostAsync(httpClient, Constants.Connection.RestUrlEndpoints.ResourcePool.ResourceServerTypeQueryEndpointUrl, "");
+			string queryServerTypesResultString = await serverTypeQueryResponse.Content.ReadAsStringAsync();
 			if (!serverTypeQueryResponse.IsSuccessStatusCode)
 			{
-				throw new System.Exception("Failed to query for Worker Manager Server Types");
+				throw new System.Exception("Failed to query for Worker Manager Server Types : {query}");
 			}
-			string queryServerTypesResultString = await serverTypeQueryResponse.Content.ReadAsStringAsync();
 			dynamic queryServerTypesResult = JsonConvert.DeserializeObject<dynamic>(queryServerTypesResultString);
 			foreach (dynamic obj in queryServerTypesResult)
 			{
@@ -737,11 +740,11 @@ namespace Helpers.Implementations
 		{
 			int workerServerTypeArtifactId = -1;
 			HttpResponseMessage serverTypeQueryResponse = await RestHelper.MakePostAsync(httpClient, Constants.Connection.RestUrlEndpoints.ResourcePool.ResourceServerTypeQueryEndpointUrl, "");
+			string queryServerTypesResultString = await serverTypeQueryResponse.Content.ReadAsStringAsync();
 			if (!serverTypeQueryResponse.IsSuccessStatusCode)
 			{
-				throw new System.Exception("Failed to query for Worker Server Types");
+				throw new System.Exception($"Failed to query for Worker Server Types : {queryServerTypesResultString}");
 			}
-			string queryServerTypesResultString = await serverTypeQueryResponse.Content.ReadAsStringAsync();
 			dynamic queryServerTypesResult = JsonConvert.DeserializeObject<dynamic>(queryServerTypesResultString);
 			foreach (dynamic obj in queryServerTypesResult)
 			{
@@ -774,9 +777,10 @@ namespace Helpers.Implementations
 			};
 			string addResourceServer = JsonConvert.SerializeObject(addResourceServerPayload);
 			HttpResponseMessage addServerResponse = await RestHelper.MakePostAsync(httpClient, Constants.Connection.RestUrlEndpoints.ResourcePool.AddServerEndpointUrl, addResourceServer);
+			string responseString = await addServerResponse.Content.ReadAsStringAsync();
 			if (!addServerResponse.IsSuccessStatusCode)
 			{
-				throw new System.Exception("Failed to add the Server to the Default Resource Pool");
+				throw new System.Exception($"Failed to add the Server to the Default Resource Pool : {responseString}");
 			}
 		}
 
@@ -799,9 +803,10 @@ namespace Helpers.Implementations
 			};
 			string removeServer = JsonConvert.SerializeObject(removeServerResourcePoolPayload);
 			HttpResponseMessage removeServerResponse = await RestHelper.MakePostAsync(httpClient, Constants.Connection.RestUrlEndpoints.ResourcePool.RemoveServerUrl, removeServer);
+			string responseString = await removeServerResponse.Content.ReadAsStringAsync();
 			if (!removeServerResponse.IsSuccessStatusCode)
 			{
-				throw new System.Exception("Failed to remove the Server from the Default Resource Pool");
+				throw new System.Exception($"Failed to remove the Server from the Default Resource Pool : {responseString}");
 			}
 		}
 
