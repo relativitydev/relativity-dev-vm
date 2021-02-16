@@ -1,7 +1,4 @@
 ﻿using Helpers.Interfaces;
-using kCura.Relativity.Client;
-using kCura.Relativity.Client.DTOs;
-using Relativity.Services.ServiceProxy;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +6,6 @@ using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Helpers.RequestModels;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -18,14 +14,12 @@ namespace Helpers.Implementations
 	public class WorkspaceHelper : IWorkspaceHelper
 	{
 		private IConnectionHelper ConnectionHelper { get; }
-		private ServiceFactory ServiceFactory { get; }
 		public ISqlHelper SqlHelper { get; set; }
 		private IRestHelper RestHelper { get; set; }
 
 		public WorkspaceHelper(IConnectionHelper connectionHelper, IRestHelper restHelper, ISqlHelper sqlHelper)
 		{
 			ConnectionHelper = connectionHelper;
-			ServiceFactory = connectionHelper.GetServiceFactory();
 			SqlHelper = sqlHelper;
 			RestHelper = restHelper;
 		}

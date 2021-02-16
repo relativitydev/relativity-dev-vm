@@ -1,10 +1,6 @@
 ﻿using Helpers.Interfaces;
-using Relativity.Services;
-using Relativity.Services.ResourcePool;
-using Relativity.Services.ResourceServer;
 using Relativity.Services.ServiceProxy;
 using System;
-using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
@@ -15,13 +11,11 @@ namespace Helpers.Implementations
 	public class AgentServerHelper : IAgentServerHelper
 	{
 		private IConnectionHelper ConnectionHelper { get; }
-		private ServiceFactory ServiceFactory { get; }
 		private IRestHelper RestHelper { get; }
 
 		public AgentServerHelper(IConnectionHelper connectionHelper, IRestHelper restHelper)
 		{
 			ConnectionHelper = connectionHelper;
-			ServiceFactory = connectionHelper.GetServiceFactory();
 			RestHelper = restHelper;
 		}
 

@@ -1,17 +1,6 @@
 ﻿using Helpers.Interfaces;
-using kCura.Relativity.Client;
-using kCura.Relativity.Client.DTOs;
-using Relativity.Imaging.Services.Interfaces;
-using Relativity.Services.Exceptions;
-using Relativity.Services.Field;
-using Relativity.Services.Search;
-using Relativity.Services.ServiceProxy;
-using Relativity.Services.User;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
-using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -21,22 +10,12 @@ namespace Helpers.Implementations
 	public class ImagingHelper : IImagingHelper
 	{
 		private IConnectionHelper ConnectionHelper { get; }
-		private IImagingProfileManager ImagingProfileManager { get; }
-		private IImagingSetManager ImagingSetManager { get; }
-		private IImagingJobManager ImagingJobManager { get; }
-		private IKeywordSearchManager KeywordSearchManager { get; }
-		private ServiceFactory ServiceFactory { get; }
 		private IRestHelper RestHelper { get; set; }
 		private IRetryLogicHelper RetryLogicHelper { get; set; }
 
 		public ImagingHelper(IConnectionHelper connectionHelper, IRestHelper restHelper, IRetryLogicHelper retryLogicHelper)
 		{
 			ConnectionHelper = connectionHelper;
-			ServiceFactory = connectionHelper.GetServiceFactory();
-			ImagingProfileManager = ServiceFactory.CreateProxy<IImagingProfileManager>();
-			ImagingSetManager = ServiceFactory.CreateProxy<IImagingSetManager>();
-			ImagingJobManager = ServiceFactory.CreateProxy<IImagingJobManager>();
-			KeywordSearchManager = ServiceFactory.CreateProxy<IKeywordSearchManager>();
 			RestHelper = restHelper;
 			RetryLogicHelper = retryLogicHelper;
 		}

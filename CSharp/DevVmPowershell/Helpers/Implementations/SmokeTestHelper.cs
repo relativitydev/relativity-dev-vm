@@ -1,6 +1,5 @@
 ﻿using Helpers.Interfaces;
 using Newtonsoft.Json;
-using Relativity.Services.ServiceProxy;
 using System;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -10,7 +9,6 @@ namespace Helpers.Implementations
 	public class SmokeTestHelper : ISmokeTestHelper
 	{
 		private IConnectionHelper ConnectionHelper { get; }
-		private ServiceFactory ServiceFactory { get; }
 		private IRestHelper RestHelper { get; }
 		private IRetryLogicHelper RetryLogicHelper { get; }
 		private IWorkspaceHelper WorkspaceHelper { get; }
@@ -18,7 +16,6 @@ namespace Helpers.Implementations
 		public SmokeTestHelper(IConnectionHelper connectionHelper, IRestHelper restHelper, IRetryLogicHelper retryLogicHelper, IWorkspaceHelper workspaceHelper)
 		{
 			ConnectionHelper = connectionHelper;
-			ServiceFactory = connectionHelper.GetServiceFactory();
 			RestHelper = restHelper;
 			RetryLogicHelper = retryLogicHelper;
 			WorkspaceHelper = workspaceHelper;

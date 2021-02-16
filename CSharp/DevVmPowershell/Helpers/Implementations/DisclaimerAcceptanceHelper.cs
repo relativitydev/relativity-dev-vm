@@ -1,16 +1,10 @@
 ﻿using Helpers.Interfaces;
-using kCura.Relativity.Client;
-using kCura.Relativity.Client.DTOs;
-using Relativity.Services.Objects;
-using Relativity.Services.Objects.DataContracts;
-using Relativity.Services.ServiceProxy;
 using System;
 using System.Linq;
 using System.Net.Http;
 using Helpers.RequestModels;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using ObjectType = kCura.Relativity.Client.DTOs.ObjectType;
 using System.Threading.Tasks;
 
 namespace Helpers.Implementations
@@ -18,16 +12,12 @@ namespace Helpers.Implementations
 	public class DisclaimerAcceptanceHelper : IDisclaimerAcceptanceHelper
 	{
 		private IConnectionHelper ConnectionHelper { get; }
-		private IObjectManager ObjectManager { get; }
-		private ServiceFactory ServiceFactory { get; }
 		private IRestHelper RestHelper { get; set; }
 		private IWorkspaceHelper WorkspaceHelper { get; set; }
 
 		public DisclaimerAcceptanceHelper(IConnectionHelper connectionHelper, IRestHelper restHelper, IWorkspaceHelper workspaceHelper)
 		{
 			ConnectionHelper = connectionHelper;
-			ServiceFactory = connectionHelper.GetServiceFactory();
-			ObjectManager = ServiceFactory.CreateProxy<IObjectManager>();
 			RestHelper = restHelper;
 			WorkspaceHelper = workspaceHelper;
 		}
