@@ -1,39 +1,22 @@
 ﻿using Helpers.Interfaces;
-using kCura.Relativity.Client;
-using kCura.Relativity.Client.DTOs;
-using Relativity.Services;
-using Relativity.Services.Objects;
-using Relativity.Services.Objects.DataContracts;
-using Relativity.Services.ResourcePool;
-using Relativity.Services.ResourceServer;
-using Relativity.Services.ServiceProxy;
-using Relativity.Services.WorkerStatus;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using Helpers.RequestModels;
-using kCura.Notification;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using Relativity.Services.Interfaces.Choice.Models;
-using Choice = kCura.Relativity.Client.DTOs.Choice;
-using ChoiceRef = Relativity.Services.Choice.ChoiceRef;
-using QueryResult = Relativity.Services.Objects.DataContracts.QueryResult;
 
 namespace Helpers.Implementations
 {
 	public class ProcessingHelper : IProcessingHelper
 	{
 		private IConnectionHelper ConnectionHelper { get; }
-		private ServiceFactory ServiceFactory { get; }
 		private IRestHelper RestHelper { get; set; }
 		public ProcessingHelper(IConnectionHelper connectionHelper, IRestHelper restHelper)
 		{
 			ConnectionHelper = connectionHelper;
-			ServiceFactory = connectionHelper.GetServiceFactory();
 			RestHelper = restHelper;
 		}
 
