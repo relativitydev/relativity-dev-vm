@@ -2,7 +2,6 @@
 using Newtonsoft.Json;
 using Relativity.Services.Exceptions;
 using Relativity.Services.Interfaces.LibraryApplication.Models;
-using Relativity.Services.ServiceProxy;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -14,7 +13,6 @@ namespace Helpers.Implementations
 {
 	public class ApplicationInstallHelper : IApplicationInstallHelper
 	{
-		private ServiceFactory ServiceFactory { get; }
 		private IConnectionHelper ConnectionHelper { get; }
 		private IWorkspaceHelper WorkspaceHelper { get; }
 		private IRestHelper RestHelper { get; }
@@ -23,7 +21,6 @@ namespace Helpers.Implementations
 		public ApplicationInstallHelper(IConnectionHelper connectionHelper, IRestHelper restHelper, IWorkspaceHelper workspaceHelper, IRetryLogicHelper retryLogicHelper)
 		{
 			ConnectionHelper = connectionHelper;
-			ServiceFactory = connectionHelper.GetServiceFactory();
 			RestHelper = restHelper;
 			WorkspaceHelper = workspaceHelper;
 			RetryLogicHelper = retryLogicHelper;
