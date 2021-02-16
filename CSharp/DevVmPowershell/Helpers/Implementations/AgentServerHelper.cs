@@ -118,7 +118,7 @@ namespace Helpers.Implementations
 		private async Task<int> GetAgentServerTypeArtifactIdAsync(HttpClient httpClient)
 		{
 			int agentServerTypeArtifactId = -1;
-			HttpResponseMessage serverTypeQueryResponse = await RestHelper.MakePostAsync(httpClient, Constants.Connection.RestUrlEndpoints.AgentServer.TypeQueryEndpointUrl, "");
+			HttpResponseMessage serverTypeQueryResponse = await RestHelper.MakePostAsync(httpClient, Constants.Connection.RestUrlEndpoints.ResourcePool.ResourceServerTypeQueryEndpointUrl, "");
 			if (!serverTypeQueryResponse.IsSuccessStatusCode)
 			{
 				throw new Exception("Failed to query for Agent Server Types");
@@ -148,7 +148,7 @@ namespace Helpers.Implementations
 				}
 			};
 			string serverQuery = JsonConvert.SerializeObject(resourceServerQueryPayload);
-			HttpResponseMessage queryServerResponse = await RestHelper.MakePostAsync(httpClient, Constants.Connection.RestUrlEndpoints.AgentServer.QueryEndpointUrl, serverQuery);
+			HttpResponseMessage queryServerResponse = await RestHelper.MakePostAsync(httpClient, Constants.Connection.RestUrlEndpoints.ResourceServer.QueryEndpointUrl, serverQuery);
 			if (!queryServerResponse.IsSuccessStatusCode)
 			{
 				throw new Exception("Failed to query for Agent Resource Server");
