@@ -31,14 +31,11 @@ namespace Helpers.Tests.Integration.Tests
 			SqlHelper = new SqlHelper(sqlRunner);
 			IRestHelper restHelper = new RestHelper();
 			RetryLogicHelper = new RetryLogicHelper();
-			WorkspaceHelper = new WorkspaceHelper(connectionHelper, restHelper, SqlHelper, TestConstants.RELATIVITY_INSTANCE_NAME, TestConstants.RELATIVITY_ADMIN_USER_NAME, TestConstants.RELATIVITY_ADMIN_PASSWORD);
-			ApplicationInstallHelper = new ApplicationInstallHelper(connectionHelper, restHelper, WorkspaceHelper, RetryLogicHelper, TestConstants.RELATIVITY_INSTANCE_NAME,
-				TestConstants.RELATIVITY_ADMIN_USER_NAME, TestConstants.RELATIVITY_ADMIN_PASSWORD);
-			AgentHelper = new AgentHelper(connectionHelper, restHelper, TestConstants.RELATIVITY_INSTANCE_NAME, TestConstants.RELATIVITY_ADMIN_USER_NAME, TestConstants.RELATIVITY_ADMIN_PASSWORD);
-
+			WorkspaceHelper = new WorkspaceHelper(connectionHelper, restHelper, SqlHelper);
+			ApplicationInstallHelper = new ApplicationInstallHelper(connectionHelper, restHelper, WorkspaceHelper, RetryLogicHelper);
+			AgentHelper = new AgentHelper(connectionHelper, restHelper);
 			ImportApiHelper = new ImportApiHelper(connectionHelper, TestConstants.RELATIVITY_INSTANCE_NAME, TestConstants.RELATIVITY_ADMIN_USER_NAME, TestConstants.RELATIVITY_ADMIN_PASSWORD);
-			Sut = new SmokeTestHelper(connectionHelper, restHelper, RetryLogicHelper, WorkspaceHelper, TestConstants.RELATIVITY_INSTANCE_NAME,
-				TestConstants.RELATIVITY_ADMIN_USER_NAME, TestConstants.RELATIVITY_ADMIN_PASSWORD);
+			Sut = new SmokeTestHelper(connectionHelper, restHelper, RetryLogicHelper, WorkspaceHelper);
 		}
 
 		[TearDown]

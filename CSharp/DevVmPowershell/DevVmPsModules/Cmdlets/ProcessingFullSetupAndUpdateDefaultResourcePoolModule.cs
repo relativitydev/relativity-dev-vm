@@ -60,7 +60,7 @@ namespace DevVmPsModules.Cmdlets
 				sqlAdminUserName: SqlAdminUserName,
 				sqlAdminPassword: SqlAdminPassword);
 			IRestHelper restHelper = new RestHelper();
-			IProcessingHelper processingHelper = new ProcessingHelper(connectionHelper, restHelper, RelativityInstanceName, RelativityAdminUserName, RelativityAdminPassword);
+			IProcessingHelper processingHelper = new ProcessingHelper(connectionHelper, restHelper);
 
 			processingHelper.FullSetupAndUpdateDefaultResourcePoolAsync().Wait();
 		}

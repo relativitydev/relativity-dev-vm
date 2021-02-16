@@ -9,7 +9,6 @@ namespace Helpers.Implementations
 	public class SqlHelper : ISqlHelper
 	{
 		private ISqlRunner SqlRunner { get; set; }
-		//private ConnectionHelper ConnectionHelper { get; set; }
 
 		public SqlHelper(ISqlRunner sqlRunner)
 		{
