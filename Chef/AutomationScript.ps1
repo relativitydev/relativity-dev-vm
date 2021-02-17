@@ -61,7 +61,7 @@ $global:devVmVersionsToCreate = New-Object System.Collections.ArrayList
 [string] $global:relativityInvariantVersionNumberFileName = "relativity_invariant_version.txt"
 [string] $global:testSingleRelativityVersion = "11.1.457.11" # Leave it blank when in Automated Production mode
 [string] $global:invariantVersion = "6.1.457.7" # Leave it blank when in Automated Production mode
-[string] $global:releaseName = "Junipher 11.1 Server" # Make sure to update this to the correct release name for the Relativity Version above, leave it blank when in Automated Production mode
+[string] $global:releaseName = "Juniper 11.1 Server" # Make sure to update this to the correct release name for the Relativity Version above, leave it blank when in Automated Production mode
 [Boolean] $global:foundCompatibleInvariantVersion = $true # Set to $false when in Automated Production mode
 
 # Define Toggle variables
