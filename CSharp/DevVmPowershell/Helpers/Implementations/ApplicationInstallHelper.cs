@@ -153,7 +153,7 @@ namespace Helpers.Implementations
 			int workspaceId = WorkspaceHelper.GetFirstWorkspaceArtifactIdQueryAsync(workspaceName).Result;
 			var tempInstallJsonRequest = new
 			{
-				request = new { WorkspaceIDs = new[] { workspaceId }, UnlockAllApplications = false }
+				request = new { WorkspaceIDs = new[] { workspaceId } }
 			};
 			string installJsonRequest = JsonConvert.SerializeObject(tempInstallJsonRequest);
 
