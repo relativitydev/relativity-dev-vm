@@ -59,7 +59,8 @@ namespace DevVmPsModules.Cmdlets
 				relativityAdminPassword: RelativityAdminPassword,
 				sqlAdminUserName: SqlAdminUserName,
 				sqlAdminPassword: SqlAdminPassword);
-			IAgentServerHelper agentServerHelper = new AgentServerHelper(connectionHelper);
+			IRestHelper restHelper = new RestHelper();
+			IAgentServerHelper agentServerHelper = new AgentServerHelper(connectionHelper, restHelper);
 
 			agentServerHelper.AddAgentServerToDefaultResourcePoolAsync().Wait();
 		}

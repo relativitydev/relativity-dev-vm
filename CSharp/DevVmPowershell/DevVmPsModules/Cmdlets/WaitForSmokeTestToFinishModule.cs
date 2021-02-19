@@ -82,9 +82,9 @@ namespace DevVmPsModules.Cmdlets
 			ISqlRunner sqlRunner = new SqlRunner(connectionHelper);
 			ISqlHelper sqlHelper = new SqlHelper(sqlRunner);
 			IRestHelper restHelper = new RestHelper();
-			IWorkspaceHelper workspaceHelper = new WorkspaceHelper(connectionHelper, restHelper, sqlHelper, RelativityInstanceName, RelativityAdminUserName, RelativityAdminPassword);
+			IWorkspaceHelper workspaceHelper = new WorkspaceHelper(connectionHelper, restHelper, sqlHelper);
 			IRetryLogicHelper retryLogicHelper = new RetryLogicHelper();
-			ISmokeTestHelper smokeTestHelper = new SmokeTestHelper(connectionHelper, restHelper, retryLogicHelper, workspaceHelper, RelativityInstanceName, RelativityAdminUserName, RelativityAdminPassword);
+			ISmokeTestHelper smokeTestHelper = new SmokeTestHelper(connectionHelper, restHelper, retryLogicHelper, workspaceHelper);
 
 			int timeoutValueInMinutes = int.Parse(TimeoutValueInMinutes);
 			bool testsCompleted = smokeTestHelper.WaitForSmokeTestToCompleteAsync(WorkspaceName, timeoutValueInMinutes).Result;

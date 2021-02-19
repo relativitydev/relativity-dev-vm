@@ -1,17 +1,6 @@
 ﻿using Helpers.Interfaces;
-using kCura.Relativity.Client;
-using kCura.Relativity.Client.DTOs;
-using Relativity.Imaging.Services.Interfaces;
-using Relativity.Services.Exceptions;
-using Relativity.Services.Field;
-using Relativity.Services.Search;
-using Relativity.Services.ServiceProxy;
-using Relativity.Services.User;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
-using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -20,29 +9,15 @@ namespace Helpers.Implementations
 {
 	public class ImagingHelper : IImagingHelper
 	{
-		private IImagingProfileManager ImagingProfileManager { get; }
-		private IImagingSetManager ImagingSetManager { get; }
-		private IImagingJobManager ImagingJobManager { get; }
-		private IKeywordSearchManager KeywordSearchManager { get; }
-		private ServiceFactory ServiceFactory { get; }
-		private string InstanceAddress { get; }
-		private string AdminUsername { get; }
-		private string AdminPassword { get; }
+		private IConnectionHelper ConnectionHelper { get; }
 		private IRestHelper RestHelper { get; set; }
 		private IRetryLogicHelper RetryLogicHelper { get; set; }
 
-		public ImagingHelper(IConnectionHelper connectionHelper, IRestHelper restHelper, IRetryLogicHelper retryLogicHelper, string instanceAddress, string adminUsername, string adminPassword)
+		public ImagingHelper(IConnectionHelper connectionHelper, IRestHelper restHelper, IRetryLogicHelper retryLogicHelper)
 		{
-			ServiceFactory = connectionHelper.GetServiceFactory();
-			ImagingProfileManager = ServiceFactory.CreateProxy<IImagingProfileManager>();
-			ImagingSetManager = ServiceFactory.CreateProxy<IImagingSetManager>();
-			ImagingJobManager = ServiceFactory.CreateProxy<IImagingJobManager>();
-			KeywordSearchManager = ServiceFactory.CreateProxy<IKeywordSearchManager>();
+			ConnectionHelper = connectionHelper;
 			RestHelper = restHelper;
 			RetryLogicHelper = retryLogicHelper;
-			InstanceAddress = instanceAddress;
-			AdminUsername = adminUsername;
-			AdminPassword = adminPassword;
 		}
 
 		public async Task ImageAllDocumentsInWorkspaceAsync(int workspaceArtifactId)
@@ -65,89 +40,97 @@ namespace Helpers.Implementations
 		{
 			Console.WriteLine($"Creating Imaging Profile [Name: {Constants.Imaging.Profile.NAME}]");
 
-			try
+			HttpClient httpClient = RestHelper.GetHttpClient(ConnectionHelper.RelativityInstanceName, ConnectionHelper.RelativityAdminUserName, ConnectionHelper.RelativityAdminPassword);
+			var basicImagingProfile = new
 			{
-				ImagingProfile basicImagingProfile = new ImagingProfile
+				imagingProfile = new
 				{
-
-					BasicOptions = new BasicImagingEngineOptions
+					ImagingMethod = Constants.Imaging.Profile.IMAGING_METHOD,
+					BasicOptions = new
 					{
 						ImageOutputDpi = Constants.Imaging.Profile.IMAGE_OUTPUT_DPI,
 						BasicImageFormat = Constants.Imaging.Profile.BASIC_IMAGE_FORMAT,
 						ImageSize = Constants.Imaging.Profile.IMAGE_SIZE
 					},
+					NativeTypes = new object[]
+					{
+					},
+					ApplicationFieldCodes = new object[]
+					{
+					},
 					Name = Constants.Imaging.Profile.NAME,
-					ImagingMethod = Constants.Imaging.Profile.IMAGING_METHOD
-				};
-
-				// Save the ImagingProfile. Successful saves returns the ArtifactID of the ImagingProfile.
-				int imagingProfileArtifactId = await ImagingProfileManager.SaveAsync(basicImagingProfile, workspaceArtifactId);
-
-				Console.WriteLine("Created Imaging Profile!");
-
-				return imagingProfileArtifactId;
-			}
-			catch (ServiceException ex)
+				},
+				workspaceId = workspaceArtifactId
+			};
+			string request = JsonConvert.SerializeObject(basicImagingProfile);
+			// Save the ImagingProfile. Successful saves returns the ArtifactID of the ImagingProfile.
+			HttpResponseMessage response = await RestHelper.MakePostAsync(httpClient, Constants.Connection.RestUrlEndpoints.ImagingProfile.CreateEndpointUrl, request);
+			if (!response.IsSuccessStatusCode)
 			{
-				//The service throws an exception of type ServiceException, performs logging and rethrows the exception.
-				throw new Exception("An error occurred when creating Imaging Profile", ex);
+				throw new Exception("Failed to Create Imaging Profile");
 			}
+			int imagingProfileArtifactId = Convert.ToInt32(await response.Content.ReadAsStringAsync());
+
+			Console.WriteLine("Created Imaging Profile!");
+
+			return imagingProfileArtifactId;
 		}
 
 		public async Task<int> CreateImagingSetAsync(int workspaceArtifactId, int savedSearchArtifactId, int imagingProfileArtifactId)
 		{
 			Console.WriteLine($"Creating Imaging Set [Name: {Constants.Imaging.Set.NAME}]");
 
-			try
+			HttpClient httpClient = RestHelper.GetHttpClient(ConnectionHelper.RelativityInstanceName, ConnectionHelper.RelativityAdminUserName, ConnectionHelper.RelativityAdminPassword);
+			var imagingSet = new
 			{
-				ImagingSet imagingSet = new ImagingSet
+				imagingSet = new
 				{
-					DataSource = savedSearchArtifactId,
-					Name = Constants.Imaging.Set.NAME,
-					ImagingProfile = new ImagingProfileRef
+					imagingProfile = new
 					{
 						ArtifactID = imagingProfileArtifactId
 					},
-					EmailNotificationRecipients = Constants.Imaging.Set.EMAIL_NOTIFICATION_RECIPIENTS
-				};
-
-				// Save the ImagingSet. Successful saves return the ArtifactID of the ImagingSet.
-				int imagingSetArtifactId = await ImagingSetManager.SaveAsync(imagingSet, workspaceArtifactId);
-
-				Console.WriteLine("Created Imaging Set!");
-
-				return imagingSetArtifactId;
-			}
-			catch (ServiceException ex)
+					DataSource = savedSearchArtifactId,
+					EmailNotificationRecipients = Constants.Imaging.Set.EMAIL_NOTIFICATION_RECIPIENTS,
+					Name = Constants.Imaging.Set.NAME
+				},
+				workspaceId = workspaceArtifactId
+			};
+			string request = JsonConvert.SerializeObject(imagingSet);
+			// Save the ImagingSet. Successful saves return the ArtifactID of the ImagingSet.
+			HttpResponseMessage response = await RestHelper.MakePostAsync(httpClient, Constants.Connection.RestUrlEndpoints.ImagingSet.CreateEndpointUrl, request);
+			if (!response.IsSuccessStatusCode)
 			{
-				//The service throws an exception of type ServiceException, performs logging and rethrows the exception.
-				throw new Exception("An error occurred when creating Imaging Set", ex);
+				throw new Exception("Failed to Create Imaging Set");
 			}
+			int imagingSetArtifactId = Convert.ToInt32(await response.Content.ReadAsStringAsync());
+
+			Console.WriteLine("Created Imaging Set!");
+
+			return imagingSetArtifactId;
 		}
 
 		public async Task RunImagingJobAsync(int workspaceArtifactId, int imagingSetArtifactId)
 		{
 			Console.WriteLine("Creating Imaging Job");
 
-			try
+			HttpClient httpClient = RestHelper.GetHttpClient(ConnectionHelper.RelativityInstanceName, ConnectionHelper.RelativityAdminUserName, ConnectionHelper.RelativityAdminPassword);
+			var imagingJob = new
 			{
-				ImagingJob imagingJob = new ImagingJob
+				imagingJob = new
 				{
-					ImagingSetId = imagingSetArtifactId,
-					WorkspaceId = workspaceArtifactId,
-					QcEnabled = Constants.Imaging.Job.QC_ENABLED
-				};
-
-				//Run an ImagingSet job.
-				Guid? jobGuid = (await ImagingJobManager.RunImagingSetAsync(imagingJob)).ImagingJobId;
-
-				Console.WriteLine("Created Imaging Job!");
-			}
-			catch (ServiceException ex)
+					imagingSetId = imagingSetArtifactId,
+					workspaceId = workspaceArtifactId
+				}
+			};
+			string request = JsonConvert.SerializeObject(imagingJob);
+			//Run an ImagingSet job.
+			HttpResponseMessage response = await RestHelper.MakePostAsync(httpClient, Constants.Connection.RestUrlEndpoints.ImagingJob.RunImagingSetEndpointUrl, request);
+			if (!response.IsSuccessStatusCode)
 			{
-				//The service throws an exception of type ServiceException, performs logging and rethrows the exception.
-				throw new Exception("An error occurred when running Imaging Job", ex);
+				throw new Exception("Failed to Run Imaging Job");
 			}
+
+			Console.WriteLine("Created Imaging Job!");
 		}
 
 		public async Task WaitForImagingJobToCompleteAsync(int workspaceArtifactId, int imagingSetArtifactId)
@@ -166,7 +149,7 @@ namespace Helpers.Implementations
 			bool jobComplete = false;
 			try
 			{
-				HttpClient httpClient = RestHelper.GetHttpClient(InstanceAddress, AdminUsername, AdminPassword);
+				HttpClient httpClient = RestHelper.GetHttpClient(ConnectionHelper.RelativityInstanceName, ConnectionHelper.RelativityAdminUserName, ConnectionHelper.RelativityAdminPassword);
 					string url = Constants.Connection.RestUrlEndpoints.ObjectManager.ReadUrl.Replace("-1", workspaceArtifactId.ToString());
 					var readPayloadObject = new
 					{
@@ -223,77 +206,61 @@ namespace Helpers.Implementations
 		{
 			Console.WriteLine("Creating Keyword search for DtSearch Index");
 
-			try
+			HttpClient httpClient = RestHelper.GetHttpClient(ConnectionHelper.RelativityInstanceName, ConnectionHelper.RelativityAdminUserName, ConnectionHelper.RelativityAdminPassword);
+			string value = null;
+			var keywordSearch = new
 			{
-				SearchContainerRef searchFolder = new SearchContainerRef();
-
-				KeywordSearch keywordSearch = new KeywordSearch
+				workspaceArtifactID = workspaceArtifactId,
+				searchDTO = new
 				{
+					ArtifactTypeID = 10,
 					Name = Constants.Search.KeywordSearch.NAME,
-					SearchContainer = searchFolder
-				};
-
-				// Get all the query fields available to the current user.
-				SearchResultViewFields searchResultViewFields = await KeywordSearchManager.GetFieldsForSearchResultViewAsync(workspaceArtifactId, 10);
-
-				// Set the owner to the current user, in this case "Admin, Relativity," or "0" for public.
-				List<UserRef> searchOwners = await KeywordSearchManager.GetSearchOwnersAsync(workspaceArtifactId);
-				keywordSearch.Owner = searchOwners.First(o => o.Name == Constants.Search.KeywordSearch.OWNER);
-
-				// Add the fields to the Fields collection.
-				// If a field Name, ArtifactID, Guid, or ViewFieldID is known, a field can be set with that information as well.
-
-				FieldRef fieldRef = searchResultViewFields.FieldsNotIncluded.First(f => f.Name == Constants.Search.KeywordSearch.FIELD_EDIT);
-				keywordSearch.Fields.Add(fieldRef);
-
-				fieldRef = searchResultViewFields.FieldsNotIncluded.First(f => f.Name == Constants.Search.KeywordSearch.FIELD_FILE_ICON);
-				keywordSearch.Fields.Add(fieldRef);
-
-				fieldRef = searchResultViewFields.FieldsNotIncluded.First(f => f.Name == Constants.Search.KeywordSearch.FIELD_CONTROL_NUMBER);
-				keywordSearch.Fields.Add(fieldRef);
-
-				// Create a Criteria for the field named "Extracted Text" where the value is set
-
-				Criteria criteria = new Criteria
-				{
-					Condition = new CriteriaCondition(
-						new FieldRef
+					SearchCriteria = new
+					{
+						Conditions = new object[]
 						{
-							Name = Constants.Search.KeywordSearch.CONDITION_FIELD_EXTRACTED_TEXT
-						}, CriteriaConditionEnum.IsSet)
-				};
-
-				// Add the search condition criteria to the collection.
-				keywordSearch.SearchCriteria.Conditions.Add(criteria);
-
-				// Add a note.
-
-				keywordSearch.Notes = Constants.Search.KeywordSearch.NOTES;
-				keywordSearch.ArtifactTypeID = 10;
-
-				// Create the search.
-				int keywordSearchArtifactId = await KeywordSearchManager.CreateSingleAsync(workspaceArtifactId, keywordSearch);
-
-				if (keywordSearchArtifactId == 0)
-				{
-					throw new Exception("Failed to create the Keyword Search");
+							new
+							{
+								Condition = new
+								{
+									Operator = "IsSet",
+									FieldIdentifier = new
+									{
+										Name = Constants.Search.KeywordSearch.CONDITION_FIELD_EXTRACTED_TEXT
+									},
+									ConditionType = "Criteria",
+									Value = value
+								}
+							}
+						}
+					},
+					Fields = new object[]
+					{
+						new
+						{
+							Name = Constants.Search.KeywordSearch.FIELD_CONTROL_NUMBER
+						}
+					}
 				}
-
-				Console.WriteLine("Created Keyword search for DtSearch Index!");
-
-				return keywordSearchArtifactId;
-			}
-			catch (Exception ex)
+			};
+			string request = JsonConvert.SerializeObject(keywordSearch);
+			HttpResponseMessage response = await RestHelper.MakePostAsync(httpClient, Constants.Connection.RestUrlEndpoints.KeywordSearch.CreateEndpointUrl, request);
+			if (!response.IsSuccessStatusCode)
 			{
-				throw new Exception("An error occurred when creating Keyword Search", ex);
+				throw new Exception("Failed to Created a Keyword Search");
 			}
+			int keywordSearchArtifactId = Convert.ToInt32(await response.Content.ReadAsStringAsync());
+
+			Console.WriteLine("Created Keyword search for DtSearch Index!");
+
+			return keywordSearchArtifactId;
 		}
 
 		public async Task<bool> CheckThatAllDocumentsInWorkspaceAreImaged(int workspaceArtifactId)
 		{
 			try
 			{
-				HttpClient httpClient = RestHelper.GetHttpClient(InstanceAddress, AdminUsername, AdminPassword);
+				HttpClient httpClient = RestHelper.GetHttpClient(ConnectionHelper.RelativityInstanceName, ConnectionHelper.RelativityAdminUserName, ConnectionHelper.RelativityAdminPassword);
 				string url = Constants.Connection.RestUrlEndpoints.ObjectManager.QuerySlimUrl.Replace("-1", workspaceArtifactId.ToString());
 				var queryPayloadObject = new
 				{
