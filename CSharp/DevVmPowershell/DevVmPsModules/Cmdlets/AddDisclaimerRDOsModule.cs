@@ -70,8 +70,8 @@ namespace DevVmPsModules.Cmdlets
 			ISqlRunner sqlRunner = new SqlRunner(connectionHelper);
 			ISqlHelper sqlHelper = new SqlHelper(sqlRunner);
 			IRestHelper restHelper = new RestHelper();
-			IWorkspaceHelper workspaceHelper = new WorkspaceHelper(connectionHelper, restHelper, sqlHelper, RelativityInstanceName, RelativityAdminUserName, RelativityAdminPassword);
-			IDisclaimerAcceptanceHelper disclaimerAcceptanceHelper = new DisclaimerAcceptanceHelper(connectionHelper, restHelper, workspaceHelper, RelativityInstanceName, RelativityAdminUserName, RelativityAdminPassword);
+			IWorkspaceHelper workspaceHelper = new WorkspaceHelper(connectionHelper, restHelper, sqlHelper);
+			IDisclaimerAcceptanceHelper disclaimerAcceptanceHelper = new DisclaimerAcceptanceHelper(connectionHelper, restHelper, workspaceHelper);
 
 			// Add Disclaimer Configuration and Disclaimer
 			Thread.Sleep(15000);

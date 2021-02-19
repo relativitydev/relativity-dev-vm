@@ -2,7 +2,6 @@
 using Newtonsoft.Json;
 using Relativity.Services.Exceptions;
 using Relativity.Services.Interfaces.LibraryApplication.Models;
-using Relativity.Services.ServiceProxy;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -14,31 +13,23 @@ namespace Helpers.Implementations
 {
 	public class ApplicationInstallHelper : IApplicationInstallHelper
 	{
-		private ServiceFactory ServiceFactory { get; }
-
+		private IConnectionHelper ConnectionHelper { get; }
 		private IWorkspaceHelper WorkspaceHelper { get; }
 		private IRestHelper RestHelper { get; }
 		private IRetryLogicHelper RetryLogicHelper { get; }
 
-		private string InstanceAddress { get; }
-		private string AdminUsername { get; }
-		private string AdminPassword { get; }
-
-		public ApplicationInstallHelper(IConnectionHelper connectionHelper, IRestHelper restHelper, IWorkspaceHelper workspaceHelper, IRetryLogicHelper retryLogicHelper, string instanceAddress, string adminUsername, string adminPassword)
+		public ApplicationInstallHelper(IConnectionHelper connectionHelper, IRestHelper restHelper, IWorkspaceHelper workspaceHelper, IRetryLogicHelper retryLogicHelper)
 		{
-			ServiceFactory = connectionHelper.GetServiceFactory();
+			ConnectionHelper = connectionHelper;
 			RestHelper = restHelper;
 			WorkspaceHelper = workspaceHelper;
 			RetryLogicHelper = retryLogicHelper;
-			InstanceAddress = instanceAddress;
-			AdminUsername = adminUsername;
-			AdminPassword = adminPassword;
 		}
 
 
 		public async Task<bool> InstallApplicationFromRapFileAsync(string workspaceName, string filePath)
 		{
-			HttpClient httpClient = RestHelper.GetHttpClient(InstanceAddress, AdminUsername, AdminPassword);
+			HttpClient httpClient = RestHelper.GetHttpClient(ConnectionHelper.RelativityInstanceName, ConnectionHelper.RelativityAdminUserName, ConnectionHelper.RelativityAdminPassword);
 
 			// Need to install to library before we install to a workspace
 			HttpResponseMessage updateResponseMessage = await UploadLibraryApplicationAsync(httpClient, filePath);
@@ -79,7 +70,7 @@ namespace Helpers.Implementations
 
 		public async Task<bool> InstallApplicationFromApplicationLibraryAsync(string workspaceName, string applicationGuid)
 		{
-			HttpClient httpClient = RestHelper.GetHttpClient(InstanceAddress, AdminUsername, AdminPassword);
+			HttpClient httpClient = RestHelper.GetHttpClient(ConnectionHelper.RelativityInstanceName, ConnectionHelper.RelativityAdminUserName, ConnectionHelper.RelativityAdminPassword);
 
 			int applicationId = GetApplicationLibraryIdAsync(applicationGuid).Result;
 
@@ -99,7 +90,7 @@ namespace Helpers.Implementations
 
 		private async Task<List<LibraryApplicationResponse>> ReadAllLibraryApplicationAsync()
 		{
-			HttpClient httpClient = RestHelper.GetHttpClient(InstanceAddress, AdminUsername, AdminPassword);
+			HttpClient httpClient = RestHelper.GetHttpClient(ConnectionHelper.RelativityInstanceName, ConnectionHelper.RelativityAdminUserName, ConnectionHelper.RelativityAdminPassword);
 			HttpResponseMessage httpResponse = await RestHelper.MakeGetAsync(httpClient, Constants.Connection.RestUrlEndpoints.ApplicationInstall.readAllLibraryApplicationUrl);
 
 			string content = await httpResponse.Content.ReadAsStringAsync();

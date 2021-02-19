@@ -1,6 +1,5 @@
 ﻿using Helpers.Interfaces;
 using Newtonsoft.Json;
-using Relativity.Services.ServiceProxy;
 using System;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -9,23 +8,17 @@ namespace Helpers.Implementations
 {
 	public class SmokeTestHelper : ISmokeTestHelper
 	{
-		private ServiceFactory ServiceFactory { get; }
+		private IConnectionHelper ConnectionHelper { get; }
 		private IRestHelper RestHelper { get; }
 		private IRetryLogicHelper RetryLogicHelper { get; }
 		private IWorkspaceHelper WorkspaceHelper { get; }
-		private string InstanceAddress { get; }
-		private string AdminUsername { get; }
-		private string AdminPassword { get; }
 
-		public SmokeTestHelper(IConnectionHelper connectionHelper, IRestHelper restHelper, IRetryLogicHelper retryLogicHelper, IWorkspaceHelper workspaceHelper, string instanceAddress, string adminUsername, string adminPassword)
+		public SmokeTestHelper(IConnectionHelper connectionHelper, IRestHelper restHelper, IRetryLogicHelper retryLogicHelper, IWorkspaceHelper workspaceHelper)
 		{
-			ServiceFactory = connectionHelper.GetServiceFactory();
+			ConnectionHelper = connectionHelper;
 			RestHelper = restHelper;
 			RetryLogicHelper = retryLogicHelper;
 			WorkspaceHelper = workspaceHelper;
-			InstanceAddress = instanceAddress;
-			AdminUsername = adminUsername;
-			AdminPassword = adminPassword;
 		}
 
 		public async Task<bool> WaitForSmokeTestToCompleteAsync(string workspaceName, int timeoutValueInMinutes)
@@ -96,7 +89,7 @@ namespace Helpers.Implementations
 			try
 			{
 				string url = Constants.Connection.RestUrlEndpoints.ObjectManager.QuerySlimUrl.Replace("-1", workspaceId.ToString());
-				HttpClient httpClient = RestHelper.GetHttpClient(InstanceAddress, AdminUsername, AdminPassword);
+				HttpClient httpClient = RestHelper.GetHttpClient(ConnectionHelper.RelativityInstanceName, ConnectionHelper.RelativityAdminUserName, ConnectionHelper.RelativityAdminPassword);
 				var queryPayloadObject = new
 				{
 					request = new
@@ -136,7 +129,7 @@ namespace Helpers.Implementations
 		private async Task<HttpResponseMessage> QueryForSmokeTestRdosAsync(int workspaceId, int smokeTestObjectTypeId)
 		{
 			string url = Constants.Connection.RestUrlEndpoints.ObjectManager.QuerySlimUrl.Replace("-1", workspaceId.ToString());
-			HttpClient httpClient = RestHelper.GetHttpClient(InstanceAddress, AdminUsername, AdminPassword);
+			HttpClient httpClient = RestHelper.GetHttpClient(ConnectionHelper.RelativityInstanceName, ConnectionHelper.RelativityAdminUserName, ConnectionHelper.RelativityAdminPassword);
 
 			var queryPayloadObject = new
 			{
