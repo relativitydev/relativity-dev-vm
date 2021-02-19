@@ -5,6 +5,11 @@
 
 -------------------------
 
+## 2021-02-19
+- [REL-527052](https://jira.kcura.com/browse/REL-527052) - Remove Relativity Installer files after DevVM provisioning is complete.
+
+-------------------------
+
 ## 2021-02-15
 - [REL-522356](https://jira.kcura.com/browse/REL-522356) - Updated the ImagingHelper.cs class to use REST APIs instead of C# APIs.
 - [REL-522362](https://jira.kcura.com/browse/REL-522362) - Updated the ProcessingHelper.cs class to use REST APIs instead of C# APIs.
@@ -19,7 +24,7 @@
 
 ## 2021-02-11
 
-- [REL-522350](https://jira.kcura.com/browse/REL-522350) 
+- [REL-522350](https://jira.kcura.com/browse/REL-522350)
 	- Updated the AgentHelper.cs class to use REST APIs instead of C# APIs.
 	- Updated Constructors to take ConnectionHelper instead of InstanceName, AdminUsername, AdminPassword
 
