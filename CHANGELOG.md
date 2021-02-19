@@ -5,10 +5,11 @@
 
 -------------------------
 
-## 2021-02-18
+## 2021-02-19
 
 - [REL-523461](https://jira.kcura.com/browse/REL-523461) - HTTP API requests in the Lanceleaf branch.
     - This code works only in Lanceleaf release.  Updated Application Install Helper to work specifically for Lanceleaf.
+	- Merged code with develop (except ProcessingHelper) for HTTP REST calls
 
 -------------------------
 
