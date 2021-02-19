@@ -8,6 +8,7 @@
 ## 2021-02-19
 - [REL-523462](https://jira.kcura.com/browse/REL-523462) - HTTP API requests in the Mayapple branch.
 	- Merged code with develop (except ProcessingHelper) for HTTP REST calls
+- [REL-527052](https://jira.kcura.com/browse/REL-527052) - Remove Relativity Installer files after DevVM provisioning is complete.
 
 -------------------------
 
@@ -25,7 +26,7 @@
 
 ## 2021-02-11
 
-- [REL-522350](https://jira.kcura.com/browse/REL-522350) 
+- [REL-522350](https://jira.kcura.com/browse/REL-522350)
 	- Updated the AgentHelper.cs class to use REST APIs instead of C# APIs.
 	- Updated Constructors to take ConnectionHelper instead of InstanceName, AdminUsername, AdminPassword
 
