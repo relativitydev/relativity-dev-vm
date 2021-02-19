@@ -10,6 +10,7 @@
 - [REL-523461](https://jira.kcura.com/browse/REL-523461) - HTTP API requests in the Lanceleaf branch.
     - This code works only in Lanceleaf release.  Updated Application Install Helper to work specifically for Lanceleaf.
 	- Merged code with develop (except ProcessingHelper) for HTTP REST calls
+- [REL-527052](https://jira.kcura.com/browse/REL-527052) - Remove Relativity Installer files after DevVM provisioning is complete.
 
 -------------------------
 
