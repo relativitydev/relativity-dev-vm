@@ -245,6 +245,8 @@
     <Compile Include="RequestModels\InstanceSettingManagerUpdateRequest.cs" />
     <Compile Include="RequestModels\ObjectManagerCreateRequestModel.cs" />
     <Compile Include="RequestModels\ObjectManagerQueryRequestModel.cs" />
+    <Compile Include="ResponseModels\AgentServerResponseModel.cs" />
+    <Compile Include="ResponseModels\AgentTypeResponseModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

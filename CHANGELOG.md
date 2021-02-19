@@ -5,6 +5,32 @@
 
 -------------------------
 
+## 2021-02-19
+- [REL-523463](https://jira.kcura.com/browse/REL-523463) - HTTP API requests in the Ninebark branch.
+	- Merged code with develop for HTTP REST calls
+
+-------------------------
+
+## 2021-02-15
+- [REL-522356](https://jira.kcura.com/browse/REL-522356) - Updated the ImagingHelper.cs class to use REST APIs instead of C# APIs.
+- [REL-522362](https://jira.kcura.com/browse/REL-522362) - Updated the ProcessingHelper.cs class to use REST APIs instead of C# APIs.
+
+-------------------------
+
+## 2021-02-12
+- [REL-522364](https://jira.kcura.com/browse/REL-522364) - Updated the RelativityVersionHelper.cs class to use REST APIs instead of C# APIs.
+[REL-522353](https://jira.kcura.com/browse/REL-522353) - Updated the AgentServerHelper.cs class to use REST APIs instead of C# APIs.
+
+-------------------------
+
+## 2021-02-11
+
+- [REL-522350](https://jira.kcura.com/browse/REL-522350) 
+	- Updated the AgentHelper.cs class to use REST APIs instead of C# APIs.
+	- Updated Constructors to take ConnectionHelper instead of InstanceName, AdminUsername, AdminPassword
+
+-------------------------
+
 ## 2021-02-02
 
 - [REL-508653](https://jira.kcura.com/browse/REL-508653) - Updated Processing Source Location code to use Kepler services REST endpoints.
