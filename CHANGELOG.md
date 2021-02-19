@@ -8,6 +8,7 @@
 ## 2021-02-19
 - [REL-523463](https://jira.kcura.com/browse/REL-523463) - HTTP API requests in the Ninebark branch.
 	- Merged code with develop for HTTP REST calls
+- [REL-527052](https://jira.kcura.com/browse/REL-527052) - Remove Relativity Installer files after DevVM provisioning is complete.
 
 -------------------------
 
