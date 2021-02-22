@@ -6,7 +6,6 @@ custom_log 'custom_log' do msg "recipe_start_time(#{recipe_name}): #{start_time}
 relativity_api_files_to_copy = [
   "kCura.dll",
   "kCura.Relativity.Client.dll",
-  "Newtonsoft.Json.dll",
   "Relativity.dll",
   "Relativity.API.dll",
   "Relativity.OAuth2Client.Interfaces.dll",
@@ -79,7 +78,8 @@ powershell_module_related_files_to_copy = [
   'Relativity.Transfer.Client.FileShare.dll', # Required for Import API
   'Relativity.Transfer.Client.Http.dll', # Required for Import API
   "Relativity.Kepler.dll", # Required for Object Manager, Default 2.7.0.0
-  "Relativity.Services.DataContracts.dll" # Required for Object Manager, Default 13.2.0.0
+  "Relativity.Services.DataContracts.dll", # Required for Object Manager, Default 13.2.0.0
+  "Newtonsoft.Json.dll" # Don't pull this from Relativity, use the dll from the files\default folder
 ]
 
 powershell_module_related_files_to_copy.each do |source_file_name|
