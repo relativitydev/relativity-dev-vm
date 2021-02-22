@@ -1,7 +1,7 @@
-﻿using System;
+﻿using Helpers.Interfaces;
+using System;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Helpers.Interfaces;
 
 namespace Helpers.Implementations
 {
@@ -25,9 +25,10 @@ namespace Helpers.Implementations
 				throw new Exception("Error Getting Instance Relativity Version");
 			}
 			string relativityVersion = await response.Content.ReadAsStringAsync();
+			relativityVersion = relativityVersion.Replace("\\", "").Replace("\"", ""); // Returned string has wrapped characters and this just cleans it up before comparing.
 			if (relativityVersion != installerRelativityVersion)
 			{
-				throw new Exception("Installed Relativity Version and Installer Version are not the same");
+				throw new Exception($"Installed Relativity Version ({relativityVersion}) and Installer Version ({installerRelativityVersion}) are not the same");
 			}
 		}
 	}
