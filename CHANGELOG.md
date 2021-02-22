@@ -8,6 +8,7 @@
 ## 2021-02-19
 - [REL-523463](https://jira.kcura.com/browse/REL-523463) - HTTP API requests in the Ninebark branch.
 	- Merged code with develop for HTTP REST calls
+	- Newtonsoft dll now pulled from files\default
 - [REL-527052](https://jira.kcura.com/browse/REL-527052) - Remove Relativity Installer files after DevVM provisioning is complete.
 - [REL-527051](https://jira.kcura.com/browse/REL-527051) - Removed RSAPI references across all of the packages.
 
@@ -27,7 +28,7 @@
 
 ## 2021-02-11
 
-- [REL-522350](https://jira.kcura.com/browse/REL-522350) 
+- [REL-522350](https://jira.kcura.com/browse/REL-522350)
 	- Updated the AgentHelper.cs class to use REST APIs instead of C# APIs.
 	- Updated Constructors to take ConnectionHelper instead of InstanceName, AdminUsername, AdminPassword
 
