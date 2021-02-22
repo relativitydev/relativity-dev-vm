@@ -8,6 +8,7 @@
 ## 2021-02-19
 - [REL-523462](https://jira.kcura.com/browse/REL-523462) - HTTP API requests in the Mayapple branch.
 	- Merged code with develop (except ProcessingHelper) for HTTP REST calls
+	- Cleaned Relativity Instance string in RelativityVersionHelper
 - [REL-527052](https://jira.kcura.com/browse/REL-527052) - Remove Relativity Installer files after DevVM provisioning is complete.
 
 -------------------------
