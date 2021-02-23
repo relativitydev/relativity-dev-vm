@@ -22,7 +22,7 @@ namespace Helpers.Tests.Integration.Tests
 				sqlAdminUserName: TestConstants.SQL_USER_NAME,
 				sqlAdminPassword: TestConstants.SQL_PASSWORD);
 			IRestHelper restHelper = new RestHelper();
-			Sut = new ProcessingHelper(connectionHelper, restHelper, TestConstants.RELATIVITY_INSTANCE_NAME, TestConstants.RELATIVITY_ADMIN_USER_NAME, TestConstants.RELATIVITY_ADMIN_PASSWORD);
+			Sut = new ProcessingHelper(connectionHelper, restHelper);
 		}
 
 		[TearDown]

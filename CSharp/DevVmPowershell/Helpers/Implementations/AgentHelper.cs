@@ -1,16 +1,11 @@
 ﻿using Helpers.Interfaces;
-using Relativity.Services.Interfaces.Agent.Models;
-using Relativity.Services.Interfaces.Shared;
-using Relativity.Services.Interfaces.Shared.Models;
-using Relativity.Services.Objects;
-using Relativity.Services.Objects.DataContracts;
-using Relativity.Services.ServiceProxy;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Helpers.RequestModels;
+using Helpers.ResponseModels;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -18,18 +13,12 @@ namespace Helpers.Implementations
 {
 	public class AgentHelper : IAgentHelper
 	{
-		private ServiceFactory ServiceFactory { get; }
-		private string InstanceAddress { get; }
-		private string AdminUsername { get; }
-		private string AdminPassword { get; }
+		private IConnectionHelper ConnectionHelper { get; set; }
 		private IRestHelper RestHelper { get; set; }
 
-		public AgentHelper(IConnectionHelper connectionHelper, IRestHelper restHelper, string instanceAddress, string adminUsername, string adminPassword)
+		public AgentHelper(IConnectionHelper connectionHelper, IRestHelper restHelper)
 		{
-			ServiceFactory = connectionHelper.GetServiceFactory();
-			InstanceAddress = instanceAddress;
-			AdminUsername = adminUsername;
-			AdminPassword = adminPassword;
+			ConnectionHelper = connectionHelper;
 			RestHelper = restHelper;
 		}
 
@@ -44,7 +33,7 @@ namespace Helpers.Implementations
 		private async Task<List<int>> GetAgentArtifactIdsAsync(string agentName)
 		{
 			List<int> agentArtifactIds = new List<int>();
-			HttpClient httpClient = RestHelper.GetHttpClient(InstanceAddress, AdminUsername, AdminPassword);
+			HttpClient httpClient = RestHelper.GetHttpClient(ConnectionHelper.RelativityInstanceName, ConnectionHelper.RelativityAdminUserName, ConnectionHelper.RelativityAdminPassword);
 			string url = $"Relativity.REST/api/Relativity.Objects/workspace/{Constants.EDDS_WORKSPACE_ARTIFACT_ID}/object/query";
 			ObjectManagerQueryRequestModel objectManagerQueryRequestModel = new ObjectManagerQueryRequestModel
 			{
@@ -86,66 +75,109 @@ namespace Helpers.Implementations
 			return agentArtifactIds;
 		}
 
-		private async Task<List<AgentTypeResponse>> GetAgentTypesInInstanceAsync()
+		private async Task<List<AgentTypeResponseModel>> GetAgentTypesInInstanceAsync()
 		{
-			using (Relativity.Services.Interfaces.Agent.IAgentManager agentManager = ServiceFactory.CreateProxy<Relativity.Services.Interfaces.Agent.IAgentManager>())
+			HttpClient httpClient = RestHelper.GetHttpClient(ConnectionHelper.RelativityInstanceName, ConnectionHelper.RelativityAdminUserName, ConnectionHelper.RelativityAdminPassword);
+			HttpResponseMessage response = await RestHelper.MakeGetAsync(httpClient, Constants.Connection.RestUrlEndpoints.AgentType.EndpointUrl);
+			if (!response.IsSuccessStatusCode)
 			{
-				List<AgentTypeResponse> agentTypeResponseList = await agentManager.GetAgentTypesAsync(Constants.EDDS_WORKSPACE_ARTIFACT_ID);
-				Console.WriteLine($"Total Agent Types in Instance: {agentTypeResponseList.Count}");
-				return agentTypeResponseList;
+				throw new Exception("Failed to Get Agent Types in Instance");
 			}
+			string resultString = await response.Content.ReadAsStringAsync();
+			dynamic result = JsonConvert.DeserializeObject<dynamic>(resultString);
+			List<AgentTypeResponseModel> agentTypeResponseList = new List<AgentTypeResponseModel>();
+			foreach (dynamic obj in result)
+			{
+				agentTypeResponseList.Add(new AgentTypeResponseModel()
+				{
+					ApplicationName = obj["ApplicationName"].ToString(),
+					CompanyName = obj["CompanyName"].ToString(),
+					DefaultInterval = Convert.ToDecimal(obj["DefaultInterval"].ToString()),
+					DefaultLoggingLevel = Convert.ToInt32(obj["DefaultLoggingLevel"].ToString()),
+					ArtifactID = Convert.ToInt32(obj["ArtifactID"].ToString()),
+					Name = obj["Name"].ToString()
+				});
+			}
+
+			return agentTypeResponseList;
 		}
 
-		private async Task<List<AgentServerResponse>> GetAgentServersForAgentTypeAsync(int agentTypeArtifactId)
+		private async Task<List<AgentServerResponseModel>> GetAgentServersForAgentTypeAsync(int agentTypeArtifactId)
 		{
-			using (Relativity.Services.Interfaces.Agent.IAgentManager agentManager = ServiceFactory.CreateProxy<Relativity.Services.Interfaces.Agent.IAgentManager>())
+			string url =
+				Constants.Connection.RestUrlEndpoints.AgentType.GetAgentServersForAgentTypeEndpointUrl.Replace(
+					"{agentTypeArtifactId}", agentTypeArtifactId.ToString());
+			HttpClient httpClient = RestHelper.GetHttpClient(ConnectionHelper.RelativityInstanceName, ConnectionHelper.RelativityAdminUserName, ConnectionHelper.RelativityAdminPassword);
+			HttpResponseMessage response = await RestHelper.MakeGetAsync(httpClient, url);
+			if (!response.IsSuccessStatusCode)
 			{
-				List<AgentServerResponse> agentServerResponseList = await agentManager.GetAvailableAgentServersAsync(Constants.EDDS_WORKSPACE_ARTIFACT_ID, agentTypeArtifactId);
-				Console.WriteLine($"Total Available Agent Servers for Agent Type: {agentServerResponseList.Count}");
-				return agentServerResponseList;
+				throw new Exception("Failed to Get Available Agent Servers for Agent Type");
 			}
+			string resultString = await response.Content.ReadAsStringAsync();
+			dynamic result = JsonConvert.DeserializeObject<dynamic>(resultString);
+			List<AgentServerResponseModel> agentServerResponseList = new List<AgentServerResponseModel>();
+			foreach (dynamic obj in result)
+			{
+				agentServerResponseList.Add(new AgentServerResponseModel()
+				{
+					Type = obj["Type"].ToString(),
+					ProcessorCores = Convert.ToInt32(obj["ProcessorCores"].ToString()),
+					NumberOfAgents = Convert.ToInt32(obj["NumberOfAgents"].ToString()),
+					ArtifactID = Convert.ToInt32(obj["ArtifactID"].ToString()),
+					Name = obj["Name"].ToString()
+				});
+			}
+
+			return agentServerResponseList;
 		}
 
 		private async Task CreateAgentAsync(int agentTypeArtifactId, int agentServerArtifactId, decimal defaultInterval, int defaultLoggingLevel)
 		{
-			AgentRequest newAgentRequest = new AgentRequest
+			var agentCreateRequestModel = new
 			{
-				Enabled = Constants.Agents.ENABLE_AGENT,
-				Interval = defaultInterval,
-				Keywords = Constants.Agents.KEYWORDS,
-				Notes = Constants.Agents.NOTES,
-				LoggingLevel = defaultLoggingLevel,
-				AgentType = new Securable<ObjectIdentifier>(
-					new ObjectIdentifier
+				AgentRequest = new
+				{
+					AgentType = new
 					{
-						ArtifactID = agentTypeArtifactId
-					}),
-				AgentServer = new Securable<ObjectIdentifier>(
-					new ObjectIdentifier
+						Value = new
+						{
+							ArtifactID = agentTypeArtifactId
+						}
+					},
+					AgentServer = new
 					{
-						ArtifactID = agentServerArtifactId
-					})
+						Value = new
+						{
+							ArtifactID = agentServerArtifactId
+						}
+					},
+					Enabled = Constants.Agents.ENABLE_AGENT,
+					Interval = defaultInterval,
+					Keywords = Constants.Agents.KEYWORDS,
+					Notes = Constants.Agents.NOTES,
+					LoggingLevel = defaultLoggingLevel
+				}
 			};
 
-			using (Relativity.Services.Interfaces.Agent.IAgentManager agentManager = ServiceFactory.CreateProxy<Relativity.Services.Interfaces.Agent.IAgentManager>())
+			string createPayload = JsonConvert.SerializeObject(agentCreateRequestModel);
+			HttpClient httpClient = RestHelper.GetHttpClient(ConnectionHelper.RelativityInstanceName, ConnectionHelper.RelativityAdminUserName, ConnectionHelper.RelativityAdminPassword);
+			HttpResponseMessage response = await RestHelper.MakePostAsync(httpClient, Constants.Connection.RestUrlEndpoints.Agent.EndpointUrl, createPayload);
+			if (!response.IsSuccessStatusCode)
 			{
-				int newAgentArtifactId = await agentManager.CreateAsync(Constants.EDDS_WORKSPACE_ARTIFACT_ID, newAgentRequest);
-				Console.WriteLine($"{nameof(newAgentArtifactId)}: {newAgentArtifactId}");
+				throw new Exception("Failed to Create Agent");
 			}
 		}
 
 		private async Task DeleteAgentAsync(int agentArtifactId)
 		{
-			using (Relativity.Services.Interfaces.Agent.IAgentManager agentManager = ServiceFactory.CreateProxy<Relativity.Services.Interfaces.Agent.IAgentManager>())
+			string url =
+				Constants.Connection.RestUrlEndpoints.Agent.DeleteEndpointUrl.Replace("{agentArtifactId}",
+					agentArtifactId.ToString());
+			HttpClient httpClient = RestHelper.GetHttpClient(ConnectionHelper.RelativityInstanceName, ConnectionHelper.RelativityAdminUserName, ConnectionHelper.RelativityAdminPassword);
+			HttpResponseMessage response = await RestHelper.MakeDeleteAsync(httpClient, url);
+			if (!response.IsSuccessStatusCode)
 			{
-				try
-				{
-					await agentManager.DeleteAsync(Constants.EDDS_WORKSPACE_ARTIFACT_ID, agentArtifactId);
-				}
-				catch (Exception ex)
-				{
-					throw new Exception($"An error occured when deleting Agent. [{nameof(agentArtifactId)}: {agentArtifactId}]", ex);
-				}
+				throw new Exception($"Failed to Delete Agent : {agentArtifactId}");
 			}
 		}
 
@@ -156,13 +188,13 @@ namespace Helpers.Implementations
 				int numberOfAgentsCreated = 0;
 
 				//Query all Agent Types in the Instance
-				List<AgentTypeResponse> agentTypesInInstance = await GetAgentTypesInInstanceAsync();
+				List<AgentTypeResponseModel> agentTypesInInstance = await GetAgentTypesInInstanceAsync();
 
 				//Filter Agent Types from Relativity application
-				List<AgentTypeResponse> agentTypesInApplication = agentTypesInInstance.Where(x => x.ApplicationName.Equals(applicationName)).ToList();
+				List<AgentTypeResponseModel> agentTypesInApplication = agentTypesInInstance.Where(x => x.ApplicationName.Equals(applicationName)).ToList();
 
 				//Create Agents if not already exists
-				foreach (AgentTypeResponse agentTypeResponse in agentTypesInApplication)
+				foreach (AgentTypeResponseModel agentTypeResponse in agentTypesInApplication)
 				{
 					string agentName = agentTypeResponse.Name;
 					int agentTypeArtifactId = agentTypeResponse.ArtifactID;
@@ -179,7 +211,7 @@ namespace Helpers.Implementations
 					else
 					{
 						//Query Agent Server for Agent Type
-						List<AgentServerResponse> agentServersForAgentType = await GetAgentServersForAgentTypeAsync(agentTypeArtifactId);
+						List<AgentServerResponseModel> agentServersForAgentType = await GetAgentServersForAgentTypeAsync(agentTypeArtifactId);
 						int firstAgentServerArtifactId = agentServersForAgentType.First().ArtifactID;
 
 						//Create Single Agent
@@ -205,13 +237,13 @@ namespace Helpers.Implementations
 				int numberOfAgentsDeleted = 0;
 
 				//Query all Agent Types in the Instance
-				List<AgentTypeResponse> agentTypesInInstance = await GetAgentTypesInInstanceAsync();
+				List<AgentTypeResponseModel> agentTypesInInstance = await GetAgentTypesInInstanceAsync();
 
 				//Filter Agent Types from Relativity application
-				List<AgentTypeResponse> agentTypesInApplication = agentTypesInInstance.Where(x => x.ApplicationName.Equals(applicationName)).ToList();
+				List<AgentTypeResponseModel> agentTypesInApplication = agentTypesInInstance.Where(x => x.ApplicationName.Equals(applicationName)).ToList();
 
 				//Create Agents if not already exists
-				foreach (AgentTypeResponse agentTypeResponse in agentTypesInApplication)
+				foreach (AgentTypeResponseModel agentTypeResponse in agentTypesInApplication)
 				{
 					string agentName = agentTypeResponse.Name;
 
@@ -254,7 +286,7 @@ namespace Helpers.Implementations
 				bool wasAdded = false;
 
 				//Query all Agent Types in the Instance
-				List<AgentTypeResponse> agentTypesInInstance = await GetAgentTypesInInstanceAsync();
+				List<AgentTypeResponseModel> agentTypesInInstance = await GetAgentTypesInInstanceAsync();
 
 				//Check if Agent already exists
 				bool doesAgentExists = await CheckIfAtLeastSingleInstanceOfAgentExistsAsync(agentName);
@@ -265,14 +297,14 @@ namespace Helpers.Implementations
 				}
 				else
 				{
-					AgentTypeResponse agentTypeResponse = agentTypesInInstance.Find(x => x.Name.Equals(agentName, StringComparison.OrdinalIgnoreCase));
+					AgentTypeResponseModel agentTypeResponse = agentTypesInInstance.Find(x => x.Name.Equals(agentName, StringComparison.OrdinalIgnoreCase));
 
 					int agentTypeArtifactId = agentTypeResponse.ArtifactID;
 					decimal defaultInterval = agentTypeResponse.DefaultInterval ?? Constants.Agents.AGENT_INTERVAL;
 					int defaultLoggingLevel = agentTypeResponse.DefaultLoggingLevel ?? (int)Constants.Agents.AGENT_LOGGING_LEVEL;
 
 					//Query Agent Server for Agent Type
-					List<AgentServerResponse> agentServersForAgentType = await GetAgentServersForAgentTypeAsync(agentTypeArtifactId);
+					List<AgentServerResponseModel> agentServersForAgentType = await GetAgentServersForAgentTypeAsync(agentTypeArtifactId);
 					int firstAgentServerArtifactId = agentServersForAgentType.First().ArtifactID;
 
 					//Create Single Agent

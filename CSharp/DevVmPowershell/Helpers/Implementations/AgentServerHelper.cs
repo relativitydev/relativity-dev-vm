@@ -1,21 +1,22 @@
 ﻿using Helpers.Interfaces;
-using Relativity.Services;
-using Relativity.Services.ResourcePool;
-using Relativity.Services.ResourceServer;
 using Relativity.Services.ServiceProxy;
 using System;
-using System.Collections.Generic;
+using System.Net.Http;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Helpers.Implementations
 {
 	public class AgentServerHelper : IAgentServerHelper
 	{
-		private ServiceFactory ServiceFactory { get; }
+		private IConnectionHelper ConnectionHelper { get; }
+		private IRestHelper RestHelper { get; }
 
-		public AgentServerHelper(IConnectionHelper connectionHelper)
+		public AgentServerHelper(IConnectionHelper connectionHelper, IRestHelper restHelper)
 		{
-			ServiceFactory = connectionHelper.GetServiceFactory();
+			ConnectionHelper = connectionHelper;
+			RestHelper = restHelper;
 		}
 
 		/// <summary>
@@ -25,118 +26,27 @@ namespace Helpers.Implementations
 		public async Task<bool> AddAgentServerToDefaultResourcePoolAsync()
 		{
 			bool wasAgentServerAddedToDefaultPool = false;
-
-			Console.WriteLine(
-				$"{nameof(AddAgentServerToDefaultResourcePoolAsync)} - Adding Agent Server ({Constants.AgentServer.AgentServerName}) to the Default Resource Pool");
-
-			// Setup for checking Resource Pools
-			TextCondition conditionPool = new TextCondition()
+			HttpClient httpClient = RestHelper.GetHttpClient(ConnectionHelper.RelativityInstanceName, ConnectionHelper.RelativityAdminUserName, ConnectionHelper.RelativityAdminPassword);
+			
+			// Get Default Resource Pool Artifact Id
+			int defaultResourcePoolArtifactId = await GetDefaultResourcePoolArtifactIdAsync(httpClient);
+			if (defaultResourcePoolArtifactId != -1)
 			{
-				Field = Constants.AgentServer.NameField,
-				Operator = TextConditionEnum.StartsWith,
-				Value = Constants.AgentServer.DefaultPool
-			};
-
-			Query queryPool = new Query()
-			{
-				Condition = conditionPool.ToQueryString(),
-			};
-
-			// Setup for checking if Agent Server exists
-			TextCondition conditionAgent = new TextCondition()
-			{
-				Field = Constants.AgentServer.NameField,
-				Operator = TextConditionEnum.EqualTo,
-				Value = Constants.AgentServer.ResourceServerName
-			};
-
-			Query queryAgent = new Query()
-			{
-				Condition = conditionAgent.ToQueryString()
-			};
-
-			try
-			{
-				using (IResourceServerManager resourceServerManager = ServiceFactory.CreateProxy<IResourceServerManager>())
-				using (IResourcePoolManager resourcePoolManager = ServiceFactory.CreateProxy<IResourcePoolManager>())
+				// Get Agent Server Type Artifact Id
+				int agentServerTypeArtifactId = await GetAgentServerTypeArtifactIdAsync(httpClient);
+				if (agentServerTypeArtifactId != -1)
 				{
-					// Check for Default Resource Pool
-					ResourcePoolQueryResultSet resultPools = await resourcePoolManager.QueryAsync(queryPool);
-
-					Console.WriteLine($"{nameof(AddAgentServerToDefaultResourcePoolAsync)} - Checking if Default Resource Pool exists");
-
-					if (resultPools.Success && resultPools.TotalCount > 0)
+					// Get Agent Server Artifact Id
+					int agentServerArtifactId = await GetAgentServerArtifactIdAsync(httpClient);
+					if (agentServerArtifactId != -1)
 					{
-						ResourcePoolRef defaultPoolRef = new ResourcePoolRef(resultPools.Results.Find(x =>
-								x.Artifact.Name.Equals(Constants.AgentServer.DefaultPool, StringComparison.OrdinalIgnoreCase)).Artifact
-							.ArtifactID);
-
-						List<ResourceServerRef> resultServers =
-							await resourcePoolManager.RetrieveResourceServersAsync(defaultPoolRef);
-
-
-						// Check to make sure the Agent Server was not already added
-						if (!resultServers.Exists(x =>
-							x.ServerType.Name.Equals(Constants.AgentServer.AgentServerName, StringComparison.OrdinalIgnoreCase)))
-						{
-							// Make sure the Agent Server actually exists and then add it
-							ResourceServerQueryResultSet queryResult = await resourceServerManager.QueryAsync(queryAgent);
-
-							if (queryResult.Success && queryResult.TotalCount > 0)
-							{
-								ResourceServer agentServer = queryResult.Results.Find(x =>
-									x.Artifact.ServerType.Name.Equals(Constants.AgentServer.AgentServerName,
-										StringComparison.OrdinalIgnoreCase)).Artifact;
-
-								ResourceServerRef agentServerRef = new ResourceServerRef()
-								{
-									ArtifactID = agentServer.ArtifactID,
-									Name = agentServer.Name,
-									ServerType = new ResourceServerTypeRef()
-									{
-										ArtifactID = agentServer.ServerType.ArtifactID,
-										Name = agentServer.ServerType.Name
-									}
-								};
-
-								await resourcePoolManager.AddServerAsync(agentServerRef, defaultPoolRef);
-
-								resultServers = await resourcePoolManager.RetrieveResourceServersAsync(defaultPoolRef);
-
-								if (resultServers.Exists(x =>
-									x.ServerType.Name.Equals(Constants.AgentServer.AgentServerName, StringComparison.OrdinalIgnoreCase)))
-								{
-									wasAgentServerAddedToDefaultPool = true;
-									Console.WriteLine($"{nameof(AddAgentServerToDefaultResourcePoolAsync)} - Successfully added Agent Server to Default Resource Pool");
-								}
-								else
-								{
-									wasAgentServerAddedToDefaultPool = false;
-									Console.WriteLine($"{nameof(AddAgentServerToDefaultResourcePoolAsync)} - Failed to add Agent Server to Default Resource Pool.");
-								}
-							}
-							else
-							{
-								Console.WriteLine($"{nameof(AddAgentServerToDefaultResourcePoolAsync)} - Failed to add Agent Server to Default Resource Pool as the Agent Server does not exist");
-							}
-						}
-						else
-						{
-							wasAgentServerAddedToDefaultPool = true;
-							Console.WriteLine($"{nameof(AddAgentServerToDefaultResourcePoolAsync)} - Failed to add Agent Server to Default Resource Pool as it already exists within the pool");
-						}
+						// Add Agent Server to Default Resource Pool
+						await CallAddAgentServerToDefaultResourcePoolAsync(httpClient, agentServerArtifactId,
+							agentServerTypeArtifactId, defaultResourcePoolArtifactId);
+						wasAgentServerAddedToDefaultPool = true;
 					}
 				}
 			}
-			catch (Exception ex)
-			{
-				Console.WriteLine(
-					$"{nameof(AddAgentServerToDefaultResourcePoolAsync)} - Failed to add Agent Server to Default Resource Pool: {ex.Message}");
-				throw;
-			}
-
-
-
 
 			return wasAgentServerAddedToDefaultPool;
 		}
@@ -148,123 +58,160 @@ namespace Helpers.Implementations
 		public async Task<bool> RemoveAgentServerFromDefaultResourcePoolAsync()
 		{
 			bool wasAgentServerRemovedFromDefaultPool = false;
+			HttpClient httpClient = RestHelper.GetHttpClient(ConnectionHelper.RelativityInstanceName, ConnectionHelper.RelativityAdminUserName, ConnectionHelper.RelativityAdminPassword);
 
-			Console.WriteLine(
-				$"{nameof(AddAgentServerToDefaultResourcePoolAsync)} - Removing Agent Server ({Constants.AgentServer.AgentServerName}) from the Default Resource Pool");
-
-			// Setup for checking Resource Pools
-			TextCondition conditionPool = new TextCondition()
+			// Get Default Resource Pool Artifact Id
+			int defaultResourcePoolArtifactId = await GetDefaultResourcePoolArtifactIdAsync(httpClient);
+			if (defaultResourcePoolArtifactId != -1)
 			{
-				Field = Constants.AgentServer.NameField,
-				Operator = TextConditionEnum.StartsWith,
-				Value = Constants.AgentServer.DefaultPool
-			};
-
-			Query queryPool = new Query()
-			{
-				Condition = conditionPool.ToQueryString(),
-			};
-
-			// Setup for checking if Agent Server exists
-			TextCondition conditionAgent = new TextCondition()
-			{
-				Field = Constants.AgentServer.NameField,
-				Operator = TextConditionEnum.EqualTo,
-				Value = Constants.AgentServer.ResourceServerName
-			};
-
-			Query queryAgent = new Query()
-			{
-				Condition = conditionAgent.ToQueryString()
-			};
-
-
-			try
-			{
-				using (IResourceServerManager resourceServerManager = ServiceFactory.CreateProxy<IResourceServerManager>())
-				using (IResourcePoolManager resourcePoolManager = ServiceFactory.CreateProxy<IResourcePoolManager>())
+				// Get Agent Server Type Artifact Id
+				int agentServerTypeArtifactId = await GetAgentServerTypeArtifactIdAsync(httpClient);
+				if (agentServerTypeArtifactId != -1)
 				{
-					// Check for Default Resource Pool
-					ResourcePoolQueryResultSet resultPools = await resourcePoolManager.QueryAsync(queryPool);
-
-					Console.WriteLine(
-						$"{nameof(AddAgentServerToDefaultResourcePoolAsync)} - Checking if Default Resource Pool exists");
-					if (resultPools.Success && resultPools.TotalCount > 0)
+					// Get Agent Server Artifact Id
+					int agentServerArtifactId = await GetAgentServerArtifactIdAsync(httpClient);
+					if (agentServerArtifactId != -1)
 					{
-						ResourcePoolRef defaultPoolRef = new ResourcePoolRef(resultPools.Results.Find(x =>
-								x.Artifact.Name.Equals(Constants.AgentServer.DefaultPool, StringComparison.OrdinalIgnoreCase))
-							.Artifact
-							.ArtifactID);
-
-						List<ResourceServerRef> resultServers =
-							await resourcePoolManager.RetrieveResourceServersAsync(defaultPoolRef);
-
-						// Check to make sure the Agent Server was added so we can remove it
-						if (resultServers.Exists(x =>
-							x.ServerType.Name.Equals(Constants.AgentServer.AgentServerName, StringComparison.OrdinalIgnoreCase)))
-						{
-							// Make sure the Agent Server actually exists and then remove it
-							ResourceServerQueryResultSet queryResult = await resourceServerManager.QueryAsync(queryAgent);
-							if (queryResult.Success && queryResult.TotalCount > 0)
-							{
-								ResourceServer agentServer = queryResult.Results.Find(x =>
-									x.Artifact.ServerType.Name.Equals(Constants.AgentServer.AgentServerName,
-										StringComparison.OrdinalIgnoreCase)).Artifact;
-
-								ResourceServerRef agentServerRef = new ResourceServerRef()
-								{
-									ArtifactID = agentServer.ArtifactID,
-									Name = agentServer.Name,
-									ServerType = new ResourceServerTypeRef()
-									{
-										ArtifactID = agentServer.ServerType.ArtifactID,
-										Name = agentServer.ServerType.Name
-									}
-								};
-
-								await resourcePoolManager.RemoveServerAsync(agentServerRef, defaultPoolRef);
-
-								resultServers = await resourcePoolManager.RetrieveResourceServersAsync(defaultPoolRef);
-
-								if (!resultServers.Exists(x =>
-									x.ServerType.Name.Equals(Constants.AgentServer.AgentServerName,
-										StringComparison.OrdinalIgnoreCase)))
-								{
-									wasAgentServerRemovedFromDefaultPool = true;
-									Console.WriteLine(
-										$"{nameof(AddAgentServerToDefaultResourcePoolAsync)} - Successfully removed Agent Server from Default Resource Pool");
-								}
-								else
-								{
-									wasAgentServerRemovedFromDefaultPool = false;
-									Console.WriteLine(
-										$"{nameof(AddAgentServerToDefaultResourcePoolAsync)} - Failed to remove Agent Server from Default Resource Pool.");
-								}
-							}
-							else
-							{
-								Console.WriteLine(
-									$"{nameof(AddAgentServerToDefaultResourcePoolAsync)} - Failed to remove Agent Server from Default Resource Pool as the Agent Server does not exist");
-							}
-						}
-						else
-						{
-							wasAgentServerRemovedFromDefaultPool = true;
-							Console.WriteLine(
-								$"{nameof(AddAgentServerToDefaultResourcePoolAsync)} - Failed to remove Agent Server from Default Resource Pool as it doesn't exist within the pool");
-						}
+						await CallRemoveAgentServerFromDefaultResourcePoolAsync(httpClient, agentServerArtifactId, agentServerTypeArtifactId, defaultResourcePoolArtifactId);
+						wasAgentServerRemovedFromDefaultPool = true;
 					}
 				}
 			}
-			catch (Exception ex)
-			{
-				Console.WriteLine(
-					$"{nameof(AddAgentServerToDefaultResourcePoolAsync)} - Failed to remove Agent Server from Default Resource Pool: {ex.Message}");
-				throw;
-			}
-
 
 			return wasAgentServerRemovedFromDefaultPool;
+		}
+
+		private async Task<int> GetDefaultResourcePoolArtifactIdAsync(HttpClient httpClient)
+		{
+			// Query for Default Resource Pool
+			var resourcePoolQueryPayload = new
+			{
+				Query = new
+				{
+					Condition = "'Name' STARTSWITH 'Default'"
+				}
+			};
+			string poolQuery = JsonConvert.SerializeObject(resourcePoolQueryPayload);
+			HttpResponseMessage queryPoolResponse = await RestHelper.MakePostAsync(httpClient, Constants.Connection.RestUrlEndpoints.ResourcePool.QueryEndpointUrl, poolQuery);
+			if (!queryPoolResponse.IsSuccessStatusCode)
+			{
+				throw new Exception("Failed to query for Default Resource Pool");
+			}
+			string queryPoolResultString = await queryPoolResponse.Content.ReadAsStringAsync();
+			dynamic queryPoolResult = JObject.Parse(queryPoolResultString) as JObject;
+			if (Convert.ToInt32(queryPoolResult.TotalCount) > 0)
+			{
+				return Convert.ToInt32(queryPoolResult.Results[0]["Artifact"]["ArtifactID"].ToString());
+			}
+			else
+			{
+				return -1;
+			}
+		}
+
+		private async Task<int> GetAgentServerTypeArtifactIdAsync(HttpClient httpClient)
+		{
+			int agentServerTypeArtifactId = -1;
+			HttpResponseMessage serverTypeQueryResponse = await RestHelper.MakePostAsync(httpClient, Constants.Connection.RestUrlEndpoints.ResourcePool.ResourceServerTypeQueryEndpointUrl, "");
+			if (!serverTypeQueryResponse.IsSuccessStatusCode)
+			{
+				throw new Exception("Failed to query for Agent Server Types");
+			}
+			string queryServerTypesResultString = await serverTypeQueryResponse.Content.ReadAsStringAsync();
+			dynamic queryServerTypesResult = JsonConvert.DeserializeObject<dynamic>(queryServerTypesResultString);
+			foreach (dynamic obj in queryServerTypesResult)
+			{
+				if (obj["Name"].ToString() == "Agent")
+				{
+					agentServerTypeArtifactId = Convert.ToInt32(obj["ArtifactID"].ToString());
+					break;
+				}
+			}
+
+			return agentServerTypeArtifactId;
+		}
+
+		private async Task<int> GetAgentServerArtifactIdAsync(HttpClient httpClient)
+		{
+			int agentServerArtifactId = -1;
+			var resourceServerQueryPayload = new
+			{
+				Query = new
+				{
+					Condition = ""
+				}
+			};
+			string serverQuery = JsonConvert.SerializeObject(resourceServerQueryPayload);
+			HttpResponseMessage queryServerResponse = await RestHelper.MakePostAsync(httpClient, Constants.Connection.RestUrlEndpoints.ResourceServer.QueryEndpointUrl, serverQuery);
+			if (!queryServerResponse.IsSuccessStatusCode)
+			{
+				throw new Exception("Failed to query for Agent Resource Server");
+			}
+			string queryServerResultString = await queryServerResponse.Content.ReadAsStringAsync();
+			dynamic queryServerResult = JObject.Parse(queryServerResultString) as JObject;
+			if (Convert.ToInt32(queryServerResult.TotalCount) > 0)
+			{
+				foreach (dynamic obj in queryServerResult.Results)
+				{
+					if (obj["Artifact"]["ServerType"]["Name"].ToString() == "Agent")
+					{
+						agentServerArtifactId = Convert.ToInt32(obj["Artifact"]["ArtifactID"].ToString());
+						break;
+					}
+				}
+			}
+
+			return agentServerArtifactId;
+		}
+
+		private async Task CallAddAgentServerToDefaultResourcePoolAsync(HttpClient httpClient, int agentServerArtifactId, int agentServerTypeArtifactId, int defaultResourcePoolArtifactId)
+		{
+			var addResourceServerPayload = new
+			{
+				resourceServer = new
+				{
+					ArtifactID = agentServerArtifactId,
+					ServerType = new
+					{
+						ArtifactID = agentServerTypeArtifactId
+					}
+				},
+				resourcePool = new
+				{
+					ArtifactID = defaultResourcePoolArtifactId
+				}
+			};
+			string addResourceServer = JsonConvert.SerializeObject(addResourceServerPayload);
+			HttpResponseMessage addServerResponse = await RestHelper.MakePostAsync(httpClient, Constants.Connection.RestUrlEndpoints.ResourcePool.AddServerEndpointUrl, addResourceServer);
+			if (!addServerResponse.IsSuccessStatusCode)
+			{
+				throw new Exception("Failed to add the Agent Server to the Default Resource Pool");
+			}
+		}
+
+		private async Task CallRemoveAgentServerFromDefaultResourcePoolAsync(HttpClient httpClient, int agentServerArtifactId, int agentServerTypeArtifactId, int defaultResourcePoolArtifactId)
+		{
+			var removeAgentServerResourcePoolPayload = new
+			{
+				resourceServer = new
+				{
+					ArtifactID = agentServerArtifactId,
+					ServerType = new
+					{
+						ArtifactID = agentServerTypeArtifactId
+					}
+				},
+				resourcePool = new
+				{
+					ArtifactID = defaultResourcePoolArtifactId
+				}
+			};
+			string removeAgentServer = JsonConvert.SerializeObject(removeAgentServerResourcePoolPayload);
+			HttpResponseMessage removeAgentServerResponse = await RestHelper.MakePostAsync(httpClient, Constants.Connection.RestUrlEndpoints.ResourcePool.RemoveServerUrl, removeAgentServer);
+			if (!removeAgentServerResponse.IsSuccessStatusCode)
+			{
+				throw new Exception("Failed to remove the Agent Server from the Default Resource Pool");
+			}
 		}
 	}
 }

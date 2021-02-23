@@ -23,8 +23,8 @@ namespace Helpers.Tests.Integration.Tests
 				relativityAdminPassword: TestConstants.RELATIVITY_ADMIN_PASSWORD,
 				sqlAdminUserName: TestConstants.SQL_USER_NAME,
 				sqlAdminPassword: TestConstants.SQL_PASSWORD);
-
-			Sut = new RelativityVersionHelper(connectionHelper);
+			IRestHelper restHelper = new RestHelper();
+			Sut = new RelativityVersionHelper(connectionHelper, restHelper);
 		}
 
 		[TearDown]
@@ -42,7 +42,7 @@ namespace Helpers.Tests.Integration.Tests
 			// Act / Assert
 			Assert.DoesNotThrow(() =>
 			{
-				Sut.ConfirmInstallerAndInstanceRelativityVersionAreEqual(installerRelativityVersion);
+				Sut.ConfirmInstallerAndInstanceRelativityVersionAreEqualAsync(installerRelativityVersion).Wait();
 			});
 		}
 	}
