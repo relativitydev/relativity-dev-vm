@@ -59,9 +59,9 @@ $global:devVmVersionsToCreate = New-Object System.Collections.ArrayList
 [Boolean] $global:devVmCreationWasSuccess = $false
 [string] $global:compressedFileExtension = "zip"
 [string] $global:relativityInvariantVersionNumberFileName = "relativity_invariant_version.txt"
-[string] $global:testSingleRelativityVersion = "11.2.172.14" # Leave it blank when in Automated Production mode
-[string] $global:invariantVersion = "6.2.165.5" # Leave it blank when in Automated Production mode
-[string] $global:releaseName = "Lanceleaf EAU" # Make sure to update this to the correct release name for the Relativity Version above, leave it blank when in Automated Production mode
+[string] $global:testSingleRelativityVersion = "12.1.144.21" # Leave it blank when in Automated Production mode
+[string] $global:invariantVersion = "7.1.143.2" # Leave it blank when in Automated Production mode
+[string] $global:releaseName = "Osier EA" # Make sure to update this to the correct release name for the Relativity Version above, leave it blank when in Automated Production mode
 [Boolean] $global:foundCompatibleInvariantVersion = $true # Set to $false when in Automated Production mode
 
 # Define Toggle variables
