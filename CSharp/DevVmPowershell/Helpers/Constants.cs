@@ -57,6 +57,67 @@ namespace Helpers
 					public const string readAllLibraryApplicationUrl = "Relativity.REST/api/relativity-environment/v1/workspace/-1/libraryapplications";
 					public const string installWorkspaceApplicationUrl = "Relativity.REST/api/Relativity.LibraryApplications/workspace/-1/libraryapplications/{0}/install";
 				}
+
+				public class InstanceDetailsService
+				{
+					public const string EndpointUrl = "Relativity.REST/api/Relativity.Services.InstanceDetails.IInstanceDetailsModule/InstanceDetailsService/GetRelativityVersionAsync";
+				}
+
+				public class AgentType
+				{
+					public const string EndpointUrl = "Relativity.rest/api/relativity.agents/workspace/-1/agenttypes/";
+					public const string GetAgentServersForAgentTypeEndpointUrl = "Relativity.rest/api/relativity.agents/workspace/-1/agenttypes/{agentTypeArtifactId}/availableagentservers";
+				}
+
+				public class Agent
+				{
+					public const string EndpointUrl = "Relativity.rest/api/relativity.agents/workspace/-1/agents/";
+					public const string DeleteEndpointUrl = "Relativity.rest/api/relativity.agents/workspace/-1/agents/{agentArtifactId}";
+				}
+
+				public class ResourcePool
+				{
+					public const string QueryEndpointUrl = "Relativity.Rest/api/Relativity.Services.ResourcePool.IResourcePoolModule/Resource%20Pool%20Service/QueryAsync";
+					public const string AddServerEndpointUrl = "Relativity.Rest/api/Relativity.Services.ResourcePool.IResourcePoolModule/Resource%20Pool%20Service/AddServerAsync";
+					public const string RemoveServerUrl = "Relativity.Rest/API/Relativity.Services.ResourcePool.IResourcePoolModule/Resource%20Pool%20Service/RemoveServerAsync";
+					public const string GetProcessingSourceLocationsUrl = "Relativity.Rest/api/Relativity.Services.ResourcePool.IResourcePoolModule/Resource%20Pool%20Service/GetProcessingSourceLocationsAsync";
+					public const string AddProcessingSourceLocationUrl = "Relativity.Rest/api/Relativity.Services.ResourcePool.IResourcePoolModule/Resource%20Pool%20Service/AddProcessingSourceLocationAsync";
+					public const string ResourceServerTypeQueryEndpointUrl = "Relativity.Rest/api/Relativity.Services.ResourcePool.IResourcePoolModule/Resource%20Pool%20Service/GetResourceServerTypeChoicesAsync";
+				}
+
+				public class ResourceServer
+				{
+					public const string QueryEndpointUrl = "Relativity.Rest/api/Relativity.Services.ResourceServer.IResourceServerModule/Resource%20Server%20Manager/QueryAsync";
+					public const string WorkerManagerCreateEndpointUrl = "Relativity.Rest/api/Relativity.Services.ResourceServer.IResourceServerModule/Worker%20Manager%20Resource%20Server%20Manager/CreateSingleAsync";
+					public const string WorkerManagerDeleteEndpointUrl = "Relativity.Rest/api/Relativity.Services.ResourceServer.IResourceServerModule/Worker%20Manager%20Resource%20Server%20Manager/DeleteSingleAsync";
+					public const string EnableProcessingOnWorkerEndpointUrl = "Relativity.Rest/api/Relativity.Services.WorkerStatus.IWorkerStatusModule/WorkerStatus/EnableProcessingOnWorkerAsync";
+					public const string UpdateCategoriesOnWorkerEndpointUrl = "Relativity.Rest/api/Relativity.Services.WorkerStatus.IWorkerStatusModule/WorkerStatus/UpdateCategoriesOnWorkerAsync";
+				}
+
+				public class ImagingProfile
+				{
+					public const string CreateEndpointUrl = "Relativity.REST/api/Relativity.Imaging.Services.Interfaces.IImagingModule/Imaging Profile Service/SaveAsync";
+				}
+
+				public class ImagingSet
+				{
+					public const string CreateEndpointUrl = "Relativity.REST/api/Relativity.Imaging.Services.Interfaces.IImagingModule/Imaging Set Service/SaveAsync";
+				}
+
+				public class ImagingJob
+				{
+					public const string RunImagingSetEndpointUrl = "Relativity.REST/api/Relativity.Imaging.Services.Interfaces.IImagingModule/Imaging Job Service/RunImagingSetAsync";
+				}
+
+				public class KeywordSearch
+				{
+					public const string CreateEndpointUrl = "Relativity.REST/api/Relativity.Services.Search.ISearchModule/Keyword%20Search%20Manager/CreateSingleAsync";
+				}
+
+				public class Choice
+				{
+					public const string QueryEndpointUrl = "Relativity.REST/Relativity/Choice/QueryResult";
+				}
 			}
 		}
 		public class Agents
@@ -234,10 +295,10 @@ END
 			public class Profile
 			{
 				public const string NAME = "Sample Imaging Profile";
-				public const int IMAGE_OUTPUT_DPI = 100;
-				public const ImageFormat BASIC_IMAGE_FORMAT = ImageFormat.Jpeg;
-				public const ImageSize IMAGE_SIZE = ImageSize.A4;
-				public const ImagingMethod IMAGING_METHOD = ImagingMethod.Basic;
+				public const string IMAGE_OUTPUT_DPI = "100";
+				public const string BASIC_IMAGE_FORMAT = "Jpeg";
+				public const string IMAGE_SIZE = "A4";
+				public const string IMAGING_METHOD = "Basic";
 			}
 
 			public class Set

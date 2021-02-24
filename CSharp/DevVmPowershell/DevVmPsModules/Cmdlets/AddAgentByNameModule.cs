@@ -68,7 +68,7 @@ namespace DevVmPsModules.Cmdlets
 				sqlAdminUserName: SqlAdminUserName,
 				sqlAdminPassword: SqlAdminPassword);
 			IRestHelper restHelper = new RestHelper();
-			IAgentHelper agentHelper = new AgentHelper(connectionHelper, restHelper, RelativityInstanceName, RelativityAdminUserName, RelativityAdminPassword);
+			IAgentHelper agentHelper = new AgentHelper(connectionHelper, restHelper);
 
 			//Create Agents for all Applications
 			foreach (string agentName in AgentNames)

@@ -14,18 +14,14 @@ namespace Helpers.Implementations
 {
 	public class InstanceSettingsHelper : IInstanceSettingsHelper
 	{
+		private IConnectionHelper ConnectionHelper { get; }
 		private ServiceFactory ServiceFactory { get; }
-		private string InstanceAddress { get; set; }
-		private string AdminUsername { get; set; }
-		private string AdminPassword { get; set; }
 		private IRestHelper RestHelper { get; set; }
 
-		public InstanceSettingsHelper(IConnectionHelper connectionHelper, IRestHelper restHelper, string instanceAddress, string adminUsername, string adminPassword)
+		public InstanceSettingsHelper(IConnectionHelper connectionHelper, IRestHelper restHelper)
 		{
+			ConnectionHelper = connectionHelper;
 			ServiceFactory = connectionHelper.GetServiceFactory();
-			InstanceAddress = instanceAddress;
-			AdminUsername = adminUsername;
-			AdminPassword = adminPassword;
 			RestHelper = restHelper;
 		}
 
@@ -33,7 +29,7 @@ namespace Helpers.Implementations
 		{
 			try
 			{
-				HttpClient httpClient = RestHelper.GetHttpClient(InstanceAddress, AdminUsername, AdminPassword);
+				HttpClient httpClient = RestHelper.GetHttpClient(ConnectionHelper.RelativityInstanceName, ConnectionHelper.RelativityAdminUserName, ConnectionHelper.RelativityAdminPassword);
 				InstanceSettingManagerCreateRequest instanceSettingManagerUpdateRequest = new InstanceSettingManagerCreateRequest
 				{
 					instanceSetting = new RequestModels.instanceSetting
@@ -77,7 +73,7 @@ namespace Helpers.Implementations
 					newValue = string.Empty;
 				}
 
-				HttpClient httpClient = RestHelper.GetHttpClient(InstanceAddress, AdminUsername, AdminPassword);
+				HttpClient httpClient = RestHelper.GetHttpClient(ConnectionHelper.RelativityInstanceName, ConnectionHelper.RelativityAdminUserName, ConnectionHelper.RelativityAdminPassword);
 				ObjectManagerQueryRequestModel objectManagerQueryRequestModel = new ObjectManagerQueryRequestModel
 				{
 					request = new Request
@@ -157,7 +153,7 @@ namespace Helpers.Implementations
 		{
 			try
 			{
-				HttpClient httpClient = RestHelper.GetHttpClient(InstanceAddress, AdminUsername, AdminPassword);
+				HttpClient httpClient = RestHelper.GetHttpClient(ConnectionHelper.RelativityInstanceName, ConnectionHelper.RelativityAdminUserName, ConnectionHelper.RelativityAdminPassword);
 				string deleteUrl = $"Relativity.REST/api/Relativity.InstanceSettings/workspace/{Constants.EDDS_WORKSPACE_ARTIFACT_ID}/instancesettings/{instanceSettingArtifactId}";
 				HttpResponseMessage httpResponseMessage = await RestHelper.MakeDeleteAsync(httpClient, deleteUrl);
 				if (!httpResponseMessage.IsSuccessStatusCode)
