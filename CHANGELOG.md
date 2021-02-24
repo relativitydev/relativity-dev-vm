@@ -5,7 +5,10 @@
 
 -------------------------
 
-## 2021-02-19
+## 2021-02-22
+- [REL-527051](https://jira.kcura.com/browse/REL-527051) - Removed RSAPI references across all of the packages.
+	- Newtonsoft dll now pulled from files\default
+	- Cleaned Relativity Instance string in RelativityVersionHelper
 - [REL-527052](https://jira.kcura.com/browse/REL-527052) - Remove Relativity Installer files after DevVM provisioning is complete.
 
 -------------------------
