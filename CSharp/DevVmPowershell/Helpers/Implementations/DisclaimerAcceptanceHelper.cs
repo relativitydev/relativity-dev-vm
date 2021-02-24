@@ -1,39 +1,23 @@
 ﻿using Helpers.Interfaces;
-using kCura.Relativity.Client;
-using kCura.Relativity.Client.DTOs;
-using Relativity.Services.Objects;
-using Relativity.Services.Objects.DataContracts;
-using Relativity.Services.ServiceProxy;
 using System;
 using System.Linq;
 using System.Net.Http;
 using Helpers.RequestModels;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using ObjectType = kCura.Relativity.Client.DTOs.ObjectType;
 using System.Threading.Tasks;
 
 namespace Helpers.Implementations
 {
 	public class DisclaimerAcceptanceHelper : IDisclaimerAcceptanceHelper
 	{
-		private IRSAPIClient RsapiClient { get; }
-		private IObjectManager ObjectManager { get; }
-		private ServiceFactory ServiceFactory { get; }
-		private string InstanceAddress { get; set; }
-		private string AdminUsername { get; set; }
-		private string AdminPassword { get; set; }
+		private IConnectionHelper ConnectionHelper { get; }
 		private IRestHelper RestHelper { get; set; }
 		private IWorkspaceHelper WorkspaceHelper { get; set; }
 
-		public DisclaimerAcceptanceHelper(IConnectionHelper connectionHelper, IRestHelper restHelper, IWorkspaceHelper workspaceHelper, string instanceAddress, string adminUsername, string adminPassword)
+		public DisclaimerAcceptanceHelper(IConnectionHelper connectionHelper, IRestHelper restHelper, IWorkspaceHelper workspaceHelper)
 		{
-			ServiceFactory = connectionHelper.GetServiceFactory();
-			RsapiClient = ServiceFactory.CreateProxy<IRSAPIClient>();
-			ObjectManager = ServiceFactory.CreateProxy<IObjectManager>();
-			InstanceAddress = instanceAddress;
-			AdminUsername = adminUsername;
-			AdminPassword = adminPassword;
+			ConnectionHelper = connectionHelper;
 			RestHelper = restHelper;
 			WorkspaceHelper = workspaceHelper;
 		}
@@ -56,7 +40,7 @@ namespace Helpers.Implementations
 		public async Task<bool> CheckIfDisclaimerConfigurationRdoExistsAsync(int workspaceId)
 		{
 			string url = Constants.Connection.RestUrlEndpoints.ObjectManager.QuerySlimUrl.Replace("-1", workspaceId.ToString());
-			HttpClient httpClient = RestHelper.GetHttpClient(InstanceAddress, AdminUsername, AdminPassword);
+			HttpClient httpClient = RestHelper.GetHttpClient(ConnectionHelper.RelativityInstanceName, ConnectionHelper.RelativityAdminUserName, ConnectionHelper.RelativityAdminPassword);
 			int objectTypeId = await GetDisclaimerSolutionConfigurationObjectTypeIdAsync(workspaceId);
 			var queryPayloadObject = new
 			{
@@ -103,7 +87,7 @@ namespace Helpers.Implementations
 		public async Task<bool> CheckIfDisclaimerRdoExistsAsync(int workspaceId)
 		{
 			string url = Constants.Connection.RestUrlEndpoints.ObjectManager.QuerySlimUrl.Replace("-1",workspaceId.ToString());
-			HttpClient httpClient = RestHelper.GetHttpClient(InstanceAddress, AdminUsername, AdminPassword);
+			HttpClient httpClient = RestHelper.GetHttpClient(ConnectionHelper.RelativityInstanceName, ConnectionHelper.RelativityAdminUserName, ConnectionHelper.RelativityAdminPassword);
 			int objectTypeId = await GetDisclaimerObjectTypeIdAsync(workspaceId);
 			var queryPayloadObject = new
 			{
@@ -134,7 +118,7 @@ namespace Helpers.Implementations
 
 		private async Task CreateDisclaimerConfigurationRdoAsync(int objectTypeId, int layoutId, int workspaceId)
 		{
-			HttpClient httpClient = RestHelper.GetHttpClient(InstanceAddress, AdminUsername, AdminPassword);
+			HttpClient httpClient = RestHelper.GetHttpClient(ConnectionHelper.RelativityInstanceName, ConnectionHelper.RelativityAdminUserName, ConnectionHelper.RelativityAdminPassword);
 			string url = $"Relativity.REST/api/Relativity.Objects/workspace/{workspaceId}/object/create";
 			ObjectManagerCreateRequestModel objectManagerCreateRequestModel = new ObjectManagerCreateRequestModel
 			{
@@ -193,7 +177,7 @@ namespace Helpers.Implementations
 
 		private async Task CreateDisclaimerRdoAsync(int objectTypeId, int layoutId, int workspaceId)
 		{
-			HttpClient httpClient = RestHelper.GetHttpClient(InstanceAddress, AdminUsername, AdminPassword);
+			HttpClient httpClient = RestHelper.GetHttpClient(ConnectionHelper.RelativityInstanceName, ConnectionHelper.RelativityAdminUserName, ConnectionHelper.RelativityAdminPassword);
 			string url = $"Relativity.REST/api/Relativity.Objects/workspace/{workspaceId}/object/create";
 			ObjectManagerCreateRequestModel objectManagerCreateRequestModel = new ObjectManagerCreateRequestModel
 			{
@@ -272,7 +256,7 @@ namespace Helpers.Implementations
 			try
 			{
 				string url = Constants.Connection.RestUrlEndpoints.ObjectManager.QuerySlimUrl.Replace("-1", workspaceId.ToString());
-				HttpClient httpClient = RestHelper.GetHttpClient(InstanceAddress, AdminUsername, AdminPassword);
+				HttpClient httpClient = RestHelper.GetHttpClient(ConnectionHelper.RelativityInstanceName, ConnectionHelper.RelativityAdminUserName, ConnectionHelper.RelativityAdminPassword);
 				var queryPayloadObject = new
 				{
 					request = new
@@ -314,7 +298,7 @@ namespace Helpers.Implementations
 			try
 			{
 				string url = Constants.Connection.RestUrlEndpoints.ObjectManager.QuerySlimUrl.Replace("-1", workspaceId.ToString());
-				HttpClient httpClient = RestHelper.GetHttpClient(InstanceAddress, AdminUsername, AdminPassword);
+				HttpClient httpClient = RestHelper.GetHttpClient(ConnectionHelper.RelativityInstanceName, ConnectionHelper.RelativityAdminUserName, ConnectionHelper.RelativityAdminPassword);
 				var queryPayloadObject = new
 				{
 					request = new
@@ -357,7 +341,7 @@ namespace Helpers.Implementations
 			try
 			{
 				string url = Constants.Connection.RestUrlEndpoints.ObjectManager.QuerySlimUrl.Replace("-1", workspaceId.ToString());
-				HttpClient httpClient = RestHelper.GetHttpClient(InstanceAddress, AdminUsername, AdminPassword);
+				HttpClient httpClient = RestHelper.GetHttpClient(ConnectionHelper.RelativityInstanceName, ConnectionHelper.RelativityAdminUserName, ConnectionHelper.RelativityAdminPassword);
 				var queryPayloadObject = new
 				{
 					request = new
@@ -398,7 +382,7 @@ namespace Helpers.Implementations
 			try
 			{
 				string url = Constants.Connection.RestUrlEndpoints.ObjectManager.QuerySlimUrl.Replace("-1", workspaceId.ToString());
-				HttpClient httpClient = RestHelper.GetHttpClient(InstanceAddress, AdminUsername, AdminPassword);
+				HttpClient httpClient = RestHelper.GetHttpClient(ConnectionHelper.RelativityInstanceName, ConnectionHelper.RelativityAdminUserName, ConnectionHelper.RelativityAdminPassword);
 				var queryPayloadObject = new
 				{
 					request = new

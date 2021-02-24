@@ -1,39 +1,34 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using Helpers.Interfaces;
+using System;
+using System.Net.Http;
 using System.Threading.Tasks;
-using Helpers.Interfaces;
-using Relativity.Services.InstanceDetails;
-using Relativity.Services.ServiceProxy;
 
 namespace Helpers.Implementations
 {
 	public class RelativityVersionHelper : IRelativityVersionHelper
 	{
-		private ServiceFactory ServiceFactory { get; }
+		private IConnectionHelper ConnectionHelper { get; }
+		private IRestHelper RestHelper { get; set; }
 
-		public RelativityVersionHelper(IConnectionHelper connectionHelper)
+		public RelativityVersionHelper(IConnectionHelper connectionHelper, IRestHelper restHelper)
 		{
-			ServiceFactory = connectionHelper.GetServiceFactory();
+			ConnectionHelper = connectionHelper;
+			RestHelper = restHelper;
 		}
 
-		public void ConfirmInstallerAndInstanceRelativityVersionAreEqual(string installerRelativityVersion)
+		public async Task ConfirmInstallerAndInstanceRelativityVersionAreEqualAsync(string installerRelativityVersion)
 		{
-			try
+			HttpClient httpClient = RestHelper.GetHttpClient(ConnectionHelper.RelativityInstanceName, ConnectionHelper.RelativityAdminUserName, ConnectionHelper.RelativityAdminPassword);
+			HttpResponseMessage response = await RestHelper.MakePostAsync(httpClient, Constants.Connection.RestUrlEndpoints.InstanceDetailsService.EndpointUrl, "");
+			if (!response.IsSuccessStatusCode)
 			{
-				using (IInstanceDetailsManager instanceDetailsManager = ServiceFactory.CreateProxy<IInstanceDetailsManager>())
-				{
-					string relativityVersion = instanceDetailsManager.GetRelativityVersionAsync().Result;
-					if (relativityVersion != installerRelativityVersion)
-					{
-						throw new Exception("Installed Relativity Version and Installer Version are not the same");
-					}
-				}
+				throw new Exception("Error Getting Instance Relativity Version");
 			}
-			catch (Exception ex)
+			string relativityVersion = await response.Content.ReadAsStringAsync();
+			relativityVersion = relativityVersion.Replace("\\", "").Replace("\"", ""); // Returned string has wrapped characters and this just cleans it up before comparing.
+			if (relativityVersion != installerRelativityVersion)
 			{
-				throw new Exception("Error Getting Instance Relativity Version", ex);
+				throw new Exception($"Installed Relativity Version ({relativityVersion}) and Installer Version ({installerRelativityVersion}) are not the same");
 			}
 		}
 	}

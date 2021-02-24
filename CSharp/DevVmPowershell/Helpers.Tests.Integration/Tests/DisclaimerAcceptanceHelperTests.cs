@@ -30,10 +30,10 @@ namespace Helpers.Tests.Integration.Tests
 			IRestHelper restHelper = new RestHelper();
 			SqlRunner = new SqlRunner(connectionHelper);
 			SqlHelper = new SqlHelper(SqlRunner);
-			WorkspaceHelper = new WorkspaceHelper(connectionHelper, restHelper, SqlHelper, TestConstants.RELATIVITY_INSTANCE_NAME, TestConstants.RELATIVITY_ADMIN_USER_NAME, TestConstants.RELATIVITY_ADMIN_PASSWORD);
+			WorkspaceHelper = new WorkspaceHelper(connectionHelper, restHelper, SqlHelper);
 			RetryLogicHelper = new RetryLogicHelper();
-			ApplicationInstallHelper = new ApplicationInstallHelper(connectionHelper, restHelper, WorkspaceHelper, RetryLogicHelper, TestConstants.RELATIVITY_INSTANCE_NAME, TestConstants.RELATIVITY_ADMIN_USER_NAME, TestConstants.RELATIVITY_ADMIN_PASSWORD);
-			Sut = new DisclaimerAcceptanceHelper(connectionHelper, restHelper, WorkspaceHelper, TestConstants.RELATIVITY_INSTANCE_NAME, TestConstants.RELATIVITY_ADMIN_USER_NAME, TestConstants.RELATIVITY_ADMIN_PASSWORD);
+			ApplicationInstallHelper = new ApplicationInstallHelper(connectionHelper, restHelper, WorkspaceHelper, RetryLogicHelper);
+			Sut = new DisclaimerAcceptanceHelper(connectionHelper, restHelper, WorkspaceHelper);
 		}
 
 		[TearDown]

@@ -9,11 +9,11 @@ namespace Helpers.Implementations
 	public class ConnectionHelper : IConnectionHelper
 	{
 		private ServiceFactory _serviceFactory;
-		public string RelativityInstanceName;
-		public string RelativityAdminUserName;
-		public string RelativityAdminPassword;
-		public string SqlAdminUserName;
-		public string SqlAdminPassword;
+		public string RelativityInstanceName { get; set; }
+		public string RelativityAdminUserName { get; set; }
+		public string RelativityAdminPassword { get; set; }
+		public string SqlAdminUserName { get; set; }
+		public string SqlAdminPassword { get; set; }
 
 
 		public ConnectionHelper(string relativityInstanceName, string relativityAdminUserName, string relativityAdminPassword, string sqlAdminUserName, string sqlAdminPassword)

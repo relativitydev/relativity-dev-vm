@@ -5,10 +5,33 @@
 
 -------------------------
 
-## 2021-02-18
+## 2021-02-19
 
 - [REL-523461](https://jira.kcura.com/browse/REL-523461) - HTTP API requests in the Lanceleaf branch.
     - This code works only in Lanceleaf release.  Updated Application Install Helper to work specifically for Lanceleaf.
+	- Merged code with develop (except ProcessingHelper) for HTTP REST calls
+	- Cleaned Relativity Instance string in RelativityVersionHelper
+- [REL-527052](https://jira.kcura.com/browse/REL-527052) - Remove Relativity Installer files after DevVM provisioning is complete.
+
+-------------------------
+
+## 2021-02-15
+- [REL-522356](https://jira.kcura.com/browse/REL-522356) - Updated the ImagingHelper.cs class to use REST APIs instead of C# APIs.
+- [REL-522362](https://jira.kcura.com/browse/REL-522362) - Updated the ProcessingHelper.cs class to use REST APIs instead of C# APIs.
+
+-------------------------
+
+## 2021-02-12
+- [REL-522364](https://jira.kcura.com/browse/REL-522364) - Updated the RelativityVersionHelper.cs class to use REST APIs instead of C# APIs.
+[REL-522353](https://jira.kcura.com/browse/REL-522353) - Updated the AgentServerHelper.cs class to use REST APIs instead of C# APIs.
+
+-------------------------
+
+## 2021-02-11
+
+- [REL-522350](https://jira.kcura.com/browse/REL-522350) 
+	- Updated the AgentHelper.cs class to use REST APIs instead of C# APIs.
+	- Updated Constructors to take ConnectionHelper instead of InstanceName, AdminUsername, AdminPassword
 
 -------------------------
 
