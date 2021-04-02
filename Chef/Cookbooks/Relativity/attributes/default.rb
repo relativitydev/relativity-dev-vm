@@ -131,6 +131,11 @@ default['relativity']['response_file']['replacement_values'] =
         # The password for the EDDSDBO account on the SQL Primary SQL Instance
         name: "EDDSDBOPASSWORD", 
         value: "#{default['sql']['user']['eddsdbo']['password']}"
+    },
+    {
+        # The password for the RelativityScriptLogin account on the SQL Primary SQL Instance you are installing to.
+        name: "RELATIVITYSCRIPTLOGINPASSWORD", 
+        value: ""
     },       
     {
         # Domain (or Workgroup) and Username of the Relativity Service Account Windows login.
