@@ -1,7 +1,7 @@
-﻿using System;
-using Helpers.Implementations;
+﻿using Helpers.Implementations;
 using Helpers.Interfaces;
 using NUnit.Framework;
+using System;
 using System.Threading.Tasks;
 
 namespace Helpers.Tests.Integration.Tests
@@ -25,8 +25,9 @@ namespace Helpers.Tests.Integration.Tests
 			IRestHelper restHelper = new RestHelper();
 			ISqlRunner sqlRunner = new SqlRunner(connectionHelper);
 			ISqlHelper sqlHelper = new SqlHelper(sqlRunner);
+			ILogService logService = new LogService();
 			IRetryLogicHelper retryLogicHelper = new RetryLogicHelper();
-			WorkspaceHelper = new WorkspaceHelper(connectionHelper, restHelper, sqlHelper);
+			WorkspaceHelper = new WorkspaceHelper(logService, connectionHelper, restHelper, sqlHelper);
 			Sut = new ImagingHelper(connectionHelper, restHelper, retryLogicHelper);
 			ImportApiHelper = new ImportApiHelper(connectionHelper, TestConstants.RELATIVITY_INSTANCE_NAME, TestConstants.RELATIVITY_ADMIN_USER_NAME, TestConstants.RELATIVITY_ADMIN_PASSWORD);
 		}
