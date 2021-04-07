@@ -137,6 +137,18 @@
     <Reference Include="Renci.SshNet, Version=2016.0.0.0, Culture=neutral, PublicKeyToken=1cee9f8bde3db106, processorArchitecture=MSIL">
       <HintPath>..\packages\SSH.NET.2016.0.0\lib\net40\Renci.SshNet.dll</HintPath>
     </Reference>
+    <Reference Include="Serilog, Version=2.0.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">
+      <HintPath>..\packages\Serilog.2.10.0\lib\net46\Serilog.dll</HintPath>
+    </Reference>
+    <Reference Include="Serilog.Sinks.Console, Version=3.1.1.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">
+      <HintPath>..\packages\Serilog.Sinks.Console.3.1.1\lib\net45\Serilog.Sinks.Console.dll</HintPath>
+    </Reference>
+    <Reference Include="Serilog.Sinks.Debug, Version=2.0.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">
+      <HintPath>..\packages\Serilog.Sinks.Debug.2.0.0\lib\net46\Serilog.Sinks.Debug.dll</HintPath>
+    </Reference>
+    <Reference Include="Serilog.Sinks.File, Version=2.0.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">
+      <HintPath>..\packages\Serilog.Sinks.File.4.1.0\lib\net45\Serilog.Sinks.File.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Core" />
@@ -162,6 +174,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CustomExceptions\DevVmPowerShellModuleHelperException.cs" />
     <Compile Include="Implementations\AgentHelper.cs" />
     <Compile Include="Implementations\AgentServerHelper.cs" />
     <Compile Include="Implementations\ApplicationInstallHelper.cs" />
@@ -170,6 +183,7 @@
     <Compile Include="Implementations\DisclaimerAcceptanceHelper.cs" />
     <Compile Include="Implementations\EnvironmentVariableHelper.cs" />
     <Compile Include="Implementations\ErrorMessageHelper.cs" />
+    <Compile Include="Implementations\LogService.cs" />
     <Compile Include="Implementations\RelativityVersionHelper.cs" />
     <Compile Include="Implementations\RestHelper.cs" />
     <Compile Include="Implementations\RetryLogicHelper.cs" />
@@ -183,6 +197,7 @@
     <Compile Include="Interfaces\IImagingHelper.cs" />
     <Compile Include="Interfaces\IImportApiHelper.cs" />
     <Compile Include="Implementations\ImagingHelper.cs" />
+    <Compile Include="Interfaces\ILogService.cs" />
     <Compile Include="Interfaces\IRecycleBinHelper.cs" />
     <Compile Include="Interfaces\IRelativityVersionHelper.cs" />
     <Compile Include="Interfaces\IRetryLogicHelper.cs" />

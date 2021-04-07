@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Management.Automation;
-using System.Text;
-using System.Threading.Tasks;
-using Helpers.Implementations;
+﻿using Helpers.Implementations;
 using Helpers.Interfaces;
+using System;
+using System.Management.Automation;
 
 namespace DevVmPsModules.Cmdlets
 {
@@ -82,7 +78,8 @@ namespace DevVmPsModules.Cmdlets
 			ISqlRunner sqlRunner = new SqlRunner(connectionHelper);
 			ISqlHelper sqlHelper = new SqlHelper(sqlRunner);
 			IRestHelper restHelper = new RestHelper();
-			IWorkspaceHelper workspaceHelper = new WorkspaceHelper(connectionHelper, restHelper, sqlHelper);
+			ILogService logService = new LogService();
+			IWorkspaceHelper workspaceHelper = new WorkspaceHelper(logService, connectionHelper, restHelper, sqlHelper);
 			IRetryLogicHelper retryLogicHelper = new RetryLogicHelper();
 			ISmokeTestHelper smokeTestHelper = new SmokeTestHelper(connectionHelper, restHelper, retryLogicHelper, workspaceHelper);
 
