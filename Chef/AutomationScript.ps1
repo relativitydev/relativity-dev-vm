@@ -69,12 +69,12 @@ $global:devVmVersionsToCreate = New-Object System.Collections.ArrayList
 
 # Define Toggle variables
 [Boolean] $global:toggleSimulateDevVmCreation = $false # Set to $true when you want to simulate the DevVm creation to test the other parts of the automation script
-[Boolean] $global:toggleSendSlackMessage = $false # Set to $false when you do not want to send a slack message
-[Boolean] $global:toggleCopyToLocalNetworkStorage = $false # Set to $false when you do not want to copy the DevVm to the network storage
-[Boolean] $global:toggleCopyToLocalDriveStorage = $false # Set to $false when you do not want to copy the DevVm to the local drive storage
-[Boolean] $global:toggleUploadToAzureDevVmBlobStorage = $false # Set to $false when you do not want to copy the DevVm to the network storage
-[Boolean] $global:toggleAddVersionToSolutionSnapshotDatabase = $false # Set to $false when you do not want to add the Relativity Version to the Solution Snapshot Database
-[Boolean] $global:toggleSkipCopyingRelativityAndInvariantInstallerAndResponseFiles = $true # Set to $true when you want to create DevVM with pre-release Relativity Versions. Remember to manually copy the Relativity and Invariant installer and response files to the network storage
+[Boolean] $global:toggleSendSlackMessage = $true # Set to $false when you do not want to send a slack message
+[Boolean] $global:toggleCopyToLocalNetworkStorage = $true # Set to $false when you do not want to copy the DevVm to the network storage
+[Boolean] $global:toggleCopyToLocalDriveStorage = $true # Set to $false when you do not want to copy the DevVm to the local drive storage
+[Boolean] $global:toggleUploadToAzureDevVmBlobStorage = $true # Set to $false when you do not want to copy the DevVm to the network storage
+[Boolean] $global:toggleAddVersionToSolutionSnapshotDatabase = $true # Set to $false when you do not want to add the Relativity Version to the Solution Snapshot Database
+[Boolean] $global:toggleSkipCopyingRelativityAndInvariantInstallerAndResponseFiles = $false # Set to $true when you want to create DevVM with pre-release Relativity Versions. Remember to manually copy the Relativity and Invariant installer and response files to the network storage
 
 function Reset-Logs-Environment-Variable()
 {
