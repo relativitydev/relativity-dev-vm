@@ -158,7 +158,8 @@ namespace Helpers.Implementations
 			HttpResponseMessage createResponse = await RestHelper.MakePostAsync(httpClient, $"{Constants.Connection.RestUrlEndpoints.WorkspaceManager.EndpointUrl}/", createPayload);
 			if (!createResponse.IsSuccessStatusCode)
 			{
-				throw new Exception("Failed to Create Workspace");
+				string responseContent = await createResponse.Content.ReadAsStringAsync();
+				throw new Exception($"Failed to Create Workspace. [{nameof(responseContent)}: {responseContent}]");
 			}
 
 			string resultString = await createResponse.Content.ReadAsStringAsync();
