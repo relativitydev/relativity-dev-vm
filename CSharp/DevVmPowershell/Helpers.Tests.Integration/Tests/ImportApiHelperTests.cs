@@ -63,7 +63,7 @@ namespace Helpers.Tests.Integration.Tests
 			}
 			catch (Exception ex)
 			{
-				//Workspace Does Not Exist
+				throw new Exception("An error occured when cleaning up workspaces (if they exist)", ex);
 			}
 		}
 	}

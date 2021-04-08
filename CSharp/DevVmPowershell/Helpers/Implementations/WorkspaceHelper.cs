@@ -2,7 +2,6 @@
 using Helpers.Interfaces;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using Serilog.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,14 +13,14 @@ namespace Helpers.Implementations
 {
 	public class WorkspaceHelper : IWorkspaceHelper
 	{
-		private readonly Logger _logger;
+		private readonly ILogService _logService;
 		private IConnectionHelper ConnectionHelper { get; }
 		public ISqlHelper SqlHelper { get; set; }
 		private IRestHelper RestHelper { get; set; }
 
 		public WorkspaceHelper(ILogService logService, IConnectionHelper connectionHelper, IRestHelper restHelper, ISqlHelper sqlHelper)
 		{
-			_logger = logService.GetLoggerAsync().Result;
+			_logService = logService;
 			ConnectionHelper = connectionHelper;
 			SqlHelper = sqlHelper;
 			RestHelper = restHelper;
@@ -31,7 +30,7 @@ namespace Helpers.Implementations
 		{
 			try
 			{
-				_logger.Debug("Create Single Workspace with the following input parameters - {workspaceTemplateName}, {workspaceName} and enableDataGrid {enableDataGrid}", workspaceTemplateName, workspaceName, enableDataGrid);
+				_logService.LogDebug($"Create Single Workspace with the following input parameters - {workspaceTemplateName}, {workspaceName} and {enableDataGrid}", workspaceTemplateName, workspaceName, enableDataGrid);
 
 				// Query for the Workspace Template
 				List<int> workspaceArtifactIds = await WorkspaceQueryAsync(workspaceTemplateName);
@@ -45,18 +44,18 @@ namespace Helpers.Implementations
 				}
 
 				int templateWorkspaceArtifactId = workspaceArtifactIds.First();
-				_logger.Debug("Queried for Workspace Template - {templateWorkspaceArtifactId}", templateWorkspaceArtifactId);
+				_logService.LogDebug($"Queried for Workspace Template - {templateWorkspaceArtifactId}", templateWorkspaceArtifactId);
 
 				// Create the workspace 
 				int workspaceArtifactId = await CreateWorkspaceAsync(templateWorkspaceArtifactId, workspaceName, enableDataGrid);
-				_logger.Debug("Workspace created - {workspaceArtifactId}", workspaceArtifactId);
+				_logService.LogDebug($"Workspace created - {workspaceArtifactId}", workspaceArtifactId);
 
 				return workspaceArtifactId;
 			}
 			catch (Exception ex)
 			{
 				var errorMessage = $"An error occurred when creating a single workspace [{nameof(workspaceName)}: {workspaceName}]";
-				_logger.Error(ex, errorMessage);
+				_logService.LogError(errorMessage, ex, workspaceName);
 				throw new DevVmPowerShellModuleHelperException(errorMessage, ex);
 			}
 		}

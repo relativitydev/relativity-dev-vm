@@ -70,7 +70,7 @@ namespace Helpers.Tests.Integration.Tests
 			}
 			catch (Exception ex)
 			{
-				Assert.Fail("InstallApplicationFromARapFileTest Failed");
+				Assert.Fail("InstallApplicationFromARapFileTest Failed", ex);
 			}
 			finally
 			{
