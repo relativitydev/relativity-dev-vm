@@ -105,7 +105,7 @@ namespace Helpers.Tests.Integration.Tests
 			}
 			catch (Exception ex)
 			{
-				Assert.Fail("InstallApplicationFromTheApplicationLibraryTest Failed");
+				Assert.Fail("InstallApplicationFromTheApplicationLibraryTest Failed", ex);
 			}
 			finally
 			{
