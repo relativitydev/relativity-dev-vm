@@ -67,6 +67,10 @@ end
 powershell_module_related_files_to_copy = [
   'DevVmPsModules.dll',
   'Helpers.dll',
+  'Serilog.dll', # Required for ILogService
+  'Serilog.Sinks.Console.dll', # Required for ILogService
+  'Serilog.Sinks.Debug.dll', # Required for ILogService
+  'Serilog.Sinks.File.dll', # Required for ILogService
   'DbContextHelper.dll',
   'Relativity.Imaging.Services.Interfaces.dll',
   'FaspManager.dll', # Required for Import API
