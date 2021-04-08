@@ -1,6 +1,7 @@
 ﻿using Helpers.Interfaces;
 using Serilog;
 using Serilog.Core;
+using Serilog.Formatting.Compact;
 using System;
 using System.IO;
 
@@ -20,7 +21,11 @@ namespace Helpers.Implementations
 					.MinimumLevel.Debug()
 					.WriteTo.Debug() // Will be written to Visual Studio Output window
 					.WriteTo.Console()
-					.WriteTo.File(tempLogFilePath, rollingInterval: RollingInterval.Day) // A new log file will be created for every single day
+					.WriteTo.File(
+						new CompactJsonFormatter(),
+						tempLogFilePath,
+						rollingInterval: RollingInterval.Day,
+						rollOnFileSizeLimit: true) // A new log file will be created for every single day
 					.CreateLogger();
 
 			_logger.Debug("Logger configured");
