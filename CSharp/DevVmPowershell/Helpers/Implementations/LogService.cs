@@ -38,7 +38,7 @@ namespace Helpers.Implementations
 			 * A new log file will be created for every single day
 			 * Log file will be located in the Temp folder. Temp folder would be located at "C:\Users\<insert_windows_username_here>\AppData\Local\Temp"
 			 * Abstracted username Temp folder path is %USERPROFILE%\AppData\Local\Temp
-			 * Example Log file path: "C:\Users\john.doe\AppData\Local\Temp\RelativityStudio_Logs_20210407.log"
+			 * Example Log file path: "C:\Users\john.doe\AppData\Local\Temp\DevVmPowerShellModule_Logs__20210407.log"
 			 */
 			string tempFolderPath = Path.GetTempPath();
 			string tempLogFilePath = Path.Combine(tempFolderPath, Constants.Logs.LogFileName);
