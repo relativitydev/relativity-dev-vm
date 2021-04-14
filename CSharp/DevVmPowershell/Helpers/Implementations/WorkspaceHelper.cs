@@ -85,7 +85,8 @@ namespace Helpers.Implementations
 				HttpResponseMessage response = await RestHelper.MakeDeleteAsync(httpClient, url);
 				if (!response.IsSuccessStatusCode)
 				{
-					throw new Exception("Failed to Delete Workspace");
+					string responseContent = await response.Content.ReadAsStringAsync();
+					throw new Exception($"Failed to Delete Workspace. [{nameof(responseContent)}: {responseContent}]");
 				}
 			}
 			catch (Exception ex)
@@ -195,7 +196,8 @@ namespace Helpers.Implementations
 			HttpResponseMessage updateResponse = await RestHelper.MakePutAsync(httpClient, $"{Constants.Connection.RestUrlEndpoints.WorkspaceManager.EndpointUrl}/{workspaceArtifactId}", updatePayload);
 			if (!updateResponse.IsSuccessStatusCode)
 			{
-				throw new Exception("Failed to Update Workspace to Enable Data Grid");
+				string responseContent = await updateResponse.Content.ReadAsStringAsync();
+				throw new Exception($"Failed updating Workspace to Enable Data Grid. [{nameof(responseContent)}: {responseContent}]");
 			}
 
 			Console.WriteLine("Updated workspace to be Data Grid Enabled");
@@ -230,7 +232,8 @@ namespace Helpers.Implementations
 				HttpResponseMessage queryResponse = await RestHelper.MakePostAsync(httpClient, Constants.Connection.RestUrlEndpoints.ObjectManager.QuerySlimUrl, queryPayload);
 				if (!queryResponse.IsSuccessStatusCode)
 				{
-					throw new Exception("Failed to Query for Workspaces");
+					string responseContent = await queryResponse.Content.ReadAsStringAsync();
+					throw new Exception($"Failed to Query for Workspaces. [{nameof(responseContent)}: {responseContent}]");
 				}
 				string resultString = await queryResponse.Content.ReadAsStringAsync();
 				dynamic result = JObject.Parse(resultString) as JObject;
@@ -279,7 +282,8 @@ namespace Helpers.Implementations
 				HttpResponseMessage queryResponse = await RestHelper.MakePostAsync(httpClient, Constants.Connection.RestUrlEndpoints.ObjectManager.QuerySlimUrl, queryPayload);
 				if (!queryResponse.IsSuccessStatusCode)
 				{
-					throw new Exception("Failed to Query for Workspaces");
+					string responseContent = await queryResponse.Content.ReadAsStringAsync();
+					throw new Exception($"Failed to Query for Workspaces. [{nameof(responseContent)}: {responseContent}]");
 				}
 				string resultString = await queryResponse.Content.ReadAsStringAsync();
 				dynamic result = JObject.Parse(resultString) as JObject;
@@ -321,7 +325,8 @@ namespace Helpers.Implementations
 				HttpResponseMessage queryResponse = await RestHelper.MakePostAsync(httpClient, Constants.Connection.RestUrlEndpoints.ObjectManager.QuerySlimUrl, queryPayload);
 				if (!queryResponse.IsSuccessStatusCode)
 				{
-					throw new Exception("Failed to Query for Workspaces");
+					string responseContent = await queryResponse.Content.ReadAsStringAsync();
+					throw new Exception($"Failed to Query for Workspaces. [{nameof(responseContent)}: {responseContent}]");
 				}
 				string resultString = await queryResponse.Content.ReadAsStringAsync();
 				dynamic result = JObject.Parse(resultString) as JObject;

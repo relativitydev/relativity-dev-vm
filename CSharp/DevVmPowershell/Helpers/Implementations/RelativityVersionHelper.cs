@@ -22,7 +22,8 @@ namespace Helpers.Implementations
 			HttpResponseMessage response = await RestHelper.MakePostAsync(httpClient, Constants.Connection.RestUrlEndpoints.InstanceDetailsService.EndpointUrl, "");
 			if (!response.IsSuccessStatusCode)
 			{
-				throw new Exception("Error Getting Instance Relativity Version");
+				string responseContent = await response.Content.ReadAsStringAsync();
+				throw new Exception($"Error Getting Instance Relativity Version. [{nameof(responseContent)}: {responseContent}]");
 			}
 			string relativityVersion = await response.Content.ReadAsStringAsync();
 			relativityVersion = relativityVersion.Replace("\\", "").Replace("\"", ""); // Returned string has wrapped characters and this just cleans it up before comparing.
