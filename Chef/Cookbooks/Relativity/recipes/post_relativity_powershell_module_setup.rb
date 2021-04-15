@@ -32,7 +32,7 @@ relativity_api_files_to_copy.each do |source_file_name|
 
   powershell_script 'copying_relativity_api_dll' do
     code <<-EOH
-      Copy-Item "#{source_file_full_path}" -Destination "#{destination_file_full_path}"
+      Copy-Item "#{source_file_full_path}" -Destination "#{destination_file_full_path}"  -ErrorAction Stop
       EOH
   end
   custom_log 'custom_log' do msg "Copied Relativity API DLL to Chef Cache Location - #{source_file_name}" end
@@ -47,7 +47,7 @@ relativity_api_library_files_to_copy.each do |source_file_name|
 
   powershell_script 'copying_relativity_api_library_dll' do
     code <<-EOH
-      Copy-Item "#{source_file_full_path}" -Destination "#{destination_file_full_path}"
+      Copy-Item "#{source_file_full_path}" -Destination "#{destination_file_full_path}"  -ErrorAction Stop
       EOH
   end
   custom_log 'custom_log' do msg "Copied Relativity API Library DLL to Chef Cache Location - #{source_file_name}" end
@@ -59,7 +59,7 @@ destination_folder_full_path = win_friendly_path(Chef::Config[:file_cache_path])
 
 powershell_script 'copying_relativity_oi_folder' do
   code <<-EOH
-    Copy-Item "#{source_folder_full_path}" -Destination "#{destination_folder_full_path}"  -Force -Recurse
+    Copy-Item "#{source_folder_full_path}" -Destination "#{destination_folder_full_path}"  -Force -Recurse  -ErrorAction Stop
     EOH
 end
 

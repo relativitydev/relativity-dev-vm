@@ -8,7 +8,7 @@ custom_log 'custom_log' do msg 'Updating Java Environment Variables' end
 powershell_script 'update_java_environment_variables' do
   code <<-EOH
     #{node['powershell_module']['import_module']}
-    Reset-JavaEnvironmentVariables
+    Reset-JavaEnvironmentVariables  -ErrorAction Stop
     EOH
 end
 
