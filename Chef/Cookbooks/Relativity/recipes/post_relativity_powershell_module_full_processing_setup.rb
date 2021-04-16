@@ -8,7 +8,7 @@ custom_log 'custom_log' do msg 'Setting up Processing' end
 powershell_script 'full_processing_setup' do
   code <<-EOH
     #{node['powershell_module']['import_module']}
-    New-ProcessingFullSetupAndUpdateDefaultResourcePool -RelativityInstanceName #{node['windows']['new_computer_name']} -RelativityAdminUserName #{node['relativity']['admin']['login']} -RelativityAdminPassword #{node['relativity']['admin']['password']} -SqlAdminUserName #{node['sql']['user']['eddsdbo']['login']} -SqlAdminPassword #{node['sql']['user']['eddsdbo']['password']}
+    New-ProcessingFullSetupAndUpdateDefaultResourcePool -RelativityInstanceName #{node['windows']['new_computer_name']} -RelativityAdminUserName #{node['relativity']['admin']['login']} -RelativityAdminPassword #{node['relativity']['admin']['password']} -SqlAdminUserName #{node['sql']['user']['eddsdbo']['login']} -SqlAdminPassword #{node['sql']['user']['eddsdbo']['password']}  -ErrorAction Stop
     EOH
 end
 

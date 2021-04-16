@@ -1,5 +1,4 @@
-﻿using System;
-using Helpers.Implementations;
+﻿using Helpers.Implementations;
 using Helpers.Interfaces;
 using NUnit.Framework;
 
@@ -23,7 +22,8 @@ namespace Helpers.Tests.Integration.Tests
 			ISqlRunner sqlRunner = new SqlRunner(connectionHelper);
 			Sut = new SqlHelper(sqlRunner);
 			IRestHelper restHelper = new RestHelper();
-			WorkspaceHelper = new WorkspaceHelper(connectionHelper, restHelper, Sut);
+			ILogService logService = new LogService();
+			WorkspaceHelper = new WorkspaceHelper(logService, connectionHelper, restHelper, Sut);
 		}
 
 		[TearDown]

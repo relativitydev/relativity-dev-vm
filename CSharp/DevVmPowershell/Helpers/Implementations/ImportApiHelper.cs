@@ -175,7 +175,8 @@ namespace Helpers.Implementations
 			HttpResponseMessage response = await restHelper.MakePostAsync(httpClient, url, request);
 			if (!response.IsSuccessStatusCode)
 			{
-				throw new Exception("Failed to Query for number of Documents");
+				string responseContent = await response.Content.ReadAsStringAsync();
+				throw new Exception($"Failed to Query for number of Documents. [{nameof(responseContent)}: {responseContent}]");
 			}
 			string result = await response.Content.ReadAsStringAsync();
 			JObject jObject = JObject.Parse(result);

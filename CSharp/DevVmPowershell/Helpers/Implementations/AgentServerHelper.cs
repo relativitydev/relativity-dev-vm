@@ -95,7 +95,8 @@ namespace Helpers.Implementations
 			HttpResponseMessage queryPoolResponse = await RestHelper.MakePostAsync(httpClient, Constants.Connection.RestUrlEndpoints.ResourcePool.QueryEndpointUrl, poolQuery);
 			if (!queryPoolResponse.IsSuccessStatusCode)
 			{
-				throw new Exception("Failed to query for Default Resource Pool");
+				string responseContent = await queryPoolResponse.Content.ReadAsStringAsync();
+				throw new Exception($"Failed to query for Default Resource Pool. [{nameof(responseContent)}: {responseContent}]");
 			}
 			string queryPoolResultString = await queryPoolResponse.Content.ReadAsStringAsync();
 			dynamic queryPoolResult = JObject.Parse(queryPoolResultString) as JObject;
@@ -115,7 +116,8 @@ namespace Helpers.Implementations
 			HttpResponseMessage serverTypeQueryResponse = await RestHelper.MakePostAsync(httpClient, Constants.Connection.RestUrlEndpoints.ResourcePool.ResourceServerTypeQueryEndpointUrl, "");
 			if (!serverTypeQueryResponse.IsSuccessStatusCode)
 			{
-				throw new Exception("Failed to query for Agent Server Types");
+				string responseContent = await serverTypeQueryResponse.Content.ReadAsStringAsync();
+				throw new Exception($"Failed to query for Agent Server Types. [{nameof(responseContent)}: {responseContent}]");
 			}
 			string queryServerTypesResultString = await serverTypeQueryResponse.Content.ReadAsStringAsync();
 			dynamic queryServerTypesResult = JsonConvert.DeserializeObject<dynamic>(queryServerTypesResultString);
@@ -145,7 +147,8 @@ namespace Helpers.Implementations
 			HttpResponseMessage queryServerResponse = await RestHelper.MakePostAsync(httpClient, Constants.Connection.RestUrlEndpoints.ResourceServer.QueryEndpointUrl, serverQuery);
 			if (!queryServerResponse.IsSuccessStatusCode)
 			{
-				throw new Exception("Failed to query for Agent Resource Server");
+				string responseContent = await queryServerResponse.Content.ReadAsStringAsync();
+				throw new Exception($"Failed to query for Agent Resource Serve. [{nameof(responseContent)}: {responseContent}]");
 			}
 			string queryServerResultString = await queryServerResponse.Content.ReadAsStringAsync();
 			dynamic queryServerResult = JObject.Parse(queryServerResultString) as JObject;
@@ -185,7 +188,8 @@ namespace Helpers.Implementations
 			HttpResponseMessage addServerResponse = await RestHelper.MakePostAsync(httpClient, Constants.Connection.RestUrlEndpoints.ResourcePool.AddServerEndpointUrl, addResourceServer);
 			if (!addServerResponse.IsSuccessStatusCode)
 			{
-				throw new Exception("Failed to add the Agent Server to the Default Resource Pool");
+				string responseContent = await addServerResponse.Content.ReadAsStringAsync();
+				throw new Exception($"Failed to add the Agent Server to the Default Resource Pool. [{nameof(responseContent)}: {responseContent}]");
 			}
 		}
 
@@ -210,7 +214,8 @@ namespace Helpers.Implementations
 			HttpResponseMessage removeAgentServerResponse = await RestHelper.MakePostAsync(httpClient, Constants.Connection.RestUrlEndpoints.ResourcePool.RemoveServerUrl, removeAgentServer);
 			if (!removeAgentServerResponse.IsSuccessStatusCode)
 			{
-				throw new Exception("Failed to remove the Agent Server from the Default Resource Pool");
+				string responseContent = await removeAgentServerResponse.Content.ReadAsStringAsync();
+				throw new Exception($"Failed to remove the Agent Server from the Default Resource Pool. [{nameof(responseContent)}: {responseContent}]");
 			}
 		}
 	}

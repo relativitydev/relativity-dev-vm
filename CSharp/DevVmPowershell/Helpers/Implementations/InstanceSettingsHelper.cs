@@ -50,7 +50,8 @@ namespace Helpers.Implementations
 				HttpResponseMessage createResponse = await RestHelper.MakePostAsync(httpClient, Constants.Connection.RestUrlEndpoints.InstanceSettings.EndpointUrl, createRequest);
 				if (!createResponse.IsSuccessStatusCode)
 				{
-					throw new Exception("Failed to create Instance Setting");
+					string responseContent = await createResponse.Content.ReadAsStringAsync();
+					throw new Exception($"Failed to Create Instance Setting. [{nameof(responseContent)}: {responseContent}]");
 				}
 
 				Console.WriteLine("Successfully Created Instance Setting");
@@ -135,7 +136,8 @@ namespace Helpers.Implementations
 					}
 					else
 					{
-						throw new Exception("Failed to Update Instance Setting.");
+						string responseContent = await updateResponse.Content.ReadAsStringAsync();
+						throw new Exception($"Failed to Update Instance Setting. [{nameof(responseContent)}: {responseContent}]");
 					}
 					return updateResponse.IsSuccessStatusCode;
 				}
@@ -158,7 +160,8 @@ namespace Helpers.Implementations
 				HttpResponseMessage httpResponseMessage = await RestHelper.MakeDeleteAsync(httpClient, deleteUrl);
 				if (!httpResponseMessage.IsSuccessStatusCode)
 				{
-					throw new Exception("Failed to Delete Instance Setting");
+					string responseContent = await httpResponseMessage.Content.ReadAsStringAsync();
+					throw new Exception($"Failed to Delete Instance Setting. [{nameof(responseContent)}: {responseContent}]");
 				}
 			}
 			catch (Exception ex)

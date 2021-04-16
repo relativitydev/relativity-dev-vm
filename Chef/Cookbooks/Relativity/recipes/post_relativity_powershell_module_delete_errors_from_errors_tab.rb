@@ -8,7 +8,7 @@ custom_log 'custom_log' do msg 'Deleting Errors from Errors Tab' end
 powershell_script 'delete_errors' do
   code <<-EOH
     #{node['powershell_module']['import_module']}
-    Remove-RelativityErrors -RelativityInstanceName #{node['windows']['new_computer_name']} -RelativityAdminUserName #{node['relativity']['admin']['login']} -RelativityAdminPassword #{node['relativity']['admin']['password']} -SqlAdminUserName #{node['sql']['user']['sa']['login']} -SqlAdminPassword #{node['sql']['user']['sa']['password']}
+    Remove-RelativityErrors -RelativityInstanceName #{node['windows']['new_computer_name']} -RelativityAdminUserName #{node['relativity']['admin']['login']} -RelativityAdminPassword #{node['relativity']['admin']['password']} -SqlAdminUserName #{node['sql']['user']['sa']['login']} -SqlAdminPassword #{node['sql']['user']['sa']['password']}  -ErrorAction Stop
     EOH
 end
 
