@@ -21,7 +21,9 @@ namespace Helpers.Tests.Integration.Tests
 				sqlAdminPassword: TestConstants.SQL_PASSWORD);
 			ISqlRunner sqlRunner = new SqlRunner(connectionHelper);
 			ISqlHelper sqlHelper = new SqlHelper(sqlRunner);
-			Sut = new WorkspaceHelper(connectionHelper, sqlHelper);
+			IRestHelper restHelper = new RestHelper();
+			ILogService logService = new LogService();
+			Sut = new WorkspaceHelper(logService, connectionHelper, restHelper, sqlHelper);
 		}
 
 		[TearDown]
@@ -113,13 +115,23 @@ namespace Helpers.Tests.Integration.Tests
 		public async Task GetWorkspaceArtifactIdTest()
 		{
 			//Arrange
-			const string workspaceName = TestConstants.SAMPLE_DATA_GRID_WORKSPACE_NAME;
+			string workspaceName = $"{nameof(DeleteSingleWorkspaceAsyncTest)}";
+			const bool enableDataGrid = false;
+
+			//Cleanup
+			await Sut.DeleteAllWorkspacesAsync(workspaceName);
+
+			int workspaceArtifactId = await Sut.CreateSingleWorkspaceAsync(Constants.Workspace.DEFAULT_WORKSPACE_TEMPLATE_NAME, workspaceName, enableDataGrid); //To Test this method, make sure the Template Workspace exists
 
 			//Act
-			int workspaceArtifactId = await Sut.GetFirstWorkspaceArtifactIdQueryAsync(workspaceName);
+			int result = await Sut.GetFirstWorkspaceArtifactIdQueryAsync(workspaceName);
 
 			//Assert
 			Assert.That(workspaceArtifactId > 0);
+			Assert.AreEqual(workspaceArtifactId, result);
+
+			//Cleanup
+			await Sut.DeleteAllWorkspacesAsync(workspaceName);
 		}
 	}
 }

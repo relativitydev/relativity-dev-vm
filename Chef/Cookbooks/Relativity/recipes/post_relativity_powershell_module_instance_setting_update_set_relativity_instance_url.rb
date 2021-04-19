@@ -11,7 +11,7 @@ instance_name_upper_case = instance_name.upcase
 powershell_script 'update_instance_setting - RelativityInstanceUrl' do
   code <<-EOH
   #{node['powershell_module']['import_module']}
-  Reset-InstanceSettingValue -RelativityInstanceName #{node['windows']['new_computer_name']} -RelativityAdminUserName #{node['relativity']['admin']['login']} -RelativityAdminPassword #{node['relativity']['admin']['password']} -SqlAdminUserName #{node['sql']['user']['eddsdbo']['login']} -SqlAdminPassword #{node['sql']['user']['eddsdbo']['password']} -Name RelativityInstanceURL -Section Relativity.Core -NewValue "http://#{instance_name_upper_case}/Relativity"
+  Reset-InstanceSettingValue -RelativityInstanceName #{node['windows']['new_computer_name']} -RelativityAdminUserName #{node['relativity']['admin']['login']} -RelativityAdminPassword #{node['relativity']['admin']['password']} -SqlAdminUserName #{node['sql']['user']['eddsdbo']['login']} -SqlAdminPassword #{node['sql']['user']['eddsdbo']['password']} -Name RelativityInstanceURL -Section Relativity.Core -NewValue "http://#{instance_name_upper_case}/Relativity"  -ErrorAction Stop
   EOH
 end
 

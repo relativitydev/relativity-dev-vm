@@ -9,7 +9,6 @@ namespace Helpers.Implementations
 	public class SqlHelper : ISqlHelper
 	{
 		private ISqlRunner SqlRunner { get; set; }
-		//private ConnectionHelper ConnectionHelper { get; set; }
 
 		public SqlHelper(ISqlRunner sqlRunner)
 		{
@@ -284,7 +283,7 @@ namespace Helpers.Implementations
 			}
 			catch (Exception ex)
 			{
-				throw new Exception("Error Retrieving Workspaces where the Application is installed");
+				throw new Exception("Error Retrieving Workspaces where the Application is installed", ex);
 			}
 		}
 	}

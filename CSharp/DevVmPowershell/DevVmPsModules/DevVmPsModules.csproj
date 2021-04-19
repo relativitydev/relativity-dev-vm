@@ -45,9 +45,6 @@
     <Reference Include="kCura, Version=10.3.170.1, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.Other.10.3.170.1\lib\net462\kCura.dll</HintPath>
     </Reference>
-    <Reference Include="kCura.Relativity.Client, Version=10.3.170.1, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.Rsapi.10.3.170.1\lib\net462\kCura.Relativity.Client.dll</HintPath>
-    </Reference>
     <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.12.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>

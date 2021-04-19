@@ -19,7 +19,8 @@ namespace Helpers.Tests.Integration.Tests
 				relativityAdminPassword: TestConstants.RELATIVITY_ADMIN_PASSWORD,
 				sqlAdminUserName: TestConstants.SQL_USER_NAME,
 				sqlAdminPassword: TestConstants.SQL_PASSWORD);
-			Sut = new AgentHelper(connectionHelper);
+			IRestHelper restHelper = new RestHelper();
+			Sut = new AgentHelper(connectionHelper, restHelper);
 		}
 
 		[TearDown]
@@ -32,18 +33,21 @@ namespace Helpers.Tests.Integration.Tests
 		public async Task CreateAgentsInRelativityApplicationAsyncTest()
 		{
 			//Arrange
+			await Sut.DeleteAgentsInRelativityApplicationAsync(TestConstants.TEST_APPLICATION_NAME);
 
 			//Act
 			int numberOfAgentsCreated = await Sut.CreateAgentsInRelativityApplicationAsync(TestConstants.TEST_APPLICATION_NAME); //To Test this method, make sure the agent in the Test Application doesn't exist
 
 			//Assert
 			Assert.That(numberOfAgentsCreated, Is.GreaterThan(0));
+			await Sut.DeleteAgentsInRelativityApplicationAsync(TestConstants.TEST_APPLICATION_NAME);
 		}
 
 		[Test]
 		public async Task DeleteAgentsInRelativityApplicationAsyncTest()
 		{
 			//Arrange
+			int numberOfAgentsCreated = await Sut.CreateAgentsInRelativityApplicationAsync(TestConstants.TEST_APPLICATION_NAME);
 
 			//Act
 			int numberOfAgentsDeleted = await Sut.DeleteAgentsInRelativityApplicationAsync(TestConstants.TEST_APPLICATION_NAME); //To Test this method, make sure the agent in the Test Application exist
@@ -57,12 +61,14 @@ namespace Helpers.Tests.Integration.Tests
 		public async Task AddAgentToRelativityByNameAsyncTest(string agentName)
 		{
 			//Arrange
+			await Sut.RemoveAgentFromRelativityByNameAsync(agentName);
 
 			//Act
 			bool wasAdded = await Sut.AddAgentToRelativityByNameAsync(agentName); //To Test this method, make sure the agent in the Test Application exist
 
 			//Assert
 			Assert.That(wasAdded, Is.EqualTo(true));
+			await Sut.RemoveAgentFromRelativityByNameAsync(agentName);
 		}
 
 		[Test]
@@ -70,6 +76,7 @@ namespace Helpers.Tests.Integration.Tests
 		public async Task RemoveAgentFromRelativityByNameAsyncTest(string agentName)
 		{
 			//Arrange
+			bool wasAdded = await Sut.AddAgentToRelativityByNameAsync(agentName);
 
 			//Act
 			bool wasDeleted = await Sut.RemoveAgentFromRelativityByNameAsync(agentName); //To Test this method, make sure the agent in the Test Application exist

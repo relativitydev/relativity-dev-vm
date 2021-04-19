@@ -1,8 +1,7 @@
-﻿using System;
-using Helpers.Implementations;
+﻿using Helpers.Implementations;
 using Helpers.Interfaces;
-using kCura.Relativity.ImportAPI.Data;
 using NUnit.Framework;
+using System;
 
 namespace Helpers.Tests.Integration.Tests
 {
@@ -21,9 +20,10 @@ namespace Helpers.Tests.Integration.Tests
 				relativityAdminPassword: TestConstants.RELATIVITY_ADMIN_PASSWORD,
 				sqlAdminUserName: TestConstants.SQL_USER_NAME,
 				sqlAdminPassword: TestConstants.SQL_PASSWORD);
-
-			Sut = new ImportApiHelper(connectionHelper);
-			WorkspaceHelper = new WorkspaceHelper(connectionHelper, null);
+			IRestHelper restHelper = new RestHelper();
+			Sut = new ImportApiHelper(connectionHelper, TestConstants.RELATIVITY_INSTANCE_NAME, TestConstants.RELATIVITY_ADMIN_USER_NAME, TestConstants.RELATIVITY_ADMIN_PASSWORD);
+			ILogService logService = new LogService();
+			WorkspaceHelper = new WorkspaceHelper(logService, connectionHelper, restHelper, null);
 
 		}
 
@@ -52,7 +52,7 @@ namespace Helpers.Tests.Integration.Tests
 			Assert.That(numberOfFilesImported, Is.EqualTo(numberOfFiles));
 
 			//Cleanup
-			WorkspaceHelper.DeleteSingleWorkspaceAsync(workspaceArtifactId);
+			WorkspaceHelper.DeleteSingleWorkspaceAsync(workspaceArtifactId).Wait();
 		}
 
 		private void CleanupWorkspaceIfItExists(string workspaceName)
@@ -63,7 +63,7 @@ namespace Helpers.Tests.Integration.Tests
 			}
 			catch (Exception ex)
 			{
-				//Workspace Does Not Exist
+				throw new Exception("An error occured when cleaning up workspaces (if they exist)", ex);
 			}
 		}
 	}

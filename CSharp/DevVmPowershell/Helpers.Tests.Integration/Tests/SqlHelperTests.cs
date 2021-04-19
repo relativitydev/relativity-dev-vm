@@ -1,5 +1,4 @@
-﻿using System;
-using Helpers.Implementations;
+﻿using Helpers.Implementations;
 using Helpers.Interfaces;
 using NUnit.Framework;
 
@@ -22,7 +21,9 @@ namespace Helpers.Tests.Integration.Tests
 				sqlAdminPassword: TestConstants.SQL_PASSWORD);
 			ISqlRunner sqlRunner = new SqlRunner(connectionHelper);
 			Sut = new SqlHelper(sqlRunner);
-			WorkspaceHelper = new WorkspaceHelper(connectionHelper, Sut);
+			IRestHelper restHelper = new RestHelper();
+			ILogService logService = new LogService();
+			WorkspaceHelper = new WorkspaceHelper(logService, connectionHelper, restHelper, Sut);
 		}
 
 		[TearDown]
@@ -68,7 +69,7 @@ namespace Helpers.Tests.Integration.Tests
 			}
 			finally
 			{
-				WorkspaceHelper.DeleteSingleWorkspaceAsync(workspaceId);
+				WorkspaceHelper.DeleteSingleWorkspaceAsync(workspaceId).Wait();
 			}
 
 		}

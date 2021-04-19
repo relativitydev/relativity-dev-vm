@@ -1,7 +1,7 @@
-﻿using System;
-using Helpers.Implementations;
+﻿using Helpers.Implementations;
 using Helpers.Interfaces;
 using NUnit.Framework;
+using System;
 using System.Threading.Tasks;
 
 namespace Helpers.Tests.Integration.Tests
@@ -22,11 +22,14 @@ namespace Helpers.Tests.Integration.Tests
 				relativityAdminPassword: TestConstants.RELATIVITY_ADMIN_PASSWORD,
 				sqlAdminUserName: TestConstants.SQL_USER_NAME,
 				sqlAdminPassword: TestConstants.SQL_PASSWORD);
+			IRestHelper restHelper = new RestHelper();
 			ISqlRunner sqlRunner = new SqlRunner(connectionHelper);
 			ISqlHelper sqlHelper = new SqlHelper(sqlRunner);
-			WorkspaceHelper = new WorkspaceHelper(connectionHelper, sqlHelper);
-			Sut = new ImagingHelper(connectionHelper);
-			ImportApiHelper = new ImportApiHelper(connectionHelper);
+			ILogService logService = new LogService();
+			IRetryLogicHelper retryLogicHelper = new RetryLogicHelper();
+			WorkspaceHelper = new WorkspaceHelper(logService, connectionHelper, restHelper, sqlHelper);
+			Sut = new ImagingHelper(connectionHelper, restHelper, retryLogicHelper);
+			ImportApiHelper = new ImportApiHelper(connectionHelper, TestConstants.RELATIVITY_INSTANCE_NAME, TestConstants.RELATIVITY_ADMIN_USER_NAME, TestConstants.RELATIVITY_ADMIN_PASSWORD);
 		}
 
 		[TearDown]
@@ -43,10 +46,10 @@ namespace Helpers.Tests.Integration.Tests
 			CleanupWorkspaceIfItExists(workspaceName);
 
 			//Create Workspace
-			int workspaceArtifactId = WorkspaceHelper.CreateSingleWorkspaceAsync(Constants.Workspace.DEFAULT_WORKSPACE_TEMPLATE_NAME, workspaceName, false).Result;
+			int workspaceArtifactId = await WorkspaceHelper.CreateSingleWorkspaceAsync(Constants.Workspace.DEFAULT_WORKSPACE_TEMPLATE_NAME, workspaceName, false);
 
 			//Import Documents
-			int numberImported = ImportApiHelper.AddDocumentsToWorkspace(workspaceArtifactId, "document", 100, "").Result;
+			int numberImported = await ImportApiHelper.AddDocumentsToWorkspace(workspaceArtifactId, "document", 100, "");
 			if (numberImported == 0)
 			{
 				await WorkspaceHelper.DeleteSingleWorkspaceAsync(workspaceArtifactId);
@@ -70,7 +73,7 @@ namespace Helpers.Tests.Integration.Tests
 			}
 			catch (Exception ex)
 			{
-				//Workspace Does Not Exist
+				throw new Exception("An error occured when cleaning up workspaces (if they exist)", ex);
 			}
 		}
 	}

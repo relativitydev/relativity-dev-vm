@@ -83,10 +83,11 @@ namespace DevVmPsModules.Cmdlets
 				relativityAdminPassword: RelativityAdminPassword,
 				sqlAdminUserName: SqlAdminUserName,
 				sqlAdminPassword: SqlAdminPassword);
-			IInstanceSettingsHelper instanceSettingsHelper = new InstanceSettingsHelper(connectionHelper);
+			IRestHelper restHelper = new RestHelper();
+			IInstanceSettingsHelper instanceSettingsHelper = new InstanceSettingsHelper(connectionHelper, restHelper);
 
 			// Update Instance Setting Value
-			instanceSettingsHelper.UpdateInstanceSettingValue(Name, Section, NewValue);
+			instanceSettingsHelper.UpdateInstanceSettingValueAsync(Name, Section, NewValue).Wait();
 		}
 
 		private void ValidateInputArguments()

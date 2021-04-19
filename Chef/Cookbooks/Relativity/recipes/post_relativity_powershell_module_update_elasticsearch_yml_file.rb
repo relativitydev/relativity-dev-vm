@@ -8,7 +8,7 @@ custom_log 'custom_log' do msg 'Updating Elasticsearch Yml File' end
 powershell_script 'update_data_grid_yml_file' do
   code <<-EOH
     #{node['powershell_module']['import_module']}
-    Reset-ElasticSearchYmlFile
+    Reset-ElasticSearchYmlFile  -ErrorAction Stop
     EOH
 end
 

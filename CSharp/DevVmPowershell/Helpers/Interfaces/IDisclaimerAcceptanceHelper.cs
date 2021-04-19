@@ -1,10 +1,12 @@
-﻿namespace Helpers.Interfaces
+﻿using System.Threading.Tasks;
+
+namespace Helpers.Interfaces
 {
 	public interface IDisclaimerAcceptanceHelper
 	{
-		void AddDisclaimerConfiguration(string workspaceName);
-		bool CheckIfDisclaimerConfigurationRDOExists(int workspaceId);
-		void AddDisclaimer(string workspaceName);
-		bool CheckIfDisclaimerRDOExists(int workspaceId);
+		Task AddDisclaimerConfigurationAsync(string workspaceName);
+		Task<bool> CheckIfDisclaimerConfigurationRdoExistsAsync(int workspaceId);
+		Task AddDisclaimerAsync(string workspaceName);
+		Task<bool> CheckIfDisclaimerRdoExistsAsync(int workspaceId);
 	}
 }

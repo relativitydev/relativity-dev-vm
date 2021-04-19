@@ -1,29 +1,23 @@
 ﻿using Helpers.Interfaces;
-using kCura.Relativity.Client;
-using kCura.Relativity.Client.DTOs;
-using Relativity.Services;
-using Relativity.Services.Objects;
-using Relativity.Services.Objects.DataContracts;
-using Relativity.Services.ResourcePool;
-using Relativity.Services.ResourceServer;
-using Relativity.Services.ServiceProxy;
-using Relativity.Services.WorkerStatus;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using Choice = kCura.Relativity.Client.DTOs.Choice;
-using ChoiceRef = Relativity.Services.Choice.ChoiceRef;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Helpers.Implementations
 {
 	public class ProcessingHelper : IProcessingHelper
 	{
-		private ServiceFactory ServiceFactory { get; }
-		public ProcessingHelper(IConnectionHelper connectionHelper)
+		private IConnectionHelper ConnectionHelper { get; }
+		private IRestHelper RestHelper { get; set; }
+		public ProcessingHelper(IConnectionHelper connectionHelper, IRestHelper restHelper)
 		{
-			ServiceFactory = connectionHelper.GetServiceFactory();
+			ConnectionHelper = connectionHelper;
+			RestHelper = restHelper;
 		}
 
 		/// <summary>
@@ -34,9 +28,9 @@ namespace Helpers.Implementations
 		{
 			bool wasSetupComplete = false;
 
-			Console.WriteLine($"{nameof(FullSetupAndUpdateDefaultResourcePoolAsync)} - Starting ({nameof(CreateProcessingSourceLocationChoice)})");
-			wasSetupComplete = CreateProcessingSourceLocationChoice();
-			Console.WriteLine($"{nameof(FullSetupAndUpdateDefaultResourcePoolAsync)} - Finished ({nameof(CreateProcessingSourceLocationChoice)}) Result: {wasSetupComplete}");
+			Console.WriteLine($"{nameof(FullSetupAndUpdateDefaultResourcePoolAsync)} - Starting ({nameof(CreateProcessingSourceLocationChoiceAsync)})");
+			wasSetupComplete = await CreateProcessingSourceLocationChoiceAsync();
+			Console.WriteLine($"{nameof(FullSetupAndUpdateDefaultResourcePoolAsync)} - Finished ({nameof(CreateProcessingSourceLocationChoiceAsync)}) Result: {wasSetupComplete}");
 
 			Console.WriteLine($"{nameof(FullSetupAndUpdateDefaultResourcePoolAsync)} - Starting ({nameof(AddProcessingSourceLocationChoiceToDefaultResourcePoolAsync)})");
 			wasSetupComplete = await AddProcessingSourceLocationChoiceToDefaultResourcePoolAsync();
@@ -98,59 +92,44 @@ namespace Helpers.Implementations
 		/// Creates a Processing Source Location Choice and makes sure it doesn't already exist.
 		/// </summary>
 		/// <returns></returns>
-		public bool CreateProcessingSourceLocationChoice()
+		public async Task<bool> CreateProcessingSourceLocationChoiceAsync()
 		{
 			bool wasChoiceCreated = false;
 
-			Console.WriteLine($"{nameof(CreateProcessingSourceLocationChoice)} - Creating Processing Source Location Choice ({Constants.Processing.ChoiceName})");
+			Console.WriteLine($"{nameof(CreateProcessingSourceLocationChoiceAsync)} - Creating Processing Source Location Choice ({Constants.Processing.ChoiceName})");
 
-			Choice choice = new Choice
+			string url = Constants.Connection.RestUrlEndpoints.ProcessingManager.ProcessingSourceCreateUrl;
+			HttpClient httpClient = RestHelper.GetHttpClient(ConnectionHelper.RelativityInstanceName, ConnectionHelper.RelativityAdminUserName, ConnectionHelper.RelativityAdminPassword);
+			var createPayloadObject = new
 			{
-				Name = Constants.Processing.ChoiceName,
-				ChoiceTypeID = Constants.Processing.ChoiceTypeID,
-				Order = 1
+
+				choiceRequest = new
+				{
+					Field = new { Guids = new List<Guid>{Guid.Parse(Constants.Processing.ProcessingSourceLocationFieldGuid)}},
+					Name = Constants.Processing.ChoiceName,
+					Order = 100,
+					Keywords = "DevVM Processing Source Location",
+					Notes = "",
+					RelativityApplications = new string[] { },
+				}
 			};
-
-			kCura.Relativity.Client.TextCondition cond = new kCura.Relativity.Client.TextCondition()
+			string createPayload = JsonConvert.SerializeObject(createPayloadObject);
+		  HttpResponseMessage createResponse = await RestHelper.MakePostAsync(httpClient, $"{Constants.Connection.RestUrlEndpoints.ProcessingManager.ProcessingSourceCreateUrl}/", createPayload);
+		  if (!createResponse.IsSuccessStatusCode)
+		  {
+			  string responseContent = await createResponse.Content.ReadAsStringAsync();
+			  throw new Exception($"Failed to Create Processing Source Location. [{nameof(responseContent)}: {responseContent}]");
+		  }
+		  string resultString = await createResponse.Content.ReadAsStringAsync();
+		  int processingChoiceId = Int32.Parse(resultString);
+		  if (processingChoiceId < 0)
 			{
-				Field = Constants.Processing.NameField,
-				Operator = kCura.Relativity.Client.TextConditionEnum.EqualTo,
-				Value = Constants.Processing.ChoiceName
-			};
-
-			using (IRSAPIClient rsapiClient = ServiceFactory.CreateProxy<IRSAPIClient>())
+				wasChoiceCreated = false;
+				Console.WriteLine($"{nameof(CreateProcessingSourceLocationChoiceAsync)} - Failed to create Processing Source Location Choice ({Constants.Processing.ChoiceName})");
+			}
+			else
 			{
-				rsapiClient.APIOptions = new APIOptions(-1);
-
-				kCura.Relativity.Client.DTOs.QueryResultSet<Choice> choiceQuery = rsapiClient.Repositories.Choice.Query(new Query<Choice>() { Condition = cond });
-
-				if (choiceQuery.Success && choiceQuery.TotalCount > 0)
-				{
-					Console.WriteLine($"{nameof(CreateProcessingSourceLocationChoice)} - Failed to create Processing Source Location Choice ({Constants.Processing.ChoiceName}) as it already exists");
-					wasChoiceCreated = true;
-					return wasChoiceCreated;
-				}
-
-				WriteResultSet<Choice> result = rsapiClient.Repositories.Choice.Create(choice);
-
-				if (result.Success)
-				{
-					choiceQuery = rsapiClient.Repositories.Choice.Query(new Query<Choice>() { Condition = cond });
-					if (choiceQuery.Success && choiceQuery.TotalCount > 0)
-					{
-						wasChoiceCreated = true;
-						Console.WriteLine($"{nameof(CreateProcessingSourceLocationChoice)} - Successfully created Processing Source Location Choice ({Constants.Processing.ChoiceName})");
-					}
-					else
-					{
-						Console.WriteLine($"{nameof(CreateProcessingSourceLocationChoice)} - Failed to create Processing Source Location Choice ({Constants.Processing.ChoiceName})");
-					}
-
-				}
-				else
-				{
-					Console.WriteLine($"{nameof(CreateProcessingSourceLocationChoice)} - Failed to create Processing Source Location Choice ({Constants.Processing.ChoiceName})");
-				}
+				wasChoiceCreated = true;
 			}
 
 			return wasChoiceCreated;
@@ -166,93 +145,37 @@ namespace Helpers.Implementations
 
 			Console.WriteLine($"{nameof(AddProcessingSourceLocationChoiceToDefaultResourcePoolAsync)} - Adding Processing Source Location Choice to Default Resource Pool");
 
-			// Setup for checking Resource Pools
-			Relativity.Services.TextCondition conditionPool = new Relativity.Services.TextCondition()
+			HttpClient httpClient = RestHelper.GetHttpClient(ConnectionHelper.RelativityInstanceName, ConnectionHelper.RelativityAdminUserName, ConnectionHelper.RelativityAdminPassword);
+			// Get Default Resource Pool Artifact Id
+			int defaultResourcePoolArtifactId = await GetDefaultResourcePoolArtifactIdAsync(httpClient);
+			if (defaultResourcePoolArtifactId != -1)
 			{
-				Field = Constants.Processing.NameField,
-				Operator = Relativity.Services.TextConditionEnum.StartsWith,
-				Value = Constants.Processing.DefaultPool
-			};
-
-			Relativity.Services.Query queryPool = new Relativity.Services.Query()
-			{
-				Condition = conditionPool.ToQueryString(),
-			};
-
-			// Setup for checking choice
-			Relativity.Services.TextCondition conditionChoice = new Relativity.Services.TextCondition()
-			{
-				Field = Constants.Processing.NameField,
-				Operator = Relativity.Services.TextConditionEnum.EqualTo,
-				Value = Constants.Processing.ChoiceName
-			};
-
-			Relativity.Services.Objects.DataContracts.QueryRequest queryChoice = new Relativity.Services.Objects.DataContracts.QueryRequest()
-			{
-				Condition = conditionChoice.ToQueryString().Replace(@"\", @"\\"),
-				ObjectType = new ObjectTypeRef() { ArtifactTypeID = Constants.Processing.ChoiceArtifactTypeId },
-				Fields = new List<FieldRef>
+				// Get Processing Choice Location Id
+				int processingChoiceId = await GetProcessingSourceLocationArtifactIdAsync(httpClient);
+				if (processingChoiceId != -1)
 				{
-					new FieldRef
+					// Check if Processing Source Location Already Exists in Default Resource Pool
+					if (!(await DoesProcessingSourceLocationAlreadyExistForDefaultResourcePoolAsync(httpClient,
+						defaultResourcePoolArtifactId, processingChoiceId)))
 					{
-						Name = Constants.Processing.ChoiceFieldRef
-					}
-				}
-			};
-
-			using (IObjectManager objectManager = ServiceFactory.CreateProxy<IObjectManager>())
-			using (IResourcePoolManager resourcePoolManager = ServiceFactory.CreateProxy<IResourcePoolManager>())
-			{
-				// Check for Default Resource Pool
-				ResourcePoolQueryResultSet resultPools = await resourcePoolManager.QueryAsync(queryPool);
-
-				Console.WriteLine($"{nameof(AddProcessingSourceLocationChoiceToDefaultResourcePoolAsync)} - Checking if Default Resource Pool exists");
-				if (resultPools.Success && resultPools.TotalCount > 0)
-				{
-					ResourcePoolRef defaultResourcePoolRef = new ResourcePoolRef(resultPools.Results.Find(x => x.Artifact.Name.Equals(Constants.Processing.DefaultPool, StringComparison.OrdinalIgnoreCase)).Artifact.ArtifactID);
-
-					// Check if Processing Server Location already added to Default Resource Pool
-					Relativity.Services.Objects.DataContracts.QueryResult resultChoice = await objectManager.QueryAsync(Constants.Processing.WorkspaceId, queryChoice, 1, 10);
-
-					Console.WriteLine($"{nameof(AddProcessingSourceLocationChoiceToDefaultResourcePoolAsync)} - Checking if Processing Source Location Choice exists");
-					if (resultChoice.TotalCount > 0)
-					{
-						ChoiceRef choice = new ChoiceRef(resultChoice.Objects.First().ArtifactID);
-
-						List<ChoiceRef> resultProcessingSourceLocations = await resourcePoolManager.GetProcessingSourceLocationsAsync(defaultResourcePoolRef);
-
-						// Check if Processing Source Location was not already added
-						if (!resultProcessingSourceLocations.Exists(x => x.ArtifactID == choice.ArtifactID))
-						{
-							await resourcePoolManager.AddProcessingSourceLocationAsync(choice, defaultResourcePoolRef);
-
-							resultProcessingSourceLocations = await resourcePoolManager.GetProcessingSourceLocationsAsync(defaultResourcePoolRef);
-
-							// Confirm if it was added
-							if (resultProcessingSourceLocations.Exists(x => x.ArtifactID == choice.ArtifactID))
-							{
-								wasChoiceAddedToPool = true;
-								Console.WriteLine($"{nameof(AddProcessingSourceLocationChoiceToDefaultResourcePoolAsync)} - Added Processing Source Location Choice to Default Resource Pool");
-							}
-						}
-						else
-						{
-							Console.WriteLine($"{nameof(AddProcessingSourceLocationChoiceToDefaultResourcePoolAsync)} - Failed to add Processing Source Location Choice to Default Resource Pool as it already exists within the pool");
-							wasChoiceAddedToPool = true;
-							return wasChoiceAddedToPool;
-						}
+						// Add Processing Source Location to Default Resource Pool
+						await CallAddProcessingSourceLocationToDefaultResourcePoolAsync(httpClient, defaultResourcePoolArtifactId, processingChoiceId);
+						Console.WriteLine($"{nameof(AddProcessingSourceLocationChoiceToDefaultResourcePoolAsync)} - Added Processing Source Location Choice to Default Resource Pool");
 					}
 					else
 					{
-						Console.WriteLine($"{nameof(AddProcessingSourceLocationChoiceToDefaultResourcePoolAsync)} - Processing Source Location Choice does not exist");
-						wasChoiceAddedToPool = true;
+						Console.WriteLine($"{nameof(AddProcessingSourceLocationChoiceToDefaultResourcePoolAsync)} - Failed to add Processing Source Location Choice to Default Resource Pool as it already exists within the pool");
 					}
-
+					wasChoiceAddedToPool = true;
 				}
 				else
 				{
-					Console.WriteLine($"{nameof(AddProcessingSourceLocationChoiceToDefaultResourcePoolAsync)} - Default Resource Pool does not exist");
+					Console.WriteLine($"{nameof(AddProcessingSourceLocationChoiceToDefaultResourcePoolAsync)} - Processing Source Location Choice does not exist");
 				}
+			}
+			else
+			{
+				Console.WriteLine($"{nameof(AddProcessingSourceLocationChoiceToDefaultResourcePoolAsync)} - Default Resource Pool does not exist");
 			}
 
 			return wasChoiceAddedToPool;
@@ -268,61 +191,20 @@ namespace Helpers.Implementations
 
 			Console.WriteLine($"{nameof(CreateWorkerManagerServerAsync)} - Creating Worker Manager Server ({Constants.Processing.ResourceServerName})");
 
-			// Setup for checking if Worker Manager Server exists
-			Relativity.Services.TextCondition conditionServer = new Relativity.Services.TextCondition()
+			HttpClient httpClient = RestHelper.GetHttpClient(ConnectionHelper.RelativityInstanceName, ConnectionHelper.RelativityAdminUserName, ConnectionHelper.RelativityAdminPassword);
+			// Check if Worker Manager Server is already exists
+			if (await GetWorkerManagerServerArtifactIdAsync(httpClient) == -1)
 			{
-				Field = Constants.Processing.NameField,
-				Operator = Relativity.Services.TextConditionEnum.EqualTo,
-				Value = Constants.Processing.ResourceServerName
-			};
-
-			Relativity.Services.Query queryServer = new Relativity.Services.Query()
-			{
-				Condition = conditionServer.ToQueryString()
-			};
-
-			// The Worker Manager Server to be created
-			WorkerManagerServer server = new WorkerManagerServer()
-			{
-				Name = Constants.Processing.ResourceServerName,
-				IsDefault = true,
-				InventoryPriority = 100,
-				DiscoveryPriority = 100,
-				PublishPriority = 100,
-				ImageOnTheFlyPriority = 1,
-				MassImagingPriority = 100,
-				SingleSaveAsPDFPriority = 100,
-				MassSaveAsPDFPriority = 100,
-				URL = Constants.Processing.ResourceServerUrl
-			};
-
-			using (IWorkerServerManager workerServerManager = ServiceFactory.CreateProxy<IWorkerServerManager>())
-			{
-				WorkerServerQueryResultSet queryResult = await workerServerManager.QueryAsync(queryServer);
-
-				if (queryResult.Success && queryResult.TotalCount == 0)
-				{
-					int workerServerArtifactId = await workerServerManager.CreateSingleAsync(server);
-					Console.WriteLine($"{nameof(CreateWorkerManagerServerAsync)} - Worker Server Artifact ID: {workerServerArtifactId}");
-
-					queryResult = await workerServerManager.QueryAsync(queryServer);
-
-					if (queryResult.Success && queryResult.TotalCount > 0)
-					{
-						wasWorkerManagerServerCreated = true;
-						Console.WriteLine($"{nameof(CreateWorkerManagerServerAsync)} - Successfully created Worker Manager Server ({Constants.Processing.ResourceServerName})");
-					}
-				}
-				else if (queryResult.Success && queryResult.TotalCount > 0)
-				{
-					Console.WriteLine($"{nameof(CreateWorkerManagerServerAsync)} - Failed to create Worker Manager Server ({Constants.Processing.ResourceServerName}) as it already exists");
-					wasWorkerManagerServerCreated = true;
-				}
-				else
-				{
-					Console.WriteLine($"{nameof(CreateWorkerManagerServerAsync)} - Failed to create and check for Worker Manager Server ({Constants.Processing.ResourceServerName})");
-				}
+				// Create Worker Manager Server
+				await CallCreateWorkerManagerServerAsync(httpClient);
+				Console.WriteLine($"{nameof(CreateWorkerManagerServerAsync)} - Successfully created Worker Manager Server ({Constants.Processing.ResourceServerName})");
+				wasWorkerManagerServerCreated = true;
 			}
+			else
+			{
+				Console.WriteLine($"{nameof(CreateWorkerManagerServerAsync)} - Failed to create Worker Manager Server ({Constants.Processing.ResourceServerName}) as it already exists");
+			}
+
 			return wasWorkerManagerServerCreated;
 		}
 
@@ -336,45 +218,21 @@ namespace Helpers.Implementations
 
 			Console.WriteLine($"{nameof(DeleteWorkerManagerServerAsync)} - Creating Worker Manager Server ({Constants.Processing.ResourceServerName})");
 
-			// Setup for checking if Worker Manager Server exists
-			Relativity.Services.TextCondition conditionServer = new Relativity.Services.TextCondition()
+			HttpClient httpClient = RestHelper.GetHttpClient(ConnectionHelper.RelativityInstanceName, ConnectionHelper.RelativityAdminUserName, ConnectionHelper.RelativityAdminPassword);
+			// Check if Worker Manager Server is already exists
+			int workerManagerServerId = await GetWorkerManagerServerArtifactIdAsync(httpClient);
+			if (workerManagerServerId != -1)
 			{
-				Field = Constants.Processing.NameField,
-				Operator = Relativity.Services.TextConditionEnum.EqualTo,
-				Value = Constants.Processing.ResourceServerName
-			};
-
-			Relativity.Services.Query queryServer = new Relativity.Services.Query()
-			{
-				Condition = conditionServer.ToQueryString()
-			};
-
-			using (IWorkerServerManager workerServerManager = ServiceFactory.CreateProxy<IWorkerServerManager>())
-			{
-				WorkerServerQueryResultSet queryResult = await workerServerManager.QueryAsync(queryServer);
-
-				if (queryResult.Success && queryResult.Results.Exists(x => x.Artifact.ServerType.Name.Equals(Constants.Processing.WorkerManagerServer, StringComparison.OrdinalIgnoreCase)))
-				{
-					await workerServerManager.DeleteSingleAsync(queryResult.Results.Find(x => x.Artifact.ServerType.Name.Equals(Constants.Processing.WorkerManagerServer, StringComparison.OrdinalIgnoreCase)).Artifact.ArtifactID);
-
-					queryResult = await workerServerManager.QueryAsync(queryServer);
-
-					if (queryResult.Success && !queryResult.Results.Exists(x => x.Artifact.ServerType.Name.Equals(Constants.Processing.WorkerManagerServer, StringComparison.OrdinalIgnoreCase)))
-					{
-						wasDeleted = true;
-						Console.WriteLine($"{nameof(DeleteWorkerManagerServerAsync)} - Successfully deleted Worker Manager Server ({Constants.Processing.ResourceServerName})");
-					}
-				}
-				else if (queryResult.Success && queryResult.TotalCount == 0)
-				{
-					Console.WriteLine($"{nameof(DeleteWorkerManagerServerAsync)} - Failed to delete Worker Manager Server ({Constants.Processing.ResourceServerName}) as it doesn't exist");
-					wasDeleted = true;
-				}
-				else
-				{
-					Console.WriteLine($"{nameof(DeleteWorkerManagerServerAsync)} - Failed to delete and check for Worker Manager Server ({Constants.Processing.ResourceServerName})");
-				}
+				// Delete Worker Manager Server
+				await CallDeleteWorkerManagerServerAsync(httpClient, workerManagerServerId);
+				Console.WriteLine($"{nameof(DeleteWorkerManagerServerAsync)} - Successfully deleted Worker Manager Server ({Constants.Processing.ResourceServerName})");
+				wasDeleted = true;
 			}
+			else
+			{
+				Console.WriteLine($"{nameof(DeleteWorkerManagerServerAsync)} - Failed to delete Worker Manager Server ({Constants.Processing.ResourceServerName}) as it doesn't exist");
+			}
+
 			return wasDeleted;
 		}
 
@@ -384,51 +242,23 @@ namespace Helpers.Implementations
 
 			Console.WriteLine($"{nameof(UpdateWorkerServerForProcessingAsync)} - Updating Worker Server ({Constants.Processing.WorkerServer}) for to be ready for Processing");
 
-			// Setup for checking if Worker Server exists
-			Relativity.Services.TextCondition conditionWorker = new Relativity.Services.TextCondition()
+			HttpClient httpClient = RestHelper.GetHttpClient(ConnectionHelper.RelativityInstanceName, ConnectionHelper.RelativityAdminUserName, ConnectionHelper.RelativityAdminPassword);
+			// Get Worker Server Artifact Id
+			int workerServerArtifactId = await GetWorkerServerArtifactIdAsync(httpClient);
+			if (workerServerArtifactId != -1)
 			{
-				Field = Constants.Processing.NameField,
-				Operator = Relativity.Services.TextConditionEnum.EqualTo,
-				Value = Constants.Processing.ResourceServerName
-			};
+				// Enable Processing on Worker Server
+				await EnableProcessingOnWorkerServerAsync(httpClient, workerServerArtifactId);
+				Thread.Sleep(10000);
+				// Update Worker Server for Processing
+				await UpdateCategoriesOnWorkerForProcessingAsync(httpClient, workerServerArtifactId);
 
-			Relativity.Services.Query queryWorker = new Relativity.Services.Query()
+				wasUpdated = true;
+				Console.WriteLine($"{nameof(UpdateWorkerServerForProcessingAsync)} - Successfully updated Worker Server ({Constants.Processing.ResourceServerName})");
+			}
+			else
 			{
-				Condition = conditionWorker.ToQueryString()
-			};
-
-			using (IWorkerStatusService workerStatusService = ServiceFactory.CreateProxy<IWorkerStatusService>())
-			using (IResourceServerManager resourceServerManager = ServiceFactory.CreateProxy<IResourceServerManager>())
-			{
-				// Make sure the Worker Server actually exists and then add it
-				ResourceServerQueryResultSet queryResult = await resourceServerManager.QueryAsync(queryWorker);
-
-				if (queryResult.Success && queryResult.Results.Exists(x => x.Artifact.ServerType.Name.Equals(Constants.Processing.WorkerServer, StringComparison.OrdinalIgnoreCase)))
-				{
-
-
-					WorkerCategory[] categories = new WorkerCategory[]
-					{
-						WorkerCategory.NativeImaging,
-						WorkerCategory.BasicImaging,
-						WorkerCategory.SaveAsPDF,
-						WorkerCategory.Processing
-					};
-					int workerServerArtifactId = queryResult.Results
-						.Find(x => x.Artifact.ServerType.Name.Equals(Constants.Processing.WorkerServer,
-							StringComparison.OrdinalIgnoreCase)).Artifact.ArtifactID;
-
-					await workerStatusService.EnableProcessingOnWorkerAsync(workerServerArtifactId);
-					Thread.Sleep(10000);
-					await workerStatusService.UpdateCategoriesOnWorkerAsync(workerServerArtifactId, categories);
-
-					wasUpdated = true;
-					Console.WriteLine($"{nameof(UpdateWorkerServerForProcessingAsync)} - Successfully updated Worker Server ({Constants.Processing.ResourceServerName})");
-				}
-				else
-				{
-					Console.WriteLine($"{nameof(UpdateWorkerServerForProcessingAsync)} - Failed to update Worker Server ({Constants.Processing.ResourceServerName}) as it doesn't exist");
-				}
+				Console.WriteLine($"{nameof(UpdateWorkerServerForProcessingAsync)} - Failed to update Worker Server ({Constants.Processing.ResourceServerName}) as it doesn't exist");
 			}
 
 			return wasUpdated;
@@ -441,97 +271,40 @@ namespace Helpers.Implementations
 		public async Task<bool> AddWorkerManagerServerToDefaultResourcePoolAsync()
 		{
 			bool wasWorkerManagerServerAddedToDefaultPool = false;
-
 			Console.WriteLine($"{nameof(AddWorkerManagerServerToDefaultResourcePoolAsync)} - Adding Worker Manager Server ({Constants.Processing.ResourceServerName}) to the Default Resource Pool");
-
-			// Setup for checking Resource Pools
-			Relativity.Services.TextCondition conditionPool = new Relativity.Services.TextCondition()
+			
+			HttpClient httpClient = RestHelper.GetHttpClient(ConnectionHelper.RelativityInstanceName, ConnectionHelper.RelativityAdminUserName, ConnectionHelper.RelativityAdminPassword);
+			// Get Default Resource Pool Artifact Id
+			int defaultResourcePoolArtifactId = await GetDefaultResourcePoolArtifactIdAsync(httpClient);
+			if (defaultResourcePoolArtifactId != -1)
 			{
-				Field = Constants.Processing.NameField,
-				Operator = Relativity.Services.TextConditionEnum.StartsWith,
-				Value = Constants.Processing.DefaultPool
-			};
-
-			Relativity.Services.Query queryPool = new Relativity.Services.Query()
-			{
-				Condition = conditionPool.ToQueryString(),
-			};
-
-			// Setup for checking if Worker Manager Server exists
-			Relativity.Services.TextCondition conditionServer = new Relativity.Services.TextCondition()
-			{
-				Field = Constants.Processing.NameField,
-				Operator = Relativity.Services.TextConditionEnum.EqualTo,
-				Value = Constants.Processing.ResourceServerName
-			};
-
-			Relativity.Services.Query queryServer = new Relativity.Services.Query()
-			{
-				Condition = conditionServer.ToQueryString()
-			};
-
-			using (IWorkerServerManager workerServerManager = ServiceFactory.CreateProxy<IWorkerServerManager>())
-			using (IResourcePoolManager resourcePoolManager = ServiceFactory.CreateProxy<IResourcePoolManager>())
-			{
-				// Check for Default Resource Pool
-				ResourcePoolQueryResultSet resultPools = await resourcePoolManager.QueryAsync(queryPool);
-
-				Console.WriteLine($"{nameof(AddWorkerManagerServerToDefaultResourcePoolAsync)} - Checking if Default Resource Pool exists");
-				if (resultPools.Success && resultPools.TotalCount > 0)
+				// Get Worker Manager Server Type Artifact Id
+				int workerManagerServerTypeArtifactId = await GetWorkerManagerServerTypeArtifactIdAsync(httpClient);
+				if (workerManagerServerTypeArtifactId != -1)
 				{
-					ResourcePoolRef defaultPoolRef = new ResourcePoolRef(resultPools.Results.Find(x => x.Artifact.Name.Equals(Constants.Processing.DefaultPool, StringComparison.OrdinalIgnoreCase)).Artifact.ArtifactID);
-
-					List<ResourceServerRef> resultServers = await resourcePoolManager.RetrieveResourceServersAsync(defaultPoolRef);
-
-					// Check to make sure the Worker Manager Server was not already added
-					if (!resultServers.Exists(x => x.ServerType.Name.Equals(Constants.Processing.WorkerManagerServer, StringComparison.OrdinalIgnoreCase)))
+					// Get Worker Manager Server Artifact Id
+					int workerManagerServerArtifactId = await GetWorkerManagerServerArtifactIdAsync(httpClient);
+					if (workerManagerServerArtifactId != -1)
 					{
-						// Make sure the Worker Manager Server actually exists and then add it
-						WorkerServerQueryResultSet queryResult = await workerServerManager.QueryAsync(queryServer);
-						if (queryResult.Success && queryResult.TotalCount > 0)
-						{
-							WorkerManagerServer workerManagerServer = queryResult.Results.Find(x => x.Artifact.Name.Equals(Constants.Processing.ResourceServerName,
-								StringComparison.OrdinalIgnoreCase) && x.Artifact.URL.Equals(Constants.Processing.ResourceServerUrl,
-									StringComparison.OrdinalIgnoreCase)).Artifact;
-
-							ResourceServerRef workerServerRef = new ResourceServerRef()
-							{
-								ArtifactID = workerManagerServer.ArtifactID,
-								Name = workerManagerServer.Name,
-								ServerType = new ResourceServerTypeRef()
-								{
-									ArtifactID = workerManagerServer.ServerType.ArtifactID,
-									Name = workerManagerServer.ServerType.Name
-								}
-							};
-
-							await resourcePoolManager.AddServerAsync(workerServerRef, defaultPoolRef);
-
-							resultServers = await resourcePoolManager.RetrieveResourceServersAsync(defaultPoolRef);
-
-							if (resultServers.Exists(x => x.ServerType.Name.Equals(Constants.Processing.WorkerManagerServer, StringComparison.OrdinalIgnoreCase)))
-							{
-								wasWorkerManagerServerAddedToDefaultPool = true;
-								Console.WriteLine($"{nameof(AddWorkerManagerServerToDefaultResourcePoolAsync)} - Successfully added Worker Manager Server to Default Resource Pool");
-							}
-							else
-							{
-								wasWorkerManagerServerAddedToDefaultPool = false;
-								Console.WriteLine($"{nameof(AddWorkerManagerServerToDefaultResourcePoolAsync)} - Failed to add Worker Manager Server to Default Resource Pool.");
-							}
-						}
-						else
-						{
-							Console.WriteLine($"{nameof(AddWorkerManagerServerToDefaultResourcePoolAsync)} - Failed to add Worker Manager Server to Default Resource Pool as the Worker Manager Server does not exist");
-						}
+						// Add Worker Manager Server to Default Resource Pool
+						await AddServerToDefaultResourcePoolAsync(httpClient, workerManagerServerArtifactId,
+							workerManagerServerTypeArtifactId, defaultResourcePoolArtifactId);
+						wasWorkerManagerServerAddedToDefaultPool = true;
+						Console.WriteLine($"{nameof(AddWorkerManagerServerToDefaultResourcePoolAsync)} - Successfully added Worker Manager Server to Default Resource Pool");
 					}
 					else
 					{
-						wasWorkerManagerServerAddedToDefaultPool = true;
-						Console.WriteLine($"{nameof(AddWorkerManagerServerToDefaultResourcePoolAsync)} - Failed to add Worker Manager Server to Default Resource Pool as it already exists within the pool");
+						Console.WriteLine($"{nameof(AddWorkerManagerServerToDefaultResourcePoolAsync)} - Failed to add Worker Manager Server to Default Resource Pool as the Worker Manager Server does not exist");
 					}
-
 				}
+				else
+				{
+					Console.WriteLine($"{nameof(AddWorkerManagerServerToDefaultResourcePoolAsync)} - Failed to get Worker Manager Server Type Id");
+				}
+			}
+			else
+			{
+				Console.WriteLine($"{nameof(AddWorkerManagerServerToDefaultResourcePoolAsync)} - Failed to get Default Resource Pool Id");
 			}
 
 			return wasWorkerManagerServerAddedToDefaultPool;
@@ -545,110 +318,40 @@ namespace Helpers.Implementations
 		public async Task<bool> AddWorkerServerToDefaultResourcePoolAsync()
 		{
 			bool wasWorkerServerAddedToDefaultPool = false;
-
 			Console.WriteLine($"{nameof(AddWorkerServerToDefaultResourcePoolAsync)} - Adding Worker Server ({Constants.Processing.WorkerServer}) to the Default Resource Pool");
 
-			// Setup for checking Resource Pools
-			Relativity.Services.TextCondition conditionPool = new Relativity.Services.TextCondition()
+			HttpClient httpClient = RestHelper.GetHttpClient(ConnectionHelper.RelativityInstanceName, ConnectionHelper.RelativityAdminUserName, ConnectionHelper.RelativityAdminPassword);
+			// Get Default Resource Pool Artifact Id
+			int defaultResourcePoolArtifactId = await GetDefaultResourcePoolArtifactIdAsync(httpClient);
+			if (defaultResourcePoolArtifactId != -1)
 			{
-				Field = Constants.Processing.NameField,
-				Operator = Relativity.Services.TextConditionEnum.StartsWith,
-				Value = Constants.Processing.DefaultPool
-			};
-
-			Relativity.Services.Query queryPool = new Relativity.Services.Query()
-			{
-				Condition = conditionPool.ToQueryString(),
-			};
-
-			// Setup for checking if Worker Manager Server exists
-			Relativity.Services.TextCondition conditionServer = new Relativity.Services.TextCondition()
-			{
-				Field = Constants.Processing.NameField,
-				Operator = Relativity.Services.TextConditionEnum.EqualTo,
-				Value = Constants.Processing.ResourceServerName
-			};
-
-			Relativity.Services.Query queryServer = new Relativity.Services.Query()
-			{
-				Condition = conditionServer.ToQueryString()
-			};
-
-			// Setup for checking if Worker Server exists
-			Relativity.Services.TextCondition conditionWorker = new Relativity.Services.TextCondition()
-			{
-				Field = Constants.Processing.NameField,
-				Operator = Relativity.Services.TextConditionEnum.EqualTo,
-				Value = Constants.Processing.ResourceServerName
-			};
-
-			Relativity.Services.Query queryWorker = new Relativity.Services.Query()
-			{
-				Condition = conditionWorker.ToQueryString()
-			};
-
-			using (IResourceServerManager resourceServerManager = ServiceFactory.CreateProxy<IResourceServerManager>())
-			using (IResourcePoolManager resourcePoolManager = ServiceFactory.CreateProxy<IResourcePoolManager>())
-			{
-				// Check for Default Resource Pool
-				ResourcePoolQueryResultSet resultPools = await resourcePoolManager.QueryAsync(queryPool);
-
-				Console.WriteLine($"{nameof(AddWorkerServerToDefaultResourcePoolAsync)} - Checking if Default Resource Pool exists");
-				if (resultPools.Success && resultPools.TotalCount > 0)
+				// Get Worker Server Type Artifact Id
+				int workerServerTypeArtifactId = await GetWorkerServerTypeArtifactIdAsync(httpClient);
+				if (workerServerTypeArtifactId != -1)
 				{
-					ResourcePoolRef defaultPoolRef = new ResourcePoolRef(resultPools.Results.Find(x => x.Artifact.Name.Equals(Constants.Processing.DefaultPool, StringComparison.OrdinalIgnoreCase)).Artifact.ArtifactID);
-
-					List<ResourceServerRef> resultServers = await resourcePoolManager.RetrieveResourceServersAsync(defaultPoolRef);
-
-					// Check to make sure the Worker Server was not already added
-					if (!resultServers.Exists(x => x.ServerType.Name.Equals(Constants.Processing.WorkerServer, StringComparison.OrdinalIgnoreCase)))
+					// Get Worker Server Artifact Id
+					int workerServerArtifactId = await GetWorkerServerArtifactIdAsync(httpClient);
+					if (workerServerArtifactId != -1)
 					{
-						// Make sure the Worker Server actually exists and then add it
-						ResourceServerQueryResultSet queryResult = await resourceServerManager.QueryAsync(queryWorker);
-
-						if (queryResult.Success && queryResult.TotalCount > 0)
-						{
-							ResourceServer workerServer = queryResult.Results.Find(x => x.Artifact.ServerType.Name.Equals(Constants.Processing.WorkerServer, StringComparison.OrdinalIgnoreCase)).Artifact;
-
-							ResourceServerRef workerServerRef = new ResourceServerRef()
-							{
-								ArtifactID = workerServer.ArtifactID,
-								Name = workerServer.Name,
-								ServerType = new ResourceServerTypeRef()
-								{
-									ArtifactID = workerServer.ServerType.ArtifactID,
-									Name = workerServer.ServerType.Name
-								}
-							};
-
-							await resourcePoolManager.AddServerAsync(workerServerRef, defaultPoolRef);
-
-							resultServers = await resourcePoolManager.RetrieveResourceServersAsync(defaultPoolRef);
-
-							if (resultServers.Exists(x => x.ServerType.Name.Equals(Constants.Processing.WorkerServer, StringComparison.OrdinalIgnoreCase)))
-							{
-								wasWorkerServerAddedToDefaultPool = true;
-								Console.WriteLine($"{nameof(AddWorkerServerToDefaultResourcePoolAsync)} - Successfully added Worker Server to Default Resource Pool");
-							}
-							else
-							{
-								wasWorkerServerAddedToDefaultPool = false;
-								Console.WriteLine($"{nameof(AddWorkerServerToDefaultResourcePoolAsync)} - Failed to add Worker Server to Default Resource Pool.");
-							}
-
-						}
-						else
-						{
-							Console.WriteLine($"{nameof(AddWorkerServerToDefaultResourcePoolAsync)} - Failed to add Worker Server to Default Resource Pool as the Worker Server does not exist");
-						}
+						// Add Worker Server to Default Resource Pool
+						await AddServerToDefaultResourcePoolAsync(httpClient, workerServerArtifactId,
+							workerServerTypeArtifactId, defaultResourcePoolArtifactId);
+						wasWorkerServerAddedToDefaultPool = true;
+						Console.WriteLine($"{nameof(AddWorkerServerToDefaultResourcePoolAsync)} - Successfully added Worker Server to Default Resource Pool");
 					}
 					else
 					{
-						wasWorkerServerAddedToDefaultPool = true;
-						Console.WriteLine($"{nameof(AddWorkerServerToDefaultResourcePoolAsync)} - Failed to add Worker Server to Default Resource Pool as it already exists within the pool");
+						Console.WriteLine($"{nameof(AddWorkerServerToDefaultResourcePoolAsync)} - Failed to add Worker Server to Default Resource Pool as the Worker does not exist");
 					}
-
 				}
+				else
+				{
+					Console.WriteLine($"{nameof(AddWorkerServerToDefaultResourcePoolAsync)} - Failed to get Worker Server Type Id");
+				}
+			}
+			else
+			{
+				Console.WriteLine($"{nameof(AddWorkerServerToDefaultResourcePoolAsync)} - Failed to get Default Resource Pool Id");
 			}
 
 			return wasWorkerServerAddedToDefaultPool;
@@ -661,98 +364,39 @@ namespace Helpers.Implementations
 		public async Task<bool> RemoveWorkerManagerServerFromDefaultResourcePoolAsync()
 		{
 			bool wasRemoved = false;
-
 			Console.WriteLine($"{nameof(RemoveWorkerManagerServerFromDefaultResourcePoolAsync)} - Removing Worker Manager Server ({Constants.Processing.ResourceServerName}) remove the Default Resource Pool");
 
-			// Setup for checking Resource Pools
-			Relativity.Services.TextCondition conditionPool = new Relativity.Services.TextCondition()
+			HttpClient httpClient = RestHelper.GetHttpClient(ConnectionHelper.RelativityInstanceName, ConnectionHelper.RelativityAdminUserName, ConnectionHelper.RelativityAdminPassword);
+			// Get Default Resource Pool Artifact Id
+			int defaultResourcePoolArtifactId = await GetDefaultResourcePoolArtifactIdAsync(httpClient);
+			if (defaultResourcePoolArtifactId != -1)
 			{
-				Field = Constants.Processing.NameField,
-				Operator = Relativity.Services.TextConditionEnum.StartsWith,
-				Value = Constants.Processing.DefaultPool
-			};
-
-			Relativity.Services.Query queryPool = new Relativity.Services.Query()
-			{
-				Condition = conditionPool.ToQueryString(),
-			};
-
-			// Setup for checking if Worker Manager Server exists
-			Relativity.Services.TextCondition conditionServer = new Relativity.Services.TextCondition()
-			{
-				Field = Constants.Processing.NameField,
-				Operator = Relativity.Services.TextConditionEnum.EqualTo,
-				Value = Constants.Processing.ResourceServerName
-			};
-
-			Relativity.Services.Query queryServer = new Relativity.Services.Query()
-			{
-				Condition = conditionServer.ToQueryString()
-			};
-
-			using (IWorkerServerManager workerServerManager = ServiceFactory.CreateProxy<IWorkerServerManager>())
-			using (IResourcePoolManager resourcePoolManager = ServiceFactory.CreateProxy<IResourcePoolManager>())
-			{
-				// Check for Default Resource Pool
-				ResourcePoolQueryResultSet resultPools = await resourcePoolManager.QueryAsync(queryPool);
-
-				Console.WriteLine($"{nameof(RemoveWorkerManagerServerFromDefaultResourcePoolAsync)} - Checking if Default Resource Pool exists");
-				if (resultPools.Success && resultPools.TotalCount > 0)
+				// Get Worker Manager Server Type Artifact Id
+				int workerManagerServerTypeArtifactId = await GetWorkerManagerServerTypeArtifactIdAsync(httpClient);
+				if (workerManagerServerTypeArtifactId != -1)
 				{
-					ResourcePoolRef defaultPoolRef = new ResourcePoolRef(resultPools.Results.Find(x => x.Artifact.Name.Equals(Constants.Processing.DefaultPool, StringComparison.OrdinalIgnoreCase)).Artifact.ArtifactID);
-
-					List<ResourceServerRef> resultServers = await resourcePoolManager.RetrieveResourceServersAsync(defaultPoolRef);
-
-					// Check to make sure the Worker Manager Server is there
-					if (resultServers.Exists(x => x.ServerType.Name.Equals(Constants.Processing.WorkerManagerServer, StringComparison.OrdinalIgnoreCase)))
+					// Get Worker Manager Server Artifact Id
+					int workerManagerServerArtifactId = await GetWorkerManagerServerArtifactIdAsync(httpClient);
+					if (workerManagerServerArtifactId != -1)
 					{
-						// Make sure the Worker Manager Server actually exists and then remove it
-						WorkerServerQueryResultSet queryResult = await workerServerManager.QueryAsync(queryServer);
-						if (queryResult.Success && queryResult.TotalCount > 0)
-						{
-							WorkerManagerServer workerManagerServer = queryResult.Results.Find(x => x.Artifact.Name.Equals(Constants.Processing.ResourceServerName,
-								StringComparison.OrdinalIgnoreCase) && x.Artifact.URL.Equals(Constants.Processing.ResourceServerUrl,
-									StringComparison.OrdinalIgnoreCase)).Artifact;
-
-							ResourceServerRef workerServerRef = new ResourceServerRef()
-							{
-								ArtifactID = workerManagerServer.ArtifactID,
-								Name = workerManagerServer.Name,
-								ServerType = new ResourceServerTypeRef()
-								{
-									ArtifactID = workerManagerServer.ServerType.ArtifactID,
-									Name = workerManagerServer.ServerType.Name
-								}
-							};
-
-							await resourcePoolManager.RemoveServerAsync(workerServerRef, defaultPoolRef);
-
-							resultServers = await resourcePoolManager.RetrieveResourceServersAsync(defaultPoolRef);
-
-							if (!resultServers.Exists(x => x.ServerType.Name.Equals(Constants.Processing.WorkerManagerServer, StringComparison.OrdinalIgnoreCase)))
-							{
-								wasRemoved = true;
-								Console.WriteLine($"{nameof(RemoveWorkerManagerServerFromDefaultResourcePoolAsync)} - Successfully removed Worker Manager Server from Default Resource Pool");
-							}
-							else
-							{
-								wasRemoved = false;
-								Console.WriteLine($"{nameof(RemoveWorkerManagerServerFromDefaultResourcePoolAsync)} - Failed to removed Worker Manager Server from Default Resource Pool.");
-							}
-						}
-						else
-						{
-							wasRemoved = true;
-							Console.WriteLine($"{nameof(RemoveWorkerManagerServerFromDefaultResourcePoolAsync)} - Failed to removed Worker Manager Server from Default Resource Pool as the Worker Manager Server does not exist");
-						}
+						// Remove Worker Manager Server from Default Resource Pool
+						await RemoveServerFromDefaultResourcePoolAsync(httpClient, workerManagerServerArtifactId, workerManagerServerTypeArtifactId, defaultResourcePoolArtifactId);
+						wasRemoved = true;
+						Console.WriteLine($"{nameof(RemoveWorkerManagerServerFromDefaultResourcePoolAsync)} - Successfully removed Worker Manager Server from Default Resource Pool");
 					}
 					else
 					{
-						wasRemoved = true;
-						Console.WriteLine($"{nameof(RemoveWorkerManagerServerFromDefaultResourcePoolAsync)} - Failed to removed Worker Manager Server from Default Resource Pool as it is not within the pool");
+						Console.WriteLine($"{nameof(RemoveWorkerManagerServerFromDefaultResourcePoolAsync)} - Failed to removed Worker Manager Server from Default Resource Pool as the Worker Manager Server does not exist");
 					}
-
 				}
+				else
+				{
+					Console.WriteLine($"{nameof(RemoveWorkerManagerServerFromDefaultResourcePoolAsync)} - Failed to get Worker Manager Server Type Id");
+				}
+			}
+			else
+			{
+				Console.WriteLine($"{nameof(RemoveWorkerManagerServerFromDefaultResourcePoolAsync)} - Failed to get Default Resource Pool Id");
 			}
 
 			return wasRemoved;
@@ -765,117 +409,392 @@ namespace Helpers.Implementations
 		public async Task<bool> RemoveWorkerServerFromDefaultResourcePoolAsync()
 		{
 			bool wasRemoved = false;
-
 			Console.WriteLine($"{nameof(RemoveWorkerServerFromDefaultResourcePoolAsync)} - Deleting Worker Server ({Constants.Processing.ResourceServerName})");
 
-			// Setup for checking Resource Pools
-			Relativity.Services.TextCondition conditionPool = new Relativity.Services.TextCondition()
+			HttpClient httpClient = RestHelper.GetHttpClient(ConnectionHelper.RelativityInstanceName, ConnectionHelper.RelativityAdminUserName, ConnectionHelper.RelativityAdminPassword);
+			// Get Default Resource Pool Artifact Id
+			int defaultResourcePoolArtifactId = await GetDefaultResourcePoolArtifactIdAsync(httpClient);
+			if (defaultResourcePoolArtifactId != -1)
 			{
-				Field = Constants.Processing.NameField,
-				Operator = Relativity.Services.TextConditionEnum.StartsWith,
-				Value = Constants.Processing.DefaultPool
-			};
-
-			Relativity.Services.Query queryPool = new Relativity.Services.Query()
-			{
-				Condition = conditionPool.ToQueryString(),
-			};
-
-			// Setup for checking if Worker Manager Server exists
-			Relativity.Services.TextCondition conditionServer = new Relativity.Services.TextCondition()
-			{
-				Field = Constants.Processing.NameField,
-				Operator = Relativity.Services.TextConditionEnum.EqualTo,
-				Value = Constants.Processing.ResourceServerName
-			};
-
-			Relativity.Services.Query queryServer = new Relativity.Services.Query()
-			{
-				Condition = conditionServer.ToQueryString()
-			};
-
-			// Setup for checking if Worker Server exists
-			Relativity.Services.TextCondition conditionWorker = new Relativity.Services.TextCondition()
-			{
-				Field = Constants.Processing.NameField,
-				Operator = Relativity.Services.TextConditionEnum.EqualTo,
-				Value = Constants.Processing.ResourceServerName
-			};
-
-			Relativity.Services.Query queryWorker = new Relativity.Services.Query()
-			{
-				Condition = conditionWorker.ToQueryString()
-			};
-
-
-			using (IResourceServerManager resourceServerManager = ServiceFactory.CreateProxy<IResourceServerManager>())
-			using (IResourcePoolManager resourcePoolManager = ServiceFactory.CreateProxy<IResourcePoolManager>())
-			{
-				// Check for Default Resource Pool
-				ResourcePoolQueryResultSet resultPools = await resourcePoolManager.QueryAsync(queryPool);
-
-				Console.WriteLine($"{nameof(RemoveWorkerServerFromDefaultResourcePoolAsync)} - Checking if Default Resource Pool exists");
-				if (resultPools.Success && resultPools.TotalCount > 0)
+				// Get Worker Server Type Artifact Id
+				int workerServerTypeArtifactId = await GetWorkerServerTypeArtifactIdAsync(httpClient);
+				if (workerServerTypeArtifactId != -1)
 				{
-					ResourcePoolRef defaultPoolRef = new ResourcePoolRef(resultPools.Results.Find(x => x.Artifact.Name.Equals(Constants.Processing.DefaultPool, StringComparison.OrdinalIgnoreCase)).Artifact.ArtifactID);
-
-					List<ResourceServerRef> resultServers = await resourcePoolManager.RetrieveResourceServersAsync(defaultPoolRef);
-
-					// Check to make sure the Worker Server is there
-					if (resultServers.Exists(x => x.ServerType.Name.Equals(Constants.Processing.WorkerServer, StringComparison.OrdinalIgnoreCase)))
+					// Get Worker Server Artifact Id
+					int workerServerArtifactId = await GetWorkerServerArtifactIdAsync(httpClient);
+					if (workerServerArtifactId != -1)
 					{
-						// Make sure the Worker Server actually exists and then remove it from the pool
-						ResourceServerQueryResultSet queryResult = await resourceServerManager.QueryAsync(queryWorker);
-
-						if (queryResult.Success && queryResult.TotalCount > 0)
-						{
-							ResourceServer workerServer = queryResult.Results.Find(x => x.Artifact.ServerType.Name.Equals(Constants.Processing.WorkerServer, StringComparison.OrdinalIgnoreCase)).Artifact;
-
-							ResourceServerRef workerServerRef = new ResourceServerRef()
-							{
-								ArtifactID = workerServer.ArtifactID,
-								Name = workerServer.Name,
-								ServerType = new ResourceServerTypeRef()
-								{
-									ArtifactID = workerServer.ServerType.ArtifactID,
-									Name = workerServer.ServerType.Name
-								}
-							};
-
-							await resourcePoolManager.RemoveServerAsync(workerServerRef, defaultPoolRef);
-
-							resultServers = await resourcePoolManager.RetrieveResourceServersAsync(defaultPoolRef);
-
-							if (!resultServers.Exists(x => x.ServerType.Name.Equals(Constants.Processing.WorkerServer, StringComparison.OrdinalIgnoreCase)))
-							{
-								wasRemoved = true;
-								Console.WriteLine($"{nameof(RemoveWorkerServerFromDefaultResourcePoolAsync)} - Successfully removed Worker Server from Default Resource Pool");
-							}
-							else
-							{
-								wasRemoved = false;
-								Console.WriteLine($"{nameof(RemoveWorkerServerFromDefaultResourcePoolAsync)} - Failed to remove Worker Server from Default Resource Pool");
-							}
-
-						}
-						else
-						{
-							wasRemoved = true;
-							Console.WriteLine($"{nameof(RemoveWorkerServerFromDefaultResourcePoolAsync)} - Failed to remove Worker Server from Default Resource Pool as the Worker Server does not exist");
-						}
+						// Remove Worker Server from Default Resource Pool
+						await RemoveServerFromDefaultResourcePoolAsync(httpClient, workerServerArtifactId, workerServerTypeArtifactId, defaultResourcePoolArtifactId);
+						wasRemoved = true;
+						Console.WriteLine($"{nameof(RemoveWorkerManagerServerFromDefaultResourcePoolAsync)} - Successfully removed Worker Server from Default Resource Pool");
 					}
 					else
 					{
-						wasRemoved = true;
-						Console.WriteLine($"{nameof(RemoveWorkerServerFromDefaultResourcePoolAsync)} - Failed to remove Worker Server from Default Resource Pool as it already is not within the pool");
+						Console.WriteLine($"{nameof(RemoveWorkerManagerServerFromDefaultResourcePoolAsync)} - Failed to removed Worker Server from Default Resource Pool as the Worker Server does not exist");
 					}
-
+				}
+				else
+				{
+					Console.WriteLine($"{nameof(RemoveWorkerManagerServerFromDefaultResourcePoolAsync)} - Failed to get Worker Server Type Id");
 				}
 			}
-
+			else
+			{
+				Console.WriteLine($"{nameof(RemoveWorkerManagerServerFromDefaultResourcePoolAsync)} - Failed to get Default Resource Pool Id");
+			}
 
 			return wasRemoved;
 		}
+
+		#region Private Helpers
+
+		private async Task<int> GetDefaultResourcePoolArtifactIdAsync(HttpClient httpClient)
+		{
+			// Query for Default Resource Pool
+			var resourcePoolQueryPayload = new
+			{
+				Query = new
+				{
+					Condition = "'Name' STARTSWITH 'Default'"
+				}
+			};
+			string poolQuery = JsonConvert.SerializeObject(resourcePoolQueryPayload);
+			HttpResponseMessage queryPoolResponse = await RestHelper.MakePostAsync(httpClient, Constants.Connection.RestUrlEndpoints.ResourcePool.QueryEndpointUrl, poolQuery);
+			string queryPoolResultString = await queryPoolResponse.Content.ReadAsStringAsync();
+			if (!queryPoolResponse.IsSuccessStatusCode)
+			{
+				throw new System.Exception($"Failed to query for Default Resource Pool : {queryPoolResultString}");
+			}
+			dynamic queryPoolResult = JObject.Parse(queryPoolResultString) as JObject;
+			if (Convert.ToInt32(queryPoolResult.TotalCount) > 0)
+			{
+				return Convert.ToInt32(queryPoolResult.Results[0]["Artifact"]["ArtifactID"].ToString());
+			}
+			else
+			{
+				return -1;
+			}
+		}
+
+		private async Task<int> GetProcessingSourceLocationArtifactIdAsync(HttpClient httpClient)
+		{
+			var processingChoiceQuery = new
+			{
+				condition = "'Choice Type ID' == 1000017",
+				fields = new object[]
+				{
+					"*"
+				}
+			};
+			string request = JsonConvert.SerializeObject(processingChoiceQuery);
+			HttpResponseMessage response = await RestHelper.MakePostAsync(httpClient, Constants.Connection.RestUrlEndpoints.Choice.QueryEndpointUrl, request);
+			string resultString = await response.Content.ReadAsStringAsync();
+			if (!response.IsSuccessStatusCode)
+			{
+				throw new System.Exception($"Failed to Query for Processing Choice Location : {resultString}");
+			}
+			dynamic result = JObject.Parse(resultString) as JObject;
+			if (Convert.ToInt32(result.ResultCount) > 0)
+			{
+				return Convert.ToInt32(result.Results[0]["Artifact ID"].ToString());
+			}
+			else
+			{
+				return -1;
+			}
+		}
+
+		private async Task<bool> DoesProcessingSourceLocationAlreadyExistForDefaultResourcePoolAsync(HttpClient httpClient,
+			int defaultResourcePoolId, int processingChoiceId)
+		{
+			var getProcessingSourceLocations = new
+			{
+				resourcePool = new
+				{
+					ArtifactID = defaultResourcePoolId
+				}
+			};
+			string request = JsonConvert.SerializeObject(getProcessingSourceLocations);
+			HttpResponseMessage response = await RestHelper.MakePostAsync(httpClient, Constants.Connection.RestUrlEndpoints.ResourcePool.GetProcessingSourceLocationsUrl, request);
+			string resultString = await response.Content.ReadAsStringAsync();
+			if (!response.IsSuccessStatusCode)
+			{
+				throw new System.Exception($"Failed to Get Processing Choice Locations for Resource Pool : {resultString}");
+			}
+			dynamic result = JsonConvert.DeserializeObject<dynamic>(resultString);
+		  bool doesProcessingChoiceExist = false;
+		  foreach (dynamic obj in result)
+		  {
+			  if (processingChoiceId == Convert.ToInt32(obj["ArtifactID"]))
+			  {
+				  doesProcessingChoiceExist = true;
+				  break;
+			  }
+		  }
+
+		  return doesProcessingChoiceExist;
+		}
+
+		private async Task CallAddProcessingSourceLocationToDefaultResourcePoolAsync(HttpClient httpClient, int defaultResourcePoolId, int processingSourceId)
+		{
+			var addProcessingSource = new
+			{
+				resourcePool = new
+				{
+					ArtifactID = defaultResourcePoolId
+				},
+				ProcessingSourceLocation = new
+				{
+					ArtifactID = processingSourceId
+				}
+			};
+			string request = JsonConvert.SerializeObject(addProcessingSource);
+			HttpResponseMessage response = await RestHelper.MakePostAsync(httpClient, Constants.Connection.RestUrlEndpoints.ResourcePool.AddProcessingSourceLocationUrl, request);
+			string responseString = await response.Content.ReadAsStringAsync();
+			if (!response.IsSuccessStatusCode)
+			{
+				throw new System.Exception($"Failed to Add Processing Choice Location to Default Resource Pool : {responseString}");
+			}
+		}
+
+		private async Task<int> GetWorkerManagerServerArtifactIdAsync(HttpClient httpClient)
+		{
+			var workerManagerQuery = new
+			{
+				Query = new
+				{
+					Condition = $"'ServerType' == 'Worker Manager Server' AND 'Name' == '{Constants.Processing.ResourceServerName}'",
+					Sorts = new object[]{}
+				}
+			};
+			string request = JsonConvert.SerializeObject(workerManagerQuery);
+			HttpResponseMessage response = await RestHelper.MakePostAsync(httpClient, Constants.Connection.RestUrlEndpoints.ResourceServer.QueryEndpointUrl, request);
+			string resultString = await response.Content.ReadAsStringAsync();
+			if (!response.IsSuccessStatusCode)
+			{
+				throw new System.Exception($"Failed to Query for Worker Manager Server: {resultString}");
+			}
+			dynamic result = JObject.Parse(resultString) as JObject;
+			if (Convert.ToInt32(result.TotalCount) > 0)
+			{
+				return Convert.ToInt32(result.Results[0]["Artifact"]["ArtifactID"].ToString());
+			}
+			else
+			{
+				return -1;
+			}
+		}
+
+		private async Task CallCreateWorkerManagerServerAsync(HttpClient httpClient)
+		{
+			var workerManagerServerCreate = new
+			{
+				resourceServer = new
+				{
+					Name = Constants.Processing.ResourceServerName,
+					IsDefault = true,
+					InventoryPriority = 100,
+					DiscoveryPriority = 100,
+					PublishPriority = 100,
+					ImageOnTheFlyPriority = 1,
+					MassImagingPriority = 100,
+					SingleSaveAsPDFPriority = 100,
+					MassSaveAsPDFPriority = 100,
+					URL = Constants.Processing.ResourceServerUrl
+				}
+			};
+			string request = JsonConvert.SerializeObject(workerManagerServerCreate);
+			HttpResponseMessage response = await RestHelper.MakePostAsync(httpClient, Constants.Connection.RestUrlEndpoints.ResourceServer.WorkerManagerCreateEndpointUrl, request);
+			string responseString = await response.Content.ReadAsStringAsync();
+			if (!response.IsSuccessStatusCode)
+			{
+				throw new System.Exception($"Failed to Create Worker Manager Server : {responseString}");
+			}
+		}
+
+		private async Task CallDeleteWorkerManagerServerAsync(HttpClient httpClient, int workerManagerServerArtifactId)
+		{
+			var workerManagerServerDelete = new
+			{
+				resourceServerID = workerManagerServerArtifactId
+			};
+			string request = JsonConvert.SerializeObject(workerManagerServerDelete);
+			HttpResponseMessage response = await RestHelper.MakePostAsync(httpClient, Constants.Connection.RestUrlEndpoints.ResourceServer.WorkerManagerDeleteEndpointUrl, request);
+			string responseString = await response.Content.ReadAsStringAsync();
+			if (!response.IsSuccessStatusCode)
+			{
+				throw new System.Exception($"Failed to Delete Worker Manager Server : {responseString}");
+			}
+		}
+
+		private async Task<int> GetWorkerServerArtifactIdAsync(HttpClient httpClient)
+		{
+			int workerServerArtifactId = -1;
+			var resourceServerQueryPayload = new
+			{
+				Query = new
+				{
+					Condition = ""
+				}
+			};
+			string serverQuery = JsonConvert.SerializeObject(resourceServerQueryPayload);
+			HttpResponseMessage queryServerResponse = await RestHelper.MakePostAsync(httpClient, Constants.Connection.RestUrlEndpoints.ResourceServer.QueryEndpointUrl, serverQuery);
+			string queryServerResultString = await queryServerResponse.Content.ReadAsStringAsync();
+			if (!queryServerResponse.IsSuccessStatusCode)
+			{
+				throw new System.Exception($"Failed to query for Worker Resource Server : {queryServerResultString}");
+			}
+			dynamic queryServerResult = JObject.Parse(queryServerResultString) as JObject;
+			if (Convert.ToInt32(queryServerResult.TotalCount) > 0)
+			{
+				foreach (dynamic obj in queryServerResult.Results)
+				{
+					if (obj["Artifact"]["ServerType"]["Name"].ToString() == "Worker")
+					{
+						workerServerArtifactId = Convert.ToInt32(obj["Artifact"]["ArtifactID"].ToString());
+						break;
+					}
+				}
+			}
+
+			return workerServerArtifactId;
+		}
+
+		private async Task EnableProcessingOnWorkerServerAsync(HttpClient httpClient, int workerServerId)
+		{
+			var enableProcessingOnWorker = new
+			{
+				workerArtifactId = workerServerId
+			};
+			string request = JsonConvert.SerializeObject(enableProcessingOnWorker);
+			HttpResponseMessage response = await RestHelper.MakePostAsync(httpClient, Constants.Connection.RestUrlEndpoints.ResourceServer.EnableProcessingOnWorkerEndpointUrl, request);
+			string responseString = await response.Content.ReadAsStringAsync();
+			if (!response.IsSuccessStatusCode)
+			{
+				throw new System.Exception($"Failed to Enable Processing on Worker Server : {responseString}");
+			}
+		}
+
+		private async Task UpdateCategoriesOnWorkerForProcessingAsync(HttpClient httpClient, int workerServerId)
+		{
+			var updateCategories = new
+			{
+				workerArtifactId = workerServerId,
+				categories = new string[]
+				{
+					"NativeImaging",
+					"BasicImaging",
+					"SaveAsPDF",
+					"Processing"
+				}
+			};
+			string request = JsonConvert.SerializeObject(updateCategories);
+			HttpResponseMessage response = await RestHelper.MakePostAsync(httpClient, Constants.Connection.RestUrlEndpoints.ResourceServer.UpdateCategoriesOnWorkerEndpointUrl, request);
+			string responseString = await response.Content.ReadAsStringAsync();
+			if (!response.IsSuccessStatusCode)
+			{
+				throw new System.Exception($"Failed to Update Categories on Worker Server : {responseString}");
+			}
+		}
+
+		private async Task<int> GetWorkerManagerServerTypeArtifactIdAsync(HttpClient httpClient)
+		{
+			int workerManagerServerTypeArtifactId = -1;
+			HttpResponseMessage serverTypeQueryResponse = await RestHelper.MakePostAsync(httpClient, Constants.Connection.RestUrlEndpoints.ResourcePool.ResourceServerTypeQueryEndpointUrl, "");
+			string queryServerTypesResultString = await serverTypeQueryResponse.Content.ReadAsStringAsync();
+			if (!serverTypeQueryResponse.IsSuccessStatusCode)
+			{
+				throw new System.Exception("Failed to query for Worker Manager Server Types : {query}");
+			}
+			dynamic queryServerTypesResult = JsonConvert.DeserializeObject<dynamic>(queryServerTypesResultString);
+			foreach (dynamic obj in queryServerTypesResult)
+			{
+				if (obj["Name"].ToString() == "Worker Manager Server")
+				{
+					workerManagerServerTypeArtifactId = Convert.ToInt32(obj["ArtifactID"].ToString());
+					break;
+				}
+			}
+
+			return workerManagerServerTypeArtifactId;
+		}
+
+		private async Task<int> GetWorkerServerTypeArtifactIdAsync(HttpClient httpClient)
+		{
+			int workerServerTypeArtifactId = -1;
+			HttpResponseMessage serverTypeQueryResponse = await RestHelper.MakePostAsync(httpClient, Constants.Connection.RestUrlEndpoints.ResourcePool.ResourceServerTypeQueryEndpointUrl, "");
+			string queryServerTypesResultString = await serverTypeQueryResponse.Content.ReadAsStringAsync();
+			if (!serverTypeQueryResponse.IsSuccessStatusCode)
+			{
+				throw new System.Exception($"Failed to query for Worker Server Types : {queryServerTypesResultString}");
+			}
+			dynamic queryServerTypesResult = JsonConvert.DeserializeObject<dynamic>(queryServerTypesResultString);
+			foreach (dynamic obj in queryServerTypesResult)
+			{
+				if (obj["Name"].ToString() == "Worker")
+				{
+					workerServerTypeArtifactId = Convert.ToInt32(obj["ArtifactID"].ToString());
+					break;
+				}
+			}
+
+			return workerServerTypeArtifactId;
+		}
+
+		private async Task AddServerToDefaultResourcePoolAsync(HttpClient httpClient, int serverArtifactId, int serverTypeArtifactId, int defaultResourcePoolArtifactId)
+		{
+			var addResourceServerPayload = new
+			{
+				resourceServer = new
+				{
+					ArtifactID = serverArtifactId,
+					ServerType = new
+					{
+						ArtifactID = serverTypeArtifactId
+					}
+				},
+				resourcePool = new
+				{
+					ArtifactID = defaultResourcePoolArtifactId
+				}
+			};
+			string addResourceServer = JsonConvert.SerializeObject(addResourceServerPayload);
+			HttpResponseMessage addServerResponse = await RestHelper.MakePostAsync(httpClient, Constants.Connection.RestUrlEndpoints.ResourcePool.AddServerEndpointUrl, addResourceServer);
+			string responseString = await addServerResponse.Content.ReadAsStringAsync();
+			if (!addServerResponse.IsSuccessStatusCode)
+			{
+				throw new System.Exception($"Failed to add the Server to the Default Resource Pool : {responseString}");
+			}
+		}
+
+		private async Task RemoveServerFromDefaultResourcePoolAsync(HttpClient httpClient, int serverArtifactId, int serverTypeArtifactId, int defaultResourcePoolArtifactId)
+		{
+			var removeServerResourcePoolPayload = new
+			{
+				resourceServer = new
+				{
+					ArtifactID = serverArtifactId,
+					ServerType = new
+					{
+						ArtifactID = serverTypeArtifactId
+					}
+				},
+				resourcePool = new
+				{
+					ArtifactID = defaultResourcePoolArtifactId
+				}
+			};
+			string removeServer = JsonConvert.SerializeObject(removeServerResourcePoolPayload);
+			HttpResponseMessage removeServerResponse = await RestHelper.MakePostAsync(httpClient, Constants.Connection.RestUrlEndpoints.ResourcePool.RemoveServerUrl, removeServer);
+			string responseString = await removeServerResponse.Content.ReadAsStringAsync();
+			if (!removeServerResponse.IsSuccessStatusCode)
+			{
+				throw new System.Exception($"Failed to remove the Server from the Default Resource Pool : {responseString}");
+			}
+		}
+
+		#endregion
 
 	} // End of class
 }

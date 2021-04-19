@@ -80,7 +80,9 @@ namespace DevVmPsModules.Cmdlets
 				sqlAdminPassword: SqlAdminPassword);
 			ISqlRunner sqlRunner = new SqlRunner(connectionHelper);
 			ISqlHelper sqlHelper = new SqlHelper(sqlRunner);
-			IWorkspaceHelper workspaceHelper = new WorkspaceHelper(connectionHelper, sqlHelper);
+			IRestHelper restHelper = new RestHelper();
+			ILogService logService = new LogService();
+			IWorkspaceHelper workspaceHelper = new WorkspaceHelper(logService, connectionHelper, restHelper, sqlHelper);
 
 			//Create Workspace
 			workspaceHelper.CreateSingleWorkspaceAsync(Constants.Workspace.DEFAULT_WORKSPACE_TEMPLATE_NAME, WorkspaceName, _enableDataGrid).Wait();
