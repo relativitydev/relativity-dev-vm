@@ -26,7 +26,8 @@ namespace Helpers.Tests.Integration.Tests
 			ISqlRunner sqlRunner = new SqlRunner(connectionHelper);
 			ISqlHelper sqlHelper = new SqlHelper(sqlRunner);
 			IRestHelper restHelper = new RestHelper();
-			WorkspaceHelper = new WorkspaceHelper(connectionHelper, restHelper, sqlHelper);
+			ILogService logService = new LogService();
+			WorkspaceHelper = new WorkspaceHelper(logService, connectionHelper, restHelper, sqlHelper);
 			RetryLogicHelper = new RetryLogicHelper();
 			Sut = new ApplicationInstallHelper(connectionHelper, restHelper, WorkspaceHelper, RetryLogicHelper);
 		}
@@ -69,7 +70,7 @@ namespace Helpers.Tests.Integration.Tests
 			}
 			catch (Exception ex)
 			{
-				Assert.Fail("InstallApplicationFromARapFileTest Failed");
+				Assert.Fail("InstallApplicationFromARapFileTest Failed", ex);
 			}
 			finally
 			{
@@ -104,7 +105,7 @@ namespace Helpers.Tests.Integration.Tests
 			}
 			catch (Exception ex)
 			{
-				Assert.Fail("InstallApplicationFromTheApplicationLibraryTest Failed");
+				Assert.Fail("InstallApplicationFromTheApplicationLibraryTest Failed", ex);
 			}
 			finally
 			{

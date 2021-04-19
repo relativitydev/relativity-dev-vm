@@ -1,5 +1,4 @@
-﻿using Relativity.Imaging.Services.Interfaces;
-using Relativity.Services.Agent;
+﻿using Relativity.Services.Agent;
 using System;
 
 namespace Helpers
@@ -9,6 +8,11 @@ namespace Helpers
 		public const int EDDS_WORKSPACE_ARTIFACT_ID = -1;
 		public const int OBJECT_TYPE_TYPE_ARTIFACT_ID = 25;
 		public const int LAYOUT_TYPE_ARTIFACT_ID = 16;
+
+		public class Logs
+		{
+			public const string LogFileName = "DevVmPowerShellModule_Logs_.log";
+		}
 
 		public class Connection
 		{
