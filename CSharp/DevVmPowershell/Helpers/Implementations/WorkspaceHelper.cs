@@ -1,24 +1,26 @@
-﻿using Helpers.Interfaces;
+﻿using Helpers.CustomExceptions;
+using Helpers.Interfaces;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace Helpers.Implementations
 {
 	public class WorkspaceHelper : IWorkspaceHelper
 	{
+		private readonly ILogService _logService;
 		private IConnectionHelper ConnectionHelper { get; }
 		public ISqlHelper SqlHelper { get; set; }
 		private IRestHelper RestHelper { get; set; }
 
-		public WorkspaceHelper(IConnectionHelper connectionHelper, IRestHelper restHelper, ISqlHelper sqlHelper)
+		public WorkspaceHelper(ILogService logService, IConnectionHelper connectionHelper, IRestHelper restHelper, ISqlHelper sqlHelper)
 		{
+			_logService = logService;
 			ConnectionHelper = connectionHelper;
 			SqlHelper = sqlHelper;
 			RestHelper = restHelper;
@@ -26,22 +28,36 @@ namespace Helpers.Implementations
 
 		public async Task<int> CreateSingleWorkspaceAsync(string workspaceTemplateName, string workspaceName, bool enableDataGrid)
 		{
-			// Query for the RelativityOne Quick Start Template
-			List<int> workspaceArtifactIds = await WorkspaceQueryAsync(workspaceTemplateName);
-			if (workspaceArtifactIds.Count == 0)
+			try
 			{
-				throw new Exception($"Template workspace doesn't exist [Name: {workspaceTemplateName}]");
+				_logService.LogDebug($"Create Single Workspace with the following input parameters - {workspaceTemplateName}, {workspaceName} and {enableDataGrid}", workspaceTemplateName, workspaceName, enableDataGrid);
+
+				// Query for the Workspace Template
+				List<int> workspaceArtifactIds = await WorkspaceQueryAsync(workspaceTemplateName);
+				if (workspaceArtifactIds.Count == 0)
+				{
+					throw new Exception($"Template workspace doesn't exist [Name: {workspaceTemplateName}]");
+				}
+				if (workspaceArtifactIds.Count > 1)
+				{
+					throw new Exception($"Multiple Template workspaces exist with the same name [Name: {workspaceTemplateName}]");
+				}
+
+				int templateWorkspaceArtifactId = workspaceArtifactIds.First();
+				_logService.LogDebug($"Queried for Workspace Template - {templateWorkspaceArtifactId}", templateWorkspaceArtifactId);
+
+				// Create the workspace 
+				int workspaceArtifactId = await CreateWorkspaceAsync(templateWorkspaceArtifactId, workspaceName, enableDataGrid);
+				_logService.LogDebug($"Workspace created - {workspaceArtifactId}", workspaceArtifactId);
+
+				return workspaceArtifactId;
 			}
-			if (workspaceArtifactIds.Count > 1)
+			catch (Exception ex)
 			{
-				throw new Exception($"Multiple Template workspaces exist with the same name [Name: {workspaceTemplateName}]");
+				var errorMessage = $"An error occurred when creating a single workspace [{nameof(workspaceName)}: {workspaceName}]";
+				_logService.LogError(errorMessage, ex, workspaceName);
+				throw new DevVmPowerShellModuleHelperException(errorMessage, ex);
 			}
-
-			int templateWorkspaceArtifactId = workspaceArtifactIds.First();
-
-			// Create the workspace 
-			int workspaceArtifactId = await CreateWorkspaceAsync(templateWorkspaceArtifactId, workspaceName, enableDataGrid);
-			return workspaceArtifactId;
 		}
 
 		public async Task DeleteAllWorkspacesAsync(string workspaceName)
@@ -69,7 +85,8 @@ namespace Helpers.Implementations
 				HttpResponseMessage response = await RestHelper.MakeDeleteAsync(httpClient, url);
 				if (!response.IsSuccessStatusCode)
 				{
-					throw new Exception("Failed to Delete Workspace");
+					string responseContent = await response.Content.ReadAsStringAsync();
+					throw new Exception($"Failed to Delete Workspace. [{nameof(responseContent)}: {responseContent}]");
 				}
 			}
 			catch (Exception ex)
@@ -125,16 +142,16 @@ namespace Helpers.Implementations
 				workspaceRequest = new
 				{
 					Name = workspaceName,
-					Status = new {ArtifactID = statusID},
-					Matter = new {Secured = false, Value = new {ArtifactID = matterID}},
+					Status = new { ArtifactID = statusID },
+					Matter = new { Secured = false, Value = new { ArtifactID = matterID } },
 					DownloadHandlerUrl = defaultDownloadHandlerUrl,
 					EnableDataGrid = false,
-					ResourcePool = new {Secured = false, Value = new {ArtifactID = resourcePoolID}},
-					DefaultFileRepository = new {Secured = false, Value = new {ArtifactID = fileRepositoryID}},
-					DefaultCacheLocation = new {Secured = false, Value = new {ArtifactID = cacheLocationID}},
-					SqlServer = new {Secured = false, Value = new {ArtifactID = sqlServerID}},
+					ResourcePool = new { Secured = false, Value = new { ArtifactID = resourcePoolID } },
+					DefaultFileRepository = new { Secured = false, Value = new { ArtifactID = fileRepositoryID } },
+					DefaultCacheLocation = new { Secured = false, Value = new { ArtifactID = cacheLocationID } },
+					SqlServer = new { Secured = false, Value = new { ArtifactID = sqlServerID } },
 					SqlFullTextLanguage = sqlFullTextLanguage,
-					Template = new {Secured = false, Value = new {ArtifactID = templateID}},
+					Template = new { Secured = false, Value = new { ArtifactID = templateID } },
 				}
 			};
 
@@ -142,7 +159,8 @@ namespace Helpers.Implementations
 			HttpResponseMessage createResponse = await RestHelper.MakePostAsync(httpClient, $"{Constants.Connection.RestUrlEndpoints.WorkspaceManager.EndpointUrl}/", createPayload);
 			if (!createResponse.IsSuccessStatusCode)
 			{
-				throw new Exception("Failed to Create Workspace");
+				string responseContent = await createResponse.Content.ReadAsStringAsync();
+				throw new Exception($"Failed to Create Workspace. [{nameof(responseContent)}: {responseContent}]");
 			}
 
 			string resultString = await createResponse.Content.ReadAsStringAsync();
@@ -162,14 +180,14 @@ namespace Helpers.Implementations
 				workspaceRequest = new
 				{
 					Name = workspaceName,
-					Status = new {ArtifactID = statusID},
-					Matter = new {Secured = false, Value = new {ArtifactID = matterID}},
+					Status = new { ArtifactID = statusID },
+					Matter = new { Secured = false, Value = new { ArtifactID = matterID } },
 					DownloadHandlerUrl = defaultDownloadHandlerUrl,
 					EnableDataGrid = true,
-					ResourcePool = new {Secured = false, Value = new {ArtifactID = resourcePoolID}},
-					DefaultFileRepository = new {Secured = false, Value = new {ArtifactID = fileRepositoryID}},
-					DefaultCacheLocation = new {Secured = false, Value = new {ArtifactID = cacheLocationID}},
-					SqlServer = new {Secured = false, Value = new {ArtifactID = sqlServerID}},
+					ResourcePool = new { Secured = false, Value = new { ArtifactID = resourcePoolID } },
+					DefaultFileRepository = new { Secured = false, Value = new { ArtifactID = fileRepositoryID } },
+					DefaultCacheLocation = new { Secured = false, Value = new { ArtifactID = cacheLocationID } },
+					SqlServer = new { Secured = false, Value = new { ArtifactID = sqlServerID } },
 					SqlFullTextLanguage = sqlFullTextLanguage,
 				}
 			};
@@ -178,7 +196,8 @@ namespace Helpers.Implementations
 			HttpResponseMessage updateResponse = await RestHelper.MakePutAsync(httpClient, $"{Constants.Connection.RestUrlEndpoints.WorkspaceManager.EndpointUrl}/{workspaceArtifactId}", updatePayload);
 			if (!updateResponse.IsSuccessStatusCode)
 			{
-				throw new Exception("Failed to Update Workspace to Enable Data Grid");
+				string responseContent = await updateResponse.Content.ReadAsStringAsync();
+				throw new Exception($"Failed updating Workspace to Enable Data Grid. [{nameof(responseContent)}: {responseContent}]");
 			}
 
 			Console.WriteLine("Updated workspace to be Data Grid Enabled");
@@ -197,7 +216,7 @@ namespace Helpers.Implementations
 					request = new
 					{
 						objectType = new { artifactTypeId = 8 },
-						fields = new []
+						fields = new[]
 						{
 							new { Name = "Case Artifact ID"},
 							new { Name = "Name" },
@@ -213,7 +232,8 @@ namespace Helpers.Implementations
 				HttpResponseMessage queryResponse = await RestHelper.MakePostAsync(httpClient, Constants.Connection.RestUrlEndpoints.ObjectManager.QuerySlimUrl, queryPayload);
 				if (!queryResponse.IsSuccessStatusCode)
 				{
-					throw new Exception("Failed to Query for Workspaces");
+					string responseContent = await queryResponse.Content.ReadAsStringAsync();
+					throw new Exception($"Failed to Query for Workspaces. [{nameof(responseContent)}: {responseContent}]");
 				}
 				string resultString = await queryResponse.Content.ReadAsStringAsync();
 				dynamic result = JObject.Parse(resultString) as JObject;
@@ -262,7 +282,8 @@ namespace Helpers.Implementations
 				HttpResponseMessage queryResponse = await RestHelper.MakePostAsync(httpClient, Constants.Connection.RestUrlEndpoints.ObjectManager.QuerySlimUrl, queryPayload);
 				if (!queryResponse.IsSuccessStatusCode)
 				{
-					throw new Exception("Failed to Query for Workspaces");
+					string responseContent = await queryResponse.Content.ReadAsStringAsync();
+					throw new Exception($"Failed to Query for Workspaces. [{nameof(responseContent)}: {responseContent}]");
 				}
 				string resultString = await queryResponse.Content.ReadAsStringAsync();
 				dynamic result = JObject.Parse(resultString) as JObject;
@@ -304,7 +325,8 @@ namespace Helpers.Implementations
 				HttpResponseMessage queryResponse = await RestHelper.MakePostAsync(httpClient, Constants.Connection.RestUrlEndpoints.ObjectManager.QuerySlimUrl, queryPayload);
 				if (!queryResponse.IsSuccessStatusCode)
 				{
-					throw new Exception("Failed to Query for Workspaces");
+					string responseContent = await queryResponse.Content.ReadAsStringAsync();
+					throw new Exception($"Failed to Query for Workspaces. [{nameof(responseContent)}: {responseContent}]");
 				}
 				string resultString = await queryResponse.Content.ReadAsStringAsync();
 				dynamic result = JObject.Parse(resultString) as JObject;

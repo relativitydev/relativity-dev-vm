@@ -40,7 +40,8 @@ namespace Helpers.Implementations
 			}
 			else
 			{
-				Console.WriteLine("Failed to install application to the library.");
+				string responseContent = await updateResponseMessage.Content.ReadAsStringAsync();
+				Console.WriteLine($"Failed to install application to the library. [{nameof(responseContent)}: {responseContent}]");
 				return false;
 			}
 

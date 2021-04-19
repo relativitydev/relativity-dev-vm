@@ -3,10 +3,8 @@
 - This file is used to list changes made in the relativity-dev-mm repo.
 - **Place Newer updates on the top**
 
--------------------------
-
-## 2021-02-23
-- [REL-524120](https://jira.kcura.com/browse/REL-524120) - Created Osier release branch from latest Ninebark branch
+## 2021-04-19
+- [REL-539853](https://jira.kcura.com/browse/REL-539853) - SeriLog logging and improved HTTP request exception handling.
 
 -------------------------
 
@@ -17,6 +15,19 @@
 	- Cleaned Relativity Instance string in RelativityVersionHelper
 - [REL-527052](https://jira.kcura.com/browse/REL-527052) - Remove Relativity Installer files after DevVM provisioning is complete.
 - [REL-527051](https://jira.kcura.com/browse/REL-527051) - Removed RSAPI references across all of the packages.
+
+-------------------------
+
+## 2021-02-23
+- [REL-524120](https://jira.kcura.com/browse/REL-524120) - Created Osier release branch from latest Ninebark branch
+
+-------------------------
+
+## 2021-02-22
+- [REL-527051](https://jira.kcura.com/browse/REL-527051) - Removed RSAPI references across all of the packages.
+	- Newtonsoft dll now pulled from files\default
+	- Cleaned Relativity Instance string in RelativityVersionHelper
+- [REL-527052](https://jira.kcura.com/browse/REL-527052) - Remove Relativity Installer files after DevVM provisioning is complete.
 
 -------------------------
 
