@@ -269,8 +269,13 @@ default['relativity']['response_file']['replacement_values'] =
     },
     {
         # Enable TLS communication when connecting to the service bus.
-        name: "TLSENABLED", 
+        name: "TLSENABLED",
         value: "1"
+    },
+    {
+        # The password for the RelativityScriptLogin account on the SQL Primary SQL Instance you are installing to.
+        name: "RELATIVITYSCRIPTLOGINPASSWORD",
+        value: ""
     }
 ]
 

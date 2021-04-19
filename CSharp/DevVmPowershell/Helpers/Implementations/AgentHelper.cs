@@ -59,7 +59,8 @@ namespace Helpers.Implementations
 			HttpResponseMessage response = await RestHelper.MakePostAsync(httpClient, url, request);
 			if (!response.IsSuccessStatusCode)
 			{
-				throw new Exception("Failed to Query for Agent Artifact Ids");
+				string responseContent = await response.Content.ReadAsStringAsync();
+				throw new Exception($"Failed to Query for Agent Artifact Ids. [{nameof(responseContent)}: {responseContent}]");
 			}
 			string result = await response.Content.ReadAsStringAsync();
 			JObject jObject = JObject.Parse(result);
@@ -81,7 +82,8 @@ namespace Helpers.Implementations
 			HttpResponseMessage response = await RestHelper.MakeGetAsync(httpClient, Constants.Connection.RestUrlEndpoints.AgentType.EndpointUrl);
 			if (!response.IsSuccessStatusCode)
 			{
-				throw new Exception("Failed to Get Agent Types in Instance");
+				string responseContent = await response.Content.ReadAsStringAsync();
+				throw new Exception($"Failed to Get Agent Types in Instance. [{nameof(responseContent)}: {responseContent}]");
 			}
 			string resultString = await response.Content.ReadAsStringAsync();
 			dynamic result = JsonConvert.DeserializeObject<dynamic>(resultString);
@@ -164,7 +166,8 @@ namespace Helpers.Implementations
 			HttpResponseMessage response = await RestHelper.MakePostAsync(httpClient, Constants.Connection.RestUrlEndpoints.Agent.EndpointUrl, createPayload);
 			if (!response.IsSuccessStatusCode)
 			{
-				throw new Exception("Failed to Create Agent");
+				string responseContent = await response.Content.ReadAsStringAsync();
+				throw new Exception($"Failed to Create Agent. [{nameof(responseContent)}: {responseContent}]");
 			}
 		}
 
@@ -177,7 +180,8 @@ namespace Helpers.Implementations
 			HttpResponseMessage response = await RestHelper.MakeDeleteAsync(httpClient, url);
 			if (!response.IsSuccessStatusCode)
 			{
-				throw new Exception($"Failed to Delete Agent : {agentArtifactId}");
+				string responseContent = await response.Content.ReadAsStringAsync();
+				throw new Exception($"Failed to Delete Agent : {agentArtifactId}. [{nameof(responseContent)}: {responseContent}]");
 			}
 		}
 
