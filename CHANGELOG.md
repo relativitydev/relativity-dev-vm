@@ -3,6 +3,9 @@
 - This file is used to list changes made in the relativity-dev-mm repo.
 - **Place Newer updates on the top**
 
+## 2021-04-19
+- [REL-539853](https://jira.kcura.com/browse/REL-539853) - SeriLog logging and improved HTTP request exception handling.
+
 -------------------------
 
 ## 2021-02-19
