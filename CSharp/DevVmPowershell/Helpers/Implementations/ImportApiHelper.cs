@@ -9,9 +9,13 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using Helpers.RequestModels;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using QueryResult = Relativity.Services.Objects.DataContracts.QueryResult;
 
 namespace Helpers.Implementations
@@ -20,21 +24,26 @@ namespace Helpers.Implementations
 	{
 		private readonly ImportAPI _importApi;
 		private ServiceFactory ServiceFactory { get; }
+		private static string InstanceAddress { get; set; }
+		private static string AdminUsername { get; set; }
+		private static string AdminPassword { get; set; }
 
-		public ImportApiHelper(IConnectionHelper connectionHelper)
+		public ImportApiHelper(IConnectionHelper connectionHelper, string instanceAddress, string adminUsername, string adminPassword)
 		{
 			ServiceFactory = connectionHelper.GetServiceFactory();
-
 			_importApi = connectionHelper.GetImportApi();
+			InstanceAddress = instanceAddress;
+			AdminUsername = adminUsername;
+			AdminPassword = adminPassword;
 		}
 
 		public async Task<int> AddDocumentsToWorkspace(int workspaceId, string fileType, int fileCount, string resourceFolderPath)
 		{
-			int numDocsBefore = await GetNumberOfDocumentsAsync(ServiceFactory, workspaceId, fileType);
+			int numDocsBefore = await GetNumberOfDocumentsAsync(workspaceId, fileType);
 
 			CreateAndExecuteJob(workspaceId, fileType, fileCount, numDocsBefore, resourceFolderPath);
 
-			int numDocsAfter = await GetNumberOfDocumentsAsync(ServiceFactory, workspaceId, fileType);
+			int numDocsAfter = await GetNumberOfDocumentsAsync(workspaceId, fileType);
 
 			return numDocsAfter - numDocsBefore;
 		}
@@ -118,39 +127,61 @@ namespace Helpers.Implementations
 			Console.WriteLine($"Job Finished With {jobReport.ErrorRowCount} Errors: ");
 		}
 
-		static async Task<int> GetNumberOfDocumentsAsync(ServiceFactory serviceFactory, int workspaceId, string fileType)
+		static async Task<int> GetNumberOfDocumentsAsync(int workspaceId, string fileType)
 		{
-			using (IObjectManager objectManager = serviceFactory.CreateProxy<IObjectManager>())
+			RestHelper restHelper = new RestHelper();
+			HttpClient httpClient = restHelper.GetHttpClient(InstanceAddress, AdminUsername, AdminPassword);
+			string url = $"Relativity.REST/api/Relativity.Objects/workspace/{workspaceId}/object/query";
+
+			ObjectManagerQueryRequestModel objectManagerQueryRequestModel = new ObjectManagerQueryRequestModel
 			{
-				QueryRequest queryRequest = new QueryRequest();
-				queryRequest.ObjectType = new ObjectTypeRef() { Name = Constants.DocumentCommonFields.DocumentTypeRef };
-				queryRequest.Fields = new List<FieldRef>()
+				request = new Request
 				{
-					new FieldRef() {
-						Name = Constants.DocumentCommonFields.ControlNumber
+					objectType = new Helpers.RequestModels.ObjectType
+					{
+						Name = Constants.DocumentCommonFields.DocumentTypeRef
 					},
-					new FieldRef() {
-						Name = Constants.DocumentCommonFields.HasImages
+					fields = new object[]
+					{
+						new
+						{
+							Name = Constants.DocumentCommonFields.ControlNumber
+						},
+						new
+						{
+							Name = Constants.DocumentCommonFields.HasImages
+						},
+						new
+						{
+							Name = Constants.DocumentCommonFields.HasNative
+						},
 					},
-					new FieldRef() {
-						Name = Constants.DocumentCommonFields.HasNative
-					}
-				};
+				},
+				start = 1,
+				length = 100
+			};
 
-				switch (fileType.ToLower())
-				{
-					case Constants.FileType.Document:
-						queryRequest.Condition = $"(('{Constants.DocumentCommonFields.ControlNumber}' LIKE 'DOC_'))";
-						break;
-					case Constants.FileType.Image:
-						queryRequest.Condition = $"(('{Constants.DocumentCommonFields.ControlNumber}' LIKE 'IMG_'))";
-						break;
-				}
-
-				QueryResult results = await objectManager.QueryAsync(workspaceId, queryRequest, 1, 100);
-
-				return results.TotalCount;
+			switch (fileType.ToLower())
+			{
+				case Constants.FileType.Document:
+					objectManagerQueryRequestModel.request.condition = $"(('{Constants.DocumentCommonFields.ControlNumber}' LIKE 'DOC_'))";
+					break;
+				case Constants.FileType.Image:
+					objectManagerQueryRequestModel.request.condition = $"(('{Constants.DocumentCommonFields.ControlNumber}' LIKE 'IMG_'))";
+					break;
 			}
+
+			string request = JsonConvert.SerializeObject(objectManagerQueryRequestModel);
+			HttpResponseMessage response = await restHelper.MakePostAsync(httpClient, url, request);
+			if (!response.IsSuccessStatusCode)
+			{
+				string responseContent = await response.Content.ReadAsStringAsync();
+				throw new Exception($"Failed to Query for number of Documents. [{nameof(responseContent)}: {responseContent}]");
+			}
+			string result = await response.Content.ReadAsStringAsync();
+			JObject jObject = JObject.Parse(result);
+			int totalCount = jObject["TotalCount"].Value<int>();
+			return totalCount;
 		}
 
 		public void CreateAndExecuteJob(int workspaceId, string fileType, int fileCount, int currentFileCount, string resourceFolderPath)

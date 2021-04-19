@@ -8,7 +8,7 @@ custom_log 'custom_log' do msg 'Enabling Viewer for RSMF' end
 powershell_script 'enable_viewer_for_rsmf' do
   code <<-EOH
     #{node['powershell_module']['import_module']}
-    Add-RsmfViewerOverride -RelativityInstanceName #{node['windows']['new_computer_name']} -RelativityAdminUserName #{node['relativity']['admin']['login']} -RelativityAdminPassword #{node['relativity']['admin']['password']} -SqlAdminUserName #{node['sql']['user']['eddsdbo']['login']} -SqlAdminPassword #{node['sql']['user']['sa']['password']}
+    Add-RsmfViewerOverride -RelativityInstanceName #{node['windows']['new_computer_name']} -RelativityAdminUserName #{node['relativity']['admin']['login']} -RelativityAdminPassword #{node['relativity']['admin']['password']} -SqlAdminUserName #{node['sql']['user']['eddsdbo']['login']} -SqlAdminPassword #{node['sql']['user']['sa']['password']}  -ErrorAction Stop
     EOH
 end
 

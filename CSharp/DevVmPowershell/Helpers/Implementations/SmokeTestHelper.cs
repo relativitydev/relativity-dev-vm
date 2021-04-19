@@ -1,52 +1,51 @@
 ﻿using Helpers.Interfaces;
-using kCura.Relativity.Client;
-using kCura.Relativity.Client.DTOs;
-using Relativity.Services.ServiceProxy;
+using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
+using System.Net.Http;
+using System.Threading.Tasks;
 
 namespace Helpers.Implementations
 {
 	public class SmokeTestHelper : ISmokeTestHelper
 	{
-		private ServiceFactory ServiceFactory { get; }
-		public SmokeTestHelper(IConnectionHelper connectionHelper)
+		private IConnectionHelper ConnectionHelper { get; }
+		private IRestHelper RestHelper { get; }
+		private IRetryLogicHelper RetryLogicHelper { get; }
+		private IWorkspaceHelper WorkspaceHelper { get; }
+
+		public SmokeTestHelper(IConnectionHelper connectionHelper, IRestHelper restHelper, IRetryLogicHelper retryLogicHelper, IWorkspaceHelper workspaceHelper)
 		{
-			ServiceFactory = connectionHelper.GetServiceFactory();
+			ConnectionHelper = connectionHelper;
+			RestHelper = restHelper;
+			RetryLogicHelper = retryLogicHelper;
+			WorkspaceHelper = workspaceHelper;
 		}
 
-		public bool WaitForSmokeTestToComplete(string workspaceName, int timeoutValueInMinutes)
+		public async Task<bool> WaitForSmokeTestToCompleteAsync(string workspaceName, int timeoutValueInMinutes)
 		{
 			try
 			{
-				bool completed = false;
-				bool hasFailingTests = false;
-				int maxTimeInMilliseconds = timeoutValueInMinutes * 60 * 1000;
-				const int sleepTimeInMilliSeconds = Constants.Waiting.SLEEP_TIME_IN_SECONDS * 1000;
-				int currentWaitTimeInMilliseconds = 0;
-				using (IRSAPIClient rsapiClient = ServiceFactory.CreateProxy<IRSAPIClient>())
-				{
-					rsapiClient.APIOptions.WorkspaceID = -1;
-					Console.WriteLine("Querying for Workspace Artifact Id");
-					int workspaceArtifactId = QueryForWorkspaceArtifactId(workspaceName, rsapiClient);
-					Console.WriteLine("Queried for Workspace Artifact Id");
+				int workspaceId = await WorkspaceHelper.GetFirstWorkspaceArtifactIdQueryAsync(workspaceName);
+				int smokeTestObjectTypeId = await RetryLogicHelper.RetryFunctionAsync<int>(Constants.Waiting.SMOKE_TEST_HELPER_RETRY_COUNT, Constants.Waiting.SMOKE_TEST_HELPER_SLEEP_TIME_IN_SECONDS,
+					async () => await GetSmokeTestObjectTypeIdAsync(workspaceId));
 
-					rsapiClient.APIOptions.WorkspaceID = workspaceArtifactId;
-					while (currentWaitTimeInMilliseconds < maxTimeInMilliseconds && completed == false)
+				bool didTestsComplete = await RetryLogicHelper.RetryFunctionAsync<bool>(Constants.Waiting.SMOKE_TEST_HELPER_RETRY_COUNT, timeoutValueInMinutes * 60,
+					async () =>
 					{
-						Thread.Sleep(sleepTimeInMilliSeconds);
+						HttpResponseMessage queryResponse = await QueryForSmokeTestRdosAsync(workspaceId, smokeTestObjectTypeId);
 
-						Console.WriteLine("Querying for Smoke Test RDOs");
-						var queryResultSet = QueryForTestRDOs(rsapiClient);
-						Console.WriteLine("Queried for Smoke Test RDOs");
+						string resultString = await queryResponse.Content.ReadAsStringAsync();
+						dynamic queryResult = JsonConvert.DeserializeObject<dynamic>(resultString);
 
+						int totalTests = queryResult.TotalCount;
 						int numberSuccess = 0;
 						int numberFail = 0;
-						foreach (Result<RDO> result in queryResultSet.Results)
+						bool completed = false;
+						bool hasFailingTests = false;
+
+						foreach (var test in queryResult.Objects)
 						{
-							string status = result.Artifact.Fields.Get(new Guid(Constants.SmokeTest.Guids.Fields.Status_FixedLengthText)).ValueAsFixedLengthText;
+							string status = test.Values[1];
 							if (status.Contains("Success"))
 							{
 								numberSuccess++;
@@ -56,27 +55,27 @@ namespace Helpers.Implementations
 								numberFail++;
 								hasFailingTests = true;
 								completed = true;
-								string testName = result.Artifact.Fields.Get(new Guid(Constants.SmokeTest.Guids.Fields.Name_FixedLengthText)).ValueAsFixedLengthText;
-								string errorDetails = result.Artifact.Fields.Get(new Guid(Constants.SmokeTest.Guids.Fields.ErrorDetails_LongText)).ValueAsLongText;
+								string testName = test.Values[0];
+								string errorDetails = test.Values[3];
 								Console.WriteLine($"Failing Test Found: {testName}");
 								Console.WriteLine($"Error Details: {errorDetails}");
 								break;
 							}
 						}
 
-						if (queryResultSet.Results.Count > 0)
+						if ((numberSuccess + numberFail) == totalTests && totalTests > 0)
 						{
-							if ((numberSuccess + numberFail) == queryResultSet.Results.Count)
-							{
-								completed = true;
-							}
+							completed = true;
+						}
+						else if (!completed)
+						{
+							throw new Exception("Smoke tests are not yet completed.");
 						}
 
-						currentWaitTimeInMilliseconds += sleepTimeInMilliSeconds;
-					}
-				}
+						return completed && !hasFailingTests;
+					});
 
-				return completed && !hasFailingTests;
+				return didTestsComplete;
 			}
 			catch (Exception ex)
 			{
@@ -84,39 +83,81 @@ namespace Helpers.Implementations
 			}
 		}
 
-		private static int QueryForWorkspaceArtifactId(string workspaceName, IRSAPIClient rsapiClient)
+		private async Task<int> GetSmokeTestObjectTypeIdAsync(int workspaceId)
 		{
-			Query<Workspace> workspaceQuery = new Query<Workspace>();
-			workspaceQuery.Condition = new TextCondition(WorkspaceFieldNames.Name, TextConditionEnum.EqualTo, workspaceName);
-			QueryResultSet<Workspace> workspaceQueryResultSet = rsapiClient.Repositories.Workspace.Query(workspaceQuery);
-			if (!workspaceQueryResultSet.Success)
+			int objectTypeId;
+			try
 			{
-				throw new Exception("Failed to Query for Workspace");
+				string url = Constants.Connection.RestUrlEndpoints.ObjectManager.QuerySlimUrl.Replace("-1", workspaceId.ToString());
+				HttpClient httpClient = RestHelper.GetHttpClient(ConnectionHelper.RelativityInstanceName, ConnectionHelper.RelativityAdminUserName, ConnectionHelper.RelativityAdminPassword);
+				var queryPayloadObject = new
+				{
+					request = new
+					{
+						objectType = new { artifactTypeId = Constants.OBJECT_TYPE_TYPE_ARTIFACT_ID },
+						fields = new[]
+						{
+							new { Name = "Name" },
+							new { Name = "Artifact Type ID" },
+						},
+						Condition = $"'Name' == '{Constants.SmokeTest.ObjectNames.SmokeTestApplicationObjectTypeName}'",
+					},
+					start = 1,
+					length = 25
+				};
+
+				string queryPayload = JsonConvert.SerializeObject(queryPayloadObject);
+				HttpResponseMessage queryResponse = await RestHelper.MakePostAsync(httpClient, url, queryPayload);
+				if (!queryResponse.IsSuccessStatusCode)
+				{
+					string responseContent = await queryResponse.Content.ReadAsStringAsync();
+					throw new Exception($"Failed to Query for Smoke Test Object Type. [{nameof(responseContent)}: {responseContent}]");
+				}
+
+				string resultString = await queryResponse.Content.ReadAsStringAsync();
+				dynamic queryResult = JsonConvert.DeserializeObject<dynamic>(resultString);
+				objectTypeId = queryResult.Objects.First.ArtifactID;
+			}
+			catch (Exception ex)
+			{
+				throw new Exception(
+					$"Error Reading the {Constants.SmokeTest.ObjectNames.SmokeTestApplicationName} ObjectType", ex);
 			}
 
-			int workspaceArtifactId = workspaceQueryResultSet.Results.First().Artifact.ArtifactID;
-			return workspaceArtifactId;
+			return objectTypeId;
 		}
 
-		private static QueryResultSet<RDO> QueryForTestRDOs(IRSAPIClient rsapiClient)
+		private async Task<HttpResponseMessage> QueryForSmokeTestRdosAsync(int workspaceId, int smokeTestObjectTypeId)
 		{
-			Query<RDO> query = new Query<RDO>();
-			query.ArtifactTypeGuid = new Guid(Constants.SmokeTest.Guids.TestObjectType);
-			query.Fields = new List<FieldValue>
+			string url = Constants.Connection.RestUrlEndpoints.ObjectManager.QuerySlimUrl.Replace("-1", workspaceId.ToString());
+			HttpClient httpClient = RestHelper.GetHttpClient(ConnectionHelper.RelativityInstanceName, ConnectionHelper.RelativityAdminUserName, ConnectionHelper.RelativityAdminPassword);
+
+			var queryPayloadObject = new
 			{
-				new FieldValue(new Guid(Constants.SmokeTest.Guids.Fields.Name_FixedLengthText)),
-				new FieldValue(new Guid(Constants.SmokeTest.Guids.Fields.Status_FixedLengthText)),
-				new FieldValue(new Guid(Constants.SmokeTest.Guids.Fields.Error_LongText)),
-				new FieldValue(new Guid(Constants.SmokeTest.Guids.Fields.ErrorDetails_LongText))
+				request = new
+				{
+					objectType = new { Guid = Constants.SmokeTest.Guids.TestObjectType },
+					fields = new[]
+					{
+						new { Guid = Constants.SmokeTest.Guids.Fields.Name_FixedLengthText },
+						new { Guid = Constants.SmokeTest.Guids.Fields.Status_FixedLengthText },
+						new { Guid = Constants.SmokeTest.Guids.Fields.Error_LongText },
+						new { Guid = Constants.SmokeTest.Guids.Fields.ErrorDetails_LongText },
+					},
+				},
+				start = 1,
+				length = 25
 			};
 
-			QueryResultSet<RDO> queryResultSet = rsapiClient.Repositories.RDO.Query(query);
-			if (!queryResultSet.Success)
+			string queryPayload = JsonConvert.SerializeObject(queryPayloadObject);
+			HttpResponseMessage queryResponse = await RestHelper.MakePostAsync(httpClient, url, queryPayload);
+			if (!queryResponse.IsSuccessStatusCode)
 			{
-				throw new Exception("Unable to query for Smoke Test Test Objects");
+				string responseContent = await queryResponse.Content.ReadAsStringAsync();
+				throw new Exception($"Failed to Query for Smoke Test RDO. [{nameof(responseContent)}: {responseContent}]");
 			}
 
-			return queryResultSet;
+			return queryResponse;
 		}
 	}
 }

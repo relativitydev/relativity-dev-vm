@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Management.Automation;
-using System.Text;
-using System.Threading.Tasks;
-using Helpers.Implementations;
+﻿using Helpers.Implementations;
 using Helpers.Interfaces;
+using System;
+using System.Management.Automation;
 
 namespace DevVmPsModules.Cmdlets
 {
@@ -79,10 +75,16 @@ namespace DevVmPsModules.Cmdlets
 				relativityAdminPassword: RelativityAdminPassword,
 				sqlAdminUserName: SqlAdminUserName,
 				sqlAdminPassword: SqlAdminPassword);
-			ISmokeTestHelper smokeTestHelper = new SmokeTestHelper(connectionHelper);
+			ISqlRunner sqlRunner = new SqlRunner(connectionHelper);
+			ISqlHelper sqlHelper = new SqlHelper(sqlRunner);
+			IRestHelper restHelper = new RestHelper();
+			ILogService logService = new LogService();
+			IWorkspaceHelper workspaceHelper = new WorkspaceHelper(logService, connectionHelper, restHelper, sqlHelper);
+			IRetryLogicHelper retryLogicHelper = new RetryLogicHelper();
+			ISmokeTestHelper smokeTestHelper = new SmokeTestHelper(connectionHelper, restHelper, retryLogicHelper, workspaceHelper);
 
 			int timeoutValueInMinutes = int.Parse(TimeoutValueInMinutes);
-			bool testsCompleted = smokeTestHelper.WaitForSmokeTestToComplete(WorkspaceName, timeoutValueInMinutes);
+			bool testsCompleted = smokeTestHelper.WaitForSmokeTestToCompleteAsync(WorkspaceName, timeoutValueInMinutes).Result;
 			if (!testsCompleted)
 			{
 				throw new Exception("Tests did not all complete successfully");

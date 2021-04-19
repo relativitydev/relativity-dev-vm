@@ -6,7 +6,6 @@ custom_log 'custom_log' do msg "recipe_start_time(#{recipe_name}): #{start_time}
 relativity_api_files_to_copy = [
   "kCura.dll",
   "kCura.Relativity.Client.dll",
-  "Newtonsoft.Json.dll",
   "Relativity.dll",
   "Relativity.API.dll",
   "Relativity.OAuth2Client.Interfaces.dll",
@@ -22,8 +21,6 @@ relativity_api_library_files_to_copy = [
   "Polly.dll", # Required for Import API
   "Relativity.Logging.dll", # Required for Import API
   "Relativity.Logging.Interfaces.dll", # Required for Import API
-  "Relativity.Kepler.dll", # Required for Object Manager, Default 2.7.0.0
-  "Relativity.Services.DataContracts.dll" # Required for Object Manager, Default 13.2.0.0
 ]
 
 # Copy ServiceHost files
@@ -35,7 +32,7 @@ relativity_api_files_to_copy.each do |source_file_name|
 
   powershell_script 'copying_relativity_api_dll' do
     code <<-EOH
-      Copy-Item "#{source_file_full_path}" -Destination "#{destination_file_full_path}"
+      Copy-Item "#{source_file_full_path}" -Destination "#{destination_file_full_path}"  -ErrorAction Stop
       EOH
   end
   custom_log 'custom_log' do msg "Copied Relativity API DLL to Chef Cache Location - #{source_file_name}" end
@@ -50,7 +47,7 @@ relativity_api_library_files_to_copy.each do |source_file_name|
 
   powershell_script 'copying_relativity_api_library_dll' do
     code <<-EOH
-      Copy-Item "#{source_file_full_path}" -Destination "#{destination_file_full_path}"
+      Copy-Item "#{source_file_full_path}" -Destination "#{destination_file_full_path}"  -ErrorAction Stop
       EOH
   end
   custom_log 'custom_log' do msg "Copied Relativity API Library DLL to Chef Cache Location - #{source_file_name}" end
@@ -62,7 +59,7 @@ destination_folder_full_path = win_friendly_path(Chef::Config[:file_cache_path])
 
 powershell_script 'copying_relativity_oi_folder' do
   code <<-EOH
-    Copy-Item "#{source_folder_full_path}" -Destination "#{destination_folder_full_path}"  -Force -Recurse
+    Copy-Item "#{source_folder_full_path}" -Destination "#{destination_folder_full_path}"  -Force -Recurse  -ErrorAction Stop
     EOH
 end
 
@@ -70,6 +67,11 @@ end
 powershell_module_related_files_to_copy = [
   'DevVmPsModules.dll',
   'Helpers.dll',
+  'Serilog.dll', # Required for ILogService
+  'Serilog.Formatting.Compact.dll', # Required for ILogService
+  'Serilog.Sinks.Console.dll', # Required for ILogService
+  'Serilog.Sinks.Debug.dll', # Required for ILogService
+  'Serilog.Sinks.File.dll', # Required for ILogService
   'DbContextHelper.dll',
   'Relativity.Imaging.Services.Interfaces.dll',
   'FaspManager.dll', # Required for Import API
@@ -79,7 +81,10 @@ powershell_module_related_files_to_copy = [
   'Relativity.Transfer.Client.Core.dll', # Required for Import API
   'Relativity.Transfer.Client.Aspera.dll', # Required for Import API
   'Relativity.Transfer.Client.FileShare.dll', # Required for Import API
-  'Relativity.Transfer.Client.Http.dll' # Required for Import API
+  'Relativity.Transfer.Client.Http.dll', # Required for Import API
+  "Relativity.Kepler.dll", # Required for Object Manager, Default 2.7.0.0
+  "Relativity.Services.DataContracts.dll", # Required for Object Manager, Default 13.2.0.0
+  "Newtonsoft.Json.dll" # Don't pull this from Relativity, use the dll from the files\default folder
 ]
 
 powershell_module_related_files_to_copy.each do |source_file_name|
