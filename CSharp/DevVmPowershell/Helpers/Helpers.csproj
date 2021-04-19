@@ -38,33 +38,43 @@
     </Reference>
     <Reference Include="FaspManager, Version=3.7.2.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.Transfer.Client.6.2.4\lib\net462\FaspManager.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="FreeImageNET, Version=3.18.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.DataExchange.Client.SDK.1.6.2\lib\net462\FreeImageNET.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="kCura, Version=10.3.170.1, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.Other.10.3.170.1\lib\net462\kCura.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.12.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="oi, Version=2019.3.0.728, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.OutsideIn.2019.3.0\lib\net40\oi.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Polly, Version=5.3.1.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Polly.5.3.1\lib\net45\Polly.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Relativity, Version=10.3.170.1, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.Other.10.3.170.1\lib\net462\Relativity.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.API, Version=10.3.170.1, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.Api.10.3.170.1\lib\net462\Relativity.API.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.DataExchange.Client.SDK, Version=1.6.2.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.DataExchange.Client.SDK.1.6.2\lib\net462\Relativity.DataExchange.Client.SDK.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.DataTransfer.MessageService, Version=10.2.0.1, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.DataExchange.Client.SDK.1.6.2\lib\net462\Relativity.DataTransfer.MessageService.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.Imaging.Services.Interfaces, Version=10.3.170.1, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -72,6 +82,7 @@
     </Reference>
     <Reference Include="Relativity.Kepler, Version=1.0.1.627, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.ObjectManager.10.3.226.8\lib\net462\Relativity.Kepler.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.Logging, Version=2019.5.1.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.Logging.2019.5.1\lib\net462\Relativity.Logging.dll</HintPath>
@@ -81,24 +92,31 @@
     </Reference>
     <Reference Include="Relativity.OAuth2Client, Version=1.0.27.2, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.OAuth2.Client.1.0.27\lib\net462\Relativity.OAuth2Client.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.OAuth2Client.IdentityModel, Version=1.0.27.2, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.OAuth2.Client.1.0.27\lib\net462\Relativity.OAuth2Client.IdentityModel.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.OAuth2Client.IdentityModel.Interfaces, Version=1.0.27.2, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.OAuth2.Client.1.0.27\lib\net462\Relativity.OAuth2Client.IdentityModel.Interfaces.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.OAuth2Client.Implicit, Version=1.0.27.2, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.OAuth2.Client.1.0.27\lib\net462\Relativity.OAuth2Client.Implicit.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.OAuth2Client.Interfaces, Version=1.0.27.2, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.OAuth2.Client.1.0.27\lib\net462\Relativity.OAuth2Client.Interfaces.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.Services.DataContracts, Version=10.3.226.8, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.ObjectManager.10.3.226.8\lib\net462\Relativity.Services.DataContracts.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.Services.Interfaces, Version=10.3.226.8, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.ObjectManager.10.3.226.8\lib\net462\Relativity.Services.Interfaces.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.Services.Interfaces.Private, Version=10.3.170.1, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -106,12 +124,10 @@
     </Reference>
     <Reference Include="Relativity.Services.ServiceProxy, Version=1.0.1.627, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.ObjectManager.10.3.226.8\lib\net462\Relativity.Services.ServiceProxy.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.Telemetry.APM, Version=9.4.164.2, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.Telemetry.Client.9.4.164\lib\net462\Relativity.Telemetry.APM.dll</HintPath>
-    </Reference>
-    <Reference Include="Relativity.Telemetry.DataContracts.Shared, Version=9.4.164.2, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.Telemetry.Client.9.4.164\lib\net462\Relativity.Telemetry.DataContracts.Shared.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.Telemetry.MetricsCollection, Version=9.4.164.2, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.Telemetry.Client.9.4.164\lib\net462\Relativity.Telemetry.MetricsCollection.dll</HintPath>
@@ -121,24 +137,31 @@
     </Reference>
     <Reference Include="Relativity.Telemetry.Services.Interface, Version=2019.1.0.3, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.Telemetry.Services.Interface.2019.1.0\lib\net462\Relativity.Telemetry.Services.Interface.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.Transfer.Client, Version=6.2.4.3, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.Transfer.Client.6.2.4\lib\net462\Relativity.Transfer.Client.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.Transfer.Client.Aspera, Version=6.2.4.3, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.Transfer.Client.6.2.4\lib\net462\Relativity.Transfer.Client.Aspera.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.Transfer.Client.Core, Version=6.2.4.3, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.Transfer.Client.6.2.4\lib\net462\Relativity.Transfer.Client.Core.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.Transfer.Client.FileShare, Version=6.2.4.3, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.Transfer.Client.6.2.4\lib\net462\Relativity.Transfer.Client.FileShare.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.Transfer.Client.Http, Version=6.2.4.3, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.Transfer.Client.6.2.4\lib\net462\Relativity.Transfer.Client.Http.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Renci.SshNet, Version=2016.0.0.0, Culture=neutral, PublicKeyToken=1cee9f8bde3db106, processorArchitecture=MSIL">
       <HintPath>..\packages\SSH.NET.2016.0.0\lib\net40\Renci.SshNet.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Serilog, Version=2.0.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">
       <HintPath>..\packages\Serilog.2.10.0\lib\net46\Serilog.dll</HintPath>
@@ -163,8 +186,13 @@
     <Reference Include="System.Management.Automation, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.PowerShell.5.ReferenceAssemblies.1.1.0\lib\net4\System.Management.Automation.dll</HintPath>
     </Reference>
+    <Reference Include="System.Reactive, Version=4.0.0.0, Culture=neutral, PublicKeyToken=94bc3704cddfc263, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Reactive.4.0.0\lib\net46\System.Reactive.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System.Runtime, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Runtime.4.3.0\lib\net462\System.Runtime.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System.Runtime.InteropServices, Version=4.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Runtime.InteropServices.4.3.0\lib\net462\System.Runtime.InteropServices.dll</HintPath>
@@ -177,6 +205,7 @@
     <Reference Include="System.Xml" />
     <Reference Include="ZetaLongPaths, Version=1.0.0.32, Culture=neutral, PublicKeyToken=b764f59068f31f38, processorArchitecture=MSIL">
       <HintPath>..\packages\ZetaLongPaths.1.0.0.32\lib\net452-full\ZetaLongPaths.dll</HintPath>
+      <Private>True</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup>
