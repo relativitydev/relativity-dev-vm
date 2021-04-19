@@ -117,7 +117,8 @@ namespace Helpers.Implementations
 		  HttpResponseMessage createResponse = await RestHelper.MakePostAsync(httpClient, $"{Constants.Connection.RestUrlEndpoints.ProcessingManager.ProcessingSourceCreateUrl}/", createPayload);
 		  if (!createResponse.IsSuccessStatusCode)
 		  {
-			  throw new System.Exception("Failed to Create Processing Source Location");
+			  string responseContent = await createResponse.Content.ReadAsStringAsync();
+			  throw new Exception($"Failed to Create Processing Source Location. [{nameof(responseContent)}: {responseContent}]");
 		  }
 		  string resultString = await createResponse.Content.ReadAsStringAsync();
 		  int processingChoiceId = Int32.Parse(resultString);

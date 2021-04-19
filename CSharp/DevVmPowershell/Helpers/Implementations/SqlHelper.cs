@@ -283,7 +283,7 @@ namespace Helpers.Implementations
 			}
 			catch (Exception ex)
 			{
-				throw new Exception("Error Retrieving Workspaces where the Application is installed");
+				throw new Exception("Error Retrieving Workspaces where the Application is installed", ex);
 			}
 		}
 	}

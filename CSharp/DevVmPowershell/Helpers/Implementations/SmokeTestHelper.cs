@@ -110,7 +110,8 @@ namespace Helpers.Implementations
 				HttpResponseMessage queryResponse = await RestHelper.MakePostAsync(httpClient, url, queryPayload);
 				if (!queryResponse.IsSuccessStatusCode)
 				{
-					throw new Exception("Failed to Query for Smoke Test Object Type");
+					string responseContent = await queryResponse.Content.ReadAsStringAsync();
+					throw new Exception($"Failed to Query for Smoke Test Object Type. [{nameof(responseContent)}: {responseContent}]");
 				}
 
 				string resultString = await queryResponse.Content.ReadAsStringAsync();
@@ -152,7 +153,8 @@ namespace Helpers.Implementations
 			HttpResponseMessage queryResponse = await RestHelper.MakePostAsync(httpClient, url, queryPayload);
 			if (!queryResponse.IsSuccessStatusCode)
 			{
-				throw new Exception("Failed to Query for Smoke Test RDO");
+				string responseContent = await queryResponse.Content.ReadAsStringAsync();
+				throw new Exception($"Failed to Query for Smoke Test RDO. [{nameof(responseContent)}: {responseContent}]");
 			}
 
 			return queryResponse;

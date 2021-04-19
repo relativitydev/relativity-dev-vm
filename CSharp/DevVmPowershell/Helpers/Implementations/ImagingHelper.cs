@@ -67,7 +67,8 @@ namespace Helpers.Implementations
 			HttpResponseMessage response = await RestHelper.MakePostAsync(httpClient, Constants.Connection.RestUrlEndpoints.ImagingProfile.CreateEndpointUrl, request);
 			if (!response.IsSuccessStatusCode)
 			{
-				throw new Exception("Failed to Create Imaging Profile");
+				string responseContent = await response.Content.ReadAsStringAsync();
+				throw new Exception($"Failed to Create Imaging Profile. [{nameof(responseContent)}: {responseContent}]");
 			}
 			int imagingProfileArtifactId = Convert.ToInt32(await response.Content.ReadAsStringAsync());
 
@@ -100,7 +101,8 @@ namespace Helpers.Implementations
 			HttpResponseMessage response = await RestHelper.MakePostAsync(httpClient, Constants.Connection.RestUrlEndpoints.ImagingSet.CreateEndpointUrl, request);
 			if (!response.IsSuccessStatusCode)
 			{
-				throw new Exception("Failed to Create Imaging Set");
+				string responseContent = await response.Content.ReadAsStringAsync();
+				throw new Exception($"Failed to Create Imaging Set. [{nameof(responseContent)}: {responseContent}]");
 			}
 			int imagingSetArtifactId = Convert.ToInt32(await response.Content.ReadAsStringAsync());
 
@@ -127,7 +129,8 @@ namespace Helpers.Implementations
 			HttpResponseMessage response = await RestHelper.MakePostAsync(httpClient, Constants.Connection.RestUrlEndpoints.ImagingJob.RunImagingSetEndpointUrl, request);
 			if (!response.IsSuccessStatusCode)
 			{
-				throw new Exception("Failed to Run Imaging Job");
+				string responseContent = await response.Content.ReadAsStringAsync();
+				throw new Exception($"Failed to Run Imaging Job. [{nameof(responseContent)}: {responseContent}]");
 			}
 
 			Console.WriteLine("Created Imaging Job!");
@@ -247,7 +250,8 @@ namespace Helpers.Implementations
 			HttpResponseMessage response = await RestHelper.MakePostAsync(httpClient, Constants.Connection.RestUrlEndpoints.KeywordSearch.CreateEndpointUrl, request);
 			if (!response.IsSuccessStatusCode)
 			{
-				throw new Exception("Failed to Created a Keyword Search");
+				string responseContent = await response.Content.ReadAsStringAsync();
+				throw new Exception($"Failed to Create a Keyword Search. [{nameof(responseContent)}: {responseContent}]");
 			}
 			int keywordSearchArtifactId = Convert.ToInt32(await response.Content.ReadAsStringAsync());
 
@@ -281,7 +285,8 @@ namespace Helpers.Implementations
 				HttpResponseMessage queryResponse = await RestHelper.MakePostAsync(httpClient, url, queryPayload);
 				if (!queryResponse.IsSuccessStatusCode)
 				{
-					throw new Exception("Failed to Query for Documents");
+					string responseContent = await queryResponse.Content.ReadAsStringAsync();
+					throw new Exception($"Failed to Query for Documents. [{nameof(responseContent)}: {responseContent}]");
 				}
 				string resultString = await queryResponse.Content.ReadAsStringAsync();
 				dynamic result = JObject.Parse(resultString) as JObject;

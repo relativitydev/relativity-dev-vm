@@ -78,7 +78,8 @@ namespace DevVmPsModules.Cmdlets
 			ISqlRunner sqlRunner = new SqlRunner(connectionHelper);
 			ISqlHelper sqlHelper = new SqlHelper(sqlRunner);
 			IRestHelper restHelper = new RestHelper();
-			IWorkspaceHelper workspaceHelper = new WorkspaceHelper(connectionHelper, restHelper, sqlHelper);
+			ILogService logService = new LogService();
+			IWorkspaceHelper workspaceHelper = new WorkspaceHelper(logService, connectionHelper, restHelper, sqlHelper);
 			IRetryLogicHelper retryLogicHelper = new RetryLogicHelper();
 			IApplicationInstallHelper applicationInstallHelper = new ApplicationInstallHelper(connectionHelper, restHelper, workspaceHelper, retryLogicHelper);
 
