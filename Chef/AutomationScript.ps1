@@ -73,7 +73,7 @@ $global:devVmVersionsToCreate = New-Object System.Collections.ArrayList
 [Boolean] $global:toggleCopyToLocalNetworkStorage = $true # Set to $false when you do not want to copy the DevVm to the network storage
 [Boolean] $global:toggleCopyToLocalDriveStorage = $true # Set to $false when you do not want to copy the DevVm to the local drive storage
 [Boolean] $global:toggleUploadToAzureDevVmBlobStorage = $true # Set to $false when you do not want to copy the DevVm to the network storage
-[Boolean] $global:toggleAddVersionToSolutionSnapshotDatabase = $true # Set to $false when you do not want to add the Relativity Version to the Solution Snapshot Database
+# [Boolean] $global:toggleAddVersionToSolutionSnapshotDatabase = $true # Set to $false when you do not want to add the Relativity Version to the Solution Snapshot Database
 [Boolean] $global:toggleSkipCopyingRelativityAndInvariantInstallerAndResponseFiles = $false # Set to $true when you want to create DevVM with pre-release Relativity Versions. Remember to manually copy the Relativity and Invariant installer and response files to the network storage
 
 function Reset-Logs-Environment-Variable()
@@ -662,29 +662,29 @@ function Send-Slack-Failure-Message([string] $relativityVersionToCopy)
   }
 }
 
-function Add-Relativity-Version-To-Solution-Snapshot-Database([string] $relativityVersion)
-{
-  if ($global:toggleAddVersionToSolutionSnapshotDatabase -eq $true)
-  {
-    Write-Message-To-Screen "toggleAddVersionToSolutionSnapshotDatabase is set to True"
+# function Add-Relativity-Version-To-Solution-Snapshot-Database([string] $relativityVersion)
+# {
+#   if ($global:toggleAddVersionToSolutionSnapshotDatabase -eq $true)
+#   {
+#     Write-Message-To-Screen "toggleAddVersionToSolutionSnapshotDatabase is set to True"
 
-    Write-Heading-Message-To-Screen "Adding Relativity Version to the Solution Snapshot Database"
+#     Write-Heading-Message-To-Screen "Adding Relativity Version to the Solution Snapshot Database"
 
-    # Make sure we are in the same folder where the current running script (AutomationScript.ps1) exists
-    Write-Message-To-Screen "PSScriptroot: $($PSScriptroot)"
-    Set-Location $PSScriptroot
+#     # Make sure we are in the same folder where the current running script (AutomationScript.ps1) exists
+#     Write-Message-To-Screen "PSScriptroot: $($PSScriptroot)"
+#     Set-Location $PSScriptroot
     
-    # Run separate Solution Snapshot API Calls PowerShell Script
-    &"$PSScriptroot\AddRelativityVersionToSolutionSnapshotDatabase.ps1" "$Env:devvm_automation_salesforce_username" "$Env:devvm_automation_salesforce_password" "$relativityVersion" $global:sendSlackMessage $global:releaseName
+#     # Run separate Solution Snapshot API Calls PowerShell Script
+#     &"$PSScriptroot\AddRelativityVersionToSolutionSnapshotDatabase.ps1" "$Env:devvm_automation_salesforce_username" "$Env:devvm_automation_salesforce_password" "$relativityVersion" $global:sendSlackMessage $global:releaseName
   
-    Write-Message-To-Screen "Ran Add Relativity Version to Solution Snapshot Database script."
-    Write-Empty-Line-To-Screen
-  }
-  else
-  {
-    Write-Message-To-Screen "toggleAddVersionToSolutionSnapshotDatabase is set to False"
-  }
-}
+#     Write-Message-To-Screen "Ran Add Relativity Version to Solution Snapshot Database script."
+#     Write-Empty-Line-To-Screen
+#   }
+#   else
+#   {
+#     Write-Message-To-Screen "toggleAddVersionToSolutionSnapshotDatabase is set to False"
+#   }
+# }
 
 function Check-DevVm-Result-Text-File-For-Success()
 {
@@ -780,9 +780,10 @@ function Create-DevVm([string] $relativityVersionToCreate)
           
           # Send Slack Message to the Tools Slack channel to remind about the follow up tasks
           Send-Slack-Success-Message-Follow-Up-Tasks $relativityVersionToCreate
-          
-          # Add Relativity Version to Solution Snapshot Database
-          Add-Relativity-Version-To-Solution-Snapshot-Database $relativityVersionToCreate
+
+          # # No longer needed for R1
+          # # Add Relativity Version to Solution Snapshot Database
+          # Add-Relativity-Version-To-Solution-Snapshot-Database $relativityVersionToCreate
         }
         else
         {
