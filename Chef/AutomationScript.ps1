@@ -73,7 +73,7 @@ $global:devVmVersionsToCreate = New-Object System.Collections.ArrayList
 [Boolean] $global:toggleCopyToLocalNetworkStorage = $true # Set to $false when you do not want to copy the DevVm to the network storage
 [Boolean] $global:toggleCopyToLocalDriveStorage = $true # Set to $false when you do not want to copy the DevVm to the local drive storage
 [Boolean] $global:toggleUploadToAzureDevVmBlobStorage = $true # Set to $false when you do not want to copy the DevVm to the network storage
-[Boolean] $global:toggleAddVersionToSolutionSnapshotDatabase = $true # Set to $false when you do not want to add the Relativity Version to the Solution Snapshot Database
+[Boolean] $global:toggleAddVersionToSolutionSnapshotDatabase = $false # SERVER RELEASE ONLY: Set to $true when you want to add the Relativity Version to the Solution Snapshot Database
 [Boolean] $global:toggleSkipCopyingRelativityAndInvariantInstallerAndResponseFiles = $false # Set to $true when you want to create DevVM with pre-release Relativity Versions. Remember to manually copy the Relativity and Invariant installer and response files to the network storage
 
 function Reset-Logs-Environment-Variable()
