@@ -71,7 +71,7 @@ namespace DevVmPsModules.Cmdlets
 			IRetryLogicHelper retryLogicHelper = new RetryLogicHelper();
 			IImagingHelper imagingHelper = new ImagingHelper(connectionHelper, restHelper, retryLogicHelper);
 			ILogService logService = new LogService();
-			IWorkspaceHelper workspaceHelper = new WorkspaceHelper(logService, connectionHelper, restHelper, null);
+			IWorkspaceHelper workspaceHelper = new WorkspaceHelper(logService, connectionHelper, restHelper, null, retryLogicHelper);
 
 			// Run Imaging Job
 			int workspaceArtifactId = workspaceHelper.GetFirstWorkspaceArtifactIdQueryAsync(WorkspaceName).Result;

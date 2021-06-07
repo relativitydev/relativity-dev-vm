@@ -153,6 +153,8 @@ namespace Helpers
 			public const int SMOKE_TEST_HELPER_RETRY_COUNT = 10;
 			public const int IMAGING_HELPER_RETRY_COUNT = 60;
 			public const int IMAGING_HELPER_RETRY_DELAY = 10;
+			public const int WORKSPACE_HELPER_RETRY_COUNT = 60;
+			public const int WORKSPACE_HELPER_RETRY_DELAY = 10;
 		}
 
 		public class DocumentCommonFields

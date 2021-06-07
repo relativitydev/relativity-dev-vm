@@ -95,7 +95,8 @@ namespace DevVmPsModules.Cmdlets
 			IImportApiHelper importApiHelper = new ImportApiHelper(connectionHelper, RelativityInstanceName, RelativityAdminUserName, RelativityAdminPassword);
 			IRestHelper restHelper = new RestHelper();
 			ILogService logService = new LogService();
-			IWorkspaceHelper workspaceHelper = new WorkspaceHelper(logService, connectionHelper, restHelper, null);
+			IRetryLogicHelper retryLogicHelper = new RetryLogicHelper();
+			IWorkspaceHelper workspaceHelper = new WorkspaceHelper(logService, connectionHelper, restHelper, null, retryLogicHelper);
 
 			// Get workspaceId
 			int workspaceId = workspaceHelper.GetFirstWorkspaceArtifactIdQueryAsync(WorkspaceName).Result;

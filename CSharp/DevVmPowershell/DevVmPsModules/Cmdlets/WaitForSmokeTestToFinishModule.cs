@@ -79,8 +79,8 @@ namespace DevVmPsModules.Cmdlets
 			ISqlHelper sqlHelper = new SqlHelper(sqlRunner);
 			IRestHelper restHelper = new RestHelper();
 			ILogService logService = new LogService();
-			IWorkspaceHelper workspaceHelper = new WorkspaceHelper(logService, connectionHelper, restHelper, sqlHelper);
 			IRetryLogicHelper retryLogicHelper = new RetryLogicHelper();
+			IWorkspaceHelper workspaceHelper = new WorkspaceHelper(logService, connectionHelper, restHelper, sqlHelper, retryLogicHelper);
 			ISmokeTestHelper smokeTestHelper = new SmokeTestHelper(connectionHelper, restHelper, retryLogicHelper, workspaceHelper);
 
 			int timeoutValueInMinutes = int.Parse(TimeoutValueInMinutes);
