@@ -449,15 +449,15 @@ namespace Helpers.Implementations
 		public async Task WaitForTemplateWorkspaceToFinishUpgradingAsync(int templateID)
 		{
 			Console.WriteLine("Waiting for Template Workspace to finish upgrading");
-			bool upgradeComplete = await WorkspaceUpgradeCompletedAsync(templateID);
-			if (!upgradeComplete)
+			bool isUpgrading = await IsWorkspaceUpgradingAsync(templateID);
+			if (isUpgrading)
 			{
 				throw new Exception("Template workspace upgrade failed to complete");
 			}
 			Console.WriteLine("Template Workspace finished upgrading!");
 		}
 
-		private async Task<bool> WorkspaceUpgradeCompletedAsync(int templateId)
+		private async Task<bool> IsWorkspaceUpgradingAsync(int templateId)
 		{
 			try
 			{
@@ -468,7 +468,7 @@ namespace Helpers.Implementations
 				async () =>
 				{
 					bool result = SqlHelper.IsWorkspaceUpgrading(templateId);
-					if (!result)
+					if (result)
 					{
 						throw new Exception("Workspace still upgrading");
 					}
