@@ -17,13 +17,15 @@ namespace Helpers.Implementations
 		private IConnectionHelper ConnectionHelper { get; }
 		public ISqlHelper SqlHelper { get; set; }
 		private IRestHelper RestHelper { get; set; }
+		private IRetryLogicHelper RetryLogicHelper { get; set; }
 
-		public WorkspaceHelper(ILogService logService, IConnectionHelper connectionHelper, IRestHelper restHelper, ISqlHelper sqlHelper)
+		public WorkspaceHelper(ILogService logService, IConnectionHelper connectionHelper, IRestHelper restHelper, ISqlHelper sqlHelper, IRetryLogicHelper retryLogicHelper)
 		{
 			_logService = logService;
 			ConnectionHelper = connectionHelper;
 			SqlHelper = sqlHelper;
 			RestHelper = restHelper;
+			RetryLogicHelper = retryLogicHelper;
 		}
 
 		public async Task<int> CreateSingleWorkspaceAsync(string workspaceTemplateName, string workspaceName, bool enableDataGrid)
@@ -110,6 +112,9 @@ namespace Helpers.Implementations
 				int sqlServerID = (await GetEligibleSqlServersAsync(httpClient, resourcePoolID)).First();
 				int sqlFullTextLanguage = await GetDefaultSqlFullTextLanguageAsync(httpClient);
 				int templateID = (await QueryEligibleTemplatesAsync(httpClient)).First();
+
+				// Wait for Template workspace to finish upgrading
+				await WaitForTemplateWorkspaceToFinishUpgradingAsync(templateID);
 
 				var workspaceArtifactId = await ExecuteCreateWorkspaceAsync(workspaceName, statusID, matterID, defaultDownloadHandlerUrl, resourcePoolID, fileRepositoryID, cacheLocationID, sqlServerID, sqlFullTextLanguage, templateID, httpClient);
 
@@ -439,6 +444,44 @@ namespace Helpers.Implementations
 			HttpResponseMessage response = await httpClient.GetAsync($"{Constants.Connection.RestUrlEndpoints.WorkspaceManager.EndpointUrl}/default-download-handler-url");
 			string result = await response.Content.ReadAsStringAsync();
 			return JsonConvert.DeserializeObject<string>(result);
+		}
+
+		public async Task WaitForTemplateWorkspaceToFinishUpgradingAsync(int templateID)
+		{
+			Console.WriteLine("Waiting for Template Workspace to finish upgrading");
+			bool isUpgrading = await IsWorkspaceUpgradingAsync(templateID);
+			if (isUpgrading)
+			{
+				throw new Exception("Template workspace upgrade failed to complete");
+			}
+			Console.WriteLine("Template Workspace finished upgrading!");
+		}
+
+		private async Task<bool> IsWorkspaceUpgradingAsync(int templateId)
+		{
+			try
+			{
+				// Retry until workspace has finished upgrading
+				bool isWorkspaceStillUpgrading = await RetryLogicHelper
+				.RetryFunctionAsync<bool>(Constants.Waiting.WORKSPACE_HELPER_RETRY_COUNT,
+				Constants.Waiting.WORKSPACE_HELPER_RETRY_DELAY,
+				async () =>
+				{
+					bool result = SqlHelper.IsWorkspaceUpgrading(templateId);
+					if (result)
+					{
+						throw new Exception("Workspace still upgrading");
+					}
+					
+					return result;
+				});
+
+				return isWorkspaceStillUpgrading;
+			}
+			catch (Exception ex)
+			{
+				throw new Exception($@"Error when checking for if workspace is still upgrading. [ErrorMessage: {ex}]", ex);
+			}
 		}
 
 		#endregion

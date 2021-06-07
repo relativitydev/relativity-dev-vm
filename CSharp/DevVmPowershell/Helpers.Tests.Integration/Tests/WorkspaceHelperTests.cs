@@ -23,7 +23,8 @@ namespace Helpers.Tests.Integration.Tests
 			ISqlHelper sqlHelper = new SqlHelper(sqlRunner);
 			IRestHelper restHelper = new RestHelper();
 			ILogService logService = new LogService();
-			Sut = new WorkspaceHelper(logService, connectionHelper, restHelper, sqlHelper);
+			IRetryLogicHelper retryLogicHelper = new RetryLogicHelper();
+			Sut = new WorkspaceHelper(logService, connectionHelper, restHelper, sqlHelper, retryLogicHelper);
 		}
 
 		[TearDown]

@@ -27,7 +27,7 @@ namespace Helpers.Tests.Integration.Tests
 			ISqlHelper sqlHelper = new SqlHelper(sqlRunner);
 			ILogService logService = new LogService();
 			IRetryLogicHelper retryLogicHelper = new RetryLogicHelper();
-			WorkspaceHelper = new WorkspaceHelper(logService, connectionHelper, restHelper, sqlHelper);
+			WorkspaceHelper = new WorkspaceHelper(logService, connectionHelper, restHelper, sqlHelper, retryLogicHelper);
 			Sut = new ImagingHelper(connectionHelper, restHelper, retryLogicHelper);
 			ImportApiHelper = new ImportApiHelper(connectionHelper, TestConstants.RELATIVITY_INSTANCE_NAME, TestConstants.RELATIVITY_ADMIN_USER_NAME, TestConstants.RELATIVITY_ADMIN_PASSWORD);
 		}
