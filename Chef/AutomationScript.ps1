@@ -73,7 +73,7 @@ $global:devVmVersionsToCreate = New-Object System.Collections.ArrayList
 [Boolean] $global:toggleCopyToLocalNetworkStorage = $true # Set to $false when you do not want to copy the DevVm to the network storage
 [Boolean] $global:toggleCopyToLocalDriveStorage = $true # Set to $false when you do not want to copy the DevVm to the local drive storage
 [Boolean] $global:toggleUploadToAzureDevVmBlobStorage = $true # Set to $false when you do not want to copy the DevVm to the network storage
-[Boolean] $global:toggleAddVersionToSolutionSnapshotDatabase = $true # Set to $false when you do not want to add the Relativity Version to the Solution Snapshot Database
+[Boolean] $global:toggleAddVersionToSolutionSnapshotDatabase = $false # SERVER RELEASE ONLY: Set to $true when you want to add the Relativity Version to the Solution Snapshot Database
 [Boolean] $global:toggleSkipCopyingRelativityAndInvariantInstallerAndResponseFiles = $false # Set to $true when you want to create DevVM with pre-release Relativity Versions. Remember to manually copy the Relativity and Invariant installer and response files to the network storage
 
 function Reset-Logs-Environment-Variable()
@@ -609,7 +609,12 @@ function Send-Slack-Success-Message([string] $relativityVersionToCopy)
       "text" = "New DevVm ($($relativityVersionToCreate)) is available at the following location(s) - [$($destinationFilePathNetworkStorage)] & [$($destinationFilePathLocalDriveStorage)]"
     } | ConvertTo-Json
 
-    Invoke-WebRequest -Method Post -Body "$BodyJSON" -Uri $Env:slack_devex_announcements_group_key -ContentType application/json
+    # Send message to news-devvm channel
+    Invoke-WebRequest -Method Post -Body "$BodyJSON" -Uri $Env:slack_news_devvm_group_key -ContentType application/json
+
+    # Send message to devvmalerts channel
+    Invoke-WebRequest -Method Post -Body "$BodyJSON" -Uri $Env:slack_devvmalerts_group_key -ContentType application/json
+
     Write-Message-To-Screen "Sent Slack Success Message"
   }
   else
@@ -631,7 +636,7 @@ function Send-Slack-Success-Message-Follow-Up-Tasks([string] $relativityVersionT
       "text" = "Follow this checklist (https://einstein.kcura.com/x/61e3C) for the new Relativity Version ($($relativityVersionToCreate))."
     } | ConvertTo-Json
 
-    Invoke-WebRequest -Method Post -Body "$BodyJSON" -Uri $Env:slack_devex_tools_group_key -ContentType application/json
+    Invoke-WebRequest -Method Post -Body "$BodyJSON" -Uri $Env:slack_devvmalerts_group_key -ContentType application/json
     Write-Message-To-Screen "Sent Slack Success Message - Follow Up Tasks"
   }
   else
@@ -653,7 +658,7 @@ function Send-Slack-Failure-Message([string] $relativityVersionToCopy)
       "text" = "Failed to create Relativity DevVm ($($relativityVersionToCreate))"
     } | ConvertTo-Json
 
-    Invoke-WebRequest -Method Post -Body "$BodyJSON" -Uri $Env:slack_devex_tools_group_key -ContentType application/json
+    Invoke-WebRequest -Method Post -Body "$BodyJSON" -Uri $Env:slack_devvmalerts_group_key -ContentType application/json
     Write-Message-To-Screen "Sent Slack Failure Message"
   }
   else
