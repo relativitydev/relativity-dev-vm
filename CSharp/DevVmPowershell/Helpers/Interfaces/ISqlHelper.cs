@@ -13,5 +13,6 @@ namespace Helpers.Interfaces
 		int GetErrorsCount(string sqlDatabaseName);
 		void InsertRsmfViewerOverride(string sqlDatabaseName);
 		List<int> RetrieveWorkspacesWhereApplicationIsInstalled(Guid applicationGuid);
+		bool IsWorkspaceUpgrading(int workspaceId);
 	}
 }

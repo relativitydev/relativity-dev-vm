@@ -23,7 +23,8 @@ namespace Helpers.Tests.Integration.Tests
 			IRestHelper restHelper = new RestHelper();
 			Sut = new ImportApiHelper(connectionHelper, TestConstants.RELATIVITY_INSTANCE_NAME, TestConstants.RELATIVITY_ADMIN_USER_NAME, TestConstants.RELATIVITY_ADMIN_PASSWORD);
 			ILogService logService = new LogService();
-			WorkspaceHelper = new WorkspaceHelper(logService, connectionHelper, restHelper, null);
+			IRetryLogicHelper retryLogicHelper = new RetryLogicHelper();
+			WorkspaceHelper = new WorkspaceHelper(logService, connectionHelper, restHelper, null, retryLogicHelper);
 
 		}
 

@@ -286,5 +286,24 @@ namespace Helpers.Implementations
 				throw new Exception("Error Retrieving Workspaces where the Application is installed", ex);
 			}
 		}
+
+		public bool IsWorkspaceUpgrading(int workspaceId)
+		{
+			try
+			{
+				string sqlGetWorkspaceUpgradeStatus = $"SELECT [Status] FROM [EDDS].[eddsdbo].[WorkspaceUpgradeStatus] WHERE [ArtifactID] = @workspaceId";
+				var sqlParams = new List<SqlParameter>
+				{
+					new SqlParameter("@workspaceId", SqlDbType.Int) {Value = workspaceId}
+				};
+
+				int status = SqlRunner.ExecuteSqlStatementAsScalar<int>("EDDS", sqlGetWorkspaceUpgradeStatus, sqlParams);
+				return status < 5;
+			}
+			catch(Exception ex)
+			{
+				throw new Exception("Error Checking whether Workspace is upgrading", ex);
+			}
+		}
 	}
 }

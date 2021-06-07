@@ -31,8 +31,8 @@ namespace Helpers.Tests.Integration.Tests
 			SqlRunner = new SqlRunner(connectionHelper);
 			SqlHelper = new SqlHelper(SqlRunner);
 			ILogService logService = new LogService();
-			WorkspaceHelper = new WorkspaceHelper(logService, connectionHelper, restHelper, SqlHelper);
-			RetryLogicHelper = new RetryLogicHelper();
+			IRetryLogicHelper retryLogicHelper = new RetryLogicHelper();
+			WorkspaceHelper = new WorkspaceHelper(logService, connectionHelper, restHelper, SqlHelper, retryLogicHelper);
 			ApplicationInstallHelper = new ApplicationInstallHelper(connectionHelper, restHelper, WorkspaceHelper, RetryLogicHelper);
 			Sut = new DisclaimerAcceptanceHelper(connectionHelper, restHelper, WorkspaceHelper);
 		}
