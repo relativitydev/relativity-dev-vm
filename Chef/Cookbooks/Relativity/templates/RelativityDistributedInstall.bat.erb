@@ -23,6 +23,6 @@ SET USERNAME=<%= @sa_username %>
 SET PASSWORD=<%= @sa_password %>
 
 
- "C:\Program Files\kCura Corporation\Relativity\Procuro\kCura.EDDS.Procuro.exe" -s  -f  -secondaryinstalltoggle -u:%USERNAME% -pw:%PASSWORD% -mdf:%MDFPATH% -ldf:%LDFPATH% -ndf:%NDFPATH% -bak:%BAKPATH%  -fileshare:%FILESHARE% -eddsdbopassword:%EDDSDBOPASSWORD% -sqlinstance:%SQLINSTANCE% -installdir:%INSTALLDIR% -distributed -xml:.\UpgradeResults_dist.xml
+ "C:\Program Files\kCura Corporation\Relativity\Procuro\kCura.EDDS.Procuro.exe" -s  -f  -secondaryinstalltoggle -u:%USERNAME% -pw:%PASSWORD% -mdf:%MDFPATH% -ldf:%LDFPATH% -ndf:%NDFPATH% -bak:%BAKPATH%  -fileshare:%FILESHARE% -eddsdbopassword:%EDDSDBOPASSWORD% -sqlinstance:%SQLINSTANCE% -installdir:%INSTALLDIR% -relativityScriptLoginPassword:%EDDSDBOPASSWORD% -distributed -xml:.\UpgradeResults_dist.xml
 
 exit 0
