@@ -91,7 +91,8 @@ function Upload-File-To-Azure-Blob-Storage {
       Install-Module `
         -Name Az `
         -AllowClobber `
-        -Scope CurrentUser
+        -Scope CurrentUser `
+        -Force
     }
 
     # Query for Current Installed Azure Az PS module version 
