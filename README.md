@@ -1,5 +1,7 @@
 # relativity-dev-vm
 
+### NOTE: This repo is no longer being use to create the DevVm
+
 ----------------------------- Documentation to use the Pre-built DevVM -----------------------------
 
 Relativity Dev VM - Pre-built VM - Documentation: https://github.com/relativitydev/relativity-dev-vm/blob/master/Documentation/PDF/Relativity%20Dev%20VM%20-%20Pre-built%20VM%20-%20Documentation.pdf
