@@ -1,6 +1,6 @@
 # relativity-dev-vm
 
-### NOTE: This repo is no longer being use to create the DevVm
+### NOTE: This repo is no longer being used to create the DevVm
 
 ----------------------------- Documentation to use the Pre-built DevVM -----------------------------
 
