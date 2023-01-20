@@ -1,14 +1,17 @@
 Clear-Host
 
-function Write-Host-Custom ([string] $writeMessage) {
+function Write-Host-Custom ([string] $writeMessage)
+{
   Write-Host "$($writeMessage)`n" -ForegroundColor Magenta
 }
 
-function Write-Host-Custom-Red ([string] $writeMessage) {
+function Write-Host-Custom-Red ([string] $writeMessage)
+{
   Write-Host "$($writeMessage)`n" -ForegroundColor Red
 }
 
-function Write-Host-Custom-Green ([string] $writeMessage) {
+function Write-Host-Custom-Green ([string] $writeMessage)
+{
   Write-Host "$($writeMessage)`n" -ForegroundColor Green
 }
 
@@ -59,9 +62,9 @@ $global:devVmVersionsToCreate = New-Object System.Collections.ArrayList
 [Boolean] $global:devVmCreationWasSuccess = $false
 [string] $global:compressedFileExtension = "zip"
 [string] $global:relativityInvariantVersionNumberFileName = "relativity_invariant_version.txt"
-[string] $global:testSingleRelativityVersion = "11.2.172.14" # Leave it blank when in Automated Production mode
-[string] $global:invariantVersion = "6.2.165.5" # Leave it blank when in Automated Production mode
-[string] $global:releaseName = "Lanceleaf EAU" # Make sure to update this to the correct release name for the Relativity Version above, leave it blank when in Automated Production mode
+[string] $global:testSingleRelativityVersion = "12.1.171.20" # Leave it blank when in Automated Production mode
+[string] $global:invariantVersion = "7.1.165.4" # Leave it blank when in Automated Production mode
+[string] $global:releaseName = "Osier EAU" # Make sure to update this to the correct release name for the Relativity Version above, leave it blank when in Automated Production mode
 [Boolean] $global:foundCompatibleInvariantVersion = $true # Set to $false when in Automated Production mode
 
 # Define Toggle variables
@@ -72,15 +75,18 @@ $global:devVmVersionsToCreate = New-Object System.Collections.ArrayList
 [Boolean] $global:toggleUploadToAzureDevVmBlobStorage = $true # Set to $false when you do not want to copy the DevVm to the network storage
 [Boolean] $global:toggleAddVersionToSolutionSnapshotDatabase = $true # Set to $false when you do not want to add the Relativity Version to the Solution Snapshot Database
 [Boolean] $global:toggleSkipCopyingRelativityAndInvariantInstallerAndResponseFiles = $false # Set to $true when you want to create DevVM with pre-release Relativity Versions. Remember to manually copy the Relativity and Invariant installer and response files to the network storage
- 
-function Reset-Logs-Environment-Variable() {
+
+function Reset-Logs-Environment-Variable()
+{
   Write-Host-Custom-Green "Resetting Logs Environment variable."
 
   Write-Host-Custom "env:DevVmAutomationLogFilePath=$($env:DevVmAutomationLogFilePath)"
-  if (-Not (Test-Path env:DevVmAutomationLogFilePath)) {
+  if (-Not (Test-Path env:DevVmAutomationLogFilePath))
+  {
     throw "ERROR: Environment variable for Logs doesn't exist."
   }
-  else {
+  else
+  {
     Write-Host-Custom "Environment variable for Logs exists. Setting it to empty string."
     $env:DevVmAutomationLogFilePath = $global:devVmAutomationLogFileResetText
   }
@@ -90,14 +96,17 @@ function Reset-Logs-Environment-Variable() {
   Write-Host-Custom ""
 }
 
-function Create-Log-File () {
+function Create-Log-File ()
+{
   Write-Host-Custom-Green "Creating new Log file."
 
   # Create DevVM Logs folder if it not already exists
-  if (Test-Path $global:devVmAutomationLogsFolder) {    
+  if (Test-Path $global:devVmAutomationLogsFolder)
+  {    
     Write-Host-Custom "DevVM Automation Logs folder exists."
   }
-  else {
+  else
+  {
     Write-Host-Custom "DevVM Automation Logs folder doesn't exists."
     New-Item -Path $global:devVmAutomationLogsFolder -ItemType directory
     Write-Host-Custom "Created DevVM Automation Logs folder. [$($global:devVmAutomationLogsFolder)]"
@@ -115,50 +124,60 @@ function Create-Log-File () {
   Write-Host-Custom ""
 }
 
-function Write-To-Log-File ([string] $writeMessage) {
+function Write-To-Log-File ([string] $writeMessage)
+{
   Add-Content -path $env:DevVmAutomationLogFilePath -Value "$($writeMessage)"
 }
 
-function Write-Message-To-Screen ([string] $writeMessage) {
+function Write-Message-To-Screen ([string] $writeMessage)
+{
   [string] $formattedMessage = "-----> [$(Get-Date -Format g)] $($writeMessage)"
   Write-Host-Custom $formattedMessage
   Write-To-Log-File $formattedMessage
 }
 
-function Write-Heading-Message-To-Screen ([string] $writeMessage) {
+function Write-Heading-Message-To-Screen ([string] $writeMessage)
+{
   [string] $formattedMessage = "-----> [$(Get-Date -Format g)] $($writeMessage)"
   Write-Host-Custom-Green $formattedMessage
   Write-To-Log-File $formattedMessage
 }
 
-function Write-Error-Message-To-Screen ([string] $writeMessage) {
+function Write-Error-Message-To-Screen ([string] $writeMessage)
+{
   [string] $formattedMessage = "-----> [$(Get-Date -Format g)] $($writeMessage)"
   Write-Host-Custom-Red $formattedMessage
   Write-To-Log-File $formattedMessage
 }
 
-function Write-Empty-Line-To-Screen () {
+function Write-Empty-Line-To-Screen ()
+{
   Write-Host ""
   Write-To-Log-File ""
 }
 
-function Delete-File-If-It-Exists ([string] $filePath) {
-  If (Test-Path $filePath) {
+function Delete-File-If-It-Exists ([string] $filePath)
+{
+  If (Test-Path $filePath)
+  {
     Remove-Item -path $filePath -Force
     Write-Message-To-Screen  "File exists and deleted. [$($filePath)]"
   }
-  else {
+  else
+  {
     Write-Message-To-Screen  "File doesn't exist. Skipped Deletion. [$($filePath)]"
   }
 }
 
-function Copy-File-Overwrite-If-It-Exists ([string] $sourceFilePath, [string] $destinationFilePath) {
+function Copy-File-Overwrite-If-It-Exists ([string] $sourceFilePath, [string] $destinationFilePath)
+{
   Write-Message-To-Screen "Copying File. [Source: $($sourceFilePath), Destination: $($destinationFilePath)]"
   Copy-Item -Path $sourceFilePath -Destination $destinationFilePath -Force
   Write-Message-To-Screen "Copied File. [Source: $($sourceFilePath), Destination: $($destinationFilePath)]"
 }
 
-function Retrieve-All-Relativity-Versions-Released() {
+function Retrieve-All-Relativity-Versions-Released()
+{
   # Retrieve all child folders
 
   $global:relativityVersionFoldersList | ForEach-Object {
@@ -169,7 +188,8 @@ function Retrieve-All-Relativity-Versions-Released() {
     $allChildFolders | ForEach-Object {
       $folderName = ($_.Name).Trim()
       Write-Message-To-Screen "$($folderName)"
-      if ($folderName -match $global:regexForRelativityVersion) {
+      if ($folderName -match $global:regexForRelativityVersion)
+      {
         [void] $global:allRelativityVersionsReleased.Add($folderName)      
       }
     }
@@ -183,7 +203,8 @@ function Retrieve-All-Relativity-Versions-Released() {
   Write-Empty-Line-To-Screen
 }
   
-function Retrieve-DevVms-Created() {
+function Retrieve-DevVms-Created()
+{
   # Retrieve all DevVM images
   $allDevVmImagesCreated = Get-ChildItem -Path $global:devVmNetworkStorageLocation | Sort-Object -Property LastWriteTime
     
@@ -194,7 +215,8 @@ function Retrieve-DevVms-Created() {
     Write-Message-To-Screen "$($imageName)"
     [string] $versionWithExtension = $imageName -replace "$($global:vmName)-", ""
     [string] $version = $versionWithExtension -replace ".$($global:compressedFileExtension)", ""
-    if ($version -match $global:regexForRelativityVersion) {
+    if ($version -match $global:regexForRelativityVersion)
+    {
       [void] $global:devVmVersionsCreated.Add($version)      
     }
   }
@@ -208,10 +230,13 @@ function Retrieve-DevVms-Created() {
   Write-Empty-Line-To-Screen
 }
 
-function Identify-DevVms-To-Create() {
+function Identify-DevVms-To-Create()
+{
   # First Add the ones which aren't already created 
-  foreach ($currentRelativityVersion1 in $global:allRelativityVersionsReleased) {
-    if (-Not $global:devVmVersionsCreated.Contains($currentRelativityVersion1)) {
+  foreach ($currentRelativityVersion1 in $global:allRelativityVersionsReleased)
+  {
+    if (-Not $global:devVmVersionsCreated.Contains($currentRelativityVersion1))
+    {
       [void] $global:devVmVersionsToCreate.Add($currentRelativityVersion1)      
     }
   }
@@ -228,15 +253,18 @@ function Identify-DevVms-To-Create() {
   Write-Empty-Line-To-Screen
 }
 
-function Check-If-Only-One-Invariant-Sql-Record-Exists ([string] $relativityVersion) {
+function Check-If-Only-One-Invariant-Sql-Record-Exists ([string] $relativityVersion)
+{
   Write-Heading-Message-To-Screen "Checking if only 1 invariant sql record exists."
 
-  if ($relativityVersion -eq '') {
+  if ($relativityVersion -eq '')
+  {
     throw "relativityVersion passed is empty."
   }
   
   $global:invariantVersionSqlRecordCount = 0
-  try {
+  try
+  {
     # Create and open a database connection
     $sqlConnection = new-object System.Data.SqlClient.SqlConnection "server=$($global:releaseSqlServer);database=$($global:releaseSqlServerDatabase);user id=$($global:releaseSqlServerLogin);password=$($global:releaseSqlServerPassword);trusted_connection=true;"
     $sqlConnection.Open()
@@ -256,29 +284,34 @@ function Check-If-Only-One-Invariant-Sql-Record-Exists ([string] $relativityVers
     $global:invariantVersionSqlRecordCount = $sqlCommand.ExecuteScalar()
     Write-Message-To-Screen "global:invariantVersionSqlRecordCount: $($global:invariantVersionSqlRecordCount)"
   }
-  Catch [Exception] {
+  Catch [Exception]
+  {
     Write-Error-Message-To-Screen "An error occured when checking if only 1 invariant sql record exists."
     Write-Error-Message-To-Screen "-----> Exception: $($_.Exception.GetType().FullName)"
     Write-Error-Message-To-Screen "-----> Exception Message: $($_.Exception.Message)"
     throw
   }
-  finally {
+  finally
+  {
     # Close the database connection
     $sqlConnection.Close()
   }
   Write-Message-To-Screen "Checked if only 1 invariant sql record exists."
 }
 
-function Retrieve-Invariant-Version-From-Sql-Server ([string] $relativityVersion) {
+function Retrieve-Invariant-Version-From-Sql-Server ([string] $relativityVersion)
+{
   Write-Heading-Message-To-Screen "Retrieving Invarint version from SQL server."
     
-  if ($relativityVersion -eq '') {
+  if ($relativityVersion -eq '')
+  {
     throw "relativityVersion passed is empty."
   }
 
   $global:invariantVersion = ""
   $global:foundCompatibleInvariantVersion = $false
-  try {
+  try
+  {
     # Create and open a database connection
     $sqlConnection = new-object System.Data.SqlClient.SqlConnection "server=$($global:releaseSqlServer); database=$($global:releaseSqlServerDatabase); user id=$($global:releaseSqlServerLogin); password=$($global:releaseSqlServerPassword); trusted_connection=true; "
     $sqlConnection.Open()
@@ -298,45 +331,55 @@ function Retrieve-Invariant-Version-From-Sql-Server ([string] $relativityVersion
     Write-Message-To-Screen "global:invariantVersion: $($global:invariantVersion)"
     Write-Message-To-Screen "global:foundCompatibleInvariantVersion: $($global:foundCompatibleInvariantVersion)"
   }
-  Catch [Exception] {
+  Catch [Exception]
+  {
     Write-Error-Message-To-Screen "An error occured when retrieving Invarint version from SQL server."
     Write-Error-Message-To-Screen "-----> Exception: $($_.Exception.GetType().FullName)"
     Write-Error-Message-To-Screen "-----> Exception Message: $($_.Exception.Message)"
     throw
   }
-  finally {
+  finally
+  {
     # Close the database connection
     $sqlConnection.Close()
   } 
   Write-Message-To-Screen "Retrieved Invariant version from SQL server."
 }
 
-function Find-Invariant-Version([string] $relativityVersion) {
+function Find-Invariant-Version([string] $relativityVersion)
+{
   Write-Heading-Message-To-Screen "Look for Invariant version for Relativity version."
   
-  if ($relativityVersion -eq '') {
+  if ($relativityVersion -eq '')
+  {
     throw "relativityVersion passed is empty."
   }
 
-  try {
+  try
+  {
     Check-If-Only-One-Invariant-Sql-Record-Exists $relativityVersion
-    if ($global:invariantVersionSqlRecordCount -eq 0) {
+    if ($global:invariantVersionSqlRecordCount -eq 0)
+    {
       throw "No Invariant version exists in the Sql database."
     }
-    if ($global:invariantVersionSqlRecordCount -gt 1) {
+    if ($global:invariantVersionSqlRecordCount -gt 1)
+    {
       throw "More than one Invariant version exists in the Sql database."
     }
 
     Retrieve-Invariant-Version-From-Sql-Server $relativityVersion
 
-    if ($global:foundCompatibleInvariantVersion) {
+    if ($global:foundCompatibleInvariantVersion)
+    {
       Write-Message-To-Screen "Identified Invariant Version: $($global:invariantVersion)"
     }
-    else {
+    else
+    {
       Write-Message-To-Screen "Could not Identify Invariant Version."
     }
   }
-  Catch [Exception] {
+  Catch [Exception]
+  {
     Write-Error-Message-To-Screen "An error occured when looking for Invariant version for Relativity version."
     Write-Error-Message-To-Screen "-----> Exception: $($_.Exception.GetType().FullName)"
     Write-Error-Message-To-Screen "-----> Exception Message: $($_.Exception.Message)"
@@ -346,7 +389,8 @@ function Find-Invariant-Version([string] $relativityVersion) {
   Write-Message-To-Screen "Finished looking for Invariant version for Relativity version."
 }
 
-function Copy-Relativity-Installer-And-Response-Files([string] $relativityVersionToCopy) {
+function Copy-Relativity-Installer-And-Response-Files([string] $relativityVersionToCopy)
+{
   Write-Heading-Message-To-Screen "Copying Relativity Installer and Response files."
 
   [string] $sourceRelativityFile = ""
@@ -357,7 +401,8 @@ function Copy-Relativity-Installer-And-Response-Files([string] $relativityVersio
     $relativityVersionToCopySplit = $relativityVersionToCopy.Split(".")
     [string] $majorRelativityVersion = "$($relativityVersionToCopySplit[0]).$($relativityVersionToCopySplit[1])"
 
-    if ($currentRelativityVersionFolder.Contains($majorRelativityVersion)) {
+    if ($currentRelativityVersionFolder.Contains($majorRelativityVersion))
+    {
       $global:currentRelativityVersionCreating = "$($currentRelativityVersionFolder)" # This vairable will be used when copying invariant install file
       $sourceRelativityFile = "$($currentRelativityVersionFolder)\$($relativityVersionToCopy)\RelativityInstallation\GOLD $($relativityVersionToCopy) Relativity.exe"
       $sourceRelativityResponseFile = "$($currentRelativityVersionFolder)\$($relativityVersionToCopy)\RelativityInstallation\RelativityResponse.txt"
@@ -376,7 +421,8 @@ function Copy-Relativity-Installer-And-Response-Files([string] $relativityVersio
   Write-Empty-Line-To-Screen
 }
 
-function Copy-Invariant-Installer-And-Response-Files([string] $invariantVersionToCopy) {
+function Copy-Invariant-Installer-And-Response-Files([string] $invariantVersionToCopy)
+{
   Write-Heading-Message-To-Screen "Copying Invariant Installer and Response files."
   
   [string] $sourceInvariantFile = ""
@@ -387,7 +433,8 @@ function Copy-Invariant-Installer-And-Response-Files([string] $invariantVersionT
     $global:currentRelativityVersionCreatingSplit = $global:currentRelativityVersionCreating.Split(".")
     [string] $majorRelativityVersion = "$($global:currentRelativityVersionCreatingSplit[0]).$($global:currentRelativityVersionCreatingSplit[1])"
 
-    if ($currentRelativityVersionFolder.Contains($majorRelativityVersion)) {
+    if ($currentRelativityVersionFolder.Contains($majorRelativityVersion))
+    {
       $global:currentRelativityVersionCreating = "$($currentRelativityVersionFolder)"
       $sourceInvariantFile = "$($currentRelativityVersionFolder)\Invariant\Invariant $($invariantVersionToCopy)\GOLD $($invariantVersionToCopy) Invariant.exe"
       $sourceInvariantResponseFile = "$($currentRelativityVersionFolder)\Invariant\Invariant $($invariantVersionToCopy)\InvariantResponse.txt"
@@ -406,13 +453,15 @@ function Copy-Invariant-Installer-And-Response-Files([string] $invariantVersionT
   Write-Empty-Line-To-Screen
 }
 
-function Copy-Relativity-And-Invariant-Version-Numbers-To-Text-File([string] $relativityVersionToCopy, [string] $invariantVersionToCopy) {
+function Copy-Relativity-And-Invariant-Version-Numbers-To-Text-File([string] $relativityVersionToCopy, [string] $invariantVersionToCopy)
+{
   Write-Heading-Message-To-Screen "Copying Relativity and Invariant Version Numbers to Text File."
 
   # Copy Relativity and Invariant version number 
   [string] $relativityInvairantVersionNumberFileNameWithPath = "$($global:devVmInstallFolder)\Relativity\$($global:relativityInvariantVersionNumberFileName)"
   Delete-File-If-It-Exists $relativityInvairantVersionNumberFileNameWithPath
-  If (Test-Path $relativityInvairantVersionNumberFileNameWithPath) {
+  If (Test-Path $relativityInvairantVersionNumberFileNameWithPath)
+  {
     Remove-Item -path $relativityInvairantVersionNumberFileNameWithPath -Force
   }
   New-Item $relativityInvairantVersionNumberFileNameWithPath -type file -Force
@@ -423,7 +472,8 @@ function Copy-Relativity-And-Invariant-Version-Numbers-To-Text-File([string] $re
   Write-Empty-Line-To-Screen
 }
 
-function Run-DevVm-Creation-Script([string] $relativityVersionToCreate) {
+function Run-DevVm-Creation-Script([string] $relativityVersionToCreate)
+{
   Write-Heading-Message-To-Screen "Running DevVm creation script."
 
   # Make sure we are in the same folder where the current running script (AutomationScript.ps1) exists
@@ -437,43 +487,50 @@ function Run-DevVm-Creation-Script([string] $relativityVersionToCreate) {
   Write-Empty-Line-To-Screen
 }
 
-function Copy-DevVm-Zip-File-To-All-File-Storages([string] $relativityVersionToCopy) {
+function Copy-DevVm-Zip-File-To-All-File-Storages([string] $relativityVersionToCopy)
+{
   Write-Heading-Message-To-Screen "Copying DevVm created [$($relativityVersionToCopy)] to File storage(s)."
    
   [System.Version] $relativityVersion = [System.Version]::Parse($relativityVersionToCopy)
   [string] $majorRelativityVersion = "$($relativityVersion.Major).$($relativityVersion.Minor)"
   
   # Copy to Network Storage
-  if ($global:toggleCopyToLocalNetworkStorage -eq $true) {
+  if ($global:toggleCopyToLocalNetworkStorage -eq $true)
+  {
     Write-Message-To-Screen "toggleCopyToLocalNetworkStorage is set to True"
 
     [string] $destinationFileParentFolderPathForNetworkStorage = "$($global:devVmNetworkStorageLocation)\$($majorRelativityVersion)"
     [string] $destinationFilePathForNetworkStorage = "$($destinationFileParentFolderPathForNetworkStorage)\$($global:vmNameAfterCreation).$($global:compressedFileExtension)"    
     
     # Create Parent folder if it doesn't already exist
-    If (!(test-path $destinationFileParentFolderPathForNetworkStorage)) {
+    If (!(test-path $destinationFileParentFolderPathForNetworkStorage))
+    {
       New-Item -ItemType Directory -Force -Path $destinationFileParentFolderPathForNetworkStorage
     }
     Copy-DevVm-Zip-File $relativityVersionToCopy $destinationFilePathForNetworkStorage
   }
-  else {
+  else
+  {
     Write-Message-To-Screen "toggleCopyToLocalNetworkStorage is set to False"    
   }
 
   # Copy to Local Drive
-  if ($global:toggleCopyToLocalDriveStorage -eq $true) {
+  if ($global:toggleCopyToLocalDriveStorage -eq $true)
+  {
     Write-Message-To-Screen "toggleCopyToLocalDriveStorage is set to True"
 
     [string] $destinationFileParentFolderPathForLocalDriveStorage = "$($global:devVmLocalDriveStorageLocation)\$($majorRelativityVersion)"
     [string] $destinationFilePathForLocalDriveStorage = "$($destinationFileParentFolderPathForLocalDriveStorage)\$($global:vmNameAfterCreation).$($global:compressedFileExtension)"    
     
     # Create Parent folder if it doesn't already exist
-    If (!(test-path $destinationFileParentFolderPathForLocalDriveStorage)) {
+    If (!(test-path $destinationFileParentFolderPathForLocalDriveStorage))
+    {
       New-Item -ItemType Directory -Force -Path $destinationFileParentFolderPathForLocalDriveStorage
     }
     Copy-DevVm-Zip-File $relativityVersionToCopy $destinationFilePathForLocalDriveStorage
   }
-  else {
+  else
+  {
     Write-Message-To-Screen "toggleCopyToLocalDriveStorage is set to False"    
   }
   
@@ -481,15 +538,18 @@ function Copy-DevVm-Zip-File-To-All-File-Storages([string] $relativityVersionToC
   Write-Empty-Line-To-Screen
 }
 
-function Copy-DevVm-Zip-File([string] $relativityVersionToCopy, [string] $destinationFilePath) {
+function Copy-DevVm-Zip-File([string] $relativityVersionToCopy, [string] $destinationFilePath)
+{
   Write-Heading-Message-To-Screen "Copying DevVm created [$($relativityVersionToCopy)] to storage [$($destinationFilePath)]" 
   
   [string] $sourceZipFilePath = "$($global:vmExportPath)\$($global:vmNameAfterCreation).$($global:compressedFileExtension)"
         
-  if (Test-Path $sourceZipFilePath) {
+  if (Test-Path $sourceZipFilePath)
+  {
     Copy-File-Overwrite-If-It-Exists $sourceZipFilePath $destinationFilePath  
   }
-  else {
+  else
+  {
     Write-Message-To-Screen "Source file[$($sourceZipFilePath)] doesn't exist. Skipped copying to storage [$($destinationFilePath)]"
   }  
   
@@ -497,8 +557,10 @@ function Copy-DevVm-Zip-File([string] $relativityVersionToCopy, [string] $destin
   Write-Empty-Line-To-Screen  
 }
 
-function Upload-DevVm-Zip-To-Azure-Blob-Storage([string] $relativityVersionToUpload) {
-  if ($global:toggleUploadToAzureDevVmBlobStorage -eq $true) {
+function Upload-DevVm-Zip-To-Azure-Blob-Storage([string] $relativityVersionToUpload)
+{
+  if ($global:toggleUploadToAzureDevVmBlobStorage -eq $true)
+  {
     Write-Message-To-Screen "toggleUploadToAzureDevVmBlobStorage is set to True"
 
     Write-Heading-Message-To-Screen "Uploading DevVM zip file to Azure DevVM Blob Storage"
@@ -523,14 +585,17 @@ function Upload-DevVm-Zip-To-Azure-Blob-Storage([string] $relativityVersionToUpl
     Write-Message-To-Screen "Finished running PowerShell script to Upload DevVM zip file to Azure DevVM Blob Storage"
     Write-Empty-Line-To-Screen
   }
-  else {
+  else
+  {
     Write-Message-To-Screen "toggleUploadToAzureDevVmBlobStorage is set to False"
   }
 }
 
-function Send-Slack-Success-Message([string] $relativityVersionToCopy) {
+function Send-Slack-Success-Message([string] $relativityVersionToCopy)
+{
   [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-  if ($global:toggleSendSlackMessage -eq $true) {
+  if ($global:toggleSendSlackMessage -eq $true)
+  {
     Write-Message-To-Screen "toggleSendSlackMessage is set to True"
 
     Write-Heading-Message-To-Screen "Sending Slack Success Message"
@@ -544,17 +609,22 @@ function Send-Slack-Success-Message([string] $relativityVersionToCopy) {
       "text" = "New DevVm ($($relativityVersionToCreate)) is available at the following location(s) - [$($destinationFilePathNetworkStorage)] & [$($destinationFilePathLocalDriveStorage)]"
     } | ConvertTo-Json
 
-    Invoke-WebRequest -Method Post -Body "$BodyJSON" -Uri $Env:slack_devex_announcements_group_key -ContentType application/json
+    Invoke-WebRequest -Method Post -Body "$BodyJSON" -Uri $Env:slack_news_devvm_group_key -ContentType application/json
+    Invoke-WebRequest -Method Post -Body "$BodyJSON" -Uri $Env:slack_devvmalerts_group_key -ContentType application/json
+
     Write-Message-To-Screen "Sent Slack Success Message"
   }
-  else {
+  else
+  {
     Write-Message-To-Screen "toggleSendSlackMessage is set to False"
   }
 }
 
-function Send-Slack-Success-Message-Follow-Up-Tasks([string] $relativityVersionToCopy) {
+function Send-Slack-Success-Message-Follow-Up-Tasks([string] $relativityVersionToCopy)
+{
   [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-  if ($global:toggleSendSlackMessage -eq $true) {
+  if ($global:toggleSendSlackMessage -eq $true)
+  {
     Write-Message-To-Screen "toggleSendSlackMessage is set to True"
 
     Write-Heading-Message-To-Screen "Sending Slack Success Message - Follow Up Tasks"
@@ -563,17 +633,20 @@ function Send-Slack-Success-Message-Follow-Up-Tasks([string] $relativityVersionT
       "text" = "Follow this checklist (https://einstein.kcura.com/x/61e3C) for the new Relativity Version ($($relativityVersionToCreate))."
     } | ConvertTo-Json
 
-    Invoke-WebRequest -Method Post -Body "$BodyJSON" -Uri $Env:slack_devex_tools_group_key -ContentType application/json
+    Invoke-WebRequest -Method Post -Body "$BodyJSON" -Uri $Env:slack_devvmalerts_group_key -ContentType application/json
     Write-Message-To-Screen "Sent Slack Success Message - Follow Up Tasks"
   }
-  else {
+  else
+  {
     Write-Message-To-Screen "toggleSendSlackMessage is set to False"
   }
 }
 
-function Send-Slack-Failure-Message([string] $relativityVersionToCopy) {
+function Send-Slack-Failure-Message([string] $relativityVersionToCopy)
+{
   [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-  if ($global:toggleSendSlackMessage -eq $true) {
+  if ($global:toggleSendSlackMessage -eq $true)
+  {
     Write-Message-To-Screen "toggleSendSlackMessage is set to True"
 
     Write-Heading-Message-To-Screen "Sending Slack Failure Message"
@@ -582,16 +655,19 @@ function Send-Slack-Failure-Message([string] $relativityVersionToCopy) {
       "text" = "Failed to create Relativity DevVm ($($relativityVersionToCreate))"
     } | ConvertTo-Json
 
-    Invoke-WebRequest -Method Post -Body "$BodyJSON" -Uri $Env:slack_devex_tools_group_key -ContentType application/json
+    Invoke-WebRequest -Method Post -Body "$BodyJSON" -Uri $Env:slack_devvmalerts_group_key -ContentType application/json
     Write-Message-To-Screen "Sent Slack Failure Message"
   }
-  else {
+  else
+  {
     Write-Message-To-Screen "toggleSendSlackMessage is set to False"
   }
 }
 
-function Add-Relativity-Version-To-Solution-Snapshot-Database([string] $relativityVersion) {
-  if ($global:toggleAddVersionToSolutionSnapshotDatabase -eq $true) {
+function Add-Relativity-Version-To-Solution-Snapshot-Database([string] $relativityVersion)
+{
+  if ($global:toggleAddVersionToSolutionSnapshotDatabase -eq $true)
+  {
     Write-Message-To-Screen "toggleAddVersionToSolutionSnapshotDatabase is set to True"
 
     Write-Heading-Message-To-Screen "Adding Relativity Version to the Solution Snapshot Database"
@@ -606,28 +682,33 @@ function Add-Relativity-Version-To-Solution-Snapshot-Database([string] $relativi
     Write-Message-To-Screen "Ran Add Relativity Version to Solution Snapshot Database script."
     Write-Empty-Line-To-Screen
   }
-  else {
+  else
+  {
     Write-Message-To-Screen "toggleAddVersionToSolutionSnapshotDatabase is set to False"
   }
 }
 
-function Check-DevVm-Result-Text-File-For-Success() {
+function Check-DevVm-Result-Text-File-For-Success()
+{
   Write-Heading-Message-To-Screen "Checking if DevVM creation was success."
   
   $global:devVmCreationWasSuccess = $false  
   [string] $result_file_path = "$PSScriptroot\$($global:devVmCreationResultFileName)"
-  if (Test-Path $result_file_path) {
+  if (Test-Path $result_file_path)
+  {
     # Read text file
     [string] $content = [IO.File]::ReadAllText($result_file_path)
     [string] $contentTrimmed = ($content.Trim())
     Write-Message-To-Screen "DevVM result file content: $($contentTrimmed)"
 
-    if (($content.Trim()) -eq "success") {
+    if (($content.Trim()) -eq "success")
+    {
       Write-Message-To-Screen "DevVM creation was success."
       $global:devVmCreationWasSuccess = $true    
     }
   }
-  else {
+  else
+  {
     $global:devVmCreationWasSuccess = $false  
     Write-Error-Message-To-Screen "DevVM Result file doesn't exist."
   }
@@ -636,7 +717,8 @@ function Check-DevVm-Result-Text-File-For-Success() {
   Write-Empty-Line-To-Screen
 }
 
-function Create-DevVm([string] $relativityVersionToCreate) {
+function Create-DevVm([string] $relativityVersionToCreate)
+{
   Write-Heading-Message-To-Screen "Creating DevVm. [$($relativityVersionToCreate)]"
 
   # Set new VM name in a variable which will be used in the CreateDevVm.ps1 script to rename the VM once it's created
@@ -645,29 +727,36 @@ function Create-DevVm([string] $relativityVersionToCreate) {
   $global:devVmCreationWasSuccess = $false
   Write-Message-To-Screen "Total attempts: $($global:maxRetry)"
 
-  Do {
-    try {
+  Do
+  {
+    try
+    {
       Write-Heading-Message-To-Screen "Attempt #$($global:count)"
     
       # Find Invariant version
       # Find-Invariant-Version $relativityVersionToCreate
 
-      if ($global:foundCompatibleInvariantVersion) {
+      if ($global:foundCompatibleInvariantVersion)
+      {
 
-        if ($global:toggleSimulateDevVmCreation -eq $true) {
+        if ($global:toggleSimulateDevVmCreation -eq $true)
+        {
           Write-Message-To-Screen "toggleSimulateDevVmCreation is set to True"
 
           $global:devVmCreationWasSuccess = $true
           Write-Message-To-Screen "Skipped DevVm creation! (In DevVM Creation Siumlation mode)"
         }
-        else {
+        else
+        {
           Write-Message-To-Screen "toggleSimulateDevVmCreation is set to False"
 
           # Copy Relativity and Invariant Installer and Respponse Files
-          if ($global:toggleSkipCopyingRelativityAndInvariantInstallerAndResponseFiles -eq $true) {
+          if ($global:toggleSkipCopyingRelativityAndInvariantInstallerAndResponseFiles -eq $true)
+          {
             Write-Message-To-Screen "Skipped Copying Relativity and Invariant Installer and Response Files for Pre-Release DevVM [`$global:toggleSkipCopyingRelativityAndInvariantInstallerAndResponseFiles: $($global:toggleSkipCopyingRelativityAndInvariantInstallerAndResponseFiles)]....."
           } 
-          else {
+          else
+          {
             Copy-Relativity-Installer-And-Response-Files $relativityVersionToCreate
             Copy-Invariant-Installer-And-Response-Files $global:invariantVersion
             Copy-Relativity-And-Invariant-Version-Numbers-To-Text-File $relativityVersionToCreate $global:invariantVersion
@@ -680,7 +769,8 @@ function Create-DevVm([string] $relativityVersionToCreate) {
           Check-DevVm-Result-Text-File-For-Success
         }        
        
-        if ($global:devVmCreationWasSuccess -eq $true) {
+        if ($global:devVmCreationWasSuccess -eq $true)
+        {
           # Copy Zip file to all file storage locations with the version number in name
           Copy-DevVm-Zip-File-To-All-File-Storages $relativityVersionToCreate
 
@@ -696,16 +786,19 @@ function Create-DevVm([string] $relativityVersionToCreate) {
           # Add Relativity Version to Solution Snapshot Database
           Add-Relativity-Version-To-Solution-Snapshot-Database $relativityVersionToCreate
         }
-        else {
+        else
+        {
           $global:count++
           Write-Message-To-Screen "DevVm creation failed. Skipped copying zip file to network storage."
         }
       }
-      else {
+      else
+      {
         throw "Skipped DevVM Creation. Could not Identify Invariant Version for Relativity Version[$($relativityVersionToCreate)]"
       }
     }
-    Catch [Exception] {
+    Catch [Exception]
+    {
       $global:count++
       Write-Message-To-Screen "Exception: $($_.Exception.GetType().FullName)"
       Write-Message-To-Screen "Exception Message: $($_.Exception.Message)"
@@ -717,7 +810,8 @@ function Create-DevVm([string] $relativityVersionToCreate) {
     Write-Message-To-Screen "global:maxRetry: $($global:maxRetry)"
   }  while (($global:devVmCreationWasSuccess -eq $false) -And ($global:count -le $global:maxRetry))
 
-  if ($global:devVmCreationWasSuccess -eq $false) {
+  if ($global:devVmCreationWasSuccess -eq $false)
+  {
     Write-Error-Message-To-Screen "DevVM creation failed. Attempted $($global:count - 1) times."
     Send-Slack-Failure-Message $relativityVersionToCreate
   }
@@ -725,26 +819,32 @@ function Create-DevVm([string] $relativityVersionToCreate) {
   Write-Empty-Line-To-Screen
 }
 
-function Create-DevVms() {
-  if ($global:devVmVersionsToCreate.Count -gt 0) {
+function Create-DevVms()
+{
+  if ($global:devVmVersionsToCreate.Count -gt 0)
+  {
     $global:devVmVersionsToCreate | ForEach-Object {
       [string] $relativityVersionToCreate = $_
 
       Write-Message-To-Screen "#################### DevVm - [$($relativityVersionToCreate)] ####################"
     
       # Check for testing mode
-      if ($global:testSingleRelativityVersion -eq "") {
+      if ($global:testSingleRelativityVersion -eq "")
+      {
         # In Production mode
         # Create DevVM as a Zip file
         Create-DevVm $relativityVersionToCreate
       }
-      else {
+      else
+      {
         # In Testing mode
-        if ($relativityVersionToCreate -eq $global:testSingleRelativityVersion) {
+        if ($relativityVersionToCreate -eq $global:testSingleRelativityVersion)
+        {
           # Create DevVM as a Zip file
           Create-DevVm $relativityVersionToCreate
         }
-        else {
+        else
+        {
           Write-Message-To-Screen "In Testing mode - skipped DevVM creation."
         }
       }
@@ -755,13 +855,16 @@ function Create-DevVms() {
       Write-Empty-Line-To-Screen
     }
   }
-  else {
+  else
+  {
     Write-Heading-Message-To-Screen "All DevVM's already created. Skipped Creation."
   }
 }
 
-function Delete-DevVm-Creation-Result-File() {
-  try {
+function Delete-DevVm-Creation-Result-File()
+{
+  try
+  {
     Write-Heading-Message-To-Screen "Deleting DevVM Creation Result File."
   
     [string] $result_file_path = "$PSScriptroot\$($global:devVmCreationResultFileName)"
@@ -770,7 +873,8 @@ function Delete-DevVm-Creation-Result-File() {
     Write-Message-To-Screen "Deleted DevVM Creation Result File. [$($result_file_path)]"
     Write-Empty-Line-To-Screen
   }
-  Catch [Exception] {
+  Catch [Exception]
+  {
     Write-Error-Message-To-Screen "An error occured when deleting DevVM Result file."
     Write-Error-Message-To-Screen "-----> Exception: $($_.Exception.GetType().FullName)"
     Write-Error-Message-To-Screen "-----> Exception Message: $($_.Exception.Message)"
@@ -778,11 +882,13 @@ function Delete-DevVm-Creation-Result-File() {
   }
 }
 
-function Initialize() {
+function Initialize()
+{
   Reset-Logs-Environment-Variable
  
   # Create Logs file if it not already exists
-  If ($env:DevVmAutomationLogFilePath -eq $global:devVmAutomationLogFileResetText) {
+  If ($env:DevVmAutomationLogFilePath -eq $global:devVmAutomationLogFileResetText)
+  {
     Write-Host-Custom "DevVM Automation Logs file doesn't exist."
     Create-Log-File
   }

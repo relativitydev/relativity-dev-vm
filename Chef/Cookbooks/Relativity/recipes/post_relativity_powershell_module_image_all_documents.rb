@@ -8,7 +8,7 @@ custom_log 'custom_log' do msg 'Imaging All Documents' end
 powershell_script 'image_all_documents' do
   code <<-EOH
     #{node['powershell_module']['import_module']}
-    Add-ImagesForAllDocuments -RelativityInstanceName #{node['windows']['new_computer_name']} -RelativityAdminUserName #{node['relativity']['admin']['login']} -RelativityAdminPassword #{node['relativity']['admin']['password']} -SqlAdminUserName #{node['sql']['user']['eddsdbo']['login']} -SqlAdminPassword #{node['sql']['user']['eddsdbo']['password']} -WorkspaceName "#{node['sample_data_grid_workspace_name']}"
+    Add-ImagesForAllDocuments -RelativityInstanceName #{node['windows']['new_computer_name']} -RelativityAdminUserName #{node['relativity']['admin']['login']} -RelativityAdminPassword #{node['relativity']['admin']['password']} -SqlAdminUserName #{node['sql']['user']['eddsdbo']['login']} -SqlAdminPassword #{node['sql']['user']['eddsdbo']['password']} -WorkspaceName "#{node['sample_data_grid_workspace_name']}"  -ErrorAction Stop
     EOH
 end
 

@@ -61,7 +61,8 @@ namespace Helpers.Implementations
 			HttpResponseMessage queryResponse = await RestHelper.MakePostAsync(httpClient, url, queryPayload);
 			if (!queryResponse.IsSuccessStatusCode)
 			{
-				throw new Exception("Failed to Query for Disclaimer Configuration RDO");
+				string responseContent = await queryResponse.Content.ReadAsStringAsync();
+				throw new Exception($"Failed to Query for Disclaimer Configuration RDO. [{nameof(responseContent)}: {responseContent}]");
 			}
 			string resultString = await queryResponse.Content.ReadAsStringAsync();
 			dynamic result = JObject.Parse(resultString) as JObject;
@@ -108,7 +109,8 @@ namespace Helpers.Implementations
 			HttpResponseMessage queryResponse = await RestHelper.MakePostAsync(httpClient, url, queryPayload);
 			if (!queryResponse.IsSuccessStatusCode)
 			{
-				throw new Exception("Failed to Query for Disclaimer RDO");
+				string responseContent = await queryResponse.Content.ReadAsStringAsync();
+				throw new Exception($"Failed to Query for Disclaimer RDO. [{nameof(responseContent)}: {responseContent}]");
 			}
 			string resultString = await queryResponse.Content.ReadAsStringAsync();
 			dynamic result = JObject.Parse(resultString) as JObject;
@@ -171,7 +173,8 @@ namespace Helpers.Implementations
 			HttpResponseMessage response = await RestHelper.MakePostAsync(httpClient, url, request);
 			if (!response.IsSuccessStatusCode)
 			{
-				throw new Exception("Failed to Create for Disclaimer Configuration RDO.");
+				string responseContent = await response.Content.ReadAsStringAsync();
+				throw new Exception($"Failed to Create for Disclaimer Configuration RDO. [{nameof(responseContent)}: {responseContent}]");
 			}
 		}
 
@@ -277,7 +280,8 @@ namespace Helpers.Implementations
 				HttpResponseMessage queryResponse = await RestHelper.MakePostAsync(httpClient, url, queryPayload);
 				if (!queryResponse.IsSuccessStatusCode)
 				{
-					throw new Exception("Failed to Query for Disclaimer Object Type");
+					string responseContent = await queryResponse.Content.ReadAsStringAsync();
+					throw new Exception($"Failed to Query for Disclaimer Configuration RDO. [{nameof(responseContent)}: {responseContent}]");
 				}
 
 				string resultString = queryResponse.Content.ReadAsStringAsync().Result;
@@ -319,7 +323,8 @@ namespace Helpers.Implementations
 				HttpResponseMessage queryResponse = await RestHelper.MakePostAsync(httpClient, url, queryPayload);
 				if (!queryResponse.IsSuccessStatusCode)
 				{
-					throw new Exception("Failed to Query for Disclaimer Solution Configuration Object Type");
+					string responseContent = await queryResponse.Content.ReadAsStringAsync();
+					throw new Exception($"Failed to Query for Disclaimer Solution Configuration Object Type. [{nameof(responseContent)}: {responseContent}]");
 				}
 
 				string resultString = await queryResponse.Content.ReadAsStringAsync();
@@ -361,7 +366,8 @@ namespace Helpers.Implementations
 				HttpResponseMessage queryResponse = await RestHelper.MakePostAsync(httpClient, url, queryPayload);
 				if (!queryResponse.IsSuccessStatusCode)
 				{
-					throw new Exception("Failed to Query for Disclaimer Layout");
+					string responseContent = await queryResponse.Content.ReadAsStringAsync();
+					throw new Exception($"Failed to Query for Disclaimer Layout. [{nameof(responseContent)}: {responseContent}]");
 				}
 
 				string resultString = await queryResponse.Content.ReadAsStringAsync();
@@ -402,7 +408,8 @@ namespace Helpers.Implementations
 				HttpResponseMessage queryResponse = await RestHelper.MakePostAsync(httpClient, url, queryPayload);
 				if (!queryResponse.IsSuccessStatusCode)
 				{
-					throw new Exception("Failed to Query for Disclaimer Configuration Layout");
+					string responseContent = await queryResponse.Content.ReadAsStringAsync();
+					throw new Exception($"Failed to Query for Disclaimer Configuration Layout. [{nameof(responseContent)}: {responseContent}]");
 				}
 
 				string resultString = await queryResponse.Content.ReadAsStringAsync();
